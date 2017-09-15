@@ -5,6 +5,12 @@ expr = re.compile(r'^VDInachrichten-(\d{4})(\d{2})(\d{2})\.pdf$')
 
 class PaperVDI:
 
+    """ Matches german VDI Nachrichten e-paper
+
+        Attributes:
+            year, month, day
+    """
+
     def matches(self, path):
         return expr.match(path.name) is not None
 

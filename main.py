@@ -1,8 +1,8 @@
 """
-Personal file management tool.
+The personal file management tool.
 
 Usage:
-    organize
+    organize simulate
     organize run
     organize undo
     organize list
@@ -20,7 +20,6 @@ Options:
     --version       Show program version and exit.
     -h, --help      Show this screen and exit.
 """
-
 import logging
 from pathlib import Path
 
@@ -28,10 +27,16 @@ from organize import Rule
 from organize import filters
 from organize import actions
 
+import appdirs
 from docopt import docopt
 
 __version__ = '0.0'
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
+
+# config folder
+app_dirs = appdirs.AppDirs('organize')
+config_dir = Path(app_dirs.user_config_dir)
+config_dir.mkdir(parents=True, exist_ok=True)
 
 
 def iter_actions(folders, rules: [Rule]):
@@ -54,20 +59,33 @@ def main(folders, simulate, rules: [Rule]):
 
 if __name__ == '__main__':
     args = docopt(__doc__, version=__version__, help=True)
+
     if args['list']:
         print('Available filters:')
+        print(' - TODO')
+        print('')
         print('Available actions:')
-    elif args['config']:
-        print('Opening your config file')
+        print(' - TODO')
+        print('')
 
-    simulate = not args['run']
-    main(
-        simulate=simulate,
-        folders=[
-            '~/Desktop/__Inbox__',
-            '~/Documents/VDI Nachrichten',
-        ],
-        rules=[
-            Rule(filter=filters.PaperVDI(),
-                 action=actions.Move('~/Documents/VDI Nachrichten/VDI {year}-{month:02}-{day:02}.pdf'))
-        ])
+    elif args['config']:
+        print('Opening your config folder...')
+        print(app_dirs.user_config_dir)
+        import webbrowser
+        webbrowser.open(config_dir.as_uri())
+
+    elif args['undo']:
+        print('Do you want to undo the last action? N / y / (s)how')
+
+    else:
+        main(
+            simulate=args['simulate'],
+            folders=['~/Desktop/__Inbox__'],
+            rules=[
+                Rule(
+                    filter=filters.PaperVDI(),
+                    action=actions.Move('~/Documents/VDI Nachrichten/VDI {year}-{month:02}-{day:02}.pdf')),
+                Rule(
+                    filter=filters.Invoice1and1(),
+                    action=actions.Move('~/TF Cloud/Office/Rechnungen/1und1 {year}-{month:02}-{day:02}.pdf'))
+            ])
