@@ -60,19 +60,19 @@ def main(folders, simulate, rules: [Rule]):
 if __name__ == '__main__':
     args = docopt(__doc__, version=__version__, help=True)
 
-    if args['list']:
+    if args['config']:
+        print('Opening your config folder...')
+        print(app_dirs.user_config_dir)
+        import webbrowser
+        webbrowser.open(config_dir.as_uri())
+
+    elif args['list']:
         print('Available filters:')
         print(' - TODO')
         print('')
         print('Available actions:')
         print(' - TODO')
         print('')
-
-    elif args['config']:
-        print('Opening your config folder...')
-        print(app_dirs.user_config_dir)
-        import webbrowser
-        webbrowser.open(config_dir.as_uri())
 
     elif args['undo']:
         print('Do you want to undo the last action? N / y / (s)how')
