@@ -21,12 +21,12 @@ Options:
     -h, --help      Show this screen and exit.
 """
 
-from pathlib import Path
 import logging
+from pathlib import Path
 
 from organize import Rule
-from organize import Move
-from organize import PaperVDI
+from organize import filters
+from organize import actions
 
 from docopt import docopt
 
@@ -34,7 +34,7 @@ __version__ = '0.0'
 logging.basicConfig(level=logging.DEBUG)
 
 
-def actions(folders, rules: [Rule]):
+def iter_actions(folders, rules: [Rule]):
     for folder in folders:
         for path in Path(folder).expanduser().glob('*.*'):
             for rule in rules:
@@ -44,7 +44,7 @@ def actions(folders, rules: [Rule]):
 
 
 def main(folders, simulate, rules: [Rule]):
-    for rule, path in actions(folders=folders, rules=rules):
+    for rule, path in iter_actions(folders=folders, rules=rules):
         file_attributes = rule.filter.parse(path)
         rule.action.run(
             path=path,
@@ -68,6 +68,6 @@ if __name__ == '__main__':
             '~/Documents/VDI Nachrichten',
         ],
         rules=[
-            Rule(filter=PaperVDI(),
-                 action=Move('~/Documents/VDI Nachrichten/VDI {year}-{month:02}-{day:02}.pdf'))
+            Rule(filter=filters.PaperVDI(),
+                 action=actions.Move('~/Documents/VDI Nachrichten/VDI {year}-{month:02}-{day:02}.pdf'))
         ])
