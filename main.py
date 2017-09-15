@@ -11,7 +11,8 @@ Usage:
     organize --version
 
 Arguments:
-    run             Applies the actions. No simulation
+    simulate        Simulate organizing your files. This allows you to check your rules.
+    run             Applies the actions. No simulation.
     undo            Undo the last organization run
     list            List available actions and filters
     config          Open configuration in %{EDITOR}
