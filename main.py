@@ -1,12 +1,36 @@
 """
-Personal file management
+Personal file management tool.
+
+Usage:
+    organize
+    organize run
+    organize undo
+    organize list
+    organize config
+    organize --help
+    organize --version
+
+Arguments:
+    run             Applies the actions. No simulation
+    undo            Undo the last organization run
+    list            List available actions and filters
+    config          Open configuration in %{EDITOR}
+
+Options:
+    --version       Show program version and exit.
+    -h, --help      Show this screen and exit.
 """
+
 from pathlib import Path
 import logging
+
 from organize import Rule
 from organize import Move
 from organize import PaperVDI
 
+from docopt import docopt
+
+__version__ = '0.0'
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -29,8 +53,16 @@ def main(folders, simulate, rules: [Rule]):
 
 
 if __name__ == '__main__':
+    args = docopt(__doc__, version=__version__, help=True)
+    if args['list']:
+        print('Available filters:')
+        print('Available actions:')
+    elif args['config']:
+        print('Opening your config file')
+
+    simulate = not args['run']
     main(
-        simulate=True,
+        simulate=simulate,
         folders=[
             '~/Desktop/__Inbox__',
             '~/Documents/VDI Nachrichten',

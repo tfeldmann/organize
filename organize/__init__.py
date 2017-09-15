@@ -1,5 +1,3 @@
-__version__ = '0.0'
-
 from .rule import Rule
 
 from .actions.move import Move
