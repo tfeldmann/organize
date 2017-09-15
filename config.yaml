@@ -1,0 +1,17 @@
+version: 1
+
+- "VDI Nachrichten":
+  filetype: PaperVDI
+  dst: "~/Documents/VDI Nachrichten/VDI-{year}-{month}-{day}.pdf"
+
+- "1und1 Rechnung Thomas":
+  filetype: Invoice1and1
+  dst: "~/TF Cloud/Office/Rechnungen"
+  conditions:
+    - name: Thomas
+
+- "1und1 Rechnung Firma":
+  filetype: Invoice1and1
+  dst: "~/TF Cloud/Office/Rechnungen/MCF"
+  conditions:
+    - name: MCF
