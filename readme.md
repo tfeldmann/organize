@@ -28,16 +28,16 @@ Options:
 
 # Example config
 ```
-folders:
-  - ~/Desktop/Inbox
-rules:
-  - 'All VDI e-papers go into documents':
-    filter: PaperVdi
-    action: Move
-      dest: ~/Documents/VDI/VDI {year}-{month}-{day}.pdf
+RULES:
+  - folder:
+    - "~/Desktop/Inbox"
+    - "~/Documents"
+    rules:  
+    - name: "VDI Nachrichten"
+      filter: PaperVdi()
+      action: Move("~/Documents/VDI/VDI {year}-{month}-{day}.pdf")
 
-  - 'Sort all 1&1 invoices'
-    filter: Invoice1and1
-    action: Move
-      dest: ~/Documents/Invoices/1&1/1&1 {year}-{month}-{day}.pdf
+    - name: "1und1 Rechnungen"
+      filter: Invoice1and1()
+      action: Move("~/Documents/Invoices/1&1/1&1 {year}-{month}-{day}.pdf")
 ```

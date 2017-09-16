@@ -34,6 +34,9 @@ from docopt import docopt
 __version__ = '0.0'
 logging.basicConfig(level=logging.INFO)
 
+import config
+print(config.CONFIG)
+
 # config folder
 app_dirs = appdirs.AppDirs('organize')
 config_dir = Path(app_dirs.user_config_dir)
@@ -79,14 +82,4 @@ if __name__ == '__main__':
         print('Do you want to undo the last action? N / y / (s)how')
 
     else:
-        main(
-            simulate=args['simulate'],
-            folders=['~/Desktop/__Inbox__'],
-            rules=[
-                Rule(
-                    filter=filters.PaperVDI(),
-                    action=actions.Move('~/Documents/VDI Nachrichten/VDI {year}-{month:02}-{day:02}.pdf')),
-                Rule(
-                    filter=filters.Invoice1and1(),
-                    action=actions.Move('~/TF Cloud/Office/Rechnungen/1und1 {year}-{month:02}-{day:02}.pdf'))
-            ])
+        main(simulate=args['simulate'])

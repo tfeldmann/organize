@@ -1,7 +1,7 @@
 import re
 from . import helpers
 
-expr = re.compile(r'^RG(\d{12})\.pdf')
+expr = re.compile(r'^RG(\d{12})\.pdf$')
 
 
 class Invoice1and1:
@@ -19,7 +19,7 @@ class Invoice1and1:
 
     def parse(self, path):
         result = {}
-
+        result['nr'] = expr.match(path.name).group(1)
         try:
             doc = helpers.parse_pdf(path)
             first_page = doc[0].split('\n')
