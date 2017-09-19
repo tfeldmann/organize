@@ -8,12 +8,16 @@ class Move:
     """ Move files
 
         Usage:
-            Move(dest)
+            Move(dest, overwrite=False)
+
             `dest` can be a format string which uses file attributes from a
             filter.
-
             If `dest` is a folder path, the file will be moved into this folder
             and not renamed.
+
+            `overwrite` specifies whether existing files should be overwritten.
+            Otherwise it will append a counter to the filename to resolve
+            conflicts.
 
         Example:
             Move('/some/path/')
@@ -21,13 +25,45 @@ class Move:
 
     """
 
-    def __init__(self, dest):
+    def __init__(self, dest: str, overwrite=False):
         self.dest = dest
+        self.overwrite = overwrite
 
-    def run(self, path, file_attributes, simulate):
-        new_path = Path(self.dest.format(path=path, **file_attributes))
-        if simulate:
-            logger.info('Moving %s to %s', path, new_path)
-        else:
+    def run(self, path: Path, file_attributes: dict, simulate: bool):
+        new_path = (
+            Path(self.dest.format(path=path, **file_attributes)).expanduser())
+
+        # if only a folder path is given we append the filename to be able to
+        # check for existing files. new_path is then a full file path.
+        if new_path.is_dir():
+            new_path = new_path / path.name
+
+        if new_path.exists():
+            if self.overwrite:
+                self._delete(path=new_path, simulate=simulate)
+            else:
+                # rename
+                count = 2
+                while new_path.exists():
+                    new_path = self._path_with_count(new_path, count)
+                    count += 1
+
+        self._move(src=path, dest=new_path, simulate=simulate)
+
+    @staticmethod
+    def _delete(path: Path, simulate: bool):
+        logger.info('Delete "%s"', path)
+        if not simulate:
+            import os
+            os.remove(path)
+
+    @staticmethod
+    def _move(src: Path, dest: Path, simulate):
+        logger.info('Moving "%s" to "%s"', src, dest)
+        if not simulate:
             import shutil
-            shutil.move(src=path.expanduser(), dst=new_path.expanduser())
+            shutil.move(src=src.expanduser(), dst=dest.expanduser())
+
+    @staticmethod
+    def _path_with_count(path: Path, count: int):
+        return path.with_name('%s %s%s' % (path.stem, count, path.suffix))
