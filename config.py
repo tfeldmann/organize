@@ -1,8 +1,6 @@
 from organize import Rule
 from organize import actions, filters
 
-__all__ = ['CONFIG']
-
 
 all_rules = [
     Rule(
@@ -18,7 +16,6 @@ all_rules = [
         action=actions.Move('~/TF Cloud/Office/Rechnungen/{year}-{month:02}-{day:02} 1und1.pdf')
     ),
 ]
-
 
 CONFIG = [{
     'folders': [

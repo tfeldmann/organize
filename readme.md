@@ -4,8 +4,6 @@
 ```
 organize simulate
 organize run
-organize undo
-organize list
 organize config
 organize --help
 organize --version
@@ -13,8 +11,6 @@ organize --version
 Arguments:
     simulate        Simulate organizing your files. This allows you to check your rules.
     run             Applies the actions. No simulation.
-    undo            Undo the last organization run
-    list            List available actions and filters
     config          Open configuration in %{EDITOR}
 
 Options:
@@ -22,22 +18,34 @@ Options:
     -h, --help      Show this screen and exit.
 ```
 
-# Installation
-
-`pip install organize`
-
 # Example config
 ```
-RULES:
-  - folder:
-    - "~/Desktop/Inbox"
-    - "~/Documents"
-    rules:  
-    - name: "VDI Nachrichten"
-      filter: PaperVdi()
-      action: Move("~/Documents/VDI/VDI {year}-{month}-{day}.pdf")
+from organize import Rule
+from organize import actions, filters
 
-    - name: "1und1 Rechnungen"
-      filter: Invoice1and1()
-      action: Move("~/Documents/Invoices/1&1/1&1 {year}-{month}-{day}.pdf")
+
+all_rules = [
+    Rule(
+        filter=filters.PaperVDI(),
+        action=actions.Move('~/Documents/VDI Nachrichten/VDI {year}-{month:02}-{day:02}.pdf')
+    ),
+    Rule(
+        filter=filters.Regex(r'^RG(\d{12})-sig\.pdf$'),
+        action=actions.Move('~/TF Cloud/Office/Rechnungen/MCF 1und1'),
+    ),
+    Rule(
+        filter=filters.Invoice1and1(),
+        action=actions.Move('~/TF Cloud/Office/Rechnungen/{year}-{month:02}-{day:02} 1und1.pdf')
+    ),
+]
+
+CONFIG = [{
+    'folders': [
+        '~/Desktop/__Inbox__',
+        '~/Download',
+        '~/TF Cloud/Office/_EINGANG_'
+    ],
+    'rules': all_rules,
+}]
+
 ```
