@@ -2,20 +2,16 @@
 The personal file management tool.
 
 Usage:
-    organize simulate
+    organize sim
     organize run
-    organize undo
-    organize list
     organize config
     organize --help
     organize --version
 
 Arguments:
-    simulate        Simulate organizing your files. This allows you to check your rules.
+    sim             Simulate organizing your files. This allows you to check your rules.
     run             Applies the actions. No simulation.
-    undo            Undo the last organization run
-    list            List available actions and filters
-    config          Open configuration in %{EDITOR}
+    config          Open the organize config folder
 
 Options:
     --version       Show program version and exit.
@@ -29,8 +25,7 @@ from pathlib import Path
 import appdirs
 from docopt import docopt
 
-from config import CONFIG
-from organize import Rule
+from organize.config import Rule, Config
 
 
 app_dirs = appdirs.AppDirs('organize')
@@ -43,23 +38,27 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def iter_actions(folders: [str], rules: [Rule]):
-    for folder in folders:
-        logger.info('Folder: %s', folder)
-        for path in Path(folder).expanduser().glob('*.*'):
-            for rule in rules:
-                if rule.filter.matches(path):
-                    yield (rule, path)
-                    break
+def execute_rules(rules, simulate: bool):
+    # TODO: Return sorted [(path, filters, actions), ...] and check for multiple
+    # rules applying to the same path
+    def first(a):
+        return a[0]
 
+    for rule in rules:
+        filter_ = first(rule.filters)
+        action_ = first(rule.actions)
+        logger.debug('Filter: %s, Action: %s', filter_, action_)
 
-def main(folders: [str], rules: [Rule], simulate: bool):
-    for rule, path in iter_actions(folders=folders, rules=rules):
-        file_attributes = rule.filter.parse(path)
-        rule.action.run(
-            path=path.resolve(),
-            file_attributes=file_attributes,
-            simulate=simulate)
+        for folder in rule.folders:
+            logger.debug('Folder: %s', folder)
+            for path in Path(folder).expanduser().glob('*.*'):
+                logger.debug('Path: %s', path)
+                if filter_.matches(path):
+                    file_attributes = filter_.parse(path)
+                    action_.run(
+                        path=path.resolve(),
+                        file_attributes=file_attributes,
+                        simulate=simulate)
 
 
 if __name__ == '__main__':
@@ -67,23 +66,18 @@ if __name__ == '__main__':
 
     if args['config']:
         print(app_dirs.user_config_dir)
-        print('Opening your config folder...')
         import webbrowser
         webbrowser.open(config_dir.as_uri())
 
-    elif args['list']:
-        print('Available filters:')
-        print(' - TODO')
-        print('')
-        print('Available actions:')
-        print(' - TODO')
-        print('')
-
-    elif args['undo']:
-        print('Do you want to undo the last action? N / y / (s)how')
+    # elif args['list']:
+    #     print('Available filters:')
+    #     print(' - TODO')
+    #     print('')
+    #     print('Available actions:')
+    #     print(' - TODO')
+    #     print('')
 
     else:
-        for config in CONFIG:
-            main(folders=config['folders'],
-                 rules=config['rules'],
-                 simulate=args['simulate'])
+        with open('config.yaml') as f:
+            config = Config(f.read())
+        execute_rules(config.rules, simulate=args['sim'])

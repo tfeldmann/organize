@@ -1,4 +1,4 @@
 appdirs
 docopt
 slate3k
-yaml
+pyyaml

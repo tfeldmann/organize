@@ -27,7 +27,7 @@ You can find your config.yaml file location with the command
 organize config
 ```
 
-Example config.yaml:
+Example `config.yaml`:
 ```yaml
 folders: &all
   - '~/Desktop/__Inbox__'
@@ -61,17 +61,22 @@ rules:
 Must:
 - [ ] `setup.py` file
 - [ ] User config file
-- [ ] User plugins
-- [ ] Action: Copy
-- [ ] Action: Rename
-- [ ] Action: Shell
+- [ ] Action: Copy(dest)
+- [ ] Action: Rename(dest)
+- [ ] Action: Shell(cmd)
 - [ ] Filter: Regex with named groups
-- [ ] Filter: OlderThan
-- [ ] Filter: NewerThan
+- [ ] Filter: OlderThan(date)
+- [ ] Filter: NewerThan(date)
+- [ ] Filter: FileExtension(ext)
+- [ ] Action pipelines
+- [ ] Filter pipelines
+- [ ] Logfile
 
 Nice to have:
 - [ ] Action: Zip
 - [ ] Action: Trash
+- [ ] User plugins
+- [ ] Undo
 
 Done:
 - [x] Filter: PaperVdi

@@ -59,7 +59,7 @@ class Move:
 
     @staticmethod
     def _move(src: Path, dest: Path, simulate):
-        logger.info('Moving "%s" to "%s"', src, dest)
+        logger.info('Move to "%s"', dest)
         if not simulate:
             import shutil
             shutil.move(src=src.expanduser(), dst=dest.expanduser())
@@ -67,3 +67,9 @@ class Move:
     @staticmethod
     def _path_with_count(path: Path, count: int):
         return path.with_name('%s %s%s' % (path.stem, count, path.suffix))
+
+    def __str__(self):
+        return 'Move(dest=%s, overwrite=%s)' % (self.dest, self.overwrite)
+
+    def __repr__(self):
+        return '<' + str(self) + '>'

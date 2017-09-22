@@ -37,4 +37,7 @@ class Invoice1and1:
         return result
 
     def __str__(self):
-        return '1&1 Invoice'
+        return 'Invoice1and1'
+
+    def __repr__(self):
+        return '<Invoice1and1>'
