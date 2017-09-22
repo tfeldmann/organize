@@ -5,13 +5,15 @@ Usage:
     organize sim
     organize run
     organize config
+    organize list
     organize --help
     organize --version
 
 Arguments:
     sim             Simulate organizing your files. This allows you to check your rules.
-    run             Applies the actions. No simulation.
+    run             Organizes your files according to your rules.
     config          Open the organize config folder
+    list            List available filters and actions
 
 Options:
     --version       Show program version and exit.
@@ -21,11 +23,12 @@ __version__ = '0.0'
 
 import logging
 from pathlib import Path
+from collections import namedtuple
 
 import appdirs
 from docopt import docopt
 
-from organize.config import Rule, Config
+from organize.config import Config
 
 
 app_dirs = appdirs.AppDirs('organize')
@@ -38,27 +41,39 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def execute_rules(rules, simulate: bool):
-    # TODO: Return sorted [(path, filters, actions), ...] and check for multiple
-    # rules applying to the same path
-    def first(a):
-        return a[0]
+def all_pathes(rule):
+    for folder in rule.folders:
+        yield from Path(folder).expanduser().glob('*.*')
 
+
+def find_jobs(rules):
+    Job = namedtuple('Job', 'path filters actions')
+    result = []
     for rule in rules:
-        filter_ = first(rule.filters)
-        action_ = first(rule.actions)
-        logger.debug('Filter: %s, Action: %s', filter_, action_)
+        for path in all_pathes(rule):
+            if all(f.matches(path) for f in rule.filters):
+                job = Job(path=path, filters=rule.filters, actions=rule.actions)
+                result.append(job)
+    return list(sorted(result, key=lambda j: j.path))
 
-        for folder in rule.folders:
-            logger.debug('Folder: %s', folder)
-            for path in Path(folder).expanduser().glob('*.*'):
-                logger.debug('Path: %s', path)
-                if filter_.matches(path):
-                    file_attributes = filter_.parse(path)
-                    action_.run(
-                        path=path.resolve(),
-                        file_attributes=file_attributes,
-                        simulate=simulate)
+
+def execute_rules(rules, simulate: bool):
+    def first(x):
+        return x[0]
+
+    jobs = find_jobs(rules)
+    # TODO: warning for multiple rules applying to the same path
+    if not jobs:
+        print('Nothing to do.')
+    else:
+        logger.debug(jobs)
+        for job in jobs:
+            logger.info('File %s', job.path)
+            file_attributes = first(job.filters).parse(job.path)
+            first(job.actions).run(
+                path=job.path.resolve(),
+                file_attributes=file_attributes,
+                simulate=simulate)
 
 
 if __name__ == '__main__':
@@ -69,13 +84,22 @@ if __name__ == '__main__':
         import webbrowser
         webbrowser.open(config_dir.as_uri())
 
-    # elif args['list']:
-    #     print('Available filters:')
-    #     print(' - TODO')
-    #     print('')
-    #     print('Available actions:')
-    #     print(' - TODO')
-    #     print('')
+    elif args['list']:
+        import inspect
+        from organize import filters, actions
+
+        filterclasses = inspect.getmembers(filters, inspect.isclass)
+        print('# Available filters\n')
+        for name, filtercls in filterclasses:
+            sig = inspect.signature(filtercls.__init__)
+            print('- %s%s:\n%s' % (name, sig, filtercls.__doc__))
+
+        print()
+        actionclasses = inspect.getmembers(actions, inspect.isclass)
+        print('# Available actions:\n')
+        for name, actioncls in actionclasses:
+            sig = inspect.signature(actioncls.__init__)
+            print('- %s%s:\n%s' % (name, sig, actioncls.__doc__))
 
     else:
         with open('config.yaml') as f:

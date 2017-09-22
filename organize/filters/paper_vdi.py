@@ -23,4 +23,7 @@ class PaperVDI:
         }
 
     def __str__(self):
-        return 'VDI Nachrichten'
+        return 'PaperVdi'
+
+    def __repr__(self):
+        return '<PaperVdi>'

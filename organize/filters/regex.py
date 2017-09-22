@@ -17,3 +17,6 @@ class Regex:
 
     def __str__(self):
         return 'Regex'
+
+    def __repr__(self):
+        return '<Regex>'
