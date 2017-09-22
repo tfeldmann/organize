@@ -2,6 +2,7 @@
 _Warning: This project is currently not yet usable. Work is in progress!_
 
 The file management automation tool.
+
 `organize` is a file organizer for the command line. It automatically organizes your files according to your rules.
 
 # Usage
