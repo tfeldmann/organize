@@ -1,20 +1,24 @@
 # organize
 _Warning: This project is currently not yet usable. Work is in progress!_
 
+The file management automation tool.
 `organize` is a file organizer for the command line. It automatically organizes your files according to your rules.
 
 # Usage
 ```
-organize simulate
-organize run
-organize config
-organize --help
-organize --version
+Usage:
+    organize sim
+    organize run
+    organize config
+    organize list
+    organize --help
+    organize --version
 
 Arguments:
-    simulate        Simulate organizing your files. This allows you to check your rules.
-    run             Applies the actions. No simulation.
-    config          Open configuration in %{EDITOR}
+    sim             Simulate organizing your files. This allows you to check your rules.
+    run             Organizes your files according to your rules.
+    config          Open the organize config folder
+    list            List available filters and actions
 
 Options:
     --version       Show program version and exit.
