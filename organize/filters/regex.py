@@ -14,3 +14,6 @@ class Regex:
 
     def parse(self, path):
         return {}
+
+    def __str__(self):
+        return 'Regex'

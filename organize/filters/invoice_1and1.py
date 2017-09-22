@@ -35,3 +35,6 @@ class Invoice1and1:
         except Exception:
             pass
         return result
+
+    def __str__(self):
+        return '1&1 Invoice'

@@ -21,3 +21,6 @@ class PaperVDI:
             'month': int(month),
             'day': int(day)
         }
+
+    def __str__(self):
+        return 'VDI Nachrichten'
