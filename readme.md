@@ -1,4 +1,7 @@
 # organize
+_Warning: This project is currently not yet usable. Work is in progress!_
+
+`organize` is a file organizer for the command line. It automatically organizes your files according to your rules.
 
 # Usage
 ```
@@ -19,33 +22,59 @@ Options:
 ```
 
 # Example config
+You can find your config.yaml file location with the command
 ```
-from organize import Rule
-from organize import actions, filters
-
-
-all_rules = [
-    Rule(
-        filter=filters.PaperVDI(),
-        action=actions.Move('~/Documents/VDI Nachrichten/VDI {year}-{month:02}-{day:02}.pdf')
-    ),
-    Rule(
-        filter=filters.Regex(r'^RG(\d{12})-sig\.pdf$'),
-        action=actions.Move('~/TF Cloud/Office/Rechnungen/MCF 1und1'),
-    ),
-    Rule(
-        filter=filters.Invoice1and1(),
-        action=actions.Move('~/TF Cloud/Office/Rechnungen/{year}-{month:02}-{day:02} 1und1.pdf')
-    ),
-]
-
-CONFIG = [{
-    'folders': [
-        '~/Desktop/__Inbox__',
-        '~/Download',
-        '~/TF Cloud/Office/_EINGANG_'
-    ],
-    'rules': all_rules,
-}]
-
+organize config
 ```
+
+Example config.yaml:
+```yaml
+folders: &all
+  - '~/Desktop/__Inbox__'
+  - '~/Download'
+  - '~/TF Cloud/Office/_EINGANG_'
+
+rules:
+  # German VDI Nachrichten
+  - filters:
+    - PaperVdi
+    actions:
+    - Move: {dest: '~/Documents/VDI Nachrichten/VDI {year}-{month:02}-{day:02}.pdf'}
+    folders: *all
+
+  # Matches filename by regular expression
+  - filters:
+    - Regex: {expr: '^RG(\d{12})-sig\.pdf$'}
+    actions:
+    - Move: {dest: '~/TF Cloud/Office/Rechnungen/MCF 1und1'}
+    folders: *all
+
+  # 1und1 invoices
+  - filters:
+    - Invoice1and1
+    actions:
+    - Move: {dest: '~/TF Cloud/Office/Rechnungen/{year}-{month:02}-{day:02} 1und1.pdf'}
+    folders: *all
+```
+
+## TODO
+Must:
+- [ ] `setup.py` file
+- [ ] User config file
+- [ ] User plugins
+- [ ] Action: Copy
+- [ ] Action: Rename
+- [ ] Action: Shell
+- [ ] Filter: Regex with named groups
+- [ ] Filter: OlderThan
+- [ ] Filter: NewerThan
+
+Nice to have:
+- [ ] Action: Zip
+- [ ] Action: Trash
+
+Done:
+- [x] Filter: PaperVdi
+- [x] Filter: Invoice1and1
+- [x] Filter: Regex
+- [x] Action: Move
