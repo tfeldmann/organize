@@ -10,7 +10,7 @@ The file management automation tool.
 organizes your files according to your rules.
 
 Usage
-=====
+-----
 
 ::
 
@@ -33,7 +33,7 @@ Usage
         -h, --help      Show this screen and exit.
 
 Example config
-==============
+--------------
 
 You can find your config.yaml file location with the command ``organize config``
 
