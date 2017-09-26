@@ -1,5 +1,7 @@
+import shutil
 import logging
 from pathlib import Path
+
 logger = logging.getLogger(__name__)
 
 
@@ -7,22 +9,22 @@ class Move:
 
     """ Move files
 
-        Usage:
-            Move(dest, overwrite=False)
+        Options:
+            dest [str]
+                `dest` can be a format string which uses file attributes from a
+                filter.
+                If `dest` is a folder path, the file will be moved into this
+                folder and not renamed.
 
-            `dest` can be a format string which uses file attributes from a
-            filter.
-            If `dest` is a folder path, the file will be moved into this folder
-            and not renamed.
+            overwrite=False [bool]
+                `overwrite` specifies whether existing files should be
+                overwritten. Otherwise it will start enumerating files (append a
+                counter to the filename) to resolve naming conflicts.
 
-            `overwrite` specifies whether existing files should be overwritten.
-            Otherwise it will append a counter to the filename to resolve
-            conflicts.
-
-        Example:
-            Move('/some/path/')
-            Move('/some/path/some-name-{year}-{month:02}-{day:02}.pdf')
-
+        Examples:
+            Move: {dest: '/some/folder/'}
+            Move: {dest: '/some/path/some-name-{year}-{month:02}-{day:02}.pdf'}
+            Move: {dest: '{path.parent}/Invoice', overwrite: False}
     """
 
     def __init__(self, dest: str, overwrite=False):
@@ -61,7 +63,6 @@ class Move:
     def _move(src: Path, dest: Path, simulate):
         logger.info('Move to "%s"', dest)
         if not simulate:
-            import shutil
             shutil.move(src=src.expanduser(), dst=dest.expanduser())
 
     @staticmethod

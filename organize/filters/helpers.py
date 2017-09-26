@@ -1,7 +1,7 @@
 import pathlib
 import logging
 
-logger = logging.getLogger('Dry run')
+logger = logging.getLogger(__name__)
 
 
 def parse_pdf(path: pathlib.Path):

@@ -4,6 +4,12 @@ import re
 class Regex:
 
     """ Matches filenames with the given regular expression
+
+        Inputs:
+            expr [str]  The regular expression to be matched
+
+        Outputs:
+            None
     """
 
     def __init__(self, expr):

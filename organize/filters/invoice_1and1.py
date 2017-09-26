@@ -8,10 +8,12 @@ class Invoice1and1:
 
     """ Matches 1&1 pdf invoices
 
-        Attributes:
+        No Inputs.
+
+        Outputs:
             year, month, day    The invoice date
-            name                The name the invoice is addressed to
-            nr                  The invoice number
+            name                The name of the invoice recipient
+            nr                  The invoicing number
     """
 
     def matches(self, path):

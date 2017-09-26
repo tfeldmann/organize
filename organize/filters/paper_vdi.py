@@ -7,8 +7,10 @@ class PaperVDI:
 
     """ Matches german VDI Nachrichten e-paper
 
-        Attributes:
-            year, month, day
+        No inputs.
+
+        Outputs:
+            year, month, day        The publication date of the newspaper
     """
 
     def matches(self, path):
