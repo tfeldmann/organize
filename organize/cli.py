@@ -19,6 +19,7 @@ Options:
     --version       Show program version and exit.
     -h, --help      Show this screen and exit.
 """
+import shutil
 import logging
 from pathlib import Path
 from collections import namedtuple
@@ -78,7 +79,10 @@ def execute_rules(rules, simulate: bool):
                 simulate=simulate)
 
 
-def main():
+def cli():
+    # TODO: Refactor into new folder structure
+    # organize
+    # - commands.py:list/run
     args = docopt(__doc__, version=__version__, help=True)
 
     if args['config']:
@@ -90,26 +94,35 @@ def main():
         import inspect
         import textwrap
         from organize import filters, actions
-        indentation = '    '
 
+        def heading(title, subtitle='', char='-', width=80):
+            space = ' ' * (width - 2 - len(title) - len(subtitle))
+            print(char * width)
+            print('%s %s %s' % (title, space, subtitle))
+            print()
+
+        def content(content):
+            print(textwrap.indent(content, ' ' * 4))
+            print('\n')
+
+        heading('Available filters:', char='#')
         filterclasses = inspect.getmembers(filters, inspect.isclass)
-        print('Available filters:\n')
         for name, filtercls in filterclasses:
-            sig = inspect.signature(filtercls.__init__)
-            doc = textwrap.indent(inspect.getdoc(filtercls), indentation)
-            print('- %s%s' % (name, sig))
-            print('%s\n' % doc)
+            doc = inspect.getdoc(filtercls)
+            heading(name, '(filter)')
+            content(doc)
 
-        print()
+        heading('Available actions:', char='#')
         actionclasses = inspect.getmembers(actions, inspect.isclass)
-        print('Available actions:\n')
         for name, actioncls in actionclasses:
-            sig = inspect.signature(actioncls.__init__)
-            doc = textwrap.indent(inspect.getdoc(actioncls), indentation)
-            print('- %s%s' % (name, sig))
-            print('%s\n' % doc)
+            doc = inspect.getdoc(actioncls)
+            heading(name, '(action)')
+            content(doc)
 
     else:
-        with open('config.yaml') as f:
+        config_path = config_dir / 'config.yaml'
+        if not config_path.exists():
+            shutil.copy('config.default.yaml', config_path)
+        with open(config_dir / 'config.yaml') as f:
             config = Config(f.read())
         execute_rules(config.rules, simulate=args['sim'])

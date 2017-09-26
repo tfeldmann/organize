@@ -25,7 +25,7 @@ setup(
     url='https://github.com/tfeldmann/organize',
     packages=find_packages(exclude=['test']),
     entry_points={
-        'console_scripts': ['organize=organize.cli:main'],
+        'console_scripts': ['organize=organize.cli:cli'],
     },
     install_requires=['appdirs', 'docopt', 'slate3k', 'pyyaml'],
     include_package_data=True,
