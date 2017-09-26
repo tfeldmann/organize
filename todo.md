@@ -13,15 +13,19 @@
 - [ ] Filter: FileExtension(ext)
 - [ ] Logfile
 - [ ] Documentation
+- [ ] Filter: FileType
+- [ ] Filter: FileEnding
 
 ## Nice to have:
 
+- [-] Filter and action listing
 - [ ] Action: Zip
 - [ ] Action: Trash
-- [ ] User plugins
+- [ ] Action: Echo
 - [ ] Undo
-- [-] Filter and action listing
 - [ ] Tests
+- [ ] Filter: Exif
+- [ ] User plugins
 
 ## Done:
 
