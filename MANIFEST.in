@@ -1,1 +1,1 @@
-include README.rst LICENSE
+include readme.rst LICENSE config.default.yaml
