@@ -1,3 +1,4 @@
+import os
 import shutil
 import logging
 from pathlib import Path
@@ -32,14 +33,14 @@ class Move:
         self.overwrite = overwrite
 
     def run(self, path: Path, file_attributes: dict, simulate: bool):
-        new_path = (
-            Path(self.dest.format(path=path, **file_attributes)).expanduser())
+        full_dest = self.dest.format(path=path, **file_attributes)
 
         # if only a folder path is given we append the filename to be able to
-        # check for existing files. new_path is then a full file path.
-        if new_path.is_dir():
-            new_path = new_path / path.name
+        # check for existing files. full_dest is then a full file path.
+        if full_dest.endswith(os.path.sep):
+            full_dest = Path(os.path.join(full_dest, path.name))
 
+        new_path = Path(full_dest).expanduser()
         if new_path.exists():
             if self.overwrite:
                 self._delete(path=new_path, simulate=simulate)
@@ -51,19 +52,20 @@ class Move:
                     count += 1
 
         self._move(src=path, dest=new_path, simulate=simulate)
+        return new_path
 
     @staticmethod
     def _delete(path: Path, simulate: bool):
         logger.info('Delete "%s"', path)
         if not simulate:
-            import os
             os.remove(path)
 
     @staticmethod
     def _move(src: Path, dest: Path, simulate):
         logger.info('Move to "%s"', dest)
         if not simulate:
-            shutil.move(src=src.expanduser(), dst=dest.expanduser())
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(src=str(src), dst=str(dest))
 
     @staticmethod
     def _path_with_count(path: Path, count: int):
