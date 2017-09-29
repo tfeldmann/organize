@@ -2,9 +2,8 @@
 
 ## Must:
 
-- [ ] User config file
-- [ ] Action pipelines
 - [ ] Filter pipelines
+- [ ] Filter modes all, none, any
 - [ ] Action: Copy(dest)
 - [ ] Action: Rename(dest)
 - [ ] Filter: Regex with named groups
@@ -18,10 +17,10 @@
 
 ## Nice to have:
 
-- [-] Filter and action listing
+- [ ] jsonschema for user config
+- [ ] Flatten config folder list
 - [ ] Action: Zip
 - [ ] Action: Trash
-- [ ] Action: Echo
 - [ ] Undo
 - [ ] Tests
 - [ ] Filter: Exif
@@ -29,6 +28,10 @@
 
 ## Done:
 
+- [x] Action: Echo @2017-09-29
+- [x] Action pipelines @2017-09-28
+- [x] User config file @2017-09-28
+- [x] Filter and action listing @2017-09-28
 - [x] `setup.py` file
 - [x] Action: Shell(cmd)
 - [x] Filter: PaperVdi
