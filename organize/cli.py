@@ -33,6 +33,7 @@ from .config import Config
 
 app_dirs = appdirs.AppDirs('organize')
 config_dir = Path(app_dirs.user_config_dir)
+config_path = config_dir / 'config.yaml'
 log_dir = Path(app_dirs.user_log_dir)
 for p in (config_dir, log_dir):
     p.mkdir(parents=True, exist_ok=True)
@@ -120,9 +121,6 @@ def cli():
             content(doc)
 
     else:
-        config_path = config_dir / 'config.yaml'
-        if not config_path.exists():
-            shutil.copy('config.default.yaml', config_path)
-        with open(config_dir / 'config.yaml') as f:
+        with open(config_path) as f:
             config = Config(f.read())
         execute_rules(config.rules, simulate=args['sim'])
