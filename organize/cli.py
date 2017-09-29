@@ -74,24 +74,23 @@ def execute_rules(rules, simulate: bool):
         for job in jobs:
             logger.info('File %s', job.path)
             file_attributes = first(job.filters).parse(job.path)
-            first(job.actions).run(
-                path=job.path.resolve(),
+
+            current_path = job.path.resolve()
+            for action in job.actions:
+                new_path = action.run(
+                    path=current_path,
                 file_attributes=file_attributes,
                 simulate=simulate)
+                if new_path is not None:
+                    current_path = new_path
 
 
-def cli():
-    # TODO: Refactor into new folder structure
-    # organize
-    # - commands.py:list/run
-    args = docopt(__doc__, version=__version__, help=True)
+def open_folder(path):
+    import webbrowser
+    webbrowser.open(path.as_uri())
 
-    if args['config']:
-        print(app_dirs.user_config_dir)
-        import webbrowser
-        webbrowser.open(config_dir.as_uri())
 
-    elif args['list']:
+def list_actions_and_filters():
         import inspect
         import textwrap
         from organize import filters, actions
@@ -120,6 +119,14 @@ def cli():
             heading(name, '(action)')
             content(doc)
 
+
+def cli():
+    args = docopt(__doc__, version=__version__, help=True)
+    if args['config']:
+        print(config_dir)
+        open_folder(config_dir)
+    elif args['list']:
+        list_actions_and_filters()
     else:
         with open(config_path) as f:
             config = Config(f.read())
