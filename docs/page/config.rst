@@ -1,17 +1,18 @@
 .. _configuration:
 
+*************
 Configuration
-=============
+*************
 
 
 Creating a config file
-----------------------
+======================
 All configuration takes place in your `config.yaml` file. You can find your config
 folder by executing ``$ organize config``.
 
 
 Folder syntax
--------------
+=============
 Every rule in your configuration file needs to know the folders it applies to.
 The easiest way is to define the rules like this:
 
@@ -29,6 +30,10 @@ The easiest way is to define the rules like this:
           - '/another/path'
         filters: ...
         actions: ...
+
+
+Advanced: Folder lists
+----------------------
 
 Instead of repeating the same folders in each and every rule you can use folder lists which you can reference in each rule.
 Referencing is a standard feature of the YAML syntax.
@@ -87,17 +92,17 @@ You can even use multiple folder lists:
 
 
 Rule syntax
------------
+===========
 - Basic rule syntax
 - filter_mode
 
 
 Filter syntax
--------------
+=============
 - Filter with/without parameters
 
 
 Action syntax
--------------
+=============
 - Actions with / without parameters
 - Using placeholders
