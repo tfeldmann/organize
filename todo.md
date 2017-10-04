@@ -4,14 +4,14 @@
 
 - [ ] Filter pipelines
 - [ ] Filter modes all, none, any
-- [ ] Action: Copy(dest)
-- [ ] Action: Rename(dest)
 - [ ] Filter: Regex with named groups
 - [ ] Filter: OlderThan(date)
 - [ ] Filter: NewerThan(date)
 - [ ] Filter: FileExtension(ext)
+- [ ] Action: Copy(dest)
+- [ ] Action: Rename(dest)
 - [ ] Logfile
-- [ ] Documentation
+- [-] Documentation
 - [ ] Filter: FileType
 - [ ] Filter: FileEnding
 
