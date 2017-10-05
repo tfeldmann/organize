@@ -54,10 +54,7 @@ def find_jobs(rules):
     for rule in rules:
         for path in all_pathes(rule):
             if all(f.matches(path) for f in rule.filters):
-                job = Job(
-                    path=path,
-                    filters=rule.filters,
-                    actions=rule.actions)
+                job = Job(path=path, filters=rule.filters, actions=rule.actions)
                 result.append(job)
     return list(sorted(result, key=lambda j: j.path))
 

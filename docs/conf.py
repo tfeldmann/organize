@@ -21,7 +21,6 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../organize'))
 
-
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -32,7 +31,7 @@ sys.path.insert(0, os.path.abspath('../organize'))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
-    'sphinx.ext.todo']
+              'sphinx.ext.todo']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -172,6 +171,3 @@ texinfo_documents = [
      author, 'organize', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-
