@@ -1,7 +1,8 @@
 import re
+from .filter import Filter
 
 
-class Regex:
+class Regex(Filter):
 
     """ Matches filenames with the given regular expression
 
@@ -19,10 +20,4 @@ class Regex:
         return self.expr.match(path.name)
 
     def parse(self, path):
-        return {}
-
-    def __str__(self):
-        return 'Regex'
-
-    def __repr__(self):
-        return '<Regex>'
+        return self.expr.match(path.name).groupdict()

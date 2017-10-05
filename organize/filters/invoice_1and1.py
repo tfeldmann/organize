@@ -1,10 +1,11 @@
 import re
-from . import helpers
+import pathlib
+from .filter import Filter
 
 expr = re.compile(r'^RG(\d{12})\.pdf$')
 
 
-class Invoice1and1:
+class Invoice1and1(Filter):
 
     """ Matches 1&1 pdf invoices
 
@@ -23,7 +24,7 @@ class Invoice1and1:
         result = {}
         result['nr'] = expr.match(path.name).group(1)
         try:
-            doc = helpers.parse_pdf(path)
+            doc = self.parse_pdf(path)
             first_page = doc[0].split('\n')
             assert '1&1' in first_page[7]
             # parse name
@@ -38,8 +39,8 @@ class Invoice1and1:
             pass
         return result
 
-    def __str__(self):
-        return 'Invoice1and1'
-
-    def __repr__(self):
-        return '<Invoice1and1>'
+    @staticmethod
+    def parse_pdf(path: pathlib.Path):
+        import slate3k
+        with path.open('rb') as f:
+            return slate3k.PDF(f)
