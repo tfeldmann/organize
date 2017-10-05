@@ -5,37 +5,17 @@ organize
 progress!*
 
 The file management automation tool.
+Install with ``pip install organize`` (Python 3 only).
 
+
+What this is good for
+---------------------
 ``organize`` is a file organizer for the command line. It automatically
 organizes your files according to your rules.
 
-Usage
------
-
-::
-
-    Usage:
-        organize sim
-        organize run
-        organize config
-        organize list
-        organize --help
-        organize --version
-
-    Arguments:
-        sim             Simulate organizing your files. This allows you to check your rules.
-        run             Organizes your files according to your rules.
-        config          Open the organize config folder
-        list            List available filters and actions
-
-    Options:
-        --version       Show program version and exit.
-        -h, --help      Show this screen and exit.
-
-Example config
---------------
-(This goes into a file named `config.yaml` in the folder shown with
-``organize config``.)
+The quickest way to show what this software is good for is to show an example.
+The following yaml code goes into a file named `config.yaml` in the folder
+shown with ``organize config``:
 
 .. code:: yaml
 
@@ -55,6 +35,31 @@ desktop into the trash. It is that easy.
 Feeling insecure? Run ``$ organize sim`` to see what would happen without
 touching your files.
 
-But there is more. You want to use custom shell scripts, move files with
-template strings or use regexes?
-`organize` has you covered -- just have a look at the documentation at organize.readthedocs.io.
+But there is more. You want to move files with template strings, use custom
+shell scripts or match filenames with regular expressions?
+`organize` has you covered.
+
+Have a look at the full documentation at organize.readthedocs.io.
+
+
+Command line interface
+----------------------
+::
+
+    Usage:
+        organize sim
+        organize run
+        organize config
+        organize list
+        organize --help
+        organize --version
+
+    Arguments:
+        sim             Simulate organizing your files. This allows you to check your rules.
+        run             Organizes your files according to your rules.
+        config          Open the organize config folder
+        list            List available filters and actions
+
+    Options:
+        --version       Show program version and exit.
+        -h, --help      Show this screen and exit.
