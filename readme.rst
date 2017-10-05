@@ -34,36 +34,27 @@ Usage
 
 Example config
 --------------
-
-You can find your config.yaml file location with the command ``organize config``
-
-Example ``config.yaml``:
+(This goes into a file named `config.yaml` in the folder shown with
+``organize config``.)
 
 .. code:: yaml
 
-    folders: &all
-      - '~/Desktop'
-      - '~/Downloads'
-
     rules:
-      # German VDI Nachrichten
+      - folders: '~/Desktop'
       - filters:
-          - PaperVDI
-        actions:
-          - Move: {dest: '~/Documents/VDI Nachrichten/VDI {year}-{month:02}-{day:02}.pdf'}
-          - Shell: {cmd: 'open "{path}"'}
-        folders: *all
+          - FileExtension:
+              - png
+              - jpg
+          - OlderThan: {years: 1}
+      - actions:
+          - Trash
 
-      # Matches filename by regular expression
-      - filters:
-          - Regex: {expr: '^RG(\d{12})-sig\.pdf$'}
-        actions:
-          - Move: {dest: '~/TF Cloud/Office/Rechnungen/MCF 1und1'}
-        folders: *all
+``$ organize run`` will now move all PNGs and JPGs older than one year from your
+desktop into the trash. It is that easy.
 
-      # 1und1 invoices
-      - filters:
-          - Invoice1and1
-        actions:
-          - Move: {dest: '~/TF Cloud/Office/Rechnungen/{year}-{month:02}-{day:02} 1und1.pdf'}
-        folders: *all
+Feeling insecure? Run ``$ organize sim`` to see what would happen without
+touching your files.
+
+But there is more. You want to use custom shell scripts, move files with
+template strings or use regexes?
+`organize` has you covered -- just have a look at the documentation at organize.readthedocs.io.
