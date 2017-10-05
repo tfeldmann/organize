@@ -41,12 +41,12 @@ Example config
 
     rules:
       - folders: '~/Desktop'
-      - filters:
+        filters:
           - FileExtension:
               - png
               - jpg
           - OlderThan: {years: 1}
-      - actions:
+        actions:
           - Trash
 
 ``$ organize run`` will now move all PNGs and JPGs older than one year from your
