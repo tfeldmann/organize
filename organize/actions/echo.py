@@ -10,7 +10,7 @@ class Echo:
     """ Prints the given message to the command line
 
         Options:
-            msg [str]
+            msg [str]: The (formatted) message string
     """
 
     def __init__(self, msg):

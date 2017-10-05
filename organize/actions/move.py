@@ -35,8 +35,8 @@ class Move:
     def run(self, path: Path, file_attributes: dict, simulate: bool):
         full_dest = self.dest.format(path=path, **file_attributes)
 
-        # if only a folder path is given we append the filename to be able to
-        # check for existing files. full_dest is then a full file path.
+        # if only a folder path is given we append the filename to have the full
+        # path. We use os.path for that because pathlib removes trailing slashes
         if full_dest.endswith(os.path.sep):
             full_dest = Path(os.path.join(full_dest, path.name))
 

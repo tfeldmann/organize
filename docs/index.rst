@@ -3,7 +3,7 @@ organize
 
 organize is a command line utility to automate file organization tasks.
 
- * command line utility
+.. todo: What this is for
 
 
 Contents:

@@ -2,10 +2,11 @@
 The personal file management tool.
 
 Usage:
-    organize sim
-    organize run
+    organize sim [-v]
+    organize run [-v]
     organize config
     organize list
+
     organize --help
     organize --version
 
@@ -16,10 +17,10 @@ Arguments:
     list            List available filters and actions
 
 Options:
+    -v, --verbose   Show debug information
     --version       Show program version and exit.
     -h, --help      Show this screen and exit.
 """
-import shutil
 import logging
 from pathlib import Path
 from collections import namedtuple
@@ -79,8 +80,8 @@ def execute_rules(rules, simulate: bool):
             for action in job.actions:
                 new_path = action.run(
                     path=current_path,
-                file_attributes=file_attributes,
-                simulate=simulate)
+                    file_attributes=file_attributes,
+                    simulate=simulate)
                 if new_path is not None:
                     current_path = new_path
 
@@ -91,33 +92,33 @@ def open_folder(path):
 
 
 def list_actions_and_filters():
-        import inspect
-        import textwrap
-        from organize import filters, actions
+    import inspect
+    import textwrap
+    from organize import filters, actions
 
-        def heading(title, subtitle='', char='-', width=80):
-            space = ' ' * (width - 2 - len(title) - len(subtitle))
-            print(char * width)
-            print('%s %s %s' % (title, space, subtitle))
-            print()
+    def heading(title, subtitle='', char='-', width=80):
+        space = ' ' * (width - 2 - len(title) - len(subtitle))
+        print(char * width)
+        print('%s %s %s' % (title, space, subtitle))
+        print()
 
-        def content(content):
-            print(textwrap.indent(content, ' ' * 4))
-            print('\n')
+    def content(content):
+        print(textwrap.indent(content, ' ' * 4))
+        print('\n')
 
-        heading('Available filters:', char='#')
-        filterclasses = inspect.getmembers(filters, inspect.isclass)
-        for name, filtercls in filterclasses:
-            doc = inspect.getdoc(filtercls)
-            heading(name, '(filter)')
-            content(doc)
+    heading('Available filters:', char='#')
+    filterclasses = inspect.getmembers(filters, inspect.isclass)
+    for name, filtercls in filterclasses:
+        doc = inspect.getdoc(filtercls)
+        heading(name, '(filter)')
+        content(doc)
 
-        heading('Available actions:', char='#')
-        actionclasses = inspect.getmembers(actions, inspect.isclass)
-        for name, actioncls in actionclasses:
-            doc = inspect.getdoc(actioncls)
-            heading(name, '(action)')
-            content(doc)
+    heading('Available actions:', char='#')
+    actionclasses = inspect.getmembers(actions, inspect.isclass)
+    for name, actioncls in actionclasses:
+        doc = inspect.getdoc(actioncls)
+        heading(name, '(action)')
+        content(doc)
 
 
 def cli():
