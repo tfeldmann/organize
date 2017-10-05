@@ -4,7 +4,7 @@ Actions
 =======
 
 Move
-----
+--------------------------------------------------------------------------------
 .. py:class:: Move(dest, [overwrite=False])
 
     Move files
@@ -36,11 +36,22 @@ Move
 
     If the specified folders do not exist they will be created when running.
 
+Trash
+--------------------------------------------------------------------------------
+.. py:class:: Trash
+
+    Moves files into the trash.
+
+
 Shell
------
+--------------------------------------------------------------------------------
+.. py:class:: Shell(cmd)
+
+    Executes shell commands.
+
 
 Echo
-----
+--------------------------------------------------------------------------------
 .. py:class:: Echo(msg)
 
     Prints the given (formatted) message
