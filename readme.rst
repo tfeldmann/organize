@@ -42,28 +42,28 @@ Example ``config.yaml``:
 .. code:: yaml
 
     folders: &all
-      - '~/Desktop/__Inbox__'
-      - '~/Download'
-      - '~/TF Cloud/Office/_EINGANG_'
+      - '~/Desktop'
+      - '~/Downloads'
 
     rules:
       # German VDI Nachrichten
       - filters:
-        - PaperVdi
+          - PaperVDI
         actions:
-        - Move: {dest: '~/Documents/VDI Nachrichten/VDI {year}-{month:02}-{day:02}.pdf'}
+          - Move: {dest: '~/Documents/VDI Nachrichten/VDI {year}-{month:02}-{day:02}.pdf'}
+          - Shell: {cmd: 'open "{path}"'}
         folders: *all
 
       # Matches filename by regular expression
       - filters:
-        - Regex: {expr: '^RG(\d{12})-sig\.pdf$'}
+          - Regex: {expr: '^RG(\d{12})-sig\.pdf$'}
         actions:
-        - Move: {dest: '~/TF Cloud/Office/Rechnungen/MCF 1und1'}
+          - Move: {dest: '~/TF Cloud/Office/Rechnungen/MCF 1und1'}
         folders: *all
 
       # 1und1 invoices
       - filters:
-        - Invoice1and1
+          - Invoice1and1
         actions:
-        - Move: {dest: '~/TF Cloud/Office/Rechnungen/{year}-{month:02}-{day:02} 1und1.pdf'}
+          - Move: {dest: '~/TF Cloud/Office/Rechnungen/{year}-{month:02}-{day:02} 1und1.pdf'}
         folders: *all

@@ -8,27 +8,47 @@ logger = logging.getLogger(__name__)
 
 class Move:
 
-    """ Move files
+    """
+    Move a file to a new location. The file can also be renamed.
+    If the specified path does not exist it will be created.
 
-        Options:
-            dest [str]
-                `dest` can be a format string which uses file attributes from a
-                filter.
-                If `dest` is a folder path, the file will be moved into this
-                folder and not renamed.
+    If you only want to rename the file and keep the folder, it is
+    easier to use the Rename-Action.
 
-            overwrite=False [bool]
-                `overwrite` specifies whether existing files should be
-                overwritten. Otherwise it will start enumerating files (append a
-                counter to the filename) to resolve naming conflicts.
+    :param str dest:
+        can be a format string which uses file attributes from a filter.
+        If `dest` is a folder path, the file will be moved into this folder and
+        not renamed.
 
-        Examples:
-            Move: {dest: '/some/folder/'}
-            Move: {dest: '/some/path/some-name-{year}-{month:02}-{day:02}.pdf'}
-            Move: {dest: '{path.parent}/Invoice', overwrite: False}
+    :param bool overwrite:
+        specifies whether existing files should be overwritten.
+        Otherwise it will start enumerating files (append a counter to the
+        filename) to resolve naming conflicts. [Default: False]
+
+    Examples:
+        - Move into `some/folder/` and keep filenames
+
+          .. code-block:: yaml
+
+              filters:
+                - Move: {dest: '/some/folder/'}
+
+        - Move to `some/path/` and change the name to include the full date
+
+          .. code-block:: yaml
+
+              - Move: {dest: '/some/path/some-name-{year}-{month:02}-{day:02}.pdf'}
+
+        - Move into the folder `Invoices` on the same folder level as the file
+          itself. Keep the filename but do not overwrite existing files (adds
+          an index to the file)
+
+          .. code-block:: yaml
+
+              - Move: {dest: '{path.parent}/Invoices', overwrite: False}
     """
 
-    def __init__(self, dest: str, overwrite=False):
+    def __init__(self, dest, overwrite=False):
         self.dest = dest
         self.overwrite = overwrite
 

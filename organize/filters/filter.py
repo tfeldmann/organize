@@ -5,7 +5,7 @@ class Filter:
         raise NotImplementedError
 
     def parse(self, path):
-        """ Return an (optional) dict of parsed file properties """
+        """ Return an dict of parsed file properties (optional) """
         return {}
 
     def __str__(self):

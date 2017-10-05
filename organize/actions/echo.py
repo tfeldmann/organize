@@ -6,10 +6,25 @@ logger = logging.getLogger(__name__)
 
 class Echo:
 
-    """ Prints the given message to the command line
+    """
+    Prints the given (formatted) message. This can be useful to test your rules,
+    especially if you use formatted messages.
 
-        Options:
-            msg [str]: The (formatted) message string
+    :param str msg: The message to print (can be formatted)
+
+    Example:
+        - This will print something like ``Found a PNG: "test.png"`` for each
+          file on your desktop:
+
+        .. code-block:: yaml
+
+            rules:
+              - folders:
+                  - '~/Desktop'
+                filters:
+                  - FileExtension
+                actions:
+                  - Echo: {msg: 'Found a {extension.upper}: "{path.name}"'}
     """
 
     def __init__(self, msg):
