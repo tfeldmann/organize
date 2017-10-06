@@ -18,18 +18,18 @@ The easiest way is to define the rules like this:
 
 .. code-block:: yaml
 
-    rules:
-      - folders:
-          - '/path/one'
-          - '/path/two'
-        filters: ...
-        actions: ...
+  rules:
+    - folders:
+        - '/path/one'
+        - '/path/two'
+      filters: ...
+      actions: ...
 
-      - folders:
-          - '/path/one'
-          - '/another/path'
-        filters: ...
-        actions: ...
+    - folders:
+        - '/path/one'
+        - '/another/path'
+      filters: ...
+      actions: ...
 
 
 Advanced: Folder lists
@@ -40,55 +40,55 @@ Referencing is a standard feature of the YAML syntax.
 
 .. code-block:: yaml
 
-    all_folders: &all
-      - '/path/one'
-      - '/path/two'
-      - '/path/three'
+  all_folders: &all
+    - '/path/one'
+    - '/path/two'
+    - '/path/three'
 
-    rules:
-      - folders: *all
-        filters: ...
-        actions: ...
+  rules:
+    - folders: *all
+      filters: ...
+      actions: ...
 
-      - folders: *all
-        filters: ...
-        actions: ...
+    - folders: *all
+      filters: ...
+      actions: ...
 
 You can even use multiple folder lists:
 
 .. code-block:: yaml
 
-    private_folders: &private
-      - '/path/private'
-      - '~/path/private'
+  private_folders: &private
+    - '/path/private'
+    - '~/path/private'
 
-    work_folders: &work
-      - '/path/work'
-      - '~/My work folder'
+  work_folders: &work
+    - '/path/work'
+    - '~/My work folder'
 
-    all_folders: &all
-      - *private
-      - *work
+  all_folders: &all
+    - *private
+    - *work
 
-    rules:
-      - folders: *private
-        filters: ...
-        actions: ...
+  rules:
+    - folders: *private
+      filters: ...
+      actions: ...
 
-      - folders: *work
-        filters: ...
-        actions: ...
+    - folders: *work
+      filters: ...
+      actions: ...
 
-      - folders: *all
-        filters: ...
-        actions: ...
+    - folders: *all
+      filters: ...
+      actions: ...
 
-      # same as *all
-      - folders:
-          - *work
-          - *private
-        filters: ...
-        actions: ...
+    # same as *all
+    - folders:
+        - *work
+        - *private
+      filters: ...
+      actions: ...
 
 
 Rule syntax

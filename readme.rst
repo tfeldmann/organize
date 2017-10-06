@@ -10,24 +10,23 @@ Install with ``pip install organize`` (Python 3 only).
 
 What this is good for
 ---------------------
-``organize`` is a file organizer for the command line. It automatically
-organizes your files according to your rules.
-
 The quickest way to show what this software is good for is to show an example.
 The following yaml code goes into a file named `config.yaml` in the folder
-shown with ``organize config``:
+shown with ``$ organize config``:
 
-.. code:: yaml
+- `config.yaml`:
 
-    rules:
-      - folders: '~/Desktop'
-        filters:
-          - FileExtension:
-              - png
-              - jpg
-          - OlderThan: {years: 1}
-        actions:
-          - Trash
+  .. code:: yaml
+
+      rules:
+        - folders: '~/Desktop'
+          filters:
+            - FileExtension:
+                - png
+                - jpg
+            - OlderThan: {years: 1}
+          actions:
+            - Trash
 
 ``$ organize run`` will now move all PNGs and JPGs older than one year from your
 desktop into the trash. It is that easy.
@@ -35,9 +34,10 @@ desktop into the trash. It is that easy.
 Feeling insecure? Run ``$ organize sim`` to see what would happen without
 touching your files.
 
-But there is more. You want to move files with template strings, use custom
+But there is more. You want to move files, use custom
 shell scripts or match filenames with regular expressions?
-`organize` has you covered.
+`organize` has you covered. You can even use template strings and extract
+information from your files.
 
 Have a look at the full documentation at organize.readthedocs.io.
 
