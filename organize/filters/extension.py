@@ -1,21 +1,8 @@
+from collections import namedtuple
+from organize.helpers import flatten
 from .filter import Filter
 
-
-class ExtensionResult:
-
-    def __init__(self, extension):
-        self.extension = extension
-
-    def __str__(self):
-        return self.extension
-
-    @property
-    def upper(self):
-        return self.extension.upper()
-
-    @property
-    def lower(self):
-        return self.extension.lower()
+ExtensionResult = namedtuple('ExtensionResult', 'lower upper')
 
 
 class Extension(Filter):
@@ -27,31 +14,88 @@ class Extension(Filter):
         The file extensions to match (do not need to start with a colon).
 
     :returns:
-        - `extension` - the file extension including colon
-        - `extension.lower` - the file extension including colon in lower case
-        - `extension.upper` - the file extension including colon in upper case
+        - `extension.lower` - the file extension including colon in lowercase
+        - `extension.upper` - the file extension including colon in UPPERCASE
+
+    Examples:
+        - Match a single file extension:
+
+          .. code-block:: yaml
+
+            rules:
+              - folders: '~/Desktop'
+                filters:
+                  - Extension: png
+                actions:
+                  - Echo: 'Found PNG file: {path}'
+
+        - Match multiple file extensions:
+
+          .. code-block:: yaml
+
+            rules:
+              - folders: '~/Desktop'
+                filters:
+                  - Extension:
+                    - jpg
+                    - jpeg
+                actions:
+                  - Echo: 'Found JPG file: {path}'
+
+        - Make all file extensions lowercase:
+
+          .. code-block:: yaml
+
+            rules:
+              - folder: '~/Desktop'
+                filters:
+                  - Extension
+                actions:
+                  - Rename: '{path.stem}{extension.lower}'
+
+        - Using extension lists:
+
+          .. code-block:: yaml
+
+            img_ext: &img
+              - png
+              - jpg
+              - tiff
+
+            audio_ext: &audio
+              - mp3
+              - wav
+              - ogg
+
+            rules:
+              - folders: '~/Desktop'
+                filters:
+                  - Extension:
+                    - *img
+                    - *audio
+                actions:
+                  - Echo: 'Found media file: {path}'
     """
 
     def __init__(self, *extensions):
-        self.extensions = list(map(self.normalize_extension, extensions))
+        self.extensions = list(
+            map(self.normalize_extension, flatten(extensions)))
 
     @staticmethod
     def normalize_extension(ext):
         if ext.startswith('.'):
             return ext.lower()
         else:
-            return ''.join(['.', ext.lower()])
+            return '.%s' % ext.lower()
 
     def matches(self, path):
         return not self.extensions or path.suffix.lower() in self.extensions
 
     def parse(self, path):
         ext = self.normalize_extension(path.suffix)
-        Result = ExtensionResult(ext)
-
         return {
-            'extension': Result
+            'extension': ExtensionResult(lower=ext, upper=ext.upper())
         }
 
     def __str__(self):
-        return 'FileExtension(%s)' % ', '.join(self.extensions)
+        return 'Extension(%s)' % ', '.join(self.extensions)
