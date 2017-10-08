@@ -14,18 +14,17 @@ class Shell(Action):
     :param str cmd: The command to execute.
 
     Example:
+      - Find all VDI Papers on your desktop, move them into documents and open the file afterwards:
 
-    - Find all VDI Papers on your desktop, move them into documents and open the file afterwards
+        .. code-block:: yaml
 
-      .. code-block: yaml
-
-        rules:
-          - folders: '~/Desktop'
-            filters:
-              - PaperVDI
-            actions:
-              - Move: '~/Documents/VDI Nachrichten/VDI {vdi.year}-{vdi.month:02}-{vdi.day:02}.pdf'
-              - Shell: 'open "{path}"'
+          rules:
+            - folders: '~/Desktop'
+              filters:
+                - PaperVDI
+              actions:
+                - Move: '~/Documents/VDI Nachrichten/VDI {vdi.year}-{vdi.month:02}-{vdi.day:02}.pdf'
+                - Shell: 'open "{path}"'
     """
 
     def __init__(self, cmd: str):
