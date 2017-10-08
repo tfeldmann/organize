@@ -1,3 +1,5 @@
+.. image:: /docs/images/organize.svg
+
 organize
 ========
 

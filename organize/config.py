@@ -14,10 +14,9 @@ def first_key(d):
 def flatten(arr):
     if arr == []:
         return []
-    elif not isinstance(arr, list):
+    if not isinstance(arr, list):
         return [arr]
-    else:
-        return flatten(arr[0]) + flatten(arr[1:])
+    return flatten(arr[0]) + flatten(arr[1:])
 
 
 class Config:
@@ -35,7 +34,8 @@ class Config:
         with open(path, 'r') as f:
             return cls.from_string(f.read())
 
-    def parse_folders(self, rule_item):
+    @staticmethod
+    def parse_folders(rule_item):
         # the folder list is flattened so we can use encapsulated list
         # definitions in the config file.
         yield from flatten(rule_item['folders'])
@@ -60,8 +60,7 @@ class Config:
             return Cls(*args)
         elif isinstance(args, dict):
             return Cls(**args)
-        else:
-            return Cls(args)
+        return Cls(args)
 
     def instantiate_filters(self, rule_item):
         for filter_item in rule_item['filters']:

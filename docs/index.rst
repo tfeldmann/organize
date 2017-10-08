@@ -1,10 +1,8 @@
+.. image:: /images/organize.svg
+
 organize
 ========
-
 organize is a command line utility to automate file organization tasks.
-
-.. todo: What this is for
-
 
 Contents:
 ---------
