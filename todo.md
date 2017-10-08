@@ -2,14 +2,11 @@
 
 ## Must:
 
-- [ ] Accept single folders in config
-- [ ] Accept lists and single strings as input for filters and actions
+- [ ] Warning if multiple rules apply to the same file
 - [ ] Filter pipelines
 - [ ] Filter: OlderThan(years=0, months=0, days=0, hours=0, minutes=0, seconds=0)
 - [ ] Filter: NewerThan(years=0, months=0, days=0, hours=0, minutes=0, seconds=0)
 - [ ] Filter: FileName(startswith='', endswith='', extension='')
-- [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='')
-- [ ] Filter: FileType(type='media')
 - [ ] Action: Copy(dest)
 - [ ] Action: Rename(dest)
 - [ ] Logfile
@@ -17,6 +14,8 @@
 
 ## Nice to have:
 
+- [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='')
+- [ ] Filter: FileType(type='media')
 - [ ] Filter modes all, none, any
 - [ ] Action: Python inline code
 - [ ] jsonschema for user config
@@ -25,10 +24,13 @@
 - [ ] Undo
 - [ ] Tests
 - [ ] Filter: Exif
+- [ ] Recurse through subfolders?
 - [ ] User plugins
 
 ## Done:
 
+- [x] Accept single folders in config @2017-10-07
+- [x] Accept lists and single strings as input for filters and actions @2017-10-07
 - [x] Action: Trash @2017-10-05
 - [x] Filter: FileExtension(ext) @2017-10-05
 - [x] Filter: Regex with named groups @2017-10-05
