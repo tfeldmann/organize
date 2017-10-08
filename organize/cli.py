@@ -60,27 +60,28 @@ def find_jobs(rules):
 
 
 def execute_rules(rules, simulate: bool):
-    def first(x):
-        return x[0]
-
     jobs = find_jobs(rules)
-    # TODO: warning for multiple rules applying to the same path
     if not jobs:
         print('Nothing to do.')
-    else:
-        logger.debug(jobs)
-        for job in jobs:
-            logger.info('File %s', job.path)
-            file_attributes = first(job.filters).parse(job.path)
+        return
 
-            current_path = job.path.resolve()
-            for action in job.actions:
-                new_path = action.run(
-                    path=current_path,
-                    file_attributes=file_attributes,
-                    simulate=simulate)
-                if new_path is not None:
-                    current_path = new_path
+    # TODO: warning for multiple rules applying to the same path
+    logger.debug(jobs)
+    for job in jobs:
+        logger.info('File %s', job.path)
+        # filter pipeline
+        file_attributes = {}
+        for filter_ in job.filters:
+            file_attributes.update(filter_.parse(job.path))
+        # job pipeline
+        current_path = job.path.resolve()
+        for action in job.actions:
+            new_path = action.run(
+                path=current_path,
+                file_attributes=file_attributes,
+                simulate=simulate)
+            if new_path is not None:
+                current_path = new_path
 
 
 def open_folder(path):
