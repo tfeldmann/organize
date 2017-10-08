@@ -1,5 +1,5 @@
 """
-The personal file management tool.
+The file management automation tool.
 
 Usage:
     organize sim [-v]
@@ -126,6 +126,5 @@ def cli():
     elif args['list']:
         list_actions_and_filters()
     else:
-        with open(config_path) as f:
-            config = Config(f.read())
+        config = Config.from_file(config_path)
         execute_rules(config.rules, simulate=args['sim'])
