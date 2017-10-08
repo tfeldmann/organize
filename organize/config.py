@@ -1,22 +1,11 @@
 import logging
 from typing import List
 from collections import namedtuple
-from organize import actions, filters
+from .helpers import flatten, first_key
+from . import actions, filters
 
 logger = logging.getLogger(__name__)
 Rule = namedtuple('Rule', 'filters actions folders')
-
-
-def first_key(d):
-    return list(d.keys())[0]
-
-
-def flatten(arr):
-    if arr == []:
-        return []
-    if not isinstance(arr, list):
-        return [arr]
-    return flatten(arr[0]) + flatten(arr[1:])
 
 
 class Config:
