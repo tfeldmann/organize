@@ -1,14 +1,30 @@
 from .filter import Filter
 
 
+class ExtensionResult:
+
+    def __init__(self, extension):
+        self.extension = extension
+
+    def __str__(self):
+        return self.extension
+
+    @property
+    def upper(self):
+        return self.extension.upper()
+
+    @property
+    def lower(self):
+        return self.extension.lower()
+
+
 class Extension(Filter):
 
-    # TODO: Match a list of file extensions
     """
     Filter by file extension
 
-    :param str ext:
-        The file extension to match (does not need to start with a colon).
+    :param extensions:
+        The file extensions to match (do not need to start with a colon).
 
     :returns:
         - `extension` - the file extension including colon
@@ -16,24 +32,26 @@ class Extension(Filter):
         - `extension.upper` - the file extension including colon in upper case
     """
 
-    def __init__(self, ext=''):
-        if ext == '':
-            self.ext = ''
-        elif ext.startswith('.'):
-            self.ext = ext.lower()
+    def __init__(self, *extensions):
+        self.extensions = list(map(self.normalize_extension, extensions))
+
+    @staticmethod
+    def normalize_extension(ext):
+        if ext.startswith('.'):
+            return ext.lower()
         else:
-            self.ext = ''.join(['.', ext.lower()])
+            return ''.join(['.', ext.lower()])
 
     def matches(self, path):
-        return self.ext == '' or path.suffix.lower() == self.ext
+        return not self.extensions or path.suffix.lower() in self.extensions
 
     def parse(self, path):
-        ext = path.suffix
+        ext = self.normalize_extension(path.suffix)
+        Result = ExtensionResult(ext)
+
         return {
-            'extension': ext,
-            'extension.lower': ext.lower(),
-            'extension.upper': ext.upper(),
+            'extension': Result
         }
 
     def __str__(self):
-        return 'FileExtension("%s")' % self.ext
+        return 'FileExtension(%s)' % ', '.join(self.extensions)

@@ -1,10 +1,11 @@
 import logging
 from pathlib import Path
+from .action import Action
 
 logger = logging.getLogger(__name__)
 
 
-class Trash:
+class Trash(Action):
 
     """
     Move a file into the trash.
@@ -19,7 +20,7 @@ class Trash:
               - folders: '~/Desktop'
               - filters:
                   - OlderThan: {years: 1}
-                  - FileExtension:
+                  - Extension:
                       - png
                       - jpg
               - actions:

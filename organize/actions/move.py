@@ -2,11 +2,12 @@ import os
 import shutil
 import logging
 from pathlib import Path
+from .action import Action
 
 logger = logging.getLogger(__name__)
 
 
-class Move:
+class Move(Action):
 
     """
     Move a file to a new location. The file can also be renamed.

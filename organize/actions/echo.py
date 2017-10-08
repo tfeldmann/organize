@@ -1,10 +1,11 @@
 import logging
 from pathlib import Path
+from .action import Action
 
 logger = logging.getLogger(__name__)
 
 
-class Echo:
+class Echo(Action):
 
     """
     Prints the given (formatted) message. This can be useful to test your rules,

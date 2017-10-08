@@ -13,4 +13,4 @@ class Filter:
         return self.__class__.__name__
 
     def __repr__(self):
-        return '<' + str(self) + '>'
+        return '<%s>' % str(self)
