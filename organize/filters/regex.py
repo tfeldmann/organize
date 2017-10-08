@@ -4,13 +4,11 @@ from .filter import Filter
 
 class Regex(Filter):
 
-    """ Matches filenames with the given regular expression
+    """
+    Matches filenames with the given regular expression
 
-        Inputs:
-            expr [str]  The regular expression to be matched
-
-        Outputs:
-            None
+    :param str expr:
+        The regular expression to be matched
     """
 
     def __init__(self, expr):
@@ -20,4 +18,5 @@ class Regex(Filter):
         return self.expr.match(path.name)
 
     def parse(self, path):
+        # TODO: regex.xyz namespace
         return self.expr.match(path.name).groupdict()
