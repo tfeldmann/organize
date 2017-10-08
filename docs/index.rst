@@ -13,11 +13,7 @@ Contents:
     page/filters
     page/actions
 
-
-Note
-----
-If you find any bugs, odd behavior, or have an idea for a new feature please don't hesitate to `open an issue <https://github.com/tfeldmann/organize/issues?state=open>`_ on GitHub.
-
+If you find any bugs or have an idea for a new feature please don't hesitate to `open an issue <https://github.com/tfeldmann/organize/issues?state=open>`_ on GitHub.
 
 Indices and tables
 ==================

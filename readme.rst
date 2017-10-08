@@ -7,12 +7,15 @@ organize
 progress!*
 
 The file management automation tool.
-Install with ``pip install organize`` (Python 3 only).
+Install with ``pip install organize`` (Python 3+ only).
 
 
-What this is good for
----------------------
-The quickest way to show what this software is good for is to show an example.
+Why you might find this useful
+------------------------------
+Your desktop is a mess? You cannot find anything in your downloads and
+documents? Sorting and renaming all these files by hand is too tedious?
+Time to automate it once and benefit from it forever.
+
 The following yaml code goes into a file named `config.yaml` in the folder
 shown with ``$ organize config``:
 

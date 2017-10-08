@@ -2,6 +2,7 @@
 
 ## Must:
 
+- [ ] Filter: IncompleteDownloads
 - [ ] Formatted output
 - [ ] Documentation for {path}
 - [ ] Warning if multiple rules apply to the same file
