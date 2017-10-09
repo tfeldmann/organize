@@ -99,6 +99,3 @@ class Extension(Filter):
 
     def __str__(self):
         return 'Extension(%s)' % ', '.join(self.extensions)
-
-    def __eq__(self, other):
-        return self.extensions == other.extensions
