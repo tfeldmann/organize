@@ -7,7 +7,7 @@ organize
 progress!*
 
 The file management automation tool.
-Install with ``pip install organize`` (Python 3+ only).
+Install with ``pip install organize-tool`` (Python 3+ only).
 
 
 Why you might find this useful

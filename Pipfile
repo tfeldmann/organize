@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+
+docopt = "*"
+"slate3k" = "*"
+pyyaml = "*"
+"send2trash" = "*"
+appdirs = "*"
+
+
+[dev-packages]
+pytest = "*"
+sphinx = "*"

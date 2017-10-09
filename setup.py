@@ -17,7 +17,7 @@ with open(os.path.join(here, 'organize', '__version__.py')) as f:
 
 
 setup(
-    name='organize',
+    name='organize-tool',
     version=about['__version__'],
     description='The file management automation tool.',
     long_description=long_description,
