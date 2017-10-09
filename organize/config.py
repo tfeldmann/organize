@@ -52,9 +52,17 @@ class Config:
         return Cls(args)
 
     def instantiate_filters(self, rule_item):
-        for filter_item in rule_item['filters']:
+        filter_list = rule_item['filters']
+        if not filter_list:
+            return
+        if not isinstance(filter_list, list):
+            raise self.FiltersNoListError()
+
+        for filter_item in filter_list:
             # filter with arguments
-            if isinstance(filter_item, dict):
+            if filter_item is None:
+                yield None
+            elif isinstance(filter_item, dict):
                 name = first_key(filter_item)
                 args = filter_item[name]
                 filter_class = self._get_filter_class_by_name(name)
@@ -68,7 +76,11 @@ class Config:
                 raise self.Error('Unknown filter type: %s' % filter_item)
 
     def instantiate_actions(self, rule_item):
-        for action_item in rule_item['actions']:
+        action_list = rule_item['actions']
+        if not isinstance(action_list, list):
+            raise self.ActionsNoListError()
+
+        for action_item in action_list:
             if isinstance(action_item, dict):
                 name = first_key(action_item)
                 args = action_item[name]
@@ -106,4 +118,10 @@ class Config:
         return result
 
     class Error(Exception):
+        pass
+
+    class FiltersNoListError(Error):
+        pass
+
+    class ActionsNoListError(Error):
         pass
