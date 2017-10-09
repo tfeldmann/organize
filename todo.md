@@ -3,6 +3,8 @@
 ## Must:
 
 - [ ] Filter: IncompleteDownloads
+- [ ] rules.exclude_system_files
+- [ ] rules.exlude_dotfiles
 - [ ] Formatted output
 - [ ] Documentation for {path}
 - [ ] Warning if multiple rules apply to the same file
