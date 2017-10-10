@@ -4,7 +4,7 @@ init:
 	pipenv install --dev --skip-lock
 
 test:
-	@py.test
+	pipenv run py.test tests
 
 publish:
 	pip install 'twine>=1.5.0'
