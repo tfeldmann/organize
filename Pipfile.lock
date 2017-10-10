@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7b3ab242c7e3743d3f0d3460baef3be97f0daaa5ae850991b32a176cb9329cf4"
+            "sha256": "21221bb3be758071e1b1bd83e4103424c09fc759894d3e4cd18980ca4f0c08f1"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -39,6 +39,10 @@
                 "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"
             ],
             "version": "==0.6.2"
+        },
+        "e1839a8": {
+            "editable": true,
+            "path": "."
         },
         "pdfminer3k": {
             "hashes": [
