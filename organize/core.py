@@ -3,6 +3,7 @@ from pathlib import Path
 from collections import namedtuple, defaultdict
 
 from clint.textui import puts, indent, colored
+from .utils import bold
 
 
 logger = logging.getLogger(__name__)
@@ -46,25 +47,35 @@ def execute_rules(rules, simulate: bool):
             puts()
         first = False
 
-        puts('Folder %s:' % colored.white(folder, bold=True))
+        puts('Folder %s:' % bold(folder))
         with indent(2):
             for job in jobs:
-                puts('File %s:' % colored.white(job.path.name, bold=True))
+                puts('File %s:' % bold(job.path.name))
                 with indent(2):
-                    # filter pipeline
-                    file_attributes = {}
-                    for filter_ in job.filters:
-                        file_attributes.update(filter_.parse(job.path))
-                    # job pipeline
-                    current_path = job.path.resolve()
-                    for action in job.actions:
-                        try:
-                            new_path = action.run(
-                                path=current_path,
-                                file_attributes=file_attributes,
-                                simulate=simulate)
-                            if new_path is not None:
-                                current_path = new_path
-                        except Exception as e:
-                            logging.exception(e)
-                            action.print('%s %s' % (colored.red('ERROR!'), e))
+                    file_attributes = filter_pipeline(job)
+                    action_pipeline(
+                        job=job,
+                        file_attributes=file_attributes,
+                        simulate=simulate)
+
+
+def filter_pipeline(job):
+    result = {}
+    for filter_ in job.filters:
+        result.update(filter_.parse(job.path))
+    return result
+
+
+def action_pipeline(job, file_attributes, simulate):
+    try:
+        current_path = job.path.resolve()
+        for action in job.actions:
+            new_path = action.run(
+                path=current_path,
+                file_attributes=file_attributes,
+                simulate=simulate)
+            if new_path is not None:
+                current_path = new_path
+    except Exception as e:
+        logging.exception(e)
+        action.print('%s %s' % (colored.red('ERROR!', bold=True), e))

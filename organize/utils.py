@@ -1,4 +1,19 @@
+import sys
 from collections import OrderedDict
+
+import colorama
+
+
+def bold(text):
+    # taken from a feature request from the clint library
+    # https://github.com/kennethreitz/clint/issues/157
+    if sys.stdout.isatty():
+        return '{on}{string}{off}'.format(
+            on=getattr(colorama.Style, 'BRIGHT'),
+            string=text,
+            off=getattr(colorama.Style, 'NORMAL'))
+    else:
+        return text
 
 
 def flatten(arr):
