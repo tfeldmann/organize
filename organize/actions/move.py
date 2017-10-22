@@ -53,8 +53,8 @@ class Move(Action):
         self.dest = dest
         self.overwrite = overwrite
 
-    def run(self, path: Path, file_attributes: dict, simulate: bool):
-        full_dest = self.dest.format(path=path, **file_attributes)
+    def run(self, path: Path, attrs: dict, simulate: bool):
+        full_dest = self.dest.format(path=path, **attrs)
 
         # if only a folder path is given we append the filename to have the full
         # path. We use os.path for that because pathlib removes trailing slashes

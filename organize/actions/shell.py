@@ -30,8 +30,8 @@ class Shell(Action):
     def __init__(self, cmd: str):
         self.cmd = cmd
 
-    def run(self, path: Path, file_attributes: dict, simulate: bool):
-        full_cmd = self.fill_template_tags(self.cmd, path, file_attributes)
+    def run(self, path: Path, attrs: dict, simulate: bool):
+        full_cmd = self.fill_template_tags(self.cmd, path, attrs)
         self.print('$ %s' % full_cmd)
         if not simulate:
             subprocess.run(full_cmd, shell=True)

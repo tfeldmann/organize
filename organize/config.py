@@ -39,7 +39,7 @@ class Config:
         try:
             return getattr(actions, name)
         except AttributeError as e:
-            raise self.Error('%s is no valid filter' % name) from e
+            raise self.Error('%s is no valid action' % name) from e
 
     @staticmethod
     def _class_instance_with_args(Cls, args):

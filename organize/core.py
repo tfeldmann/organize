@@ -52,11 +52,8 @@ def execute_rules(rules, simulate: bool):
             for job in jobs:
                 puts('File %s:' % bold(job.path.name))
                 with indent(2):
-                    file_attributes = filter_pipeline(job)
-                    action_pipeline(
-                        job=job,
-                        file_attributes=file_attributes,
-                        simulate=simulate)
+                    attrs = filter_pipeline(job)
+                    action_pipeline(job=job, attrs=attrs, simulate=simulate)
 
 
 def filter_pipeline(job):
@@ -66,14 +63,12 @@ def filter_pipeline(job):
     return result
 
 
-def action_pipeline(job, file_attributes, simulate):
+def action_pipeline(job, attrs, simulate):
     try:
         current_path = job.path.resolve()
         for action in job.actions:
             new_path = action.run(
-                path=current_path,
-                file_attributes=file_attributes,
-                simulate=simulate)
+                path=current_path, attrs=attrs, simulate=simulate)
             if new_path is not None:
                 current_path = new_path
     except Exception as e:
