@@ -1,5 +1,6 @@
 import re
 import pathlib
+from organize.utils import DotDict
 from .filter import Filter
 
 expr = re.compile(r'^RG(\d{12})\.pdf$')
@@ -21,7 +22,7 @@ class Invoice1and1(Filter):
         return expr.match(path.name)
 
     def parse(self, path):
-        result = {}
+        result = DotDict()
         result['nr'] = expr.match(path.name).group(1)
         try:
             doc = self.parse_pdf(path)
@@ -37,7 +38,7 @@ class Invoice1and1(Filter):
             result['day'] = int(day)
         except Exception:
             pass
-        return result
+        return {'invoice_1and1': result}
 
     @staticmethod
     def parse_pdf(path: pathlib.Path):

@@ -1,5 +1,5 @@
 from collections import namedtuple
-from organize.helpers import flatten
+from organize.utils import DotDict, flatten
 from .filter import Filter
 
 ExtensionResult = namedtuple('ExtensionResult', 'lower upper')
@@ -93,9 +93,11 @@ class Extension(Filter):
 
     def parse(self, path):
         ext = self.normalize_extension(path.suffix)
-        return {
-            'extension': ExtensionResult(lower=ext, upper=ext.upper())
-        }
+        extension = DotDict({
+            'lower': ext,
+            'upper': ext.upper()
+        })
+        return {'extension': extension}
 
     def __str__(self):
         return 'Extension(%s)' % ', '.join(self.extensions)

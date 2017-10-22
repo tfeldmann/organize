@@ -75,15 +75,13 @@ class Move(Action):
         self._move(src=path, dest=new_path, simulate=simulate)
         return new_path
 
-    @staticmethod
-    def _delete(path: Path, simulate: bool):
-        logger.info('Delete "%s"', path)
+    def _delete(self, path: Path, simulate: bool):
+        self.print('Delete "%s"' % path)
         if not simulate:
             os.remove(path)
 
-    @staticmethod
-    def _move(src: Path, dest: Path, simulate):
-        logger.info('Move to "%s"', dest)
+    def _move(self, src: Path, dest: Path, simulate):
+        self.print('Move to "%s"' % dest)
         if not simulate:
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.move(src=str(src), dst=str(dest))

@@ -23,13 +23,13 @@ Options:
 """
 import logging
 from pathlib import Path
-from collections import namedtuple
 
 import appdirs
 from docopt import docopt
 
 from .__version__ import __version__
 from .config import Config
+from .core import execute_rules
 
 
 app_dirs = appdirs.AppDirs('organize')
@@ -41,47 +41,6 @@ for p in (config_dir, log_dir):
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-
-def all_pathes(rule):
-    for folder in rule.folders:
-        yield from Path(folder).expanduser().glob('*.*')
-
-
-def find_jobs(rules):
-    Job = namedtuple('Job', 'path filters actions')
-    result = []
-    for rule in rules:
-        for path in all_pathes(rule):
-            if all(f.matches(path) for f in rule.filters):
-                job = Job(path=path, filters=rule.filters, actions=rule.actions)
-                result.append(job)
-    return list(sorted(result, key=lambda j: j.path))
-
-
-def execute_rules(rules, simulate: bool):
-    jobs = find_jobs(rules)
-    if not jobs:
-        print('Nothing to do.')
-        return
-
-    # TODO: warning for multiple rules applying to the same path
-    logger.debug(jobs)
-    for job in jobs:
-        logger.info('File %s', job.path)
-        # filter pipeline
-        file_attributes = {}
-        for filter_ in job.filters:
-            file_attributes.update(filter_.parse(job.path))
-        # job pipeline
-        current_path = job.path.resolve()
-        for action in job.actions:
-            new_path = action.run(
-                path=current_path,
-                file_attributes=file_attributes,
-                simulate=simulate)
-            if new_path is not None:
-                current_path = new_path
 
 
 def open_folder(path):

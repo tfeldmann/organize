@@ -29,6 +29,6 @@ class Trash(Action):
 
     def run(self, path: Path, file_attributes: dict, simulate: bool):
         from send2trash import send2trash
-        logger.info('Trashing "%s"', path)
+        self.print('Trash "%s"' % path)
         if not simulate:
             send2trash(path)

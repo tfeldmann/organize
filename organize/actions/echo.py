@@ -32,8 +32,8 @@ class Echo(Action):
         self.msg = msg
 
     def run(self, path: Path, file_attributes: dict, simulate: bool):
-        full_msg = self.msg.format(path=path, **file_attributes)
-        print(full_msg)
+        full_msg = self.fill_template_tags(self.msg, path, file_attributes)
+        self.print('%s' % full_msg)
 
     def __str__(self):
         return 'Echo(msg="%s")' % self.msg

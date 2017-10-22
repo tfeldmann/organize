@@ -31,8 +31,8 @@ class Shell(Action):
         self.cmd = cmd
 
     def run(self, path: Path, file_attributes: dict, simulate: bool):
-        full_cmd = self.cmd.format(path=path, **file_attributes)
-        logger.info('Executing: $ %s', full_cmd)
+        full_cmd = self.fill_template_tags(self.cmd, path, file_attributes)
+        self.print('$ %s' % full_cmd)
         if not simulate:
             subprocess.run(full_cmd, shell=True)
 

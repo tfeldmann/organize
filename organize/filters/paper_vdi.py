@@ -1,5 +1,5 @@
 import re
-from collections import namedtuple
+from organize.utils import DotDict
 from .filter import Filter
 
 expr = re.compile(r'^VDInachrichten-(\d{4})(\d{2})(\d{2})\.pdf$')
@@ -20,8 +20,10 @@ class PaperVDI(Filter):
         return expr.match(path.name) is not None
 
     def parse(self, path):
-        Result = namedtuple('vdi', 'year month day')
         year, month, day = expr.match(path.name).groups()
-        return {
-            'vdi': Result(year=int(year), month=int(month), day=int(day))
-        }
+        result = DotDict({
+            'year': int(year),
+            'month': int(month),
+            'day': int(day),
+        })
+        return {'vdi': result}

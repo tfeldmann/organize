@@ -1,4 +1,5 @@
 import re
+from organize.utils import DotDict
 from .filter import Filter
 
 
@@ -18,5 +19,5 @@ class Regex(Filter):
         return self.expr.match(path.name)
 
     def parse(self, path):
-        # TODO: regex.xyz namespace
-        return self.expr.match(path.name).groupdict()
+        result = DotDict(self.expr.match(path.name).groupdict())
+        return {'regex': result}
