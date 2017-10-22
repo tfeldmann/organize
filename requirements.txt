@@ -1,5 +1,0 @@
-appdirs
-docopt
-slate3k
-pyyaml
-Send2Trash
