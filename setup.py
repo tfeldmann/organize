@@ -5,9 +5,9 @@ from setuptools import find_packages, setup
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Import the README and use it as the long-description.
-# Note: this will only work if 'readme.rst' is present in your MANIFEST.in
+# Note: this will only work if 'README.rst' is present in your MANIFEST.in
 # file!
-with open(os.path.join(here, 'readme.rst'), encoding='utf-8') as f:
+with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = '\n' + f.read()
 
 # Load the package's __version__.py module as a dictionary.
