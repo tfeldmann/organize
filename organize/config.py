@@ -1,7 +1,7 @@
 import logging
 from typing import List
 from collections import namedtuple
-from .helpers import flatten, first_key
+from .utils import flatten, first_key
 from . import actions, filters
 
 logger = logging.getLogger(__name__)
