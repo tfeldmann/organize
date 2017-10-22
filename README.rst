@@ -3,7 +3,7 @@
 organize
 ========
 .. image:: https://readthedocs.org/projects/organize/badge/?version=latest
-  :target: http://organize.readthedocs.io/en/latest/?badge=latest
+  :target: https://organize.readthedocs.io/en/latest/?badge=latest
   :alt: Documentation Status
 
 *Warning: This project is currently not yet usable. Work is in
@@ -47,7 +47,27 @@ shell scripts or match filenames with regular expressions?
 `organize` has you covered. You can even use template strings and extract
 information from your files.
 
-Have a look at the full documentation at organize.readthedocs.io.
+Have a look at the full documentation at https://organize.readthedocs.io/.
+
+
+Functionality
+-------------
+
+*Filters* (how to select files):
+
+ - File extension
+ - Regular expression
+ - Built in detectors for 1&1 Invoices, VDI Papers and more.
+
+*Actions* (what you can with your files):
+
+ - Move
+ - Run shell command
+ - Run inline Python code
+ - Move into Trash
+ - Print
+
+If you miss a feature please file an issue. Pull requests are very welcome!
 
 
 Command line interface

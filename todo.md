@@ -13,6 +13,8 @@
 
 ## Nice to have:
 
+- [ ] Action: Print
+- [ ] Action: E-Mail
 - [ ] Filter: IncompleteDownloads
 - [ ] rules.exlude_dotfiles
 - [ ] rules.exclude_system_files
@@ -20,7 +22,6 @@
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='')
 - [ ] Filter: FileType(type='media')
 - [ ] Filter modes all, none, any
-- [ ] Action: Python inline code
 - [ ] jsonschema for user config validation
 - [ ] Action: Zip
 - [ ] Action: Notify
@@ -32,6 +33,7 @@
 
 ## Done:
 
+- [x] Action: Python inline code @2017-10-22
 - [x] Regex parse result namespace @2017-10-22
 - [x] Formatted output @2017-10-15
 - [x] Filter pipelines @2017-10-08
