@@ -8,7 +8,25 @@ logger = logging.getLogger(__name__)
 class Python(Action):
 
     """
-    Inline python code to execute
+    Execute python code in your config file.
+
+    :param str code: The python code to execute
+
+    Example:
+      - A basic example that shows how to get the current file path and do some
+        printing in a for loop. The ``|`` is yaml syntax for defining a string
+        with multiple lines.
+
+        .. code-block:: yaml
+
+          rules:
+            - folders: '~/Desktop'
+                actions:
+                - Python |
+                    print('The path of the current file is %s' % path)
+                    print('This is how you inline python code!')
+                    for _ in range(5):
+                        print('Heyho, its me from the loop')
     """
 
     def __init__(self, code):

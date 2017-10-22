@@ -16,6 +16,10 @@ Shell
 -----
 .. autoclass:: Shell
 
+Python
+------
+.. autoclass:: Python
+
 Echo
 ----
 .. autoclass:: Echo
