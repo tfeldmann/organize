@@ -11,6 +11,7 @@ pyyaml = "*"
 "send2trash" = "*"
 appdirs = "*"
 "e1839a8" = {path = ".", editable = true}
+clint = "*"
 
 
 [dev-packages]

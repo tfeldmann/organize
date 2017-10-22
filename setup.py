@@ -28,7 +28,9 @@ setup(
     entry_points={
         'console_scripts': ['organize=organize.cli:cli'],
     },
-    install_requires=['appdirs', 'docopt', 'slate3k', 'pyyaml', 'Send2Trash'],
+    install_requires=[
+        'appdirs', 'docopt', 'slate3k', 'pyyaml', 'Send2Trash', 'clint'
+    ],
     include_package_data=True,
     license='MIT',
     classifiers=[
