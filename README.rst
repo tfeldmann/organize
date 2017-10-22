@@ -1,4 +1,9 @@
+.. image:: https://readthedocs.org/projects/organize/badge/?version=latest
+  :target: http://organize.readthedocs.io/en/latest/?badge=latest
+  :alt: Documentation Status
+
 .. image:: /docs/images/organize.svg
+
 
 organize
 ========
