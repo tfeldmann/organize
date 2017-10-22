@@ -2,12 +2,7 @@
 
 ## Must:
 
-- [ ] Filter: IncompleteDownloads
-- [ ] rules.exclude_system_files
-- [ ] rules.exlude_dotfiles
-- [ ] Formatted output
 - [ ] Documentation for {path}
-- [ ] Warning if multiple rules apply to the same file
 - [ ] Flatten Filter Extension input
 - [ ] Filter: OlderThan(years=0, months=0, days=0, hours=0, minutes=0, seconds=0)
 - [ ] Filter: NewerThan(years=0, months=0, days=0, hours=0, minutes=0, seconds=0)
@@ -18,11 +13,15 @@
 
 ## Nice to have:
 
+- [ ] Filter: IncompleteDownloads
+- [ ] rules.exlude_dotfiles
+- [ ] rules.exclude_system_files
+- [ ] Warning if multiple rules apply to the same file
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='')
 - [ ] Filter: FileType(type='media')
 - [ ] Filter modes all, none, any
 - [ ] Action: Python inline code
-- [ ] jsonschema for user config
+- [ ] jsonschema for user config validation
 - [ ] Action: Zip
 - [ ] Action: Notify
 - [ ] Undo
@@ -33,6 +32,8 @@
 
 ## Done:
 
+- [x] Regex parse result namespace @2017-10-22
+- [x] Formatted output @2017-10-15
 - [x] Filter pipelines @2017-10-08
 - [x] Accept single folders in config @2017-10-07
 - [x] Accept lists and single strings as input for filters and actions @2017-10-07
