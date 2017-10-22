@@ -1,4 +1,4 @@
-.. image:: /images/organize.svg
+.. image:: https://raw.githubusercontent.com/tfeldmann/organize/master/docs/images/organize.svg?sanitize=true
 
 organize
 ========
