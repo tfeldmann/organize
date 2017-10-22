@@ -29,7 +29,8 @@ setup(
         'console_scripts': ['organize=organize.cli:cli'],
     },
     install_requires=[
-        'appdirs', 'docopt', 'slate3k', 'pyyaml', 'Send2Trash', 'clint'
+        'appdirs', 'docopt', 'slate3k', 'pyyaml', 'Send2Trash', 'clint',
+        'colorama'
     ],
     include_package_data=True,
     license='MIT',
