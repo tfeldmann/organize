@@ -4,6 +4,8 @@ organize
 ========
 organize is a command line utility to automate file organization tasks.
 
+http://github.com/tfeldmann/organize
+
 Contents:
 ---------
 .. toctree::
