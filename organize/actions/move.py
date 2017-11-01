@@ -64,7 +64,7 @@ class Move(Action):
         new_path = Path(full_dest).expanduser()
         if new_path.exists():
             if self.overwrite:
-                self._delete(path=new_path, simulate=simulate)
+                self.delete(path=new_path, simulate=simulate)
             else:
                 # rename
                 count = 2
@@ -72,15 +72,15 @@ class Move(Action):
                     new_path = self._path_with_count(new_path, count)
                     count += 1
 
-        self._move(src=path, dest=new_path, simulate=simulate)
+        self.move(src=path, dest=new_path, simulate=simulate)
         return new_path
 
-    def _delete(self, path: Path, simulate: bool):
+    def delete(self, path: Path, simulate: bool):
         self.print('Delete "%s"' % path)
         if not simulate:
             os.remove(path)
 
-    def _move(self, src: Path, dest: Path, simulate):
+    def move(self, src: Path, dest: Path, simulate):
         self.print('Move to "%s"' % dest)
         if not simulate:
             dest.parent.mkdir(parents=True, exist_ok=True)
@@ -92,6 +92,3 @@ class Move(Action):
 
     def __str__(self):
         return 'Move(dest=%s, overwrite=%s)' % (self.dest, self.overwrite)
-
-    def __repr__(self):
-        return '<' + str(self) + '>'

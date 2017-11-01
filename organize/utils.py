@@ -5,13 +5,10 @@ import colorama
 
 
 def bold(text):
-    # taken from a feature request from the clint library
+    # inspired by a feature request from the clint library
     # https://github.com/kennethreitz/clint/issues/157
     if sys.stdout.isatty():
-        return '{on}{string}{off}'.format(
-            on=getattr(colorama.Style, 'BRIGHT'),
-            string=text,
-            off=getattr(colorama.Style, 'NORMAL'))
+        return ''.join([colorama.Style.BRIGHT, text, colorama.Style.NORMAL])
     else:
         return text
 
