@@ -13,6 +13,7 @@ def test_basic():
           - Extension:
             - jpg
             - png
+          - Extension: txt
         actions:
           - Move: {dest: '~/Desktop/New Folder', overwrite: true}
           - Echo: 'Moved {path}{extension.upper}'
@@ -28,7 +29,7 @@ def test_basic():
     assert conf.rules == [
         Rule(
             folders=['~/Desktop'],
-            filters=[Extension('.JPG', 'PNG')],
+            filters=[Extension('.JPG', 'PNG'), Extension('txt')],
             actions=[
                 Move(dest='~/Desktop/New Folder', overwrite=True),
                 Echo(msg='Moved {path}{extension.upper}')
@@ -113,3 +114,28 @@ def test_error_action_dict():
     """)
     with pytest.raises(Config.ActionsNoListError):
         _ = conf.rules
+
+
+def test_empty_filters():
+    conf = Config.from_string("""
+    rules:
+      - folders: '/'
+        filters:
+        actions:
+          - Trash
+      - folders: '~/'
+        actions:
+          - Trash
+    """)
+    assert conf.rules == [
+        Rule(
+            folders=['/'],
+            filters=[],
+            actions=[Trash()]
+        ),
+        Rule(
+            folders=['~/'],
+            filters=[],
+            actions=[Trash()]
+        )
+    ]

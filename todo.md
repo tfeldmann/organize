@@ -33,6 +33,7 @@
 
 ## Done:
 
+- [x] Allow no filters -> empty filter list @2017-11-01
 - [x] Action: Python inline code @2017-10-22
 - [x] Regex parse result namespace @2017-10-22
 - [x] Formatted output @2017-10-15

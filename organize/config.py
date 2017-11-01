@@ -52,7 +52,11 @@ class Config:
         return Cls(args)
 
     def instantiate_filters(self, rule_item):
-        filter_list = rule_item['filters']
+        # filter list can be empty
+        try:
+            filter_list = rule_item['filters']
+        except KeyError:
+            return
         if not filter_list:
             return
         if not isinstance(filter_list, list):
