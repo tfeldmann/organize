@@ -8,14 +8,21 @@ expr = re.compile(r'^RG(\d{12})\.pdf$')
 
 class Invoice1and1(Filter):
 
-    """ Matches 1&1 pdf invoices
+    """
+    Matches 1&1 invoice pdfs
 
-        No Inputs.
+    Always available:
 
-        Outputs:
-            year, month, day    The invoice date
-            name                The name of the invoice recipient
-            nr                  The invoicing number
+    :returns:
+        - `invoice_1and1.nr`    - the invoicing number
+
+    The following data is only available if the pdf could be parsed:
+
+    :returns:
+        - `invoice_1and1.year`  - the invoice year
+        - `invoice_1and1.month` - the invoice month
+        - `invoice_1and1.day`   - the invoice day
+        - `invoice_1and1.name`  - the name of the invoice recipient
     """
 
     def matches(self, path):
