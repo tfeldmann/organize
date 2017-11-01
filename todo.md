@@ -3,22 +3,21 @@
 ## Must:
 
 - [ ] Documentation for {path}
-- [ ] Flatten Filter Extension input
 - [ ] Filter: OlderThan(years=0, months=0, days=0, hours=0, minutes=0, seconds=0)
 - [ ] Filter: NewerThan(years=0, months=0, days=0, hours=0, minutes=0, seconds=0)
 - [ ] Filter: FileName(startswith='', endswith='', extension='')
 - [ ] Action: Copy(dest)
 - [ ] Action: Rename(dest)
+- [ ] Documentation for Rename
 - [ ] Logfile
 
 ## Nice to have:
 
-- [ ] Action: Print
 - [ ] Action: E-Mail
 - [ ] Filter: IncompleteDownloads
 - [ ] rules.exlude_dotfiles
 - [ ] rules.exclude_system_files
-- [ ] Warning if multiple rules apply to the same file
+- [ ] Warning if multiple rules apply to the same file?
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='')
 - [ ] Filter: FileType(type='media')
 - [ ] Filter modes all, none, any
@@ -30,10 +29,13 @@
 - [ ] Filter: Exif
 - [ ] Recurse through subfolders?
 - [ ] User plugins
+- [ ] Action: Print
+- [ ] Rule names
 
 ## Done:
 
 - [x] Allow no filters -> empty filter list @2017-11-01
+- [x] Flatten Filter Extension input @2017-11-01
 - [x] Action: Python inline code @2017-10-22
 - [x] Regex parse result namespace @2017-10-22
 - [x] Formatted output @2017-10-15
