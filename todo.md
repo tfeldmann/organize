@@ -2,11 +2,11 @@
 
 ## Must:
 
-- [ ] Filter: FileName(startswith='', contains='', endswith='', extension='')
 - [ ] Action: Copy(dest)
 - [ ] Action: Rename(dest)
 - [ ] Documentation for {path}
 - [ ] Documentation for LastModified
+- [ ] Documentation for Filename
 - [ ] Documentation for Rename
 - [ ] Logfile
 
@@ -33,6 +33,7 @@
 
 ## Done:
 
+- [x] Filter: FileName(startswith='', contains='', endswith='', case_sensitive=True) @2018-02-14
 - [x] Filter: LastModified(years=0, months=0, days=0, hours=0, minutes=0, seconds=0) @2018-02-14
 - [x] Allow no filters -> empty filter list @2017-11-01
 - [x] Flatten Filter Extension input @2017-11-01
