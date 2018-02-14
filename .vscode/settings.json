@@ -1,4 +1,8 @@
 {
     "restructuredtext.confPath": "${workspaceRoot}/docs",
-    "restructuredtext.builtDocumentationPath": "${workspaceRoot}/docs/_build/html"
+    "restructuredtext.builtDocumentationPath": "${workspaceRoot}/docs/_build/html",
+    "python.unitTest.pyTestArgs": [
+        "tests"
+    ],
+    "python.unitTest.pyTestEnabled": true
 }

@@ -2,12 +2,11 @@
 
 ## Must:
 
-- [ ] Documentation for {path}
-- [ ] Filter: OlderThan(years=0, months=0, days=0, hours=0, minutes=0, seconds=0)
-- [ ] Filter: NewerThan(years=0, months=0, days=0, hours=0, minutes=0, seconds=0)
-- [ ] Filter: FileName(startswith='', endswith='', extension='')
+- [ ] Filter: FileName(startswith='', contains='', endswith='', extension='')
 - [ ] Action: Copy(dest)
 - [ ] Action: Rename(dest)
+- [ ] Documentation for {path}
+- [ ] Documentation for LastModified
 - [ ] Documentation for Rename
 - [ ] Logfile
 
@@ -23,7 +22,6 @@
 - [ ] Filter modes all, none, any
 - [ ] jsonschema for user config validation
 - [ ] Action: Zip
-- [ ] Action: Notify
 - [ ] Undo
 - [ ] Tests
 - [ ] Filter: Exif
@@ -31,9 +29,11 @@
 - [ ] User plugins
 - [ ] Action: Print
 - [ ] Rule names
+- [ ] CLI help with python-rst2ansi
 
 ## Done:
 
+- [x] Filter: LastModified(years=0, months=0, days=0, hours=0, minutes=0, seconds=0) @2018-02-14
 - [x] Allow no filters -> empty filter list @2017-11-01
 - [x] Flatten Filter Extension input @2017-11-01
 - [x] Action: Python inline code @2017-10-22
@@ -56,3 +56,6 @@
 - [x] Filter: Invoice1and1
 - [x] Filter: Regex
 - [x] Action: Move
+
+## Dismissed:
+- [ ] Action: Notify
