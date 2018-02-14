@@ -15,18 +15,21 @@ class Python(Action):
     Example:
       - A basic example that shows how to get the current file path and do some
         printing in a for loop. The ``|`` is yaml syntax for defining a string
-        with multiple lines.
+        literal spanning multiple lines.
 
         .. code-block:: yaml
 
           rules:
             - folders: '~/Desktop'
-                actions:
-                - Python |
-                    print('The path of the current file is %s' % path)
-                    print('This is how you inline python code!')
-                    for _ in range(5):
-                        print('Heyho, its me from the loop')
+              actions:
+              - Python: |
+                  print('The path of the current file is %s' % path)
+                  print('This is how you inline python code!')
+                  print('You have access to the folloging variables:')
+                  print(path)
+                  print(simulate)
+                  for _ in range(5):
+                      print('Heyho, its me from the loop')
     """
 
     def __init__(self, code):
