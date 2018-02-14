@@ -8,6 +8,14 @@ Extension
 ---------
 .. autoclass:: Extension
 
+Filename
+--------
+.. autoclass:: Filename
+
+LastModified
+------------
+.. autoclass:: LastModified
+
 Regex
 -----
 .. autoclass:: Regex
