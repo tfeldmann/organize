@@ -51,7 +51,7 @@ class Rename(Move):
         self.dest = os.path.join('{path.parent}', dest)
         self.overwrite = overwrite
 
-    def move(self, src: Path, dest: Path, simulate):
+    def move(self, src, dest, simulate):
         self.print('Rename to "%s"' % dest)
         if not simulate:
             dest.parent.mkdir(parents=True, exist_ok=True)

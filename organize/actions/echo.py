@@ -30,7 +30,8 @@ class Echo(Action):
     def __init__(self, msg):
         self.msg = msg
 
-    def run(self, path, attrs: dict, simulate: bool):
+    def run(self, path, attrs, simulate):
+        # type: (Path, dict, bool) -> None
         full_msg = self.fill_template_tags(self.msg, path, attrs)
         self.print('%s' % full_msg)
 

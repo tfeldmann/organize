@@ -45,7 +45,7 @@ def filter_pipeline(job):
     return result
 
 
-def action_pipeline(job: Job, attrs: dict, simulate: bool):
+def action_pipeline(job, attrs, simulate):  # type: (Job, dict, bool) -> None
     try:
         current_path = job.path.resolve()
         for action in job.actions:
@@ -58,7 +58,7 @@ def action_pipeline(job: Job, attrs: dict, simulate: bool):
         action.print('%s %s' % (colored.red('ERROR!', bold=True), e))
 
 
-def execute_rules(rules, simulate: bool):
+def execute_rules(rules, simulate):  # type: (bool) -> None
     # TODO: warning for multiple rules applying to the same path?
     jobs = list(find_jobs(rules))
     if not jobs:

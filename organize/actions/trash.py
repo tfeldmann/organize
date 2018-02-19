@@ -28,7 +28,7 @@ class Trash(Action):
                   - Trash
     """
 
-    def run(self, path: Path, attrs: dict, simulate: bool):
+    def run(self, path, attrs, simulate):  # type: (Path, dict, bool) -> None
         from send2trash import send2trash
         self.print('Trash "%s"' % path)
         if not simulate:

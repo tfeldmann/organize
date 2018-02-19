@@ -12,7 +12,8 @@ class TemplateAttributeError(Error):
 
 class Action:
 
-    def run(self, path: Path, attrs: dict, simulate: bool):
+    def run(self, path, attrs, simulate):
+        # type: (Path, dict, bool) -> None
         # if you change the file path, return the new path here
         raise NotImplementedError
 

@@ -32,7 +32,7 @@ class Shell(Action):
     def __init__(self, cmd: str):
         self.cmd = cmd
 
-    def run(self, path: Path, attrs: dict, simulate: bool):
+    def run(self, path, attrs, simulate):  # type: (Path, dict, bool) -> None
         full_cmd = self.fill_template_tags(self.cmd, path, attrs)
         self.print('$ %s' % full_cmd)
         if not simulate:

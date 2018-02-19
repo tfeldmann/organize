@@ -10,11 +10,11 @@ Rule = namedtuple('Rule', 'filters actions folders')
 
 class Config:
 
-    def __init__(self, config: dict):
+    def __init__(self, config):  # type: (dict)
         self.config = config
 
     @classmethod
-    def from_string(cls, config: str):
+    def from_string(cls, config):  # type: (str) -> None
         import yaml
         return cls(yaml.load(config))
 
@@ -98,7 +98,7 @@ class Config:
                 raise self.Error('Unknown action type: %s' % action_item)
 
     @property
-    def rules(self) -> List[Rule]:
+    def rules(self):  # type: () -> List[Rule]:
         """:returns: A list of instantiated Rules
         """
         result = []

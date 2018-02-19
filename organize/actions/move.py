@@ -54,7 +54,7 @@ class Move(Action):
         self.dest = dest
         self.overwrite = overwrite
 
-    def run(self, path: Path, attrs: dict, simulate: bool):
+    def run(self, path, attrs, simulate):  # type: (Path, dict, bool) -> None
         full_dest = self.dest.format(path=path, **attrs)
 
         # if only a folder path is given we append the filename to have the full
@@ -79,19 +79,19 @@ class Move(Action):
         self.move(src=path.expanduser(), dest=new_path, simulate=simulate)
         return new_path
 
-    def delete(self, path: Path, simulate: bool):
+    def delete(self, path, simulate):  # type: (Path, bool)
         self.print('Delete "%s"' % path)
         if not simulate:
             os.remove(str(path))
 
-    def move(self, src: Path, dest: Path, simulate):
+    def move(self, src, dest, simulate):  # type: (Path, Path, bool)
         self.print('Move to "%s"' % dest)
         if not simulate:
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.move(src=str(src), dst=str(dest))
 
     @staticmethod
-    def _path_with_count(path: Path, count: int):
+    def _path_with_count(path, count):  # type: (Path, int) -> Path
         return path.with_name('%s %s%s' % (path.stem, count, path.suffix))
 
     def __str__(self):

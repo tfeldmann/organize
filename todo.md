@@ -12,7 +12,7 @@
 - [ ] Documentation for Python Filter
 - [ ] Logfile
 - [ ] Proof-read docs before releasing
-- [ ] Remove VDI Paper filter
+- [ ] Remove VDI Paper filter, 1&1 Filter
 
 ## Nice to have:
 
