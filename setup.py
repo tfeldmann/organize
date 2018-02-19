@@ -9,7 +9,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 # Import the README and use it as the long-description.
 # Note: this will only work if 'README.rst' is present in your MANIFEST.in
 # file!
-with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
+with open(os.path.join(here, 'README.rst')) as f:
     long_description = '\n' + f.read()
 
 # Load the package's __version__.py module as a dictionary.
@@ -27,7 +27,6 @@ install_requires = [
 ]
 if sys.version_info < (3, 5):
     install_requires.append('typing')
-if sys.version_info < (3, 4):
     install_requires.append('pathlib2')
 
 setup(
