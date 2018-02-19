@@ -19,11 +19,3 @@ LastModified
 Regex
 -----
 .. autoclass:: Regex
-
-Invoice1and1
-------------
-.. autoclass:: Invoice1and1
-
-PaperVDI
---------
-.. autoclass:: PaperVDI

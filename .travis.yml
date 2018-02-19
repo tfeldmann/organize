@@ -8,3 +8,5 @@ python:
   - "3.6"
 install:
   - pip install appdirs docopt pyyaml Send2Trash clint colorama
+script:
+    py.test

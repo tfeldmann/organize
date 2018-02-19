@@ -6,6 +6,9 @@ organize
   :target: https://organize.readthedocs.io/en/latest/?badge=latest
   :alt: Documentation Status
 
+.. image:: https://travis-ci.org/tfeldmann/organize.svg?branch=master
+    :target: https://travis-ci.org/tfeldmann/organize
+
 *Warning: This project is currently not yet usable. Work is in
 progress!*
 
