@@ -51,22 +51,22 @@ class LastModified(Filter):
 
     def __init__(self, days=0, hours=0, minutes=0, seconds=0,
                  select_mode='min'):
-        _select_mode = select_mode.strip().lower()
-        if _select_mode not in ('min', 'max'):
+        self._select_mode = select_mode.strip().lower()
+        if self._select_mode not in ('min', 'max'):
             raise ValueError(
                 "Unknown option for 'select_mode': must be 'min' or 'max'.")
         else:
-            self.is_minimum = (_select_mode == 'min')
-        delta = timedelta(
+            self.is_minimum = (self._select_mode == 'min')
+        self.timedelta = timedelta(
             days=days, hours=hours, minutes=minutes, seconds=seconds)
-        self.reference_date = datetime.now() - delta
 
     def matches(self, path):
         file_modified = self._last_modified(path)
+        reference_date = datetime.now() - self.timedelta
         if self.is_minimum:
-            return file_modified <= self.reference_date
+            return file_modified <= reference_date
         else:
-            return file_modified >= self.reference_date
+            return file_modified >= reference_date
 
     def parse(self, path):
         file_modified = self._last_modified(path)
@@ -74,3 +74,7 @@ class LastModified(Filter):
 
     def _last_modified(self, path):
         return datetime.fromtimestamp(path.stat().st_mtime)
+
+    def __str__(self):
+        return 'FileModified(delta=%s, select_mode=%s)' % (
+            self.timedelta, self._select_mode)

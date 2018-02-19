@@ -1,7 +1,7 @@
 import pytest
 
 from organize.config import Config, Rule
-from organize.filters import Extension, PaperVDI
+from organize.filters import Extension, LastModified
 from organize.actions import Move, Echo, Shell, Trash
 
 
@@ -60,7 +60,8 @@ def test_yaml_ref():
           - Extension:
             - *media
             - jpg
-          - PaperVDI
+          - LastModified:
+              days: 10
         actions:
           - Echo:
               msg: 'Hello World'
@@ -78,7 +79,7 @@ def test_yaml_ref():
             filters=[
                 Extension('.wav', '.PNG'),
                 Extension('.wav', '.PNG', 'jpg'),
-                PaperVDI()],
+                LastModified(days=10), True],
             actions=[
                 Echo(msg='Hello World')]
         ),
