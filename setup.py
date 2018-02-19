@@ -29,8 +29,7 @@ setup(
         'console_scripts': ['organize=organize.cli:cli'],
     },
     install_requires=[
-        'appdirs', 'docopt', 'slate3k', 'pyyaml', 'Send2Trash', 'clint',
-        'colorama'
+        'appdirs', 'docopt', 'pyyaml', 'Send2Trash', 'clint', 'colorama'
     ],
     include_package_data=True,
     license='MIT',
@@ -47,7 +46,6 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Utilities',
     ],
 )
