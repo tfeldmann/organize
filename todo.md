@@ -3,6 +3,7 @@
 ## Must:
 
 - [ ] Filter: Python
+- [ ] Filter: Duplicates
 - [ ] Action: Rename(dest)
 - [ ] Action: Copy(dest)
 - [ ] Documentation for {path}
@@ -10,6 +11,8 @@
 - [ ] Documentation for Copy
 - [ ] Documentation for Python Filter
 - [ ] Logfile
+- [ ] Proof-read docs before releasing
+- [ ] Remove VDI Paper filter
 
 ## Nice to have:
 

@@ -16,13 +16,13 @@ class LastModified(Filter):
     :param int minutes:
         specify number of minutes
 
-    :param str select:
-        either 'within' or 'before'. 'within' matches all file last modified
-        within the given time, 'before' all files last modified before the given
+    :param str select_mode:
+        either 'min' or 'max'. 'min' matches all files last modified before the
+        given time, 'max' matches all files last modified within the given
         time.
 
     Examples:
-        - Show all files on your desktop modified within the last 10 days:
+        - Show all files on your desktop last modified at least 10 days ago:
 
           .. code-block:: yaml
 
@@ -32,10 +32,10 @@ class LastModified(Filter):
                   - LastModified:
                       - days: 10
                 actions:
-                  - Echo: 'Was modified within the last 10 days'
+                  - Echo: 'Was modified at least 10 days ago'
 
-        - Show all files on your desktop which were modified at least 5 hours
-          ago:
+        - Show all files on your desktop which were modified within the last
+          5 hours:
 
           .. code-block:: yaml
 
@@ -44,24 +44,26 @@ class LastModified(Filter):
                 filters:
                   - LastModified:
                       - hours: 5
-                      - select: 'before'
+                      - select_mode: 'max'
                 actions:
-                  - Echo: 'Was modified more than 5 hours ago.'
+                  - Echo: 'Was modified within the last 5 hours'
     """
 
-    def __init__(self, days=0, hours=0, minutes=0, seconds=0, select='within'):
-        _select = select.strip().lower()
-        if _select not in ('within', 'before'):
-            raise Exception("Unknown option for 'select': must be 'within' or 'before'.")
+    def __init__(self, days=0, hours=0, minutes=0, seconds=0,
+                 select_mode='min'):
+        _select_mode = select_mode.strip().lower()
+        if _select_mode not in ('min', 'max'):
+            raise ValueError(
+                "Unknown option for 'select_mode': must be 'min' or 'max'.")
         else:
-            self.select_before = (_select == 'before')
+            self.is_minimum = (_select_mode == 'min')
         delta = timedelta(
             days=days, hours=hours, minutes=minutes, seconds=seconds)
         self.reference_date = datetime.now() - delta
 
     def matches(self, path):
         file_modified = self._last_modified(path)
-        if self.select_before:
+        if self.is_minimum:
             return file_modified <= self.reference_date
         else:
             return file_modified >= self.reference_date
