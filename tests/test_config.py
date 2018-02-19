@@ -79,7 +79,7 @@ def test_yaml_ref():
             filters=[
                 Extension('.wav', '.PNG'),
                 Extension('.wav', '.PNG', 'jpg'),
-                LastModified(days=10), True],
+                LastModified(days=10)],
             actions=[
                 Echo(msg='Hello World')]
         ),
