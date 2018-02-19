@@ -29,7 +29,8 @@ setup(
         'console_scripts': ['organize=organize.cli:cli'],
     },
     install_requires=[
-        'appdirs', 'docopt', 'pyyaml', 'Send2Trash', 'clint', 'colorama'
+        'appdirs', 'docopt', 'pyyaml', 'Send2Trash', 'clint', 'colorama',
+        'typing;python_version<"3.5"', 'pathlib2;python_version<"3.4"'
     ],
     include_package_data=True,
     license='MIT',

@@ -17,7 +17,7 @@ def test_tilde_expansion():
         move = Move(dest='~/newname.py', overwrite=False)
         move.run(p, {}, False)
 
-        mock_exists.assert_called()
+        mock_exists.assert_called_with()
         mock_remove.assert_not_called()
         mock_move.assert_called_with(
             src=os.path.join(USER_DIR, 'test.py'),
@@ -33,7 +33,7 @@ def test_into_folder():
         move = Move(dest='~/somefolder/', overwrite=False)
         move.run(p, {}, False)
 
-        mock_exists.assert_called()
+        mock_exists.assert_called_with()
         mock_remove.assert_not_called()
         mock_move.assert_called_with(
             src=os.path.join(USER_DIR, 'test.py'),
@@ -48,7 +48,7 @@ def test_overwrite():
         move = Move(dest='~/somefolder/', overwrite=True)
         move.run(p, {}, False)
 
-        mock_exists.assert_called()
+        mock_exists.assert_called_with()
         mock_remove.assert_called_with(
             os.path.join(USER_DIR, 'somefolder', 'test.py'))
         mock_move.assert_called_with(
@@ -64,7 +64,7 @@ def test_already_exists():
         move = Move(dest='~/folder/', overwrite=False)
         move.run(p, {}, False)
 
-        mock_exists.assert_called()
+        mock_exists.assert_called_with()
         mock_remove.assert_not_called()
         mock_move.assert_called_with(
             src=os.path.join(USER_DIR, 'test.py'),
@@ -80,7 +80,7 @@ def test_already_exists_multiple():
         move = Move(dest='~/folder/', overwrite=False)
         move.run(p, {}, False)
 
-        mock_exists.assert_called()
+        mock_exists.assert_called_with()
         mock_remove.assert_not_called()
         mock_move.assert_called_with(
             src=os.path.join(USER_DIR, 'test.py'),
@@ -111,7 +111,7 @@ def test_attrs():
         move = Move(dest='~/{nr.upper}-name.py', overwrite=False)
         move.run(p, {'nr': DotDict({'upper': 1})}, False)
 
-        mock_exists.assert_called()
+        mock_exists.assert_called_with()
         mock_remove.assert_not_called()
         mock_move.assert_called_with(
             src=os.path.join(USER_DIR, 'test.py'),
@@ -129,7 +129,7 @@ def test_path():
             overwrite=False)
         move.run(p, {}, False)
 
-        mock_exists.assert_called()
+        mock_exists.assert_called_with()
         mock_remove.assert_not_called()
         mock_move.assert_called_with(
             src=os.path.join(USER_DIR, 'test.py'),
