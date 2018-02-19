@@ -1,6 +1,8 @@
 import os
+import sys
 
 from setuptools import find_packages, setup
+
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -15,6 +17,18 @@ about = {}
 with open(os.path.join(here, 'organize', '__version__.py')) as f:
     exec(f.read(), about)
 
+install_requires = [
+    'appdirs',
+    'docopt',
+    'pyyaml',
+    'Send2Trash',
+    'clint',
+    'colorama',
+]
+if sys.version_info < (3, 5):
+    install_requires.append('typing')
+if sys.version_info < (3, 4):
+    install_requires.append('pathlib2')
 
 setup(
     name='organize-tool',
@@ -28,10 +42,7 @@ setup(
     entry_points={
         'console_scripts': ['organize=organize.cli:cli'],
     },
-    install_requires=[
-        'appdirs', 'docopt', 'pyyaml', 'Send2Trash', 'clint', 'colorama',
-        'typing;python_version<"3.5"', 'pathlib2;python_version<"3.4"'
-    ],
+    install_requires=install_requires,
     include_package_data=True,
     license='MIT',
     classifiers=[
