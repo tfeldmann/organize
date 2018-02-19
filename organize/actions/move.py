@@ -66,19 +66,22 @@ class Move(Action):
             if self.overwrite:
                 self.delete(path=new_path, simulate=simulate)
             else:
-                # rename
-                count = 2
-                while new_path.exists():
-                    new_path = self._path_with_count(new_path, count)
+                # rename file to avoid overwrite
+                count = 1
+                while True:
                     count += 1
+                    tmp_path = self._path_with_count(new_path, count)
+                    if not tmp_path.exists():
+                        new_path = tmp_path
+                        break
 
-        self.move(src=path, dest=new_path, simulate=simulate)
+        self.move(src=path.expanduser(), dest=new_path, simulate=simulate)
         return new_path
 
     def delete(self, path: Path, simulate: bool):
         self.print('Delete "%s"' % path)
         if not simulate:
-            os.remove(path)
+            os.remove(str(path))
 
     def move(self, src: Path, dest: Path, simulate):
         self.print('Move to "%s"' % dest)
