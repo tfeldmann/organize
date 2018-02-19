@@ -1,5 +1,6 @@
 import os
-from unittest.mock import patch
+
+from mock import patch
 
 from organize.actions import Move
 from organize.utils import DotDict, Path

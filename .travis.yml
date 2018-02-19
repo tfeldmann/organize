@@ -8,5 +8,6 @@ python:
   - "3.6"
 install:
   - python setup.py install
+  - pip install mock
 script:
     py.test

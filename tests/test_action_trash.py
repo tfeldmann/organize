@@ -1,5 +1,5 @@
 import os
-from unittest.mock import patch
+from mock import patch
 
 from organize.actions import Trash
 from organize.utils import Path

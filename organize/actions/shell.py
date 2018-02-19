@@ -1,3 +1,4 @@
+import sys
 import logging
 import subprocess
 
@@ -35,7 +36,8 @@ class Shell(Action):
         full_cmd = self.fill_template_tags(self.cmd, path, attrs)
         self.print('$ %s' % full_cmd)
         if not simulate:
-            subprocess.run(full_cmd, shell=True)
+            # we use call instead of run to be compatible with python < 3.5
+            subprocess.call(full_cmd, shell=True)
 
     def __str__(self):
         return 'Shell(cmd="%s")' % self.cmd
