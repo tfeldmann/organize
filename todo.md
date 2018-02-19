@@ -2,10 +2,13 @@
 
 ## Must:
 
-- [ ] Action: Copy(dest)
+- [ ] Filter: Python
 - [ ] Action: Rename(dest)
+- [ ] Action: Copy(dest)
 - [ ] Documentation for {path}
 - [ ] Documentation for Rename
+- [ ] Documentation for Copy
+- [ ] Documentation for Python Filter
 - [ ] Logfile
 
 ## Nice to have:

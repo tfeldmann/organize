@@ -31,4 +31,4 @@ class Trash(Action):
         from send2trash import send2trash
         self.print('Trash "%s"' % path)
         if not simulate:
-            send2trash(path)
+            send2trash(str(path.expanduser()))

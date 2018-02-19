@@ -3,6 +3,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from organize.actions import Move
+from organize.utils import DotDict
 
 USER_DIR = os.path.expanduser('~')
 
@@ -99,3 +100,37 @@ def test_makedirs():
         mock_move.assert_called_with(
             src=os.path.join(USER_DIR, 'test.py'),
             dst=os.path.join(USER_DIR, 'some', 'new', 'folder', 'test.py'))
+
+
+def test_attrs():
+    p = Path('~') / 'test.py'
+    with patch.object(Path, 'exists') as mock_exists, \
+            patch('shutil.move') as mock_move, \
+            patch('os.remove') as mock_remove:
+        mock_exists.return_value = False
+        move = Move(dest='~/{nr.upper}-name.py', overwrite=False)
+        move.run(p, {'nr': DotDict({'upper': 1})}, False)
+
+        mock_exists.assert_called()
+        mock_remove.assert_not_called()
+        mock_move.assert_called_with(
+            src=os.path.join(USER_DIR, 'test.py'),
+            dst=os.path.join(USER_DIR, '1-name.py'))
+
+
+def test_path():
+    p = Path('~') / 'test.py'
+    with patch.object(Path, 'exists') as mock_exists, \
+            patch('shutil.move') as mock_move, \
+            patch('os.remove') as mock_remove:
+        mock_exists.return_value = False
+        move = Move(
+            dest='~/{path.stem}/{path.suffix}/{path.name}',
+            overwrite=False)
+        move.run(p, {}, False)
+
+        mock_exists.assert_called()
+        mock_remove.assert_not_called()
+        mock_move.assert_called_with(
+            src=os.path.join(USER_DIR, 'test.py'),
+            dst=os.path.join(USER_DIR, 'test', '.py', 'test.py'))
