@@ -1,5 +1,6 @@
 import logging
-from pathlib import Path
+
+from organize.utils import Path
 from .action import Action
 
 logger = logging.getLogger(__name__)

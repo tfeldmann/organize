@@ -1,9 +1,8 @@
 import os
-from pathlib import Path
 from unittest.mock import patch
 
 from organize.actions import Move
-from organize.utils import DotDict
+from organize.utils import DotDict, Path
 
 USER_DIR = os.path.expanduser('~')
 

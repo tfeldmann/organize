@@ -1,5 +1,4 @@
 import logging
-from pathlib import Path
 from .action import Action
 
 logger = logging.getLogger(__name__)
@@ -31,7 +30,7 @@ class Echo(Action):
     def __init__(self, msg):
         self.msg = msg
 
-    def run(self, path: Path, attrs: dict, simulate: bool):
+    def run(self, path, attrs: dict, simulate: bool):
         full_msg = self.fill_template_tags(self.msg, path, attrs)
         self.print('%s' % full_msg)
 

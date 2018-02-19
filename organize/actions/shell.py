@@ -1,7 +1,8 @@
 import logging
 import subprocess
-from pathlib import Path
+
 from .action import Action
+from organize.utils import Path
 
 logger = logging.getLogger(__name__)
 

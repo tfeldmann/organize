@@ -1,5 +1,5 @@
-from pathlib import Path
 from clint.textui import puts
+from organize.utils import Path
 
 
 class Error(Exception):

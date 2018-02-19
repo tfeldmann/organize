@@ -1,5 +1,5 @@
 import logging
-from pathlib import Path
+from organize.utils import Path
 from .action import Action
 
 logger = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ class Python(Action):
     def __init__(self, code):
         self.code = code
 
-    def run(self, path: Path, attrs: dict, simulate: bool):
+    def run(self, path, attrs: dict, simulate: bool):
         if simulate:
             self.print('Code not run in simulation')
         else:

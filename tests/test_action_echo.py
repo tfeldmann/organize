@@ -1,8 +1,7 @@
-from pathlib import Path
 from unittest.mock import patch
 
 from organize.actions import Echo
-
+from organize.utils import Path
 
 def test_echo_basic():
     echo = Echo('Hello World')

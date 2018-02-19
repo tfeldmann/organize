@@ -1,9 +1,9 @@
 import logging
-from pathlib import Path
-from collections import namedtuple, defaultdict
+from collections import defaultdict, namedtuple
 
-from clint.textui import puts, indent, colored
-from .utils import bold
+from clint.textui import colored, indent, puts
+
+from .utils import Path, bold
 
 logger = logging.getLogger(__name__)
 

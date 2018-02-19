@@ -22,7 +22,6 @@ Options:
     -h, --help      Show this screen and exit.
 """
 import logging
-from pathlib import Path
 
 import appdirs
 from docopt import docopt
@@ -30,6 +29,7 @@ from docopt import docopt
 from .__version__ import __version__
 from .config import Config
 from .core import execute_rules
+from .utils import Path
 
 
 app_dirs = appdirs.AppDirs('organize')

@@ -1,4 +1,8 @@
 import sys
+if sys.version_info < (3, 5):
+    from pathlib2 import Path
+else:
+    from pathlib import Path
 from collections import OrderedDict
 
 import colorama

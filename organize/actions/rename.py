@@ -1,7 +1,8 @@
 import os
 import shutil
 import logging
-from pathlib import Path
+
+from organize.utils import Path
 from .move import Move
 
 logger = logging.getLogger(__name__)
