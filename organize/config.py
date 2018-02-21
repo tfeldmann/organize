@@ -1,5 +1,4 @@
 import logging
-from typing import List
 from collections import namedtuple
 from .utils import flatten, first_key
 from . import actions, filters

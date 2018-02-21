@@ -39,6 +39,7 @@ def test_into_folder():
             src=os.path.join(USER_DIR, 'test.py'),
             dst=os.path.join(USER_DIR, 'somefolder', 'test.py'))
 
+
 def test_overwrite():
     p = Path('~') / 'test.py'
     with patch.object(Path, 'exists') as mock_exists, \
@@ -54,6 +55,7 @@ def test_overwrite():
         mock_move.assert_called_with(
             src=os.path.join(USER_DIR, 'test.py'),
             dst=os.path.join(USER_DIR, 'somefolder', 'test.py'))
+
 
 def test_already_exists():
     p = Path('~') / 'test.py'

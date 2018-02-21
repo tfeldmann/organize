@@ -14,10 +14,11 @@ class Extension(Filter):
         The file extensions to match (do not need to start with a colon).
 
     :returns:
-        - `extension.lower` - the file extension including colon in lowercase
-        - `extension.upper` - the file extension including colon in UPPERCASE
+        - `extension.lower`: the file extension including colon in lowercase
+        - `extension.upper`: the file extension including colon in UPPERCASE
 
     Examples:
+
         - Match a single file extension:
 
           .. code-block:: yaml

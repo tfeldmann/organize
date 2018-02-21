@@ -6,6 +6,7 @@ from organize.utils import Path
 
 USER_DIR = os.path.expanduser('~')
 
+
 def test_trash():
     with patch('send2trash.send2trash') as m:
         trash = Trash()
