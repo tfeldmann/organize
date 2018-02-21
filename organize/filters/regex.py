@@ -47,7 +47,7 @@ class Regex(Filter):
         self.expr = re.compile(expr)
 
     def matches(self, path):
-        return self.expr.match(path.name)
+        return bool(self.expr.match(path.name))
 
     def parse(self, path):
         result = DotDict(self.expr.match(path.name).groupdict())
