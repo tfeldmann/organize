@@ -9,6 +9,7 @@
 - [ ] Documentation for Copy
 - [ ] Logfile
 - [ ] Proof-read docs before releasing
+- [ ] A few more examples
 
 
 ## Nice to have:

@@ -1,12 +1,12 @@
 """
 The file management automation tool.
+Full documentation: https://organize.readthedocs.io
 
 Usage:
-    organize sim [-v]
-    organize run [-v]
+    organize sim
+    organize run
     organize config
     organize list
-
     organize --help
     organize --version
 
@@ -17,27 +17,20 @@ Arguments:
     list            List available filters and actions
 
 Options:
-    -v, --verbose   Show debug information
     --version       Show program version and exit.
     -h, --help      Show this screen and exit.
+
 """
 import logging
 
 import appdirs
+from clint.textui import indent, puts
 from docopt import docopt
 
 from .__version__ import __version__
 from .config import Config
 from .core import execute_rules
-from .utils import Path
-
-
-app_dirs = appdirs.AppDirs('organize')
-config_dir = Path(app_dirs.user_config_dir)
-config_path = config_dir / 'config.yaml'
-log_dir = Path(app_dirs.user_log_dir)
-for p in (config_dir, log_dir):
-    p.mkdir(parents=True, exist_ok=True)
+from .utils import Path, bold
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -50,35 +43,27 @@ def open_folder(path):
 
 def list_actions_and_filters():
     import inspect
-    import textwrap
     from organize import filters, actions
-
-    def heading(title, subtitle='', char='-', width=80):
-        space = ' ' * (width - 2 - len(title) - len(subtitle))
-        print(char * width)
-        print('%s %s %s' % (title, space, subtitle))
-        print()
-
-    def content(content):
-        print(textwrap.indent(content, ' ' * 4))
-        print('\n')
-
-    heading('Available filters:', char='#')
-    filterclasses = inspect.getmembers(filters, inspect.isclass)
-    for name, filtercls in filterclasses:
-        doc = inspect.getdoc(filtercls)
-        heading(name, '(filter)')
-        content(doc)
-
-    heading('Available actions:', char='#')
-    actionclasses = inspect.getmembers(actions, inspect.isclass)
-    for name, actioncls in actionclasses:
-        doc = inspect.getdoc(actioncls)
-        heading(name, '(action)')
-        content(doc)
+    puts(bold('Available filters:'))
+    with indent(2):
+        for name, _ in inspect.getmembers(filters, inspect.isclass):
+            puts(name)
+    puts()
+    puts(bold('Available actions:'))
+    with indent(2):
+        for name, _ in inspect.getmembers(actions, inspect.isclass):
+            puts(name)
 
 
-def cli():
+def main():
+    # prepare config and log folders
+    app_dirs = appdirs.AppDirs('organize')
+    config_dir = Path(app_dirs.user_config_dir)
+    config_path = config_dir / 'config.yaml'
+    log_dir = Path(app_dirs.user_log_dir)
+    for d in (config_dir, log_dir):
+        d.mkdir(parents=True, exist_ok=True)
+
     args = docopt(__doc__, version=__version__, help=True)
     if args['config']:
         print(config_dir)

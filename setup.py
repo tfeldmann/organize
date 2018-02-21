@@ -41,7 +41,7 @@ setup(
     url='https://github.com/tfeldmann/organize',
     packages=find_packages(exclude=['tests']),
     entry_points={
-        'console_scripts': ['organize=organize.cli:cli'],
+        'console_scripts': ['organize=organize.cli:main'],
     },
     install_requires=install_requires,
     include_package_data=True,

@@ -1,4 +1,4 @@
-from organize.cli import cli
+from organize import cli
 
 if __name__ == '__main__':
-    cli()
+    cli.main()
