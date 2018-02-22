@@ -50,11 +50,11 @@ class Move(Action):
               - Move: {dest: '{path.parent}/Invoices', overwrite: False}
     """
 
-    def __init__(self, dest, overwrite=False):
+    def __init__(self, dest: str, overwrite=False):
         self.dest = dest
         self.overwrite = overwrite
 
-    def run(self, path, attrs, simulate):  # type: (Path, dict, bool) -> None
+    def run(self, path: Path, attrs: dict, simulate: bool):
         full_dest = self.dest.format(path=path, **attrs)
 
         # if only a folder path is given we append the filename to have the full

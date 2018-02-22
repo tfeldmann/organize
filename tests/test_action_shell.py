@@ -21,5 +21,5 @@ def test_shell_attrs():
 def test_shell_path():
     with patch('subprocess.call') as m:
         shell = Shell('echo {path.stem} for {year}')
-        shell.run(Path('/this/isafile.txt'), {'year': 2017}, False)
+        shell.run(Path('/') / 'this' / 'isafile.txt', {'year': 2017}, False)
         m.assert_called_with('echo isafile for 2017', shell=True)

@@ -12,8 +12,7 @@ class TemplateAttributeError(Error):
 
 class Action:
 
-    def run(self, path, attrs, simulate):
-        # type: (Path, dict, bool) -> None
+    def run(self, path: Path, attrs: dict, simulate: bool) -> None:
         # if you change the file path, return the new path here
         raise NotImplementedError
 
@@ -21,11 +20,12 @@ class Action:
         # print a message for the user
         puts('- %s: %s' % (self.__class__.__name__, msg))
 
-    def fill_template_tags(self, msg, path, attrs):
+    @staticmethod
+    def fill_template_tags(msg: str, path: Path, attrs: dict):
         try:
             return msg.format(path=path, **attrs)
-        except AttributeError as e:
-            cause = e.args[0]
+        except AttributeError as exc:
+            cause = exc.args[0]
             raise TemplateAttributeError(
                 'Missing template variable %s for "%s"' % (cause, msg))
 
