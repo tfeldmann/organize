@@ -22,12 +22,13 @@ class Rename(Action):
     :param bool overwrite:
         specifies whether existing files should be overwritten.
         Otherwise it will start enumerating files (append a counter to the
-        filename) to resolve naming conflicts. [Default: True]
+        filename) to resolve naming conflicts. [Default: False]
 
     Examples:
         - Convert all .PDF file extensions to lowercase (.pdf):
 
           .. code-block:: yaml
+
                 rules:
                 - folders: '~/Desktop'
                   filters:
@@ -36,7 +37,7 @@ class Rename(Action):
                     - Rename: "{path.stem}.pdf"
     """
 
-    def __init__(self, name: str, overwrite=True):
+    def __init__(self, name: str, overwrite=False):
         if os.path.sep in name:
             ValueError('Rename only takes a filename as argument. To move '
                        'files between folders use the Move action.')

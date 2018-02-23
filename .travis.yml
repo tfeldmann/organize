@@ -8,5 +8,6 @@ python:
 install:
   - python setup.py install
   - pip install mock
+  - pip install -U pytest
 script:
     py.test

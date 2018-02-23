@@ -8,6 +8,10 @@ Move
 ----
 .. autoclass:: Move(dest, [overwrite=False])
 
+Rename
+------
+.. autoclass:: Rename(dest, [overwrite=False])
+
 Trash
 -----
 .. autoclass:: Trash
