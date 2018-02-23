@@ -1,3 +1,4 @@
+from typing import Optional
 from clint.textui import puts
 from organize.utils import Path
 
@@ -12,16 +13,16 @@ class TemplateAttributeError(Error):
 
 class Action:
 
-    def run(self, path: Path, attrs: dict, simulate: bool) -> None:
+    def run(self, path: Path, attrs: dict, simulate: bool) -> Optional[Path]:
         # if you change the file path, return the new path here
         raise NotImplementedError
 
     def print(self, msg):
         # print a message for the user
-        puts('- %s: %s' % (self.__class__.__name__, msg))
+        puts('- [%s] %s' % (self.__class__.__name__, msg))
 
     @staticmethod
-    def fill_template_tags(msg: str, path: Path, attrs: dict):
+    def fill_template_tags(msg: str, path: Path, attrs: dict) -> str:
         try:
             return msg.format(path=path, **attrs)
         except AttributeError as exc:

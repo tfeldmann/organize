@@ -2,8 +2,9 @@ import os
 import shutil
 import logging
 from .action import Action
+from .trash import Trash
 
-from organize.utils import Path
+from organize.utils import Path, find_unused_filename
 
 logger = logging.getLogger(__name__)
 
@@ -55,44 +56,27 @@ class Move(Action):
         self.overwrite = overwrite
 
     def run(self, path: Path, attrs: dict, simulate: bool):
-        full_dest = self.dest.format(path=path, **attrs)
+        full_path = path.expanduser()
 
+        expanded_dest = self.fill_template_tags(self.dest, path, attrs)
         # if only a folder path is given we append the filename to have the full
         # path. We use os.path for that because pathlib removes trailing slashes
-        if full_dest.endswith(os.path.sep):
-            full_dest = Path(os.path.join(full_dest, path.name))
+        if expanded_dest.endswith(os.path.sep):
+            expanded_dest = os.path.join(expanded_dest, path.name)
 
-        new_path = Path(full_dest).expanduser()
-        if new_path.exists():
+        new_path = Path(expanded_dest).expanduser()
+        if new_path.exists() and not new_path.samefile(full_path):
             if self.overwrite:
-                self.delete(path=new_path, simulate=simulate)
+                self.print('Overwriting existing file!')
+                Trash().run(path=new_path, attrs=attrs, simulate=simulate)
             else:
-                # rename file to avoid overwrite
-                count = 1
-                while True:
-                    count += 1
-                    tmp_path = self._path_with_count(new_path, count)
-                    if not tmp_path.exists():
-                        new_path = tmp_path
-                        break
+                new_path = find_unused_filename(new_path)
 
-        self.move(src=path.expanduser(), dest=new_path, simulate=simulate)
+        self.print('Move to "%s"' % new_path)
+        if not simulate:
+            new_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(src=str(full_path), dst=str(new_path))
         return new_path
-
-    def delete(self, path, simulate):  # type: (Path, bool)
-        self.print('Delete "%s"' % path)
-        if not simulate:
-            os.remove(str(path))
-
-    def move(self, src, dest, simulate):  # type: (Path, Path, bool)
-        self.print('Move to "%s"' % dest)
-        if not simulate:
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            shutil.move(src=str(src), dst=str(dest))
-
-    @staticmethod
-    def _path_with_count(path, count):  # type: (Path, int) -> Path
-        return path.with_name('%s %s%s' % (path.stem, count, path.suffix))
 
     def __str__(self):
         return 'Move(dest=%s, overwrite=%s)' % (self.dest, self.overwrite)

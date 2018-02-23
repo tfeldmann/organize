@@ -10,6 +10,18 @@ def mock_exists():
 
 
 @pytest.fixture
+def mock_samefile():
+    with patch.object(Path, 'samefile') as mck:
+        yield mck
+
+
+@pytest.fixture
+def mock_rename():
+    with patch.object(Path, 'rename') as mck:
+        yield mck
+
+
+@pytest.fixture
 def mock_move():
     with patch('shutil.move') as mck:
         yield mck
@@ -18,6 +30,12 @@ def mock_move():
 @pytest.fixture
 def mock_remove():
     with patch('os.remove') as mck:
+        yield mck
+
+
+@pytest.fixture
+def mock_trash():
+    with patch('send2trash.send2trash') as mck:
         yield mck
 
 

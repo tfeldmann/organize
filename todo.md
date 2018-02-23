@@ -14,26 +14,28 @@
 
 ## Nice to have:
 
+- [ ] Action: Zip
+- [ ] Action: E-Mail
+- [ ] Action: Print (on printer)
+- [ ] Action: Notify (desktop notification)
 - [ ] Filter: Python (+ docs)
 - [ ] Filter: Duplicates
-- [ ] Action: E-Mail
 - [ ] Filter: IncompleteDownloads
-- [ ] rules.exlude_dotfiles
-- [ ] rules.exclude_system_files
-- [ ] Warning if multiple rules apply to the same file?
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='')
 - [ ] Filter: FileType(type='media')
-- [ ] Filter modes all, none, any
-- [ ] jsonschema for user config validation
-- [ ] Action: Zip
-- [ ] Undo
-- [ ] Tests
-- [ ] Filter: Exif
-- [ ] Recurse through subfolders?
-- [ ] User plugins
-- [ ] Action: Print
-- [ ] Rule names
-- [ ] CLI help with python-rst2ansi
+- [ ] Filter: Exif data
+- [ ] Filter: id3 tag data
+- [ ] Config: Case insensitive filter and action matching?
+- [ ] Config: A way to exclude dotfiles
+- [ ] Config: A way to exclude system files
+- [ ] Config: A way to recurse through subfolders
+- [ ] Config: Warning if multiple rules apply to the same file?
+- [ ] Config: Filter modes all, none, any
+- [ ] Config: jsonschema for user config validation?
+- [ ] Config: Rule names
+- [ ] Core: Increment existing counters in filename
+- [ ] Core: User plugins
+- [ ] Core: show docstring of individual filters, actions in help
 
 
 ## Done:
@@ -67,4 +69,4 @@
 
 
 ## Dismissed:
-- [ ] Action: Notify
+- [ ] Undo (cannot work with python code and shell scripts)
