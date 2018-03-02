@@ -5,31 +5,44 @@ Quickstart
 
 Installation
 ------------
-Requirements: Python 3+
+Requirements: Python 3.3+
 
 `organize` is installed via pip:
 
 - ``$ pip install organize-tool``
 
+Run the script with:
+
+``$ organize``
+
 
 Creating your first config file
 -------------------------------
-To print the standard location for organize's config file, use the config command in your terminal (This will also open the path in your file manager)::
+To edit the configuration in your $EDITOR, run:
 
     $ organize config
 
-And create a file named `config.yaml` with the content:
+For example your configuration file could look like this:
 
 .. code-block:: yaml
 
     rules:
       - folders:
-          - '~/Desktop'
-          - '~/Documents'
+          - ~/Desktop
+          - ~/Documents
         filters:
-          - OlderThan: {months: 1}
+          - LastModified:
+              days: 365
         actions:
           - Echo: 'Found old file: {path}'
+
+      - folders:
+          - ~/Desktop
+        filters:
+          - Filename:
+              startswith: '_'
+        actions:
+          - Trash
 
 
 Simulate and run
