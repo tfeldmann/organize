@@ -17,7 +17,7 @@ Arguments:
     --version       Show program version and exit.
     -h, --help      Show this screen and exit.
 
-organize config options:
+Options:
     -o, --open-folder  Open the folder containing the configuration files.
     -p, --path         Show the path of the configuration file.
     -d, --debug        Print the current configuration for debugging purposes.

@@ -13,7 +13,7 @@ organize
 
 `organize` is installed via pip (requirement: Python 3.3+):
 
-- ``$ pip3 install organize-tool``
+``$ pip3 install organize-tool``
 
 Run the script with:
 
@@ -65,20 +65,20 @@ Functionality
 
 *Filters* (how to select files):
 
- - File extension
- - Regular expression
- - Last modified date
- - Filename
+- File extension
+- Regular expression
+- Last modified date
+- Filename
 
 *Actions* (what you can with your files):
 
- - Move files
- - Copy files
- - Rename files in place
- - Run shell command
- - Run inline Python code
- - Move into Trash
- - Print something to the console
+- Move files
+- Copy files
+- Rename files in place
+- Run shell command
+- Run inline Python code
+- Move into Trash
+- Print something to the console
 
 If you miss a feature please file an issue. Pull requests are very welcome!
 
@@ -105,7 +105,7 @@ Command line interface
       --version       Show program version and exit.
       -h, --help      Show this screen and exit.
 
-  organize config options:
+  Options:
       -o, --open-folder  Open the folder containing the configuration files.
       -p, --path         Show the path of the configuration file.
       -d, --debug        Print the current configuration for debugging purposes.
