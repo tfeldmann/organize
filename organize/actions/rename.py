@@ -7,8 +7,6 @@ from organize.utils import Path, find_unused_filename
 from .action import Action
 from .trash import Trash
 
-logger = logging.getLogger(__name__)
-
 
 class Rename(Action):
 
@@ -43,6 +41,7 @@ class Rename(Action):
                        'files between folders use the Move action.')
         self.name = name
         self.overwrite = overwrite
+        self.log = logging.getLogger(__name__)
 
     def run(self, path: Path, attrs: dict, simulate: bool) -> Path:
         full_path = path.expanduser()
@@ -59,6 +58,7 @@ class Rename(Action):
 
         self.print('New name: "%s"' % new_path.name)
         if not simulate:
+            self.log.info('Renaming "%s" to "%s".', full_path, new_path)
             full_path.rename(new_path)
         return new_path
 

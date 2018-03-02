@@ -2,13 +2,10 @@
 
 ## Must:
 - [ ] Test: LastModified
+- [ ] Test: Copy
 - [ ] Documentation for {path}
-- [ ] Logfile
 - [ ] Proof-read docs before releasing
 - [ ] A few more examples
-- [ ] Flatten filter lists
-- [ ] 'exclude' directive in rule (like 'filter')
-- [ ] Fill empty config errors
 
 ## Nice to have:
 - [ ] Action: Zip
@@ -22,6 +19,8 @@
 - [ ] Filter: FileType(type='media')
 - [ ] Filter: Exif data
 - [ ] Filter: id3 tag data
+- [ ] Config: Flatten filter lists
+- [ ] Config: 'exclude' directive in rule (like 'filter')
 - [ ] Config: Case insensitive filter and action matching?
 - [ ] Config: A way to exclude dotfiles
 - [ ] Config: A way to exclude system files
@@ -35,6 +34,7 @@
 - [ ] Core: show docstring of individual filters, actions in help
 
 ## Done:
+- [x] Logfile  @2018-03-02
 - [x] Documentation for Copy  @2018-03-01
 - [x] Action: Copy(dest)  @2018-03-01
 - [x] Action: Rename(dest)  @2018-02-23

@@ -6,8 +6,6 @@ from .trash import Trash
 
 from organize.utils import Path, find_unused_filename
 
-logger = logging.getLogger(__name__)
-
 
 class Move(Action):
 
@@ -54,6 +52,7 @@ class Move(Action):
     def __init__(self, dest: str, overwrite=False):
         self.dest = dest
         self.overwrite = overwrite
+        self.log = logging.getLogger(__name__)
 
     def run(self, path: Path, attrs: dict, simulate: bool):
         full_path = path.expanduser()
@@ -74,7 +73,9 @@ class Move(Action):
 
         self.print('Move to "%s"' % new_path)
         if not simulate:
+            self.log.info('Creating folder if not exists: %s', new_path.parent)
             new_path.parent.mkdir(parents=True, exist_ok=True)
+            self.log.info('Moving "%s" to "%s"', full_path, new_path)
             shutil.move(src=str(full_path), dst=str(new_path))
         return new_path
 

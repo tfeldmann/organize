@@ -3,8 +3,6 @@ import logging
 from organize.utils import Path
 from .action import Action
 
-logger = logging.getLogger(__name__)
-
 
 class Trash(Action):
 
@@ -28,8 +26,13 @@ class Trash(Action):
                   - Trash
     """
 
-    def run(self, path, attrs, simulate):  # type: (Path, dict, bool) -> None
+    def __init__(self):
+        self.log = logging.getLogger(__name__)
+
+    def run(self, path: Path, attrs: dict, simulate: bool):
         from send2trash import send2trash
         self.print('Trash "%s"' % path)
         if not simulate:
-            send2trash(str(path.expanduser()))
+            expanded_path = path.expanduser()
+            self.log.info('Moving file %s into trash.', expanded_path)
+            send2trash(str(expanded_path))

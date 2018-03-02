@@ -18,7 +18,7 @@ class Action:
         raise NotImplementedError
 
     def print(self, msg):
-        # print a message for the user
+        """ print a message for the user """
         puts('- [%s] %s' % (self.__class__.__name__, msg))
 
     @staticmethod

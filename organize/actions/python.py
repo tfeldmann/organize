@@ -2,8 +2,6 @@ import logging
 from organize.utils import Path
 from .action import Action
 
-logger = logging.getLogger(__name__)
-
 
 class Python(Action):
 
@@ -34,11 +32,15 @@ class Python(Action):
 
     def __init__(self, code):
         self.code = code
+        self.log = logging.getLogger(__name__)
 
     def run(self, path: Path, attrs: dict, simulate: bool) -> None:
         if simulate:
             self.print('Code not run in simulation')
         else:
+            self.log.info(
+                'Executing python script:\n"""\n%s""" with path="%s", args=%s',
+                self.code, path, attrs)
             # local variables for inline function
             locals_ = attrs.copy()
             locals_['simulate'] = simulate
