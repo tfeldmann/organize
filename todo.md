@@ -1,25 +1,22 @@
 # TODO
 
 ## Must:
-
-- [ ] Action: Rename(dest)
-- [ ] Action: Copy(dest)
+- [ ] Test: LastModified
 - [ ] Documentation for {path}
-- [ ] Documentation for Rename
-- [ ] Documentation for Copy
 - [ ] Logfile
 - [ ] Proof-read docs before releasing
 - [ ] A few more examples
-
+- [ ] Flatten filter lists
+- [ ] 'exclude' directive in rule (like 'filter')
+- [ ] Fill empty config errors
 
 ## Nice to have:
-
 - [ ] Action: Zip
 - [ ] Action: E-Mail
 - [ ] Action: Print (on printer)
 - [ ] Action: Notify (desktop notification)
 - [ ] Filter: Python (+ docs)
-- [ ] Filter: Duplicates
+- [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
 - [ ] Filter: IncompleteDownloads
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='')
 - [ ] Filter: FileType(type='media')
@@ -37,9 +34,11 @@
 - [ ] Core: User plugins
 - [ ] Core: show docstring of individual filters, actions in help
 
-
 ## Done:
-
+- [x] Documentation for Copy  @2018-03-01
+- [x] Action: Copy(dest)  @2018-03-01
+- [x] Action: Rename(dest)  @2018-02-23
+- [x] Documentation for Rename  @2018-02-23
 - [x] Documentation for LastModified @2018-02-14
 - [x] Documentation for Filename @2018-02-14
 - [x] Filter: FileName(startswith='', contains='', endswith='', case_sensitive=True) @2018-02-14
@@ -62,11 +61,10 @@
 - [x] Filter and action listing @2017-09-28
 - [x] `setup.py` file
 - [x] Action: Shell(cmd)
-- [x] Filter: PaperVdi
-- [x] Filter: Invoice1and1
 - [x] Filter: Regex
 - [x] Action: Move
 
-
 ## Dismissed:
+- [x] Filter: PaperVdi (too specific, can be done with Regex)
+- [x] Filter: Invoice1and1 (too specific and fragile)
 - [ ] Undo (cannot work with python code and shell scripts)
