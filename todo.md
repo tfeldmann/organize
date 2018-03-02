@@ -5,7 +5,7 @@
 - [ ] Test: Copy
 - [ ] Documentation for {path}
 - [ ] Proof-read docs before releasing
-- [ ] Quickstart with examples
+- [ ] Quickstart with examples (Put all screenshots in folder, trash old unfinished downloads)
 
 ## Nice to have:
 - [ ] Action: Zip
@@ -65,6 +65,6 @@
 - [x] Action: Move
 
 ## Dismissed:
-- [x] Filter: PaperVdi (too specific, can be done with Regex)
-- [x] Filter: Invoice1and1 (too specific and fragile)
+- [ ] Filter: PaperVdi (too specific, can be done with Regex)
+- [ ] Filter: Invoice1and1 (too specific and fragile)
 - [ ] Undo (cannot work with python code and shell scripts)

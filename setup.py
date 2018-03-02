@@ -3,8 +3,8 @@ import sys
 
 from setuptools import find_packages, setup
 
-if sys.version_info < (3, 0):
-    raise EnvironmentError('organize requires Python 3.3+')
+if sys.version_info < (3, 3):
+    raise EnvironmentError('Python 3.3+ required')
 
 here = os.path.abspath(os.path.dirname(__file__))
 

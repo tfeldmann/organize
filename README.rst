@@ -63,14 +63,14 @@ Have a look at the full documentation at https://organize.readthedocs.io/.
 Functionality
 -------------
 
-*Filters* (how to select files):
+**Filters** (how to select files):
 
 - File extension
 - Regular expression
 - Last modified date
 - Filename
 
-*Actions* (what you can with your files):
+**Actions** (what you can with your files):
 
 - Move files
 - Copy files
