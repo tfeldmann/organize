@@ -5,7 +5,7 @@
 - [ ] Test: Copy
 - [ ] Documentation for {path}
 - [ ] Proof-read docs before releasing
-- [ ] A few more examples
+- [ ] Quickstart with examples
 
 ## Nice to have:
 - [ ] Action: Zip

@@ -104,8 +104,8 @@ def main():
         except Config.Error as e:
             logger.exception(e)
             print_error(e)
-            print("Try 'organize config --debug' for easier debugging.")
-            print('Full traceback at: %s' % log_path)
+            puts("Try 'organize config --debug' for easier debugging.")
+            puts('Full traceback at: %s' % log_path)
             sys.exit(1)
 
 
@@ -127,16 +127,17 @@ def open_in_filemanager(path):
 def config_debug():
     """ prints the config with resolved aliases and tries to parse rules """
     try:
-        print('Your configuration rules:')
-        config = Config.from_file(config_path)
-        if not config.config:
-            print_error('Config file is empty')
-        print(config.yaml())
+        puts(bold('Your configuration as seen by the parser:'))
+        with indent(2):
+            config = Config.from_file(config_path)
+            if not config.config:
+                print_error('Config file is empty')
+            puts(config.yaml())
         _ = config.rules
     except Config.Error as e:
         print_error(e)
     else:
-        print(colored.green('Everything seems fine.'))
+        puts(colored.green('No problems found.', bold=True))
 
 
 def list_actions_and_filters():
@@ -155,4 +156,4 @@ def list_actions_and_filters():
 
 
 def print_error(text):
-    print('%s %s' % (colored.red('ERROR!', bold=True), text))
+    puts('%s %s' % (colored.red('ERROR!', bold=True), text))
