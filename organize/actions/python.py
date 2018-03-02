@@ -35,7 +35,7 @@ class Python(Action):
     def __init__(self, code):
         self.code = code
 
-    def run(self, path, attrs, simulate):  # type: (Path, dict, bool) -> None
+    def run(self, path: Path, attrs: dict, simulate: bool) -> None:
         if simulate:
             self.print('Code not run in simulation')
         else:

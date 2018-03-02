@@ -11,10 +11,12 @@ def test_tilde_expansion(mock_exists, mock_samefile, mock_rename, mock_trash):
     mock_exists.return_value = False
     mock_samefile.return_value = False
     rename = Rename(name='newname.py', overwrite=False)
-    rename.run(path, {}, False)
+    new_path = rename.run(path, {}, False)
     mock_exists.assert_called()
     mock_trash.assert_not_called()
-    mock_rename.assert_called_with((Path('~') / 'newname.py').expanduser())
+    expected_path = (Path('~') / 'newname.py').expanduser()
+    mock_rename.assert_called_with(expected_path)
+    assert new_path == expected_path
 
 
 def test_overwrite(mock_exists, mock_samefile, mock_rename, mock_trash):

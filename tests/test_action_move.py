@@ -11,13 +11,14 @@ def test_tilde_expansion(mock_exists, mock_samefile, mock_move, mock_trash, mock
     mock_exists.return_value = False
     mock_samefile.return_value = False
     move = Move(dest='~/newname.py', overwrite=False)
-    move.run(path, {}, False)
+    new_path = move.run(path, {}, False)
     mock_mkdir.assert_called_with(exist_ok=True, parents=True)
     mock_exists.assert_called_with()
     mock_trash.assert_not_called()
     mock_move.assert_called_with(
         src=os.path.join(USER_DIR, 'test.py'),
         dst=os.path.join(USER_DIR, 'newname.py'))
+    assert new_path == Path('~/newname.py').expanduser()
 
 
 def test_into_folder(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
