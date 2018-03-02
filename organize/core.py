@@ -1,11 +1,13 @@
 import logging
 from collections import defaultdict, namedtuple
+from typing import Iterable, Tuple, Generator
 
 from clint.textui import colored, indent, puts
 
 from .utils import Path, bold
 
 logger = logging.getLogger(__name__)
+
 
 Job = namedtuple('Job', 'folder path filters actions')
 Job.__doc__ = """
@@ -45,7 +47,7 @@ def filter_pipeline(job):
     return result
 
 
-def action_pipeline(job, attrs, simulate):  # type: (Job, dict, bool) -> None
+def action_pipeline(job: Job, attrs: dict, simulate: bool):
     try:
         current_path = job.path.resolve()
         for action in job.actions:
@@ -58,8 +60,7 @@ def action_pipeline(job, attrs, simulate):  # type: (Job, dict, bool) -> None
         action.print('%s %s' % (colored.red('ERROR!', bold=True), e))
 
 
-def execute_rules(rules, simulate):  # type: (bool) -> None
-    # TODO: warning for multiple rules applying to the same path?
+def execute_rules(rules, simulate):
     jobs = list(find_jobs(rules))
     if not jobs:
         puts('Nothing to do.')

@@ -143,7 +143,7 @@ class Config:
 
     class NoRulesFoundError(Error):
         def __str__(self):
-            return "No 'rules' found in configuration file"
+            return 'No rules found in configuration file'
 
     class ParsingError(Error):
         pass

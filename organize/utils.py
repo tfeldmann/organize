@@ -3,6 +3,8 @@ from collections import OrderedDict
 
 import colorama
 
+# in python < 3.5 the pathlib module misses some features so we have to import
+# a backported alternative
 if sys.version_info < (3, 5):
     from pathlib2 import Path
 else:
