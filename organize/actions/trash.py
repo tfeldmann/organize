@@ -15,10 +15,12 @@ class Trash(Action):
 
           .. code-block:: yaml
 
+              # config.yaml
               rules:
               - folders: '~/Desktop'
               - filters:
-                  - OlderThan: {years: 1}
+                  - LastModified:
+                      - days: 365
                   - Extension:
                       - png
                       - jpg

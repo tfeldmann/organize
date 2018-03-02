@@ -107,6 +107,11 @@ def main():
             puts("Try 'organize config --debug' for easier debugging.")
             puts('Full traceback at: %s' % log_path)
             sys.exit(1)
+        except Exception as e:
+            logger.exception(e)
+            print_error(e)
+            puts('Full traceback at: %s' % log_path)
+            sys.exit(1)
 
 
 def config_edit():

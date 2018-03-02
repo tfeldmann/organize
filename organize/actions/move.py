@@ -1,10 +1,11 @@
+import logging
 import os
 import shutil
-import logging
-from .action import Action
-from .trash import Trash
 
 from organize.utils import Path, find_unused_filename
+
+from .action import Action
+from .trash import Trash
 
 
 class Move(Action):

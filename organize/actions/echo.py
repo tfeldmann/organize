@@ -11,18 +11,30 @@ class Echo(Action):
     :param str msg: The message to print (can be formatted)
 
     Example:
+        - Prints "Hello World!" and filepath for each file on the desktop:
+
+          .. code-block:: yaml
+
+            # config.yaml
+            rules:
+              - folders:
+                  - ~/Desktop
+                actions:
+                  - Echo: "Hello World! {path}"
+
         - This will print something like ``Found a PNG: "test.png"`` for each
           file on your desktop:
 
-        .. code-block:: yaml
+          .. code-block:: yaml
 
+            # config.yaml
             rules:
               - folders:
-                  - '~/Desktop'
+                  - ~/Desktop
                 filters:
-                  - FileExtension
+                  - Extension
                 actions:
-                  - Echo: {msg: 'Found a {extension.upper}: "{path.name}"'}
+                  - Echo: 'Found a {extension.upper}: "{path.name}"'
     """
 
     def __init__(self, msg):

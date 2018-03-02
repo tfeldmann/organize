@@ -23,6 +23,7 @@ class Extension(Filter):
 
           .. code-block:: yaml
 
+            # config.yaml
             rules:
               - folders: '~/Desktop'
                 filters:
@@ -34,6 +35,7 @@ class Extension(Filter):
 
           .. code-block:: yaml
 
+            # config.yaml
             rules:
               - folders: '~/Desktop'
                 filters:
@@ -47,6 +49,7 @@ class Extension(Filter):
 
           .. code-block:: yaml
 
+            # config.yaml
             rules:
               - folder: '~/Desktop'
                 filters:
@@ -58,6 +61,7 @@ class Extension(Filter):
 
           .. code-block:: yaml
 
+            # config.yaml
             img_ext: &img
               - png
               - jpg

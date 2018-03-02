@@ -26,6 +26,7 @@ class LastModified(Filter):
 
           .. code-block:: yaml
 
+            # config.yaml
             rules:
               - folders: '~/Desktop'
                 filters:
@@ -39,6 +40,7 @@ class LastModified(Filter):
 
           .. code-block:: yaml
 
+            # config.yaml
             rules:
               - folders: '~/Desktop'
                 filters:

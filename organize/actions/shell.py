@@ -18,6 +18,7 @@ class Shell(Action):
 
         .. code-block:: yaml
 
+          # config.yaml
           rules:
             - folders: '~/Desktop'
               filters:

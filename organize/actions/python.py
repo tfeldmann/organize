@@ -10,24 +10,51 @@ class Python(Action):
 
     :param str code: The python code to execute
 
-    Example:
+    Examples:
       - A basic example that shows how to get the current file path and do some
         printing in a for loop. The ``|`` is yaml syntax for defining a string
         literal spanning multiple lines.
 
         .. code-block:: yaml
 
+          # config.yaml
           rules:
             - folders: '~/Desktop'
               actions:
-              - Python: |
-                  print('The path of the current file is %s' % path)
-                  print('This is how you inline python code!')
-                  print('You have access to the folloging variables:')
-                  print(path)
-                  print(simulate)
-                  for _ in range(5):
-                      print('Heyho, its me from the loop')
+                - Python: |
+                    print('The path of the current file is %s' % path)
+                    for _ in range(5):
+                        print('Heyho, its me from the loop')
+
+      - You can access filter data:
+
+        .. code-block:: yaml
+
+          # config.yaml
+          rules:
+            - folders: ~/Desktop
+              filters:
+                - Regex: '^(?P<name>.*)\.(?P<extension>.*)$'
+              actions:
+                - Python: |
+                    print('Name: %s' % regex.name)
+                    print('Extension: %s' % regex.extension)
+
+      - You have access to all the python magic -- do a google search for each
+        filename starting with an underscore:
+
+        .. code-block:: yaml
+
+          # config.yaml
+          rules:
+            - folders: ~/Desktop
+              filters:
+                - Filename:
+                    startswith: '_'
+              actions:
+                - Python: |
+                    import webbrowser
+                    webbrowser.open('https://www.google.com/search?q=%s' % path.stem)
     """
 
     def __init__(self, code):

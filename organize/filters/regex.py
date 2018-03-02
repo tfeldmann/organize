@@ -21,6 +21,7 @@ class Regex(Filter):
 
           .. code-block:: yaml
 
+            # config.yaml
             rules:
               - folders: '~/Desktop'
                 filters:
@@ -35,6 +36,7 @@ class Regex(Filter):
 
           .. code-block:: yaml
 
+            # config.yaml
             rules:
               - folders: '~/Desktop'
                 filters:
