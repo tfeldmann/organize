@@ -1,3 +1,4 @@
+from .copy import Copy
 from .echo import Echo
 from .move import Move
 from .python import Python
