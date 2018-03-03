@@ -28,6 +28,12 @@ def mock_move():
 
 
 @pytest.fixture
+def mock_copy():
+    with patch('shutil.copy2') as mck:
+        yield mck
+
+
+@pytest.fixture
 def mock_remove():
     with patch('os.remove') as mck:
         yield mck

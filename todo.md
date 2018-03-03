@@ -1,9 +1,8 @@
 # TODO
 
 ## Must:
-- [ ] Test: LastModified
-- [ ] Test: Copy
 - [ ] Documentation for {path}
+- [ ] Documentation for {basedir}
 - [ ] Proof-read docs before releasing
 - [ ] Quickstart with examples (Put all screenshots in folder, trash old unfinished downloads)
 
@@ -23,7 +22,7 @@
 - [ ] Config: 'exclude' directive in rule (like 'filter')
 - [ ] Config: Case insensitive filter and action matching?
 - [ ] Config: A way to exclude dotfiles
-- [ ] Config: A way to exclude system files
+- [ ] Config: A way to exclude common system files (.DS_Store, ...)
 - [ ] Config: A way to recurse through subfolders
 - [ ] Config: Warning if multiple rules apply to the same file?
 - [ ] Config: Filter modes all, none, any
@@ -34,6 +33,9 @@
 - [ ] Core: show docstring of individual filters, actions in help
 
 ## Done:
+- [x] Test: Copy  @2018-03-03
+- [x] Core: {basedir} needed for subfolders  @2018-03-03
+- [x] Test: LastModified  @2018-03-03
 - [x] Logfile  @2018-03-02
 - [x] Documentation for Copy  @2018-03-01
 - [x] Action: Copy(dest)  @2018-03-01

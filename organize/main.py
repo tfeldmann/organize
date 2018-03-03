@@ -10,7 +10,7 @@ Usage:
     organize --version
 
 Arguments:
-    sim             Simulate organizing your files. This allows you to check your rules.
+    sim             Simulate a run. Does not touch your files.
     run             Organizes your files according to your rules.
     config          Open the configuration file in $EDITOR.
     list            List available filters and actions.
@@ -19,8 +19,8 @@ Arguments:
 
 Options:
     -o, --open-folder  Open the folder containing the configuration files.
-    -p, --path         Show the path of the configuration file.
-    -d, --debug        Print the current configuration for debugging purposes.
+    -p, --path         Show the path to the configuration file.
+    -d, --debug        Print and check your current configuration.
 
 Full documentation: https://organize.readthedocs.io
 """

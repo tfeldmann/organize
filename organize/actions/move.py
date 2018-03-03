@@ -28,7 +28,7 @@ class Move(Action):
         filename) to resolve naming conflicts. [Default: False]
 
     Examples:
-        - Move into `some/folder/` and keep filenames
+        - Move into `/some/folder/` and keep filenames
 
           .. code-block:: yaml
 
@@ -55,10 +55,10 @@ class Move(Action):
         self.overwrite = overwrite
         self.log = logging.getLogger(__name__)
 
-    def run(self, path: Path, attrs: dict, simulate: bool):
+    def run(self, basedir: Path, path: Path, attrs: dict, simulate: bool):
         full_path = path.expanduser()
 
-        expanded_dest = self.fill_template_tags(self.dest, path, attrs)
+        expanded_dest = self.fill_template_tags(self.dest, basedir, path, attrs)
         # if only a folder path is given we append the filename to have the full
         # path. We use os.path for that because pathlib removes trailing slashes
         if expanded_dest.endswith(os.path.sep):
@@ -68,7 +68,7 @@ class Move(Action):
         if new_path.exists() and not new_path.samefile(full_path):
             if self.overwrite:
                 self.print('Overwriting existing file!')
-                Trash().run(path=new_path, attrs=attrs, simulate=simulate)
+                Trash().run(basedir, path=new_path, attrs=attrs, simulate=simulate)
             else:
                 new_path = find_unused_filename(new_path)
 

@@ -44,16 +44,16 @@ class Rename(Action):
         self.overwrite = overwrite
         self.log = logging.getLogger(__name__)
 
-    def run(self, path: Path, attrs: dict, simulate: bool) -> Path:
+    def run(self, basedir: Path, path: Path, attrs: dict, simulate: bool) -> Path:
         full_path = path.expanduser()
-        expanded_name = self.fill_template_tags(self.name, full_path, attrs)
+        expanded_name = self.fill_template_tags(self.name, basedir, full_path, attrs)
         new_path = full_path.parent / expanded_name
 
         # handle filename collisions
         if new_path.exists() and not new_path.samefile(full_path):
             if self.overwrite:
                 self.print('Overwriting existing file!')
-                Trash().run(path=new_path, attrs=attrs, simulate=simulate)
+                Trash().run(basedir, path=new_path, attrs=attrs, simulate=simulate)
             else:
                 new_path = find_unused_filename(new_path)
 

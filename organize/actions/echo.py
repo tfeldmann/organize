@@ -1,4 +1,5 @@
 import logging
+from organize.utils import Path
 from .action import Action
 
 
@@ -41,11 +42,11 @@ class Echo(Action):
         self.msg = msg
         self.log = logging.getLogger(__name__)
 
-    def run(self, path, attrs, simulate):
+    def run(self, basedir: Path, path: Path, attrs: dict, simulate: bool):
         self.log.debug(
             'Echo msg "%s" for path: "%s" with attrs: "%s"',
             self.msg, path, attrs)
-        full_msg = self.fill_template_tags(self.msg, path, attrs)
+        full_msg = self.fill_template_tags(self.msg, basedir, path, attrs)
         self.log.info('Console output: %s', full_msg)
         self.print('%s' % full_msg)
 

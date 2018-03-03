@@ -2,6 +2,8 @@
 
 organize
 ========
+**The file management automation tool.**
+
 .. image:: https://readthedocs.org/projects/organize/badge/?version=latest
   :target: https://organize.readthedocs.io/en/latest/?badge=latest
   :alt: Documentation Status
@@ -9,9 +11,10 @@ organize
 .. image:: https://travis-ci.org/tfeldmann/organize.svg?branch=master
     :target: https://travis-ci.org/tfeldmann/organize
 
-**The file management automation tool.**
+`organize` is the open-source alternative to *Hazel* for macOS or *File Juggler*
+for Windows that runs on the command line.
 
-`organize` is installed via pip (requirement: Python 3.3+):
+Install via pip (requirement: Python 3.3+):
 
 ``$ pip3 install organize-tool``
 
@@ -24,7 +27,7 @@ Why you might find this useful
 ------------------------------
 Your desktop is a mess? You cannot find anything in your downloads and
 documents? Sorting and renaming all these files by hand is too tedious?
-**Time to automate it once and benefit from it forever**.
+Time to automate it once and benefit from it forever.
 
 The following yaml code goes into a file named `config.yaml` in the folder
 shown with ``$ organize config``:
@@ -98,7 +101,7 @@ Command line interface
       organize --version
 
   Arguments:
-      sim             Simulate organizing your files. This allows you to check your rules.
+      sim             Simulate a run. Does not touch your files.
       run             Organizes your files according to your rules.
       config          Open the configuration file in $EDITOR.
       list            List available filters and actions.
@@ -107,5 +110,7 @@ Command line interface
 
   Options:
       -o, --open-folder  Open the folder containing the configuration files.
-      -p, --path         Show the path of the configuration file.
-      -d, --debug        Print the current configuration for debugging purposes.
+      -p, --path         Show the path to the configuration file.
+      -d, --debug        Print and check your current configuration.
+
+  Full documentation: https://organize.readthedocs.io

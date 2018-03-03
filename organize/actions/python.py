@@ -61,7 +61,7 @@ class Python(Action):
         self.code = code
         self.log = logging.getLogger(__name__)
 
-    def run(self, path: Path, attrs: dict, simulate: bool) -> None:
+    def run(self, basedir: Path, path: Path, attrs: dict, simulate: bool):
         if simulate:
             self.print('Code not run in simulation')
         else:
@@ -72,6 +72,7 @@ class Python(Action):
             locals_ = attrs.copy()
             locals_['simulate'] = simulate
             locals_['path'] = path
+            locals_['basedir'] = basedir
             # replace default print function
             globals_ = globals().copy()
             globals_['print'] = self.print

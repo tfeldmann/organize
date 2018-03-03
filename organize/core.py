@@ -1,6 +1,5 @@
 import logging
 from collections import defaultdict, namedtuple
-from typing import Iterable, Tuple, Generator
 
 from clint.textui import colored, indent, puts
 
@@ -52,7 +51,10 @@ def action_pipeline(job: Job, attrs: dict, simulate: bool):
         current_path = job.path.resolve()
         for action in job.actions:
             new_path = action.run(
-                path=current_path, attrs=attrs, simulate=simulate)
+                basedir=Path(job.folder).expanduser(),
+                path=current_path,
+                attrs=attrs,
+                simulate=simulate)
             if new_path is not None:
                 current_path = new_path
     except Exception as e:
@@ -63,7 +65,9 @@ def action_pipeline(job: Job, attrs: dict, simulate: bool):
 def execute_rules(rules, simulate):
     jobs = list(find_jobs(rules))
     if not jobs:
-        puts('Nothing to do.')
+        msg = 'Nothing to do.'
+        logging.info(msg)
+        puts(msg)
         return
 
     jobs_by_folder = sort_by_folder(jobs)

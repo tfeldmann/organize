@@ -64,7 +64,14 @@ def find_unused_filename(path: Path) -> Path:
     filename until we find a unused filename.
     """
     stem = path.stem
-    count = 1
+    try:
+        splitstem = stem.split(' ')
+        if len(splitstem) < 2:
+            raise ValueError()
+        count = int(splitstem[-1])
+        stem = ' '.join(splitstem[:-1])
+    except (ValueError, IndexError):
+        count = 1
     while True:
         count += 1
         tmp_path = path.with_name('%s %s%s' % (stem, count, path.suffix))
