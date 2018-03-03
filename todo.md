@@ -13,26 +13,28 @@
 - [ ] Action: Notify (desktop notification)
 - [ ] Filter: Python (+ docs)
 - [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
-- [ ] Filter: IncompleteDownloads
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='')
-- [ ] Filter: FileType(type='media')
 - [ ] Filter: Exif data
 - [ ] Filter: id3 tag data
-- [ ] Config: Flatten filter lists
 - [ ] Config: 'exclude' directive in rule (like 'filter')
-- [ ] Config: Case insensitive filter and action matching?
-- [ ] Config: A way to exclude dotfiles
-- [ ] Config: A way to exclude common system files (.DS_Store, ...)
 - [ ] Config: A way to recurse through subfolders
-- [ ] Config: Warning if multiple rules apply to the same file?
-- [ ] Config: Filter modes all, none, any
-- [ ] Config: jsonschema for user config validation?
+- [ ] Config: Case insensitive filter and action matching
+- [ ] Config: Flatten filter lists
 - [ ] Config: Rule names
-- [ ] Core: Increment existing counters in filename
 - [ ] Core: User plugins
 - [ ] Core: show docstring of individual filters, actions in help
 
+## Think about
+- [ ] Filter: IncompleteDownloads?
+- [ ] Filter: FileType(type='media')?
+- [ ] Config: A way to exclude dotfiles?
+- [ ] Config: A way to exclude common system files (.DS_Store, ...)?
+- [ ] Config: Warning if multiple rules apply to the same file?
+- [ ] Config: Filter modes all, none, any?
+- [ ] Config: jsonschema for user config validation?
+
 ## Done:
+- [x] Core: Increment existing counters in filename  @2018-03-03
 - [x] Test: Copy  @2018-03-03
 - [x] Core: {basedir} needed for subfolders  @2018-03-03
 - [x] Test: LastModified  @2018-03-03

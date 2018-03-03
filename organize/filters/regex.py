@@ -38,11 +38,11 @@ class Regex(Filter):
 
             # config.yaml
             rules:
-              - folders: '~/Desktop'
+              - folders: ~/Desktop
                 filters:
                   - Regex: '^RG(?P<the_number>\d{12})-sig\.pdf$'
                 actions:
-                  - Move: '~/Documents/Invoices/1und1/{the_number}.pdf'
+                  - Move: ~/Documents/Invoices/1und1/{regex.the_number}.pdf
     """
 
     def __init__(self, expr):
