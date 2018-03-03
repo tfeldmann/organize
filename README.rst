@@ -1,8 +1,4 @@
-.. image:: /docs/images/organize.svg
-
-organize
-========
-**The file management automation tool.**
+.. image:: https://github.com/tfeldmann/organize/raw/master/docs/images/organize.svg?sanitize=true
 
 .. image:: https://readthedocs.org/projects/organize/badge/?version=latest
   :target: https://organize.readthedocs.io/en/latest/?badge=latest
@@ -11,8 +7,9 @@ organize
 .. image:: https://travis-ci.org/tfeldmann/organize.svg?branch=master
     :target: https://travis-ci.org/tfeldmann/organize
 
-`organize` is the open-source alternative to *Hazel* for macOS or *File Juggler*
-for Windows that runs on the command line.
+organize
+========
+**The file management automation tool.**
 
 Install via pip (requirement: Python 3.3+):
 
@@ -28,6 +25,9 @@ Why you might find this useful
 Your desktop is a mess? You cannot find anything in your downloads and
 documents? Sorting and renaming all these files by hand is too tedious?
 Time to automate it once and benefit from it forever.
+
+`organize` is the open-source alternative to Hazel for macOS or File Juggler
+for Windows that runs on the command line.
 
 The following yaml code goes into a file named `config.yaml` in the folder
 shown with ``$ organize config``:
