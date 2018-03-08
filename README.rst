@@ -34,18 +34,28 @@ shown with ``$ organize config``:
 
 - `config.yaml`:
 
-  .. code:: yaml
+  .. code-block:: yaml
 
       rules:
+        # move screenshots into "Screenshots" folder
         - folders:
             - ~/Desktop
+          filters:
+            - Filename:
+                startswith: Screen Shot
+          actions:
+            - Move: ~/Desktop/Screenshots/
+
+        # move incomplete downloads older > 30 days into the trash
+        - folders:
             - ~/Downloads
           filters:
             - Extension:
-                - png
-                - jpg
+              - download
+              - crdownload
+              - part
             - LastModified:
-                days: 365
+              days: 30
           actions:
             - Trash
 

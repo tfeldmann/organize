@@ -28,20 +28,25 @@ For example your configuration file could look like this:
   :caption: config.yaml
 
     rules:
-      - folders:
-          - ~/Desktop
-          - ~/Documents
-        filters:
-          - LastModified:
-              days: 365
-        actions:
-          - Echo: 'Found old file: {path}'
-
+      # move screenshots into "Screenshots" folder
       - folders:
           - ~/Desktop
         filters:
           - Filename:
-              startswith: '_'
+              startswith: Screen Shot
+        actions:
+          - Move: ~/Desktop/Screenshots/
+
+      # move incomplete downloads older > 30 days into the trash
+      - folders:
+          - ~/Downloads
+        filters:
+          - Extension:
+            - crdownload
+            - part
+            - download
+          - LastModified:
+            days: 30
         actions:
           - Trash
 

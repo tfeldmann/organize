@@ -84,7 +84,7 @@ The easiest way is to define the rules like this:
 
 
 Advanced: Aliases
------------------------------
+-----------------
 Instead of repeating the same folders in each and every rule you can use an alias for multiple folders which you can then reference in each rule.
 Aliases are a standard feature of the YAML syntax.
 
@@ -146,10 +146,64 @@ You can even use multiple folder lists:
 
 Filter syntax
 =============
+``filters`` is a list of :ref:`Filters`.
+In general, filters are defined like this:
 
+.. code-block:: yaml
+  :caption: config.yaml
+
+  rules:
+    - folders: ...
+      actions: ...
+      filters:
+        # filter without parameters
+        - FilterName
+
+        # filter with a single parameter
+        - FilterName: parameter
+
+        # filter expecting a list as parameter
+        - FilterName:
+          - first
+          - second
+          - third
+
+        # filter with multiple parameters
+        - FilterName:
+            parameter1: true
+            option2: 10.51
+            third_argument: test string
+
+.. note::
+  Every filter comes with multiple usage examples which should be easy to adapt for your use case!
 
 
 Action syntax
 =============
-- Actions with / without parameters
-- Using placeholders
+``actions`` is a list of :ref:`Actions`.
+Actions can be defined like this:
+
+.. code-block:: yaml
+  :caption: config.yaml
+
+  rules:
+    - folders: ...
+      actions:
+        # action without parameters
+        - ActionName
+
+        # action with a single parameter
+        - ActionName: parameter
+
+        # filter with multiple parameters
+        - ActionName:
+            parameter1: true
+            option2: 10.51
+            third_argument: test string
+
+.. note::
+  Every action comes with multiple usage examples which should be easy to adapt for your use case!
+
+Variable substitution (placeholders)
+------------------------------------
+This is where it becomes interesting. organize lets you use
