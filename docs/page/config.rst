@@ -81,8 +81,8 @@ The easiest way is to define the rules like this:
       actions: ...
 
 
-Advanced: Aliases
------------------
+Aliases
+-------
 Instead of repeating the same folders in each and every rule you can use an alias for multiple folders which you can then reference in each rule.
 Aliases are a standard feature of the YAML syntax.
 
@@ -204,4 +204,24 @@ Actions can be defined like this:
 
 Variable substitution (placeholders)
 ------------------------------------
-This is where it becomes interesting. organize lets you use
+You can use placeholder variables in your actions. This is a very important feature of `organize` and allows for much flexibility for complex organization tasks.
+
+Placeholder variables are used with curly braces ``{var}``.
+You have access to the variables:
+
+- ``{path}`` -- is the full path to the current file
+- ``{basedir}`` -- the current base folder.
+
+Use the dot notation to access properties of ``{path}`` and ``{basedir}``:
+
+- ``{path}`` -- the full path to the current file
+- ``{path.name}`` -- the full filename with extension
+- ``{path.stem}`` -- just the file name without extension
+- ``{path.suffix}`` -- the file extension
+- ``{path.parent}`` -- the parent folder of the current file
+- ``{path.parent.parent}`` -- parent calls are chainable...
+
+- ``{basedir}`` -- the full path to the current base folder
+- ``{basedir.parent}`` -- the full path to the base folder's parent
+
+and any other property of the python ``pathlib.Path`` (`official documentation <https://docs.python.org/3/library/pathlib.html#methods-and-properties>`_) object.
