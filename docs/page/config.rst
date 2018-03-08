@@ -5,10 +5,60 @@ Configuration
 *************
 
 
-Creating a config file
-======================
-All configuration takes place in your `config.yaml` file. You can find your config
-folder by executing ``$ organize config``.
+Editing the configuration
+=========================
+All configuration takes place in your `config.yaml` file.
+
+- To show the full path to your configuration file:::
+
+    $ organize config --path
+
+- To open the folder containing the configuration file:::
+
+    $ organize config --open-folder
+
+- To edit your configuration in ``$EDITOR`` run:::
+
+    $ organize config
+
+
+Rule syntax
+===========
+The rule configuration is done in `YAML <https://learnxinyminutes.com/docs/yaml/>`_.
+You need a top-level element ``rules`` which contains a list of rules.
+Each rule defines ``folders``, ``filters`` (optional) and ``actions``.
+
+.. code-block:: yaml
+  :caption: config.yaml
+  :emphasize-lines: 1,2,5,10,14,16,18
+
+  rules:
+    - folders:
+        - ~/Desktop
+        - /some/folder/
+      filters:
+        - LastModified:
+            days: 40
+            mode: newer
+        - Extension: pdf
+      actions:
+        - Move: ~/Desktop/Target/
+        - Trash
+
+    - folders:
+        - ~/Inbox
+      filters:
+        - Extension: pdf
+      actions:
+        - Move: ~/otherinbox
+
+- ``folders`` is a list of folders you want to organize.
+- ``filters`` is a list of filters to apply to the files - you can filter by file extension, last modified date, regular expressions and many more. See :ref:`Filters`.
+- ``actions`` is a list of actions to apply to the filtered files. You can put them into the trash, move them into another folder and many more. See :ref:`Actions`.
+
+.. note::
+   At the moment organize only handles the files at the top level of the folders given in ``folders``.
+   Recursion through subdirs is planned for later versions.
 
 
 Folder syntax
@@ -17,30 +67,32 @@ Every rule in your configuration file needs to know the folders it applies to.
 The easiest way is to define the rules like this:
 
 .. code-block:: yaml
+  :caption: config.yaml
 
   rules:
     - folders:
-        - '/path/one'
-        - '/path/two'
+        - /path/one
+        - /path/two
       filters: ...
       actions: ...
 
     - folders:
-        - '/path/one'
-        - '/another/path'
+        - /path/one
+        - /another/path
       filters: ...
       actions: ...
 
 
-Advanced: Folder lists
-----------------------
-
-Instead of repeating the same folders in each and every rule you can use folder lists which you can reference in each rule.
-Referencing is a standard feature of the YAML syntax.
+Advanced: Aliases
+-----------------------------
+Instead of repeating the same folders in each and every rule you can use an alias for multiple folders which you can then reference in each rule.
+Aliases are a standard feature of the YAML syntax.
 
 .. code-block:: yaml
+  :caption: config.yaml
 
-  all_folders: &all
+
+  all_my_messy_folders: &all
     - '/path/one'
     - '/path/two'
     - '/path/three'
@@ -57,6 +109,7 @@ Referencing is a standard feature of the YAML syntax.
 You can even use multiple folder lists:
 
 .. code-block:: yaml
+  :caption: config.yaml
 
   private_folders: &private
     - '/path/private'
@@ -91,15 +144,9 @@ You can even use multiple folder lists:
       actions: ...
 
 
-Rule syntax
-===========
-- Basic rule syntax
-- filter_mode
-
-
 Filter syntax
 =============
-- Filter with/without parameters
+
 
 
 Action syntax

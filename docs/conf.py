@@ -31,7 +31,8 @@ sys.path.insert(0, os.path.abspath('../organize'))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
-              'sphinx.ext.todo']
+              'sphinx.ext.todo',
+              'sphinx.ext.autosectionlabel']
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).

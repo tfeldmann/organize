@@ -25,6 +25,7 @@ To edit the configuration in your $EDITOR, run:
 For example your configuration file could look like this:
 
 .. code-block:: yaml
+  :caption: config.yaml
 
     rules:
       - folders:

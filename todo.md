@@ -21,17 +21,11 @@
 - [ ] Config: Case insensitive filter and action matching
 - [ ] Config: Flatten filter lists
 - [ ] Config: Rule names
-- [ ] Core: User plugins
-- [ ] Core: show docstring of individual filters, actions in help
-
-## Think about
-- [ ] Filter: IncompleteDownloads?
-- [ ] Filter: FileType(type='media')?
-- [ ] Config: A way to exclude dotfiles?
-- [ ] Config: A way to exclude common system files (.DS_Store, ...)?
 - [ ] Config: Warning if multiple rules apply to the same file?
 - [ ] Config: Filter modes all, none, any?
 - [ ] Config: jsonschema for user config validation?
+- [ ] Core: User plugins
+- [ ] Core: show docstring of individual filters, actions in help
 
 ## Done:
 - [x] Core: Increment existing counters in filename  @2018-03-03
@@ -69,6 +63,10 @@
 - [x] Action: Move
 
 ## Dismissed:
+- [ ] Filter: IncompleteDownloads (Can be done with Extension)
+- [ ] Filter: FileType(type='media') (`file` utility not available on windows)
+- [ ] Config: A way to exclude dotfiles (can be done with the `exclude` syntax)
+- [ ] Config: A way to exclude common system files (.DS_Store, ...) (`exclude`)
 - [ ] Filter: PaperVdi (too specific, can be done with Regex)
 - [ ] Filter: Invoice1and1 (too specific and fragile)
 - [ ] Undo (cannot work with python code and shell scripts)
