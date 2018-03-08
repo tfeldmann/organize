@@ -12,6 +12,19 @@ class Echo(Action):
     :param str msg: The message to print (can be formatted)
 
     Example:
+        - Prints "Found old file" for each file older than one year:
+
+          .. code-block:: yaml
+
+            # config.yaml
+            rules:
+              - folders: ~/Desktop
+                filters:
+                  - LastModified:
+                      days: 365
+                actions:
+                  - Echo: "Found old file"
+
         - Prints "Hello World!" and filepath for each file on the desktop:
 
           .. code-block:: yaml
