@@ -1,5 +1,4 @@
 import os
-import shutil
 import logging
 
 from organize.utils import Path, find_unused_filename
@@ -52,7 +51,7 @@ class Rename(Action):
         # handle filename collisions
         if new_path.exists() and not new_path.samefile(full_path):
             if self.overwrite:
-                self.print('Overwriting existing file!')
+                self.print('File already exists')
                 Trash().run(basedir, path=new_path, attrs=attrs, simulate=simulate)
             else:
                 new_path = find_unused_filename(new_path)
