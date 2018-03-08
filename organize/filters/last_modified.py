@@ -16,10 +16,10 @@ class LastModified(Filter):
     :param int minutes:
         specify number of minutes
 
-    :param str select_mode:
-        either 'min' or 'max'. 'min' matches all files last modified before the
-        given time, 'max' matches all files last modified within the given
-        time.
+    :param str mode:
+        either 'older' or 'newer'. 'older' matches all files last modified
+        before the given time, 'newer' matches all files last modified within
+        the given time.
 
     Examples:
         - Show all files on your desktop last modified at least 10 days ago:
@@ -46,26 +46,25 @@ class LastModified(Filter):
                 filters:
                   - LastModified:
                       - hours: 5
-                      - select_mode: 'max'
+                      - mode: newer
                 actions:
                   - Echo: 'Was modified within the last 5 hours'
     """
 
-    def __init__(self, days=0, hours=0, minutes=0, seconds=0,
-                 select_mode='min'):
-        self._select_mode = select_mode.strip().lower()
-        if self._select_mode not in ('min', 'max'):
+    def __init__(self, days=0, hours=0, minutes=0, seconds=0, mode='older'):
+        self._mode = mode.strip().lower()
+        if self._mode not in ('older', 'newer'):
             raise ValueError(
-                "Unknown option for 'select_mode': must be 'min' or 'max'.")
+                "Unknown option for 'mode': must be 'older' or 'newer'.")
         else:
-            self.is_minimum = (self._select_mode == 'min')
+            self.is_older = (self._mode == 'older')
         self.timedelta = timedelta(
             days=days, hours=hours, minutes=minutes, seconds=seconds)
 
     def matches(self, path):
         file_modified = self._last_modified(path)
         reference_date = datetime.now() - self.timedelta
-        if self.is_minimum:
+        if self.is_older:
             return file_modified <= reference_date
         else:
             return file_modified >= reference_date
@@ -79,4 +78,4 @@ class LastModified(Filter):
 
     def __str__(self):
         return 'FileModified(delta=%s, select_mode=%s)' % (
-            self.timedelta, self._select_mode)
+            self.timedelta, self._mode)
