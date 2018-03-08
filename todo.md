@@ -4,7 +4,6 @@
 - [ ] Documentation for {path}
 - [ ] Documentation for {basedir}
 - [ ] Proof-read docs before releasing
-- [ ] Quickstart with examples (Put all screenshots in folder, trash old unfinished downloads)
 
 ## Nice to have:
 - [ ] Action: Zip
@@ -28,6 +27,7 @@
 - [ ] Core: show docstring of individual filters, actions in help
 
 ## Done:
+- [x] Quickstart with examples (Put all screenshots in folder, trash old unfinished downloads)  @2018-03-08
 - [x] Core: Increment existing counters in filename  @2018-03-03
 - [x] Test: Copy  @2018-03-03
 - [x] Core: {basedir} needed for subfolders  @2018-03-03
