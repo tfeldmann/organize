@@ -114,7 +114,6 @@ of what is possible with placeholder variables:
 .. code-block:: yaml
 
     rules:
-      # Sort pdfs by year (last modified)
       - folders: '~/Documents'
         filters:
           - Extension:
