@@ -40,7 +40,7 @@ For example your configuration file could look like this:
             - part
             - download
           - LastModified:
-            days: 30
+              days: 30
         actions:
           - Trash
 

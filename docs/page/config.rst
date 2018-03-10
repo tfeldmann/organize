@@ -204,10 +204,11 @@ Actions can be defined like this:
 
 Variable substitution (placeholders)
 ------------------------------------
-You can use placeholder variables in your actions. This is a very important feature of `organize` and allows for much flexibility for complex organization tasks.
+You can use placeholder variables in your actions.
+This is a very important feature of `organize` and allows for much flexibility for complex organization tasks.
 
 Placeholder variables are used with curly braces ``{var}``.
-You have access to the variables:
+You always have access to the variables ``{path}`` and ``{basedir}``:
 
 - ``{path}`` -- is the full path to the current file
 - ``{basedir}`` -- the current base folder.
@@ -215,7 +216,7 @@ You have access to the variables:
 Use the dot notation to access properties of ``{path}`` and ``{basedir}``:
 
 - ``{path}`` -- the full path to the current file
-- ``{path.name}`` -- the full filename with extension
+- ``{path.name}`` -- the full filename including extension
 - ``{path.stem}`` -- just the file name without extension
 - ``{path.suffix}`` -- the file extension
 - ``{path.parent}`` -- the parent folder of the current file
