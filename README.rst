@@ -17,13 +17,11 @@ Install via pip (requirement: Python 3.3+):
 
 Setup your file management rules:
 
-``$ organize config``
+``$ organize config`` (See below for examples)
 
 Simulate / run:
 
-``$ organize sim``
-
-``$ organize run``
+``$ organize sim`` / ``$ organize run``
 
 
 Why you might find this useful
@@ -32,11 +30,12 @@ Your desktop is a mess? You cannot find anything in your downloads and
 documents? Sorting and renaming all these files by hand is too tedious?
 Time to automate it once and benefit from it forever.
 
-`organize` is a command line, open-source alternative to apps like Hazel (macOS) or File Juggler
-(Windows).
+`organize` is a command line, open-source alternative to apps like Hazel (macOS)
+or File Juggler (Windows).
 
 In your shell, run ``$ organize config`` to edit the configuration and enter
-(alternatively create a file ``config.yaml`` at the path shown with ``$ organize config --path``):
+(alternatively create a file ``config.yaml`` at the path shown with
+``$ organize config --path``):
 
 - `config.yaml`:
 
@@ -57,9 +56,9 @@ In your shell, run ``$ organize config`` to edit the configuration and enter
             - ~/Downloads
           filters:
             - Extension:
-              - download
-              - crdownload
-              - part
+                - download
+                - crdownload
+                - part
             - LastModified:
                 days: 30
           actions:
@@ -73,10 +72,9 @@ It is that easy.
 Feeling insecure? Run ``$ organize sim`` to see what would happen without
 touching your files.
 
-But there is more. You want to rename / copy files, run custom
-shell / python scripts or match filenames with regular expressions?
-`organize` has you covered. You can even modify the actions according to
-information about the file using placeholder variables.
+But there is more. You want to rename / copy files, run custom shell / python
+scripts, match filenames with regular expressions or use placeholder variables?
+`organize` has you covered.
 
 Have a look at the full documentation at https://organize.readthedocs.io/.
 
@@ -84,14 +82,14 @@ Have a look at the full documentation at https://organize.readthedocs.io/.
 Functionality
 -------------
 
-**Filters** (how to select files):
+Select files by (filters):
 
-- File extension
+- Extension
 - Regular expression
-- Last modified date
-- Filename
+- Last modified date (newer, older)
+- Filename (startswith, endswith, contains)
 
-**Actions** (what you can with your files):
+Organize your files (actions):
 
 - Move files
 - Copy files
@@ -101,7 +99,10 @@ Functionality
 - Move into Trash
 - Print something to the console
 
-If you miss a feature please file an issue. Pull requests are very welcome!
+The data from file selection is available in the actions via placeholder
+variables.
+
+If you miss a feature please file an issue. Pull requests welcome!
 
 
 Command line interface

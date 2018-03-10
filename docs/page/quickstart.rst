@@ -36,9 +36,9 @@ For example your configuration file could look like this:
           - ~/Downloads
         filters:
           - Extension:
-            - crdownload
-            - part
-            - download
+              - crdownload
+              - part
+              - download
           - LastModified:
               days: 30
         actions:
