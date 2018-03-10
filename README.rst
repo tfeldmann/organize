@@ -13,11 +13,17 @@ organize
 
 Install via pip (requirement: Python 3.3+):
 
-``$ pip3 install organize-tool``
+``$ pip install organize-tool`` (or ``$ pip3 install organize-tool``)
 
-Run the script with:
+Setup your file management rules:
 
-``$ organize``
+``$ organize config``
+
+Simulate / run:
+
+``$ organize sim``
+
+``$ organize run``
 
 
 Why you might find this useful
@@ -26,11 +32,11 @@ Your desktop is a mess? You cannot find anything in your downloads and
 documents? Sorting and renaming all these files by hand is too tedious?
 Time to automate it once and benefit from it forever.
 
-`organize` is the open-source alternative to Hazel for macOS or File Juggler
-for Windows that runs on the command line.
+`organize` is a command line, open-source alternative to apps like Hazel (macOS) or File Juggler
+(Windows).
 
-The following yaml code goes into a file named `config.yaml` in the folder
-shown with ``$ organize config``:
+In your shell, run ``$ organize config`` to edit the configuration and enter
+(alternatively create a file ``config.yaml`` at the path shown with ``$ organize config --path``):
 
 - `config.yaml`:
 
@@ -55,20 +61,22 @@ shown with ``$ organize config``:
               - crdownload
               - part
             - LastModified:
-              days: 30
+                days: 30
           actions:
             - Trash
 
-``$ organize run`` will now move all PNGs and JPGs older than one year from your
-desktop and downloads folder into the trash. It is that easy.
+``$ organize run`` will now move all your screenshots from your desktop into a
+subfolder Screenshots (the folder will be created if it does not exist) and put
+all incomplete downloader older than 30 days into the trash.
+It is that easy.
 
 Feeling insecure? Run ``$ organize sim`` to see what would happen without
 touching your files.
 
-But there is more. You want to move files, use custom
-shell scripts or match filenames with regular expressions?
-`organize` has you covered. You can even use template strings and extract
-information from your files.
+But there is more. You want to rename / copy files, run custom
+shell / python scripts or match filenames with regular expressions?
+`organize` has you covered. You can even modify the actions according to
+information about the file using placeholder variables.
 
 Have a look at the full documentation at https://organize.readthedocs.io/.
 
