@@ -30,14 +30,14 @@ Your desktop is a mess? You cannot find anything in your downloads and
 documents? Sorting and renaming all these files by hand is too tedious?
 Time to automate it once and benefit from it forever.
 
-`organize` is a command line, open-source alternative to apps like Hazel (macOS)
+*organize* is a command line, open-source alternative to apps like Hazel (macOS)
 or File Juggler (Windows).
 
 In your shell, run ``$ organize config`` to edit the configuration and enter
 (alternatively create a file ``config.yaml`` at the path shown with
 ``$ organize config --path``):
 
-- `config.yaml`:
+- ``config.yaml``:
 
   .. code-block:: yaml
 
@@ -123,11 +123,11 @@ of what is possible with placeholder variables:
         actions:
           - Move: '~/Documents/{extension.upper}/{lastmodified.year}/'
 
-Given we have two files in our `~/Documents` folder named `script.docx` from
-year 2018 and `demo.pdf` from year 2016 this will happen:
+Given we have two files in our ``~/Documents`` folder named ``script.docx`` from
+year 2018 and ``demo.pdf`` from year 2016 this will happen:
 
-- `script.docx` will be moved to `~/Documents/DOCX/2018/script.docx`
-- `demo.pdf` will be moved to `~/Documents/PDF/2016/demo.pdf`
+- ``script.docx`` will be moved to ``~/Documents/DOCX/2018/script.docx`
+- ``demo.pdf`` will be moved to ``~/Documents/PDF/2016/demo.pdf`
 
 (Have a look at the full documentation to see powerful examples of placeholder
 variables with named groups in regular expressions.)
