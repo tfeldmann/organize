@@ -25,14 +25,26 @@ class Rename(Action):
         - Convert all .PDF file extensions to lowercase (.pdf):
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-                # config.yaml
-                rules:
-                - folders: '~/Desktop'
-                  filters:
-                    - Extension: PDF
-                  actions:
-                    - Rename: "{path.stem}.pdf"
+            rules:
+              - folders: '~/Desktop'
+                filters:
+                  - Extension: PDF
+                actions:
+                  - Rename: "{path.stem}.pdf"
+
+        - Convert **all** file extensions to lowercase:
+
+          .. code-block:: yaml
+            :caption: config.yaml
+
+            rules:
+              - folders: '~/Desktop'
+                filters:
+                  - Extension
+                actions:
+                  - Rename: "{path.stem}{extension.lower}"
     """
 
     def __init__(self, name: str, overwrite=False):

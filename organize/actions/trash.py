@@ -14,9 +14,9 @@ class Trash(Action):
           into the trash:
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-              # config.yaml
-              rules:
+            rules:
               - folders: '~/Desktop'
               - filters:
                   - LastModified:

@@ -24,6 +24,7 @@ class LastModified(Filter):
     :returns:
         - {lastmodified.year} -- the year the file was last modified
         - {lastmodified.month} -- the month the file was last modified
+        - {lastmodified.day} -- the day the file was last modified
         - {lastmodified.hour} -- the hour the file was last modified
         - {lastmodified.minute} -- the minute the file was last modified
         - {lastmodified.second} -- the second the file was last modified
@@ -32,8 +33,8 @@ class LastModified(Filter):
         - Show all files on your desktop last modified at least 10 days ago:
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-            # config.yaml
             rules:
               - folders: '~/Desktop'
                 filters:
@@ -46,8 +47,8 @@ class LastModified(Filter):
           5 hours:
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-            # config.yaml
             rules:
               - folders: '~/Desktop'
                 filters:
@@ -57,9 +58,10 @@ class LastModified(Filter):
                 actions:
                   - Echo: 'Was modified within the last 5 hours'
 
-        - Sort pdfs by year (last modified)
+        - Sort pdfs by year of last modification
 
           .. code-block:: yaml
+            :caption: config.yaml
 
             rules:
               - folders: '~/Documents'

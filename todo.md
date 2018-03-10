@@ -1,32 +1,32 @@
 # TODO
 
-## Must:
-- [ ] Documentation for {path}
-- [ ] Documentation for {basedir}
-- [ ] Proof-read docs before releasing
+## Next up:
+- [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
+- [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='3 Gb')
+- [ ] Config: 'exclude' directive in rule (like 'filter')
+- [ ] Config: 'include_subfolders' directive in rule
 
-## Nice to have:
+## Maybe sometime:
+- [ ] Config: Case insensitive filter and action matching
+- [ ] Config: Rule names
+- [ ] Config: Warning if multiple rules apply to the same file?
+- [ ] Config: Filter modes all, none, any?
+- [ ] Config: jsonschema for user config validation?
+- [ ] Config: Flatten filter lists
+- [ ] Core: User plugins
+- [ ] Core: show docstring of individual filters, actions in help
 - [ ] Action: Zip
 - [ ] Action: E-Mail
 - [ ] Action: Print (on printer)
 - [ ] Action: Notify (desktop notification)
 - [ ] Filter: Python (+ docs)
-- [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
-- [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='')
-- [ ] Filter: Exif data
 - [ ] Filter: id3 tag data
-- [ ] Config: 'exclude' directive in rule (like 'filter')
-- [ ] Config: A way to recurse through subfolders
-- [ ] Config: Case insensitive filter and action matching
-- [ ] Config: Flatten filter lists
-- [ ] Config: Rule names
-- [ ] Config: Warning if multiple rules apply to the same file?
-- [ ] Config: Filter modes all, none, any?
-- [ ] Config: jsonschema for user config validation?
-- [ ] Core: User plugins
-- [ ] Core: show docstring of individual filters, actions in help
+- [ ] Filter: Exif data
 
 ## Done:
+- [x] Proof-read docs before releasing  @2018-03-10
+- [x] Documentation for {path}  @2018-03-10
+- [x] Documentation for {basedir}  @2018-03-10
 - [x] Quickstart with examples (Put all screenshots in folder, trash old unfinished downloads)  @2018-03-08
 - [x] Core: Increment existing counters in filename  @2018-03-03
 - [x] Test: Copy  @2018-03-03

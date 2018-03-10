@@ -13,15 +13,7 @@ organize
 
 Install via pip (requirement: Python 3.3+):
 
-``$ pip install organize-tool`` (or ``$ pip3 install organize-tool``)
-
-Setup your file management rules:
-
-``$ organize config`` (See below for examples)
-
-Simulate / run:
-
-``$ organize sim`` / ``$ organize run``
+``$ pip install organize-tool``
 
 
 Why you might find this useful
@@ -126,11 +118,8 @@ of what is possible with placeholder variables:
 Given we have two files in our ``~/Documents`` folder named ``script.docx`` from
 year 2018 and ``demo.pdf`` from year 2016 this will happen:
 
-- ``script.docx`` will be moved to ``~/Documents/DOCX/2018/script.docx`
-- ``demo.pdf`` will be moved to ``~/Documents/PDF/2016/demo.pdf`
-
-(Have a look at the full documentation to see powerful examples of placeholder
-variables with named groups in regular expressions.)
+- ``script.docx`` will be moved to ``~/Documents/DOCX/2018/script.docx``
+- ``demo.pdf`` will be moved to ``~/Documents/PDF/2016/demo.pdf``
 
 
 Command line interface

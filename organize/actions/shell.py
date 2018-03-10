@@ -1,9 +1,9 @@
-import sys
 import logging
 import subprocess
 
-from .action import Action
 from organize.utils import Path
+
+from .action import Action
 
 
 class Shell(Action):
@@ -14,17 +14,16 @@ class Shell(Action):
     :param str cmd: The command to execute.
 
     Example:
-      - Find all VDI Papers on your desktop, move them into documents and open the file afterwards:
+      - (macOS) Open all pdfs on your desktop:
 
         .. code-block:: yaml
+          :caption: config.yaml
 
-          # config.yaml
           rules:
             - folders: '~/Desktop'
               filters:
-                - PaperVDI
+                - Extension: pdf
               actions:
-                - Move: '~/Documents/VDI Nachrichten/VDI {vdi.year}-{vdi.month:02}-{vdi.day:02}.pdf'
                 - Shell: 'open "{path}"'
     """
 

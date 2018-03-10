@@ -7,17 +7,19 @@ Editing the configuration
 =========================
 All configuration takes place in your `config.yaml` file.
 
-- To show the full path to your configuration file:::
+- To show the full path to your configuration file::
 
     $ organize config --path
 
-- To open the folder containing the configuration file:::
+- To open the folder containing the configuration file::
 
     $ organize config --open-folder
 
-- To edit your configuration in ``$EDITOR`` run:::
+- To edit your configuration in ``$EDITOR`` run
 
-    $ organize config
+  .. code-block:: bash
+
+    $ organize config  # example: "EDITOR=vim organize config"
 
 
 Rule syntax
@@ -228,5 +230,11 @@ Use the dot notation to access properties of ``{path}`` and ``{basedir}``:
 
 and any other property of the python ``pathlib.Path`` (`official documentation <https://docs.python.org/3/library/pathlib.html#methods-and-properties>`_) object.
 
-Additionally filters may return information about the file.
-The regular expressio
+Additionally :ref:`Filters` may return information about the file.
+Check the documentation and examples of the filter to see available placeholder
+variables and usage examples. Some examples include:
+
+- ``{lastmodified.year}`` -- the year the file was last modified
+- ``{regex.yournamedgroup}`` -- anything you can extract via regular expressions
+- ``{extension.upper}`` -- the file extension in uppercase
+- ... and many more.

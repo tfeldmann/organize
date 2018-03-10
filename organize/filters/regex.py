@@ -14,14 +14,15 @@ class Regex(Filter):
     Any named groups in your regular expression will be returned like this:
 
     :returns:
-        - regex.[your named group]
+        - {regex.yourgroupname} -- The text matched with the named group
+          ``(?P<yourgroupname>)``
 
     Examples:
         - Match an invoice with a regular expression:
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-            # config.yaml
             rules:
               - folders: '~/Desktop'
                 filters:
@@ -35,8 +36,8 @@ class Regex(Filter):
           group ``the_number``.
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-            # config.yaml
             rules:
               - folders: ~/Desktop
                 filters:

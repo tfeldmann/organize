@@ -15,33 +15,33 @@ class Echo(Action):
         - Prints "Found old file" for each file older than one year:
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-            # config.yaml
             rules:
               - folders: ~/Desktop
                 filters:
                   - LastModified:
                       days: 365
                 actions:
-                  - Echo: "Found old file"
+                  - Echo: 'Found old file'
 
         - Prints "Hello World!" and filepath for each file on the desktop:
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-            # config.yaml
             rules:
               - folders:
                   - ~/Desktop
                 actions:
-                  - Echo: "Hello World! {path}"
+                  - Echo: 'Hello World! {path}'
 
         - This will print something like ``Found a PNG: "test.png"`` for each
           file on your desktop:
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-            # config.yaml
             rules:
               - folders:
                   - ~/Desktop

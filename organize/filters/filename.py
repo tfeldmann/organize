@@ -23,8 +23,8 @@ class Filename(Filter):
         - Match all files starting with 'Invoice':
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-            # config.yaml
             rules:
               - folders: '~/Desktop'
                 filters:
@@ -37,8 +37,8 @@ class Filename(Filter):
           (case insensitive)
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-            # config.yaml
             rules:
               - folders: '~/Desktop'
                 filters:

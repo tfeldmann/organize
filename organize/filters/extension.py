@@ -37,8 +37,8 @@ class Extension(Filter):
         - Match a single file extension:
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-            # config.yaml
             rules:
               - folders: '~/Desktop'
                 filters:
@@ -49,8 +49,8 @@ class Extension(Filter):
         - Match multiple file extensions:
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-            # config.yaml
             rules:
               - folders: '~/Desktop'
                 filters:
@@ -63,8 +63,8 @@ class Extension(Filter):
         - Make all file extensions lowercase:
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-            # config.yaml
             rules:
               - folder: '~/Desktop'
                 filters:
@@ -75,8 +75,8 @@ class Extension(Filter):
         - Using extension lists:
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-            # config.yaml
             img_ext: &img
               - png
               - jpg

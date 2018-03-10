@@ -16,9 +16,9 @@ class Python(Action):
         literal spanning multiple lines.
 
         .. code-block:: yaml
+            :caption: config.yaml
 
-          # config.yaml
-          rules:
+            rules:
             - folders: '~/Desktop'
               actions:
                 - Python: |
@@ -29,9 +29,9 @@ class Python(Action):
       - You can access filter data:
 
         .. code-block:: yaml
+            :caption: config.yaml
 
-          # config.yaml
-          rules:
+            rules:
             - folders: ~/Desktop
               filters:
                 - Regex: '^(?P<name>.*)\.(?P<extension>.*)$'
@@ -44,9 +44,9 @@ class Python(Action):
         filename starting with an underscore:
 
         .. code-block:: yaml
+            :caption: config.yaml
 
-          # config.yaml
-          rules:
+            rules:
             - folders: ~/Desktop
               filters:
                 - Filename:
