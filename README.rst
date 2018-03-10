@@ -61,6 +61,7 @@ In your shell, run ``$ organize config`` to edit the configuration and enter
                 - part
             - LastModified:
                 days: 30
+                mode: older
           actions:
             - Trash
 
@@ -82,14 +83,14 @@ Have a look at the full documentation at https://organize.readthedocs.io/.
 Functionality
 -------------
 
-Select files by (filters):
+**Select files by** (filters):
 
 - Extension
 - Regular expression
 - Last modified date (newer, older)
 - Filename (startswith, endswith, contains)
 
-Organize your files (actions):
+**Organize your files** (actions):
 
 - Move files
 - Copy files
@@ -110,18 +111,18 @@ Advanced usage example
 This is not neccessarily how you *should* organize your files but is a example
 of what is possible with placeholder variables:
 
-.. code-block::yaml
+.. code-block:: yaml
 
-  rules:
-    # Sort pdfs by year (last modified)
-    - folders: '~/Documents'
-      filters:
-        - Extension:
-            - pdf
-            - docx
-        - LastModified
-      actions:
-        - Move: '~/Documents/{extension.upper}/{lastmodified.year}/'
+    rules:
+      # Sort pdfs by year (last modified)
+      - folders: '~/Documents'
+        filters:
+          - Extension:
+              - pdf
+              - docx
+          - LastModified
+        actions:
+          - Move: '~/Documents/{extension.upper}/{lastmodified.year}/'
 
 Given we have two files in our `~/Documents` folder named `script.docx` from
 year 2018 and `demo.pdf` from year 2016 this will happen:
