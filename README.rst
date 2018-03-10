@@ -105,6 +105,34 @@ variables.
 If you miss a feature please file an issue. Pull requests welcome!
 
 
+Advanced usage example
+----------------------
+This is not neccessarily how you *should* organize your files but is a example
+of what is possible with placeholder variables:
+
+.. code-block::yaml
+
+  rules:
+    # Sort pdfs by year (last modified)
+    - folders: '~/Documents'
+      filters:
+        - Extension:
+            - pdf
+            - docx
+        - LastModified
+      actions:
+        - Move: '~/Documents/{extension.upper}/{lastmodified.year}/'
+
+Given we have two files in our `~/Documents` folder named `script.docx` from
+year 2018 and `demo.pdf` from year 2016 this will happen:
+
+- `script.docx` will be moved to `~/Documents/DOCX/2018/script.docx`
+- `demo.pdf` will be moved to `~/Documents/PDF/2016/demo.pdf`
+
+(Have a look at the full documentation to see powerful examples of placeholder
+variables with named groups in regular expressions.)
+
+
 Command line interface
 ----------------------
 ::

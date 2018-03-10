@@ -91,9 +91,10 @@ Aliases are a standard feature of the YAML syntax.
 
 
   all_my_messy_folders: &all
-    - '/path/one'
-    - '/path/two'
-    - '/path/three'
+    - ~/Desktop
+    - ~/Downloads
+    - ~/Documents
+    - ~/Dropbox
 
   rules:
     - folders: *all
@@ -145,7 +146,7 @@ You can even use multiple folder lists:
 Filter syntax
 =============
 ``filters`` is a list of :ref:`Filters`.
-In general, filters are defined like this:
+Filters are defined like this:
 
 .. code-block:: yaml
   :caption: config.yaml
@@ -226,3 +227,6 @@ Use the dot notation to access properties of ``{path}`` and ``{basedir}``:
 - ``{basedir.parent}`` -- the full path to the base folder's parent
 
 and any other property of the python ``pathlib.Path`` (`official documentation <https://docs.python.org/3/library/pathlib.html#methods-and-properties>`_) object.
+
+Additionally filters may return information about the file.
+The regular expressio

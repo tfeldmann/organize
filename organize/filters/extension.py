@@ -1,8 +1,22 @@
-from collections import namedtuple
-from organize.utils import DotDict, flatten
+from organize.utils import flatten
 from .filter import Filter
 
-ExtensionResult = namedtuple('ExtensionResult', 'lower upper')
+
+class ExtensionResult:
+
+    def __init__(self, ext):
+        self.ext = ext if ext.startswith('.') else '.%s' % ext
+
+    @property
+    def lower(self):
+        return self.ext.lower()
+
+    @property
+    def upper(self):
+        return self.ext.upper()
+
+    def __str__(self):
+        return self.ext
 
 
 class Extension(Filter):
@@ -11,11 +25,12 @@ class Extension(Filter):
     Filter by file extension
 
     :param extensions:
-        The file extensions to match (do not need to start with a colon).
+        The file extensions to match (does not need to start with a colon).
 
     :returns:
-        - `extension.lower`: the file extension including colon in lowercase
-        - `extension.upper`: the file extension including colon in UPPERCASE
+        - `{extension}`: the original file extension including colon.
+        - `{extension.lower}`: the file extension in lowercase including colon.
+        - `{extension.upper}`: the file extension in UPPERCASE including colon.
 
     Examples:
 
@@ -88,21 +103,14 @@ class Extension(Filter):
 
     @staticmethod
     def normalize_extension(ext):
-        if ext.startswith('.'):
-            return ext.lower()
-        else:
-            return '.%s' % ext.lower()
+        return ext.lower() if ext.startswith('.') else '.%s' % ext.lower()
 
     def matches(self, path):
         return not self.extensions or path.suffix.lower() in self.extensions
 
     def parse(self, path):
-        ext = self.normalize_extension(path.suffix)
-        extension = DotDict({
-            'lower': ext,
-            'upper': ext.upper()
-        })
-        return {'extension': extension}
+        result = ExtensionResult(path.suffix)
+        return {'extension': result}
 
     def __str__(self):
         return 'Extension(%s)' % ', '.join(self.extensions)

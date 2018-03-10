@@ -13,3 +13,18 @@ def test_extension():
     ]
     for path, match in testpathes:
         assert extension.matches(path) == match
+
+
+def test_extension_empty():
+    extension = Extension()
+    assert extension.matches(Path('~/test.txt'))
+
+
+def test_extension_result():
+    path = Path('~/somefile.TxT')
+    extension = Extension('txt')
+    assert extension.matches(path)
+    result = extension.parse(path)['extension']
+    assert str(result) == '.TxT'
+    assert result.lower == '.txt'
+    assert result.upper == '.TXT'

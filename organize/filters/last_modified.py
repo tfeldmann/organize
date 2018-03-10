@@ -21,6 +21,13 @@ class LastModified(Filter):
         before the given time, 'newer' matches all files last modified within
         the given time.
 
+    :returns:
+        - {lastmodified.year} -- the year the file was last modified
+        - {lastmodified.month} -- the month the file was last modified
+        - {lastmodified.hour} -- the hour the file was last modified
+        - {lastmodified.minute} -- the minute the file was last modified
+        - {lastmodified.second} -- the second the file was last modified
+
     Examples:
         - Show all files on your desktop last modified at least 10 days ago:
 
@@ -49,6 +56,18 @@ class LastModified(Filter):
                       - mode: newer
                 actions:
                   - Echo: 'Was modified within the last 5 hours'
+
+        - Sort pdfs by year (last modified)
+
+          .. code-block:: yaml
+
+            rules:
+              - folders: '~/Documents'
+                filters:
+                  - Extension: pdf
+                  - LastModified
+                actions:
+                  - Move: '~/Documents/PDF/{lastmodified.year}/'
     """
 
     def __init__(self, days=0, hours=0, minutes=0, seconds=0, mode='older'):
@@ -71,7 +90,7 @@ class LastModified(Filter):
 
     def parse(self, path):
         file_modified = self._last_modified(path)
-        return {'last_modified': file_modified}
+        return {'lastmodified': file_modified}
 
     def _last_modified(self, path):
         return datetime.fromtimestamp(path.stat().st_mtime)
