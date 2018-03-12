@@ -61,7 +61,7 @@ class Move(Action):
         expanded_dest = self.fill_template_tags(self.dest, basedir, path, attrs)
         # if only a folder path is given we append the filename to have the full
         # path. We use os.path for that because pathlib removes trailing slashes
-        if expanded_dest.endswith(os.path.sep):
+        if expanded_dest.endswith(('\\', '/')):
             expanded_dest = os.path.join(expanded_dest, path.name)
 
         new_path = Path(expanded_dest).expanduser()
