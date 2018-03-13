@@ -61,17 +61,24 @@ class Rename(Action):
         new_path = full_path.parent / expanded_name
 
         # handle filename collisions
-        if new_path.exists() and not new_path.samefile(full_path):
+        new_path_exists = new_path.exists()
+        new_path_samefile = new_path_exists and new_path.samefile(full_path)
+        if new_path_exists and not new_path_samefile:
             if self.overwrite:
                 self.print('File already exists')
                 Trash().run(basedir, path=new_path, attrs=attrs, simulate=simulate)
             else:
                 new_path = find_unused_filename(new_path)
 
-        self.print('New name: "%s"' % new_path.name)
-        if not simulate:
-            self.log.info('Renaming "%s" to "%s".', full_path, new_path)
-            full_path.rename(new_path)
+        # do nothing if the new name is equal to the old name and the file is
+        # the same
+        if new_path_samefile and new_path == full_path:
+            self.print('Keep name')
+        else:
+            self.print('New name: "%s"' % new_path.name)
+            if not simulate:
+                self.log.info('Renaming "%s" to "%s".', full_path, new_path)
+                full_path.rename(new_path)
         return new_path
 
     def __str__(self):

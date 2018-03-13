@@ -28,13 +28,14 @@ def test_into_folder(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkd
     mock_exists.return_value = False
     mock_samefile.return_value = False
     move = Move(dest='~/somefolder/', overwrite=False)
-    move.run(basedir, path, {}, False)
+    new_path = move.run(basedir, path, {}, False)
     mock_mkdir.assert_called_with(exist_ok=True, parents=True)
     mock_exists.assert_called_with()
     mock_trash.assert_not_called()
     mock_move.assert_called_with(
         src=os.path.join(USER_DIR, 'test.py'),
         dst=os.path.join(USER_DIR, 'somefolder', 'test.py'))
+    assert new_path is not None
 
 
 def test_overwrite(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
@@ -43,7 +44,7 @@ def test_overwrite(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir
     mock_exists.return_value = True
     mock_samefile.return_value = False
     move = Move(dest='~/somefolder/', overwrite=True)
-    move.run(basedir, path, {}, False)
+    new_path = move.run(basedir, path, {}, False)
     mock_mkdir.assert_called_with(exist_ok=True, parents=True)
     mock_exists.assert_called_with()
     mock_trash.assert_called_with(
@@ -51,6 +52,7 @@ def test_overwrite(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir
     mock_move.assert_called_with(
         src=os.path.join(USER_DIR, 'test.py'),
         dst=os.path.join(USER_DIR, 'somefolder', 'test.py'))
+    assert new_path is not None
 
 
 def test_already_exists(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
@@ -59,13 +61,14 @@ def test_already_exists(mock_exists, mock_samefile, mock_move, mock_trash, mock_
     mock_exists.side_effect = [True, False]
     mock_samefile.return_value = False
     move = Move(dest='~/folder/', overwrite=False)
-    move.run(basedir, path, {}, False)
+    new_path = move.run(basedir, path, {}, False)
     mock_mkdir.assert_called_with(exist_ok=True, parents=True)
     mock_exists.assert_called_with()
     mock_trash.assert_not_called()
     mock_move.assert_called_with(
         src=os.path.join(USER_DIR, 'test.py'),
         dst=os.path.join(USER_DIR, 'folder', 'test 2.py'))
+    assert new_path is not None
 
 
 def test_already_exists_multiple(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
@@ -74,25 +77,27 @@ def test_already_exists_multiple(mock_exists, mock_samefile, mock_move, mock_tra
     mock_exists.side_effect = [True, True, True, False]
     mock_samefile.return_value = False
     move = Move(dest='~/folder/', overwrite=False)
-    move.run(basedir, path, {}, False)
+    new_path = move.run(basedir, path, {}, False)
     mock_mkdir.assert_called_with(exist_ok=True, parents=True)
     mock_exists.assert_called_with()
     mock_trash.assert_not_called()
     mock_move.assert_called_with(
         src=os.path.join(USER_DIR, 'test.py'),
         dst=os.path.join(USER_DIR, 'folder', 'test 4.py'))
+    assert new_path is not None
 
 
 def test_makedirs(mock_parent, mock_move, mock_trash):
     basedir = Path('~')
     path = Path('~') / 'test.py'
     move = Move(dest='~/some/new/folder/', overwrite=False)
-    move.run(basedir, path, {}, False)
+    new_path = move.run(basedir, path, {}, False)
     mock_parent.mkdir.assert_called_with(parents=True, exist_ok=True)
     mock_trash.assert_not_called()
     mock_move.assert_called_with(
         src=os.path.join(USER_DIR, 'test.py'),
         dst=os.path.join(USER_DIR, 'some', 'new', 'folder', 'test.py'))
+    assert new_path is not None
 
 
 def test_attrs(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
@@ -101,13 +106,14 @@ def test_attrs(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
     mock_exists.return_value = False
     mock_samefile.return_value = False
     move = Move(dest='~/{nr.upper}-name.py', overwrite=False)
-    move.run(basedir, path, {'nr': DotDict({'upper': 1})}, False)
+    new_path = move.run(basedir, path, {'nr': DotDict({'upper': 1})}, False)
     mock_mkdir.assert_called_with(exist_ok=True, parents=True)
     mock_exists.assert_called_with()
     mock_trash.assert_not_called()
     mock_move.assert_called_with(
         src=os.path.join(USER_DIR, 'test.py'),
         dst=os.path.join(USER_DIR, '1-name.py'))
+    assert new_path is not None
 
 
 def test_path(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
@@ -118,10 +124,39 @@ def test_path(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
     move = Move(
         dest='~/{path.stem}/{path.suffix}/{path.name}',
         overwrite=False)
-    move.run(basedir, path, {}, False)
+    new_path = move.run(basedir, path, {}, False)
     mock_mkdir.assert_called_with(exist_ok=True, parents=True)
     mock_exists.assert_called_with()
     mock_trash.assert_not_called()
     mock_move.assert_called_with(
         src=os.path.join(USER_DIR, 'test.py'),
         dst=os.path.join(USER_DIR, 'test', '.py', 'test.py'))
+    assert new_path is not None
+
+
+def test_keep_location(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
+    basedir = Path('~')
+    path = Path('~') / 'test.py'
+    mock_exists.return_value = True
+    mock_samefile.return_value = True
+    move = Move(dest='~/test.py')
+    new_path = move.run(basedir, path, {}, False)
+    mock_mkdir.assert_not_called()
+    mock_exists.assert_called_with()
+    mock_trash.assert_not_called()
+    mock_move.assert_not_called()
+    assert new_path is not None
+
+
+def test_dont_keep_case_sensitive(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
+    basedir = Path('~')
+    path = Path('~') / 'test.py'
+    mock_exists.return_value = True
+    mock_samefile.return_value = True
+    move = Move(dest='~/TEST.PY')
+    new_path = move.run(basedir, path, {}, False)
+    mock_mkdir.assert_called()
+    mock_exists.assert_called_with()
+    mock_trash.assert_not_called()
+    mock_move.assert_called()
+    assert new_path is not None

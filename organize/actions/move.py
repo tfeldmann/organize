@@ -58,26 +58,33 @@ class Move(Action):
     def run(self, basedir: Path, path: Path, attrs: dict, simulate: bool):
         full_path = fullpath(path)
 
-        expanded_dest = self.fill_template_tags(self.dest, basedir, path, attrs)
+        expanded_dest = self.fill_template_tags(
+            self.dest, basedir, path, attrs)
         # if only a folder path is given we append the filename to have the full
         # path. We use os.path for that because pathlib removes trailing slashes
         if expanded_dest.endswith(('\\', '/')):
             expanded_dest = os.path.join(expanded_dest, path.name)
 
         new_path = fullpath(expanded_dest)
-        if new_path.exists() and not new_path.samefile(full_path):
+        new_path_exists = new_path.exists()
+        new_path_samefile = new_path_exists and new_path.samefile(full_path)
+        if new_path_exists and not new_path_samefile:
             if self.overwrite:
                 self.print('File already exists')
                 Trash().run(basedir, path=new_path, attrs=attrs, simulate=simulate)
             else:
                 new_path = find_unused_filename(new_path)
 
-        self.print('Move to "%s"' % new_path)
-        if not simulate:
-            self.log.info('Creating folder if not exists: %s', new_path.parent)
-            new_path.parent.mkdir(parents=True, exist_ok=True)
-            self.log.info('Moving "%s" to "%s"', full_path, new_path)
-            shutil.move(src=str(full_path), dst=str(new_path))
+        if new_path_samefile and new_path == full_path:
+            self.print('Keep location')
+        else:
+            self.print('Move to "%s"' % new_path)
+            if not simulate:
+                self.log.info(
+                    'Creating folder if not exists: %s', new_path.parent)
+                new_path.parent.mkdir(parents=True, exist_ok=True)
+                self.log.info('Moving "%s" to "%s"', full_path, new_path)
+                shutil.move(src=str(full_path), dst=str(new_path))
         return new_path
 
     def __str__(self):
