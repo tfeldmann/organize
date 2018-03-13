@@ -37,8 +37,8 @@ class Copy(Action):
                 actions:
                   - Copy: '~/Desktop/somefolder/'
 
-        - Use a placeholder to copy all .pdf files into a PDF folder and all .jpg
-          files into a .JPG folder. Existing files will be overwritten.
+        - Use a placeholder to copy all .pdf files into a "PDF" folder and all .jpg
+          files into a "JPG" folder. Existing files will be overwritten.
 
           .. code-block:: yaml
             :caption: config.yaml

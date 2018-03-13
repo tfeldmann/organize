@@ -44,7 +44,7 @@ class Rename(Action):
                 filters:
                   - Extension
                 actions:
-                  - Rename: "{path.stem}{extension.lower}"
+                  - Rename: "{path.stem}.{extension.lower}"
     """
 
     def __init__(self, name: str, overwrite=False):

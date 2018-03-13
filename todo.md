@@ -23,6 +23,7 @@
 - [ ] Filter: Exif data
 
 ## Done:
+- [x] Filter: Extension - remove colon  @2018-03-13
 - [x] Documentation: subfolders  @2018-03-13
 - [x] Documentation: system_files  @2018-03-13
 - [x] Config: 'subfolders' directive in rule  @2018-03-13

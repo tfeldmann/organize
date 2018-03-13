@@ -16,7 +16,7 @@ def test_basic():
           - Extension: txt
         actions:
           - Move: {dest: '~/Desktop/New Folder', overwrite: true}
-          - Echo: 'Moved {path}{extension.upper}'
+          - Echo: 'Moved {path}/{extension.upper}'
       - folders:
           - '~/test1'
           - /test2
@@ -32,7 +32,7 @@ def test_basic():
             filters=[Extension('.JPG', 'PNG'), Extension('txt')],
             actions=[
                 Move(dest='~/Desktop/New Folder', overwrite=True),
-                Echo(msg='Moved {path}{extension.upper}')
+                Echo(msg='Moved {path}/{extension.upper}')
             ],
             subfolders=False,
             system_files=False,

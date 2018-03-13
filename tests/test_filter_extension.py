@@ -3,7 +3,7 @@ from organize.filters import Extension
 
 
 def test_extension():
-    extension = Extension('JPG', 'gif', 'pdf')
+    extension = Extension('JPG', '.gif', 'pdf')
     testpathes = [
         (Path('~/somefile.pdf'), True),
         (Path('/home/test/somefile.pdf.jpeg'), False),
@@ -25,6 +25,13 @@ def test_extension_result():
     extension = Extension('txt')
     assert extension.matches(path)
     result = extension.parse(path)['extension']
-    assert str(result) == '.TxT'
-    assert result.lower == '.txt'
-    assert result.upper == '.TXT'
+    assert str(result) == 'TxT'
+    assert result.lower == 'txt'
+    assert result.upper == 'TXT'
+
+    extension = Extension('.txt')
+    assert extension.matches(path)
+    result = extension.parse(path)['extension']
+    assert str(result) == 'TxT'
+    assert result.lower == 'txt'
+    assert result.upper == 'TXT'

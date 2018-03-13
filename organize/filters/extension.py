@@ -5,7 +5,7 @@ from .filter import Filter
 class ExtensionResult:
 
     def __init__(self, ext):
-        self.ext = ext if ext.startswith('.') else '.%s' % ext
+        self.ext = ext[1:] if ext.startswith('.') else ext
 
     @property
     def lower(self):
@@ -28,9 +28,9 @@ class Extension(Filter):
         The file extensions to match (does not need to start with a colon).
 
     :returns:
-        - ``{extension}`` -- the original file extension including colon.
-        - ``{extension.lower}`` -- the file extension in lowercase including colon.
-        - ``{extension.upper}`` -- the file extension in UPPERCASE including colon.
+        - ``{extension}`` -- the original file extension (without colon)
+        - ``{extension.lower}`` -- the file extension in lowercase
+        - ``{extension.upper}`` -- the file extension in UPPERCASE
 
     Examples:
 
@@ -55,7 +55,7 @@ class Extension(Filter):
               - folders: '~/Desktop'
                 filters:
                   - Extension:
-                    - jpg
+                    - .jpg
                     - jpeg
                 actions:
                   - Echo: 'Found JPG file: {path}'
@@ -70,7 +70,7 @@ class Extension(Filter):
                 filters:
                   - Extension
                 actions:
-                  - Rename: '{path.stem}{extension.lower}'
+                  - Rename: '{path.stem}.{extension.lower}'
 
         - Using extension lists:
 
@@ -103,10 +103,18 @@ class Extension(Filter):
 
     @staticmethod
     def normalize_extension(ext):
-        return ext.lower() if ext.startswith('.') else '.%s' % ext.lower()
+        """ strip colon and convert to lowercase """
+        if ext.startswith('.'):
+            return ext[1:].lower()
+        else:
+            return ext.lower()
 
     def matches(self, path):
-        return not self.extensions or path.suffix.lower() in self.extensions
+        if not self.extensions:
+            return True
+        if not path.suffix:
+            return False
+        return self.normalize_extension(path.suffix) in self.extensions
 
     def parse(self, path):
         result = ExtensionResult(path.suffix)
