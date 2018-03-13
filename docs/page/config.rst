@@ -51,10 +51,14 @@ Each rule defines ``folders``, ``filters`` (optional) and ``actions``.
         - Extension: pdf
       actions:
         - Move: ~/otherinbox
+      subfolders: true
+      system_files: false
 
 - ``folders`` is a list of folders you want to organize.
 - ``filters`` is a list of filters to apply to the files - you can filter by file extension, last modified date, regular expressions and many more. See :ref:`Filters`.
 - ``actions`` is a list of actions to apply to the filtered files. You can put them into the trash, move them into another folder and many more. See :ref:`Actions`.
+- ``subfolders`` specifies whether subfolders should be included in the search. Default = false
+- ``system_files`` specifies whether to include system files (desktop.ini, thumbs.db, .DS_Store) in the search. Default = false
 
 .. note::
    At the moment organize only handles the files at the top level of the folders given in ``folders``.
@@ -207,14 +211,14 @@ Actions can be defined like this:
 
 Variable substitution (placeholders)
 ------------------------------------
-You can use placeholder variables in your actions.
-This is a very important feature of `organize` and allows for much flexibility for complex organization tasks.
+**You can use placeholder variables in your actions.**
 
 Placeholder variables are used with curly braces ``{var}``.
 You always have access to the variables ``{path}`` and ``{basedir}``:
 
 - ``{path}`` -- is the full path to the current file
-- ``{basedir}`` -- the current base folder.
+- ``{basedir}`` -- the current base folder (the base folder is the folder you
+  specify in your configuration).
 
 Use the dot notation to access properties of ``{path}`` and ``{basedir}``:
 
@@ -228,11 +232,14 @@ Use the dot notation to access properties of ``{path}`` and ``{basedir}``:
 - ``{basedir}`` -- the full path to the current base folder
 - ``{basedir.parent}`` -- the full path to the base folder's parent
 
-and any other property of the python ``pathlib.Path`` (`official documentation <https://docs.python.org/3/library/pathlib.html#methods-and-properties>`_) object.
+and any other property of the python ``pathlib.Path`` (`official documentation
+<https://docs.python.org/3/library/pathlib.html#methods-and-properties>`_) object.
 
-Additionally :ref:`Filters` may return information about the file.
-Check the documentation and examples of the filter to see available placeholder
-variables and usage examples. Some examples include:
+Additionally :ref:`Filters` may emit placeholder variables when applied to a
+path. Check the documentation and examples of the filter to see available
+placeholder variables and usage examples.
+
+Some examples include:
 
 - ``{lastmodified.year}`` -- the year the file was last modified
 - ``{regex.yournamedgroup}`` -- anything you can extract via regular expressions

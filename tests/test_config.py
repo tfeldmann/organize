@@ -33,12 +33,16 @@ def test_basic():
             actions=[
                 Move(dest='~/Desktop/New Folder', overwrite=True),
                 Echo(msg='Moved {path}{extension.upper}')
-            ]
+            ],
+            subfolders=False,
+            system_files=False,
         ),
         Rule(
             folders=['~/test1', '/test2'],
             filters=[],
-            actions=[Shell(cmd='say {path.stem}')]
+            actions=[Shell(cmd='say {path.stem}')],
+            subfolders=False,
+            system_files=False,
         )
     ]
 
@@ -81,12 +85,16 @@ def test_yaml_ref():
                 Extension('.wav', '.PNG', 'jpg'),
                 LastModified(days=10)],
             actions=[
-                Echo(msg='Hello World')]
+                Echo(msg='Hello World')],
+            subfolders=False,
+            system_files=False,
         ),
         Rule(
             folders=['~/Desktop', '~/Documents', '/more/more'],
             filters=[],
-            actions=[Trash()]
+            actions=[Trash()],
+            subfolders=False,
+            system_files=False,
         )
     ]
 
@@ -132,11 +140,15 @@ def test_empty_filters():
         Rule(
             folders=['/'],
             filters=[],
-            actions=[Trash()]
+            actions=[Trash()],
+            subfolders=False,
+            system_files=False,
         ),
         Rule(
             folders=['~/'],
             filters=[],
-            actions=[Trash()]
+            actions=[Trash()],
+            subfolders=False,
+            system_files=False,
         )
     ]

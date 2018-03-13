@@ -1,12 +1,13 @@
 # TODO
 
 ## Next up:
+- [ ] Documentation: subfolders
+- [ ] Documentation: system_files
 - [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='3 Gb')
-- [ ] Config: 'exclude' directive in rule (like 'filter')
-- [ ] Config: 'include_subfolders' directive in rule
 
 ## Maybe sometime:
+- [ ] Config: 'exclude' directive in rule (like 'filter') -> mode any, all?
 - [ ] Config: Case insensitive filter and action matching
 - [ ] Config: Rule names
 - [ ] Config: Warning if multiple rules apply to the same file?
@@ -24,6 +25,7 @@
 - [ ] Filter: Exif data
 
 ## Done:
+- [x] Config: 'subfolders' directive in rule  @2018-03-13
 - [x] Proof-read docs before releasing  @2018-03-10
 - [x] Documentation for {path}  @2018-03-10
 - [x] Documentation for {basedir}  @2018-03-10

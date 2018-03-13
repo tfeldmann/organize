@@ -8,7 +8,7 @@ from . import actions, filters
 from .utils import Path, first_key, flatten
 
 logger = logging.getLogger(__name__)
-Rule = namedtuple('Rule', 'filters actions folders')
+Rule = namedtuple('Rule', 'filters actions folders subfolders system_files')
 
 
 class Config:
@@ -115,8 +115,7 @@ class Config:
 
     @property
     def rules(self) -> List[Rule]:
-        """:returns: A list of instantiated Rules
-        """
+        """ :returns: A list of instantiated Rules """
         if 'rules' not in self.config:
             raise self.NoRulesFoundError()
         result = []
@@ -135,7 +134,10 @@ class Config:
             rule = Rule(
                 folders=rule_folders,
                 filters=rule_filters,
-                actions=rule_actions)
+                actions=rule_actions,
+                subfolders=rule_item.get('subfolders', False),
+                system_files=rule_item.get('system_files', False),
+            )
             result.append(rule)
         return result
 

@@ -19,8 +19,12 @@ Job.__doc__ = """
 
 def all_files_for_rule(rule):
     for folder in rule.folders:
-        for path in fullpath(folder).glob('*.*'):
-            yield (folder, path)
+        globstr = '**/*.*' if rule.subfolders else '*.*'
+        for path in fullpath(folder).glob(globstr):
+            if path.is_file() and (
+                    rule.system_files or
+                    path.name not in ('thumbs.db', 'desktop.ini', '.DS_Store')):
+                yield (folder, path)
 
 
 def find_jobs(rules):
@@ -58,7 +62,7 @@ def action_pipeline(job: Job, attrs: dict, simulate: bool):
             if new_path is not None:
                 current_path = new_path
     except Exception as e:
-        logging.exception(e)
+        logger.exception(e)
         action.print('%s %s' % (colored.red('ERROR!', bold=True), e))
 
 
@@ -66,7 +70,7 @@ def execute_rules(rules, simulate):
     jobs = list(find_jobs(rules))
     if not jobs:
         msg = 'Nothing to do.'
-        logging.info(msg)
+        logger.info(msg)
         puts(msg)
         return
 
