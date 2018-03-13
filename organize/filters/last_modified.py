@@ -22,12 +22,12 @@ class LastModified(Filter):
         the given time.
 
     :returns:
-        - {lastmodified.year} -- the year the file was last modified
-        - {lastmodified.month} -- the month the file was last modified
-        - {lastmodified.day} -- the day the file was last modified
-        - {lastmodified.hour} -- the hour the file was last modified
-        - {lastmodified.minute} -- the minute the file was last modified
-        - {lastmodified.second} -- the second the file was last modified
+        - ``{lastmodified.year}`` -- the year the file was last modified
+        - ``{lastmodified.month}`` -- the month the file was last modified
+        - ``{lastmodified.day}`` -- the day the file was last modified
+        - ``{lastmodified.hour}`` -- the hour the file was last modified
+        - ``{lastmodified.minute}`` -- the minute the file was last modified
+        - ``{lastmodified.second}`` -- the second the file was last modified
 
     Examples:
         - Show all files on your desktop last modified at least 10 days ago:

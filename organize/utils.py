@@ -3,12 +3,17 @@ from collections import OrderedDict
 
 import colorama
 
-# in python < 3.5 the pathlib module misses some features so we have to import
+# in python < 3.6 the pathlib module misses some features so we have to import
 # a backported alternative
-if sys.version_info < (3, 5):
+if sys.version_info < (3, 6):
     from pathlib2 import Path
 else:
     from pathlib import Path
+
+
+def fullpath(path):
+    """ Expand '~' and resolve the given path """
+    return Path(path).expanduser().resolve(strict=False)
 
 
 def bold(text):

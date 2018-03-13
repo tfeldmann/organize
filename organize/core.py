@@ -3,7 +3,7 @@ from collections import defaultdict, namedtuple
 
 from clint.textui import colored, indent, puts
 
-from .utils import Path, bold
+from .utils import Path, fullpath, bold
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ Job.__doc__ = """
 
 def all_files_for_rule(rule):
     for folder in rule.folders:
-        for path in Path(folder).expanduser().glob('*.*'):
+        for path in fullpath(folder).glob('*.*'):
             yield (folder, path)
 
 
@@ -51,7 +51,7 @@ def action_pipeline(job: Job, attrs: dict, simulate: bool):
         current_path = job.path.resolve()
         for action in job.actions:
             new_path = action.run(
-                basedir=Path(job.folder).expanduser(),
+                basedir=fullpath(job.folder),
                 path=current_path,
                 attrs=attrs,
                 simulate=simulate)

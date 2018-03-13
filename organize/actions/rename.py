@@ -1,7 +1,7 @@
 import os
 import logging
 
-from organize.utils import Path, find_unused_filename
+from organize.utils import Path, fullpath, find_unused_filename
 
 from .action import Action
 from .trash import Trash
@@ -56,7 +56,7 @@ class Rename(Action):
         self.log = logging.getLogger(__name__)
 
     def run(self, basedir: Path, path: Path, attrs: dict, simulate: bool) -> Path:
-        full_path = path.expanduser()
+        full_path = fullpath(path)
         expanded_name = self.fill_template_tags(self.name, basedir, full_path, attrs)
         new_path = full_path.parent / expanded_name
 

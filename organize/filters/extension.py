@@ -28,9 +28,9 @@ class Extension(Filter):
         The file extensions to match (does not need to start with a colon).
 
     :returns:
-        - `{extension}`: the original file extension including colon.
-        - `{extension.lower}`: the file extension in lowercase including colon.
-        - `{extension.upper}`: the file extension in UPPERCASE including colon.
+        - ``{extension}`` -- the original file extension including colon.
+        - ``{extension.lower}`` -- the file extension in lowercase including colon.
+        - ``{extension.upper}`` -- the file extension in UPPERCASE including colon.
 
     Examples:
 

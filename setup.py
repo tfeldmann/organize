@@ -29,6 +29,7 @@ install_requires = [
 ]
 if sys.version_info < (3, 5):
     install_requires.append('typing')
+if sys.version_info < (3, 6):
     install_requires.append('pathlib2')
 
 setup(

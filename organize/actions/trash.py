@@ -1,6 +1,6 @@
 import logging
 
-from organize.utils import Path
+from organize.utils import Path, fullpath
 from .action import Action
 
 
@@ -35,6 +35,6 @@ class Trash(Action):
         from send2trash import send2trash
         self.print('Trash "%s"' % path)
         if not simulate:
-            expanded_path = path.expanduser()
-            self.log.info('Moving file %s into trash.', expanded_path)
-            send2trash(str(expanded_path))
+            full_path = fullpath(path)
+            self.log.info('Moving file %s into trash.', full_path)
+            send2trash(str(full_path))

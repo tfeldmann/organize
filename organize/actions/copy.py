@@ -2,7 +2,7 @@ import logging
 import os
 import shutil
 
-from organize.utils import Path, find_unused_filename
+from organize.utils import Path, fullpath, find_unused_filename
 
 from .action import Action
 from .trash import Trash
@@ -56,7 +56,7 @@ class Copy(Action):
         self.log = logging.getLogger(__name__)
 
     def run(self, basedir: Path, path: Path, attrs: dict, simulate: bool):
-        full_path = path.expanduser()
+        full_path = fullpath(path)
 
         expanded_dest = self.fill_template_tags(self.dest, basedir, path, attrs)
         # if only a folder path is given we append the filename to have the full
@@ -64,7 +64,7 @@ class Copy(Action):
         if expanded_dest.endswith(('\\', '/')):
             expanded_dest = os.path.join(expanded_dest, path.name)
 
-        new_path = Path(expanded_dest).expanduser()
+        new_path = fullpath(expanded_dest)
         if new_path.exists() and not new_path.samefile(full_path):
             if self.overwrite:
                 self.print('File already exists')
