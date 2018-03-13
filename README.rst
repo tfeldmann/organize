@@ -13,7 +13,7 @@ organize
 
 Install via pip (requirement: Python 3.3+):
 
-``$ pip install organize-tool``
+``$ pip3 install organize-tool``
 
 
 Why you might find this useful
@@ -25,9 +25,7 @@ Time to automate it once and benefit from it forever.
 *organize* is a command line, open-source alternative to apps like Hazel (macOS)
 or File Juggler (Windows).
 
-In your shell, run ``$ organize config`` to edit the configuration and enter
-(alternatively create a file ``config.yaml`` at the path shown with
-``$ organize config --path``):
+In your shell, run ``$ organize config`` to edit the configuration:
 
 - ``config.yaml``:
 
@@ -57,15 +55,20 @@ In your shell, run ``$ organize config`` to edit the configuration and enter
           actions:
             - Trash
 
-``$ organize run`` will now move all your screenshots from your desktop into a
-subfolder Screenshots (the folder will be created if it does not exist) and put
-all incomplete downloader older than 30 days into the trash.
+(alternatively you can run ``$ organize config --path`` to see the full path to your ``config.yaml``)
+
+``$ organize run`` will now...
+
+- move all your screenshots from your desktop a "Screenshots" subfolder
+  (the folder will be created if it does not exist)
+- put all incomplete downloads older than 30 days into the trash
+
 It is that easy.
 
 Feeling insecure? Run ``$ organize sim`` to see what would happen without
 touching your files.
 
-But there is more. You want to rename / copy files, run custom shell / python
+But there is more. You want to rename / copy files, run custom shell- or python
 scripts, match filenames with regular expressions or use placeholder variables?
 `organize` has you covered.
 
@@ -92,9 +95,6 @@ Functionality
 - Move into Trash
 - Print something to the console
 
-The data from file selection is available in the actions via placeholder
-variables.
-
 If you miss a feature please file an issue. Pull requests welcome!
 
 
@@ -107,6 +107,7 @@ of what is possible with placeholder variables:
 
     rules:
       - folders: '~/Documents'
+        subfolders: true
         filters:
           - Extension:
               - pdf
@@ -115,8 +116,9 @@ of what is possible with placeholder variables:
         actions:
           - Move: '~/Documents/{extension.upper}/{lastmodified.year}/'
 
-Given we have two files in our ``~/Documents`` folder named ``script.docx`` from
-year 2018 and ``demo.pdf`` from year 2016 this will happen:
+Given we have two files in our ``~/Documents`` folder (or any of its subfolders)
+named ``script.docx`` from year 2018 and ``demo.pdf`` from year 2016 this will
+happen:
 
 - ``script.docx`` will be moved to ``~/Documents/DOCX/2018/script.docx``
 - ``demo.pdf`` will be moved to ``~/Documents/PDF/2016/demo.pdf``
@@ -147,6 +149,6 @@ Command line interface
   Options:
       -o, --open-folder  Open the folder containing the configuration files.
       -p, --path         Show the path to the configuration file.
-      -d, --debug        Print and check your current configuration.
+      -d, --debug        Debug your configuration file.
 
   Full documentation: https://organize.readthedocs.io

@@ -1,8 +1,6 @@
 # TODO
 
 ## Next up:
-- [ ] Documentation: subfolders
-- [ ] Documentation: system_files
 - [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='3 Gb')
 
@@ -25,6 +23,8 @@
 - [ ] Filter: Exif data
 
 ## Done:
+- [x] Documentation: subfolders  @2018-03-13
+- [x] Documentation: system_files  @2018-03-13
 - [x] Config: 'subfolders' directive in rule  @2018-03-13
 - [x] Proof-read docs before releasing  @2018-03-10
 - [x] Documentation for {path}  @2018-03-10

@@ -20,7 +20,7 @@ Arguments:
 Options:
     -o, --open-folder  Open the folder containing the configuration files.
     -p, --path         Show the path to the configuration file.
-    -d, --debug        Print and check your current configuration.
+    -d, --debug        Debug your configuration file.
 
 Full documentation: https://organize.readthedocs.io
 """
@@ -156,7 +156,6 @@ def config_debug():
 
     if not haserr:
         puts(colored.green('No config problems found.', bold=True))
-
 
 
 def list_actions_and_filters():
