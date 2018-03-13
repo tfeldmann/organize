@@ -37,7 +37,7 @@ In your shell, run ``$ organize config`` to edit the configuration:
             - ~/Desktop
           filters:
             - Filename:
-                startswith: Screen Shot
+                startswith: 'Screen Shot'
           actions:
             - Move: ~/Desktop/Screenshots/
 
