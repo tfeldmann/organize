@@ -1,5 +1,6 @@
 import logging
 from collections import namedtuple
+from typing import List
 
 import yaml
 
@@ -113,7 +114,7 @@ class Config:
                 raise self.Error('Unknown action: %s' % action_item)
 
     @property
-    def rules(self):  # type: () -> List[Rule]:
+    def rules(self) -> List[Rule]:
         """:returns: A list of instantiated Rules
         """
         if 'rules' not in self.config:
