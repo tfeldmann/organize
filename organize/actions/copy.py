@@ -11,16 +11,13 @@ from .trash import Trash
 class Copy(Action):
 
     """
-    Copy a file to a new location. The file can also be renamed.
+    Copy a file to a new location.
     If the specified path does not exist it will be created.
 
-    If you only want to rename the file and keep the folder, it is
-    easier to use the Rename-Action.
-
     :param str dest:
-        can be a format string which uses file attributes from a filter.
-        If `dest` is a folder path, the file will be Copyd into this folder and
-        not renamed.
+        The destination where the file should be copied to.
+        If `dest` ends with a slash / backslash, the file will be copied into
+        this folder and keep its original name.
 
     :param bool overwrite:
         specifies whether existing files should be overwritten.
@@ -28,26 +25,50 @@ class Copy(Action):
         filename) to resolve naming conflicts. [Default: False]
 
     Examples:
-        - Copy into `some/folder/` and keep filenames
+        - Copy all pdfs into `~/Desktop/somefolder/` and keep filenames
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-              filters:
-                - Copy: {dest: '/some/folder/'}
+            rules:
+              - folders: ~/Desktop
+                filters:
+                  - Extension: pdf
+                actions:
+                  - Copy: '~/Desktop/somefolder/'
 
-        - Copy to `some/path/` and change the name to include the full date
-
-          .. code-block:: yaml
-
-              - Copy: {dest: '/some/path/some-name-{year}-{month:02}-{day:02}.pdf'}
-
-        - Copy into the folder `Invoices` on the same folder level as the file
-          itself. Keep the filename but do not overwrite existing files (adds
-          an index to the file)
+        - Use a placeholder to copy all .pdf files into a PDF folder and all .jpg
+          files into a .JPG folder. Existing files will be overwritten.
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-              - Copy: {dest: '{path.parent}/Invoices', overwrite: False}
+            rules:
+              - folders: ~/Desktop
+                filters:
+                  - Extension:
+                      - pdf
+                      - jpg
+                actions:
+                  - Copy:
+                      dest: '~/Desktop/{extension.upper}/'
+                      overwrite: true
+
+        - Copy into the folder `Invoices`. Keep the filename but do not
+          overwrite existing files (adds an index to the file)
+
+          .. code-block:: yaml
+            :caption: config.yaml
+
+            rules:
+              - folders: ~/Desktop/Invoices
+                filters:
+                  - Extension:
+                      - pdf
+                actions:
+                  - Copy:
+                      dest: '~/Documents/Invoices/'
+                      overwrite: false
     """
 
     def __init__(self, dest: str, overwrite=False):
