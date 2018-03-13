@@ -7,10 +7,7 @@ test:
 	pipenv run py.test tests
 
 publish:
-	pip install 'twine>=1.5.0'
-	python setup.py sdist bdist_wheel
-	twine upload dist/*
-	rm -fr build dist .egg organize.egg-info
+	python setup.py sdist upload -r pypi
 
 docs:
 	cd docs && make html
