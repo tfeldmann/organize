@@ -120,6 +120,10 @@ class Config:
             raise self.NoRulesFoundError()
         result = []
         for i, rule_item in enumerate(self.config['rules']):
+            # skip disabled rules
+            if not rule_item.get('enabled', True):
+                continue
+
             rule_folders = list(self.parse_folders(rule_item))
             rule_filters = list(self.instantiate_filters(rule_item))
             rule_actions = list(self.instantiate_actions(rule_item))

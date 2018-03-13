@@ -51,18 +51,20 @@ Each rule defines ``folders``, ``filters`` (optional) and ``actions``.
         - Extension: pdf
       actions:
         - Move: ~/otherinbox
+      # optional settings:
+      enabled: true
       subfolders: true
       system_files: false
 
 - ``folders`` is a list of folders you want to organize.
 - ``filters`` is a list of filters to apply to the files - you can filter by file extension, last modified date, regular expressions and many more. See :ref:`Filters`.
 - ``actions`` is a list of actions to apply to the filtered files. You can put them into the trash, move them into another folder and many more. See :ref:`Actions`.
+
+Other optional per rule settings:
+
+- ``enabled`` can be used to temporarily disable single rules. Default = true
 - ``subfolders`` specifies whether subfolders should be included in the search. Default = false
 - ``system_files`` specifies whether to include system files (desktop.ini, thumbs.db, .DS_Store) in the search. Default = false
-
-.. note::
-   At the moment organize only handles the files at the top level of the folders given in ``folders``.
-   Recursion through subdirs is planned for later versions.
 
 
 Folder syntax

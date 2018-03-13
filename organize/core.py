@@ -3,7 +3,7 @@ from collections import defaultdict, namedtuple
 
 from clint.textui import colored, indent, puts
 
-from .utils import Path, fullpath, bold
+from .utils import fullpath, bold
 
 logger = logging.getLogger(__name__)
 
