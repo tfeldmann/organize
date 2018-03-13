@@ -49,6 +49,21 @@ class Echo(Action):
                   - Extension
                 actions:
                   - Echo: 'Found a {extension.upper}: "{path.name}"'
+
+        - Show the ``{basedir}`` and ``{path}`` of all files in '~/Downloads',
+          '~/Desktop' and their subfolders:
+
+          .. code-block:: yaml
+            :caption: config.yaml
+
+            rules:
+              - folders:
+                  - ~/Desktop
+                  - ~/Downloads
+                subfolders: true
+                actions:
+                  - Echo: 'Basedir: {basedir}'
+                  - Echo: 'Path:    {path}'
     """
 
     def __init__(self, msg):

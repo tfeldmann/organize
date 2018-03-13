@@ -14,7 +14,7 @@ class Regex(Filter):
     Any named groups in your regular expression will be returned like this:
 
     :returns:
-        - {regex.yourgroupname} -- The text matched with the named group
+        - ``{regex.yourgroupname}`` -- The text matched with the named group
           ``(?P<yourgroupname>)``
 
     Examples:

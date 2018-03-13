@@ -18,9 +18,9 @@ class Move(Action):
     easier to use the Rename-Action.
 
     :param str dest:
-        can be a format string which uses file attributes from a filter.
-        If `dest` is a folder path, the file will be moved into this folder and
-        not renamed.
+        The destination folder or path.
+        If `dest` ends with a slash / backslash, the file will be moved into
+        this folder and not renamed.
 
     :param bool overwrite:
         specifies whether existing files should be overwritten.
@@ -28,26 +28,53 @@ class Move(Action):
         filename) to resolve naming conflicts. [Default: False]
 
     Examples:
-        - Move into `/some/folder/` and keep filenames
+        - Move all pdfs and jpgs from the desktop into the folder "~/Desktop/media/".
+          Filenames are not changed.
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-              filters:
-                - Move: {dest: '/some/folder/'}
+            rules:
+              - folders: ~/Desktop
+                filters:
+                  - Extension:
+                      - pdf
+                      - jpg
+                actions:
+                  - Move: '~/Desktop/media/'
 
-        - Move to `some/path/` and change the name to include the full date
+        - Use a placeholder to move all .pdf files into a "PDF" folder and all
+          .jpg files into a "JPG" folder. Existing files will be overwritten.
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-              - Move: {dest: '/some/path/some-name-{year}-{month:02}-{day:02}.pdf'}
+            rules:
+              - folders: ~/Desktop
+                filters:
+                  - Extension:
+                      - pdf
+                      - jpg
+                actions:
+                  - Move:
+                      dest: '~/Desktop/{extension.upper}/'
+                      overwrite: true
 
-        - Move into the folder `Invoices` on the same folder level as the file
-          itself. Keep the filename but do not overwrite existing files (adds
-          an index to the file)
+        - Move pdfs into the folder `Invoices`. Keep the filename but do not
+          overwrite existing files (adds an index to the file)
 
           .. code-block:: yaml
+            :caption: config.yaml
 
-              - Move: {dest: '{path.parent}/Invoices', overwrite: False}
+            rules:
+              - folders: ~/Desktop/Invoices
+                filters:
+                  - Extension:
+                      - pdf
+                actions:
+                  - Copy:
+                      dest: '~/Documents/Invoices/'
+                      overwrite: false
     """
 
     def __init__(self, dest: str, overwrite=False):

@@ -7,6 +7,12 @@ Editing the configuration
 =========================
 All configuration takes place in your `config.yaml` file.
 
+- To edit your configuration in ``$EDITOR`` run:
+
+  .. code-block:: bash
+
+    $ organize config  # example: "EDITOR=vim organize config"
+
 - To show the full path to your configuration file::
 
     $ organize config --path
@@ -15,11 +21,9 @@ All configuration takes place in your `config.yaml` file.
 
     $ organize config --open-folder
 
-- To edit your configuration in ``$EDITOR`` run
+- To debug your configuration run::
 
-  .. code-block:: bash
-
-    $ organize config  # example: "EDITOR=vim organize config"
+  $ organize config --debug
 
 
 Rule syntax
