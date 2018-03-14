@@ -18,9 +18,12 @@
 - [ ] Action: E-Mail
 - [ ] Action: Print (on printer)
 - [ ] Action: Notify (desktop notification)
+- [ ] Action: Symlink
 - [ ] Filter: Python (+ docs)
 - [ ] Filter: id3 tag data
-- [ ] Filter: Exif data
+- [ ] Filter: Exif data (camera__contains, ...)
+- [ ] Filter: MD5
+- [ ] Filter: TaggoFile
 
 ## Done:
 - [x] Filter: Extension - remove colon  @2018-03-13
