@@ -100,8 +100,8 @@ If you miss a feature please file an issue. Pull requests welcome!
 
 Advanced usage example
 ----------------------
-This is not neccessarily how you *should* organize your files but is a example
-of what is possible with placeholder variables:
+This example shows some advanced features like placeholder variables, pluggable
+actions and recursion through subfolders:
 
 .. code-block:: yaml
 
@@ -115,6 +115,7 @@ of what is possible with placeholder variables:
           - LastModified
         actions:
           - Move: '~/Documents/{extension.upper}/{lastmodified.year}/'
+          - Shell: 'open "{path}"'
 
 Given we have two files in our ``~/Documents`` folder (or any of its subfolders)
 named ``script.docx`` from year 2018 and ``demo.pdf`` from year 2016 this will
@@ -122,6 +123,7 @@ happen:
 
 - ``script.docx`` will be moved to ``~/Documents/DOCX/2018/script.docx``
 - ``demo.pdf`` will be moved to ``~/Documents/PDF/2016/demo.pdf``
+- The files will be opened (``open`` command in macOS) from their new location.
 
 
 Command line interface
