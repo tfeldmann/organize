@@ -55,7 +55,8 @@ In your shell, run ``$ organize config`` to edit the configuration:
           actions:
             - Trash
 
-(alternatively you can run ``$ organize config --path`` to see the full path to your ``config.yaml``)
+(alternatively you can run ``$ organize config --path`` to see the full path to
+your ``config.yaml``)
 
 ``$ organize run`` will now...
 
@@ -73,29 +74,6 @@ scripts, match filenames with regular expressions or use placeholder variables?
 `organize` has you covered.
 
 Have a look at the full documentation at https://organize.readthedocs.io/.
-
-
-Functionality
--------------
-
-**Select files by** (filters):
-
-- Extension
-- Regular expression
-- Last modified date (newer, older)
-- Filename (startswith, endswith, contains)
-
-**Organize your files** (actions):
-
-- Move files
-- Copy files
-- Rename files in place
-- Run shell command
-- Run inline Python code
-- Move into Trash
-- Print something to the console
-
-If you miss a feature please file an issue. Pull requests welcome!
 
 
 Advanced usage example
@@ -124,6 +102,29 @@ happen:
 - ``script.docx`` will be moved to ``~/Documents/DOCX/2018/script.docx``
 - ``demo.pdf`` will be moved to ``~/Documents/PDF/2016/demo.pdf``
 - The files will be opened (``open`` command in macOS) from their new location.
+
+
+Functionality
+-------------
+
+**Select files by** (filters):
+
+- Extension
+- Regular expression
+- Last modified date (newer, older)
+- Filename (startswith, endswith, contains)
+
+**Organize your files** (actions):
+
+- Move files
+- Copy files
+- Rename files in place
+- Run shell command
+- Run inline Python code
+- Move into Trash
+- Print something to the console
+
+If you miss a feature please file an issue. Pull requests welcome!
 
 
 Command line interface
