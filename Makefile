@@ -1,14 +1,24 @@
-.PHONY: docs
-init:
-	pip install pipenv --upgrade
-	pipenv install --dev --skip-lock
+.PHONY: upload upload_prod clean docs
 
-test:
-	pipenv run py.test tests
+dist:
+	python3 setup.py sdist bdist_wheel
 
-publish:
-	python setup.py sdist upload -r pypi
+upload: dist
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+	@echo Success.
+	@echo
+	@echo "Test install with:"
+	@echo "    pip3 install --index-url https://test.pypi.org/simple/ organize-tool"
+	@echo "Upload to production:"
+	@echo "    make upload_prod"
+
+upload_prod: dist
+	twine upload dist/*
+	@echo Success.
+
+clean:
+	rm -fr build dist .egg organize_tool.egg-info
 
 docs:
 	cd docs && make html
-	@echo "\033[95m\n\nBuild successful! View the docs homepage at docs/_build/html/index.html.\n\033[0m"
+	@echo Build successful! View the docs at docs/_build/html/index.html
