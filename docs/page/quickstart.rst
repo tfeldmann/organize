@@ -7,7 +7,11 @@ Requirements: Python 3.3+
 
 `organize` is installed via pip:
 
-- ``$ pip install organize-tool`` (or ``$ pip3 install organize-tool``)
+On macOS / Windows:
+``$ pip3 install organize-tool``
+
+On Linux:
+``$ sudo pip3 install organize-tool``
 
 
 Creating your first config file

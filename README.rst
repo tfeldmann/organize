@@ -13,7 +13,11 @@ organize
 
 Install via pip (requirement: Python 3.3+):
 
+On macOS / Windows:
 ``$ pip3 install organize-tool``
+
+On Linux:
+``$ sudo pip3 install organize-tool``
 
 
 Why you might find this useful
