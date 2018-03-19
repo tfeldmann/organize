@@ -4,7 +4,7 @@
 - [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='3 Gb')
 
-## Maybe sometime:
+## Wishlist / sometime:
 - [ ] Config: 'exclude' directive in rule (like 'filter') -> mode any, all?
 - [ ] Config: Case insensitive filter and action matching
 - [ ] Config: Rule names
@@ -12,8 +12,10 @@
 - [ ] Config: Filter modes all, none, any?
 - [ ] Config: jsonschema for user config validation?
 - [ ] Config: Flatten filter lists
+- [ ] Config: Support ansible 'with_item' list syntax
 - [ ] Core: User plugins
 - [ ] Core: show docstring of individual filters, actions in help
+- [ ] Core: Add Support for S3, SSH, FTP etc. via PyFilesystem
 - [ ] Action: Zip
 - [ ] Action: E-Mail
 - [ ] Action: Print (on printer)
@@ -23,7 +25,7 @@
 - [ ] Filter: id3 tag data
 - [ ] Filter: Exif data (camera__contains, ...)
 - [ ] Filter: MD5
-- [ ] Filter: TaggoFile
+- [ ] Filter: Hashtags(query 'people-john,stars>4,USA') -> List / str of hashtags
 
 ## Done:
 - [x] Core: Show location of files in subfolders  @2018-03-19
