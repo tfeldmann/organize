@@ -26,6 +26,7 @@
 - [ ] Filter: TaggoFile
 
 ## Done:
+- [x] Core: Show location of files in subfolders  @2018-03-19
 - [x] Filter: Extension - remove colon  @2018-03-13
 - [x] Documentation: subfolders  @2018-03-13
 - [x] Documentation: system_files  @2018-03-13

@@ -85,7 +85,12 @@ def execute_rules(rules, simulate):
         puts('Folder %s:' % bold(folder))
         with indent(2):
             for job in jobs:
-                puts('File %s:' % bold(job.path.name))
+                try:
+                    folderpath = fullpath(job.folder)
+                    relative_path = str(job.path.relative_to(folderpath))
+                except ValueError:
+                    relative_path = job.path.name
+                puts('File %s:' % bold(relative_path))
                 with indent(2):
                     attrs = filter_pipeline(job)
                     action_pipeline(job=job, attrs=attrs, simulate=simulate)
