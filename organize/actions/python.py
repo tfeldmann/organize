@@ -61,18 +61,17 @@ class Python(Action):
         self.code = code
         self.log = logging.getLogger(__name__)
 
-    def run(self, basedir: Path, path: Path, attrs: dict, simulate: bool):
+    def run(self, attrs: dict, simulate: bool):
         if simulate:
             self.print('Code not run in simulation')
         else:
+            path = attrs['path']
             self.log.info(
                 'Executing python script:\n"""\n%s""" with path="%s", args=%s',
                 self.code, path, attrs)
             # local variables for inline function
             locals_ = attrs.copy()
             locals_['simulate'] = simulate
-            locals_['path'] = path
-            locals_['basedir'] = basedir
             # replace default print function
             globals_ = globals().copy()
             globals_['print'] = self.print

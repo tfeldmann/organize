@@ -13,7 +13,7 @@ class TemplateAttributeError(Error):
 
 class Action:
 
-    def run(self, basedir: Path, path: Path, attrs: dict, simulate: bool) -> Optional[Path]:
+    def run(self, attrs: dict, simulate: bool) -> Optional[Path]:
         # if you change the file path, return the new path here
         raise NotImplementedError
 
@@ -22,9 +22,9 @@ class Action:
         puts('- [%s] %s' % (self.__class__.__name__, msg))
 
     @staticmethod
-    def fill_template_tags(msg: str, basedir:Path, path: Path, attrs: dict) -> str:
+    def fill_template_tags(msg: str, attrs: dict) -> str:
         try:
-            return msg.format(basedir=basedir, path=path, **attrs)
+            return msg.format(**attrs)
         except AttributeError as exc:
             cause = exc.args[0]
             raise TemplateAttributeError(

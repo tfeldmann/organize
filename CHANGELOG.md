@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3
+- Glob support in folder configuration.
+- New variable {relative_path} is now available in actions.
+
 ## v1.2
 - Shows the relative path to files in subfolders.
 

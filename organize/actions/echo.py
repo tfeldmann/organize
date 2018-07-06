@@ -70,11 +70,12 @@ class Echo(Action):
         self.msg = msg
         self.log = logging.getLogger(__name__)
 
-    def run(self, basedir: Path, path: Path, attrs: dict, simulate: bool):
+    def run(self, attrs: dict, simulate: bool):
+        path = attrs['path']
         self.log.debug(
             'Echo msg "%s" for path: "%s" with attrs: "%s"',
             self.msg, path, attrs)
-        full_msg = self.fill_template_tags(self.msg, basedir, path, attrs)
+        full_msg = self.fill_template_tags(self.msg, attrs)
         self.log.info('Console output: %s', full_msg)
         self.print('%s' % full_msg)
 

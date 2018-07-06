@@ -67,7 +67,7 @@ Each rule defines ``folders``, ``filters`` (optional) and ``actions``.
 Other optional per rule settings:
 
 - ``enabled`` can be used to temporarily disable single rules. Default = true
-- ``subfolders`` specifies whether subfolders should be included in the search. Default = false
+- ``subfolders`` specifies whether subfolders should be included in the search. Default = false. Only applies if you don't use globstrings in the folders.
 - ``system_files`` specifies whether to include system files (desktop.ini, thumbs.db, .DS_Store) in the search. Default = false
 
 
@@ -91,6 +91,51 @@ The easiest way is to define the rules like this:
         - /another/path
       filters: ...
       actions: ...
+
+
+Globstrings
+-----------
+You can use globstrings in the folder lists. For example to get all files with filenames ending with ``_ui`` and any file extension you can use:
+
+.. code-block:: yaml
+  :caption: config.yaml
+
+  rules:
+    - folders:
+        - '~/Downloads/*_ui.*'
+      actions:
+        - Echo: '{path}'
+
+You can use globstrings to recurse through subdirectories (alternatively you can use the ``subfolders: true`` setting as shown below)
+
+.. code-block:: yaml
+  :caption: config.yaml
+
+  rules:
+    - folders:
+        - '~/Downloads/**/*.*'
+      actions:
+        - Echo: 'base {basedir}, path {path}, relative: {relative_path}'
+
+    # alternative syntax
+    - folders:
+        - ~/Downloads
+      subfolders: true
+      actions:
+        - Echo: 'base {basedir}, path {path}, relative: {relative_path}'
+
+You can use globstrings to exclude folders based on name.
+
+The following example recurses through all subdirectories in your downloads folder except ``~/Downloads/Software`` and finds files with ending in ``.c`` and ``.h``.
+
+.. code-block:: yaml
+  :caption: config.yaml
+
+  rules:
+    - folders:
+        - '~/Downloads/*[!Software]/**/*.[c|h]'
+      actions:
+        - Echo: '{path}'
 
 
 Aliases
@@ -220,13 +265,14 @@ Variable substitution (placeholders)
 **You can use placeholder variables in your actions.**
 
 Placeholder variables are used with curly braces ``{var}``.
-You always have access to the variables ``{path}`` and ``{basedir}``:
+You always have access to the variables ``{path}``, ``{basedir}`` and ``{relative_path}``:
 
 - ``{path}`` -- is the full path to the current file
 - ``{basedir}`` -- the current base folder (the base folder is the folder you
   specify in your configuration).
+- ``{relative_path}`` -- the relative path from ``{basedir}`` to ``{path}``
 
-Use the dot notation to access properties of ``{path}`` and ``{basedir}``:
+Use the dot notation to access properties of ``{path}``, ``{basedir}`` and ``{relative_path}``:
 
 - ``{path}`` -- the full path to the current file
 - ``{path.name}`` -- the full filename including extension

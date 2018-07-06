@@ -1,7 +1,7 @@
 __title__ = 'organize-tool'
 __description__ = 'The file management automation tool.'
 __url__ = 'http://github.com/tfeldmann/organize'
-__version__ = '1.2'
+__version__ = '1.3'
 __author__ = 'Thomas Feldmann'
 __author_email__ = 'mail@tfeldmann.de'
 __license__ = 'MIT'

@@ -1,4 +1,11 @@
-from organize.utils import Path, find_unused_filename
+from organize.utils import Path, find_unused_filename, splitglob
+
+
+def test_splitglob():
+    assert splitglob('~/Downloads') == (Path.home() / 'Downloads', '')
+    assert (
+        splitglob('/Test/\* tmp\*/*[!H]/**/*.*') ==
+        (Path('/Test/\* tmp\*'), '*[!H]/**/*.*'))
 
 
 def test_unused_filename_basic(mock_exists):

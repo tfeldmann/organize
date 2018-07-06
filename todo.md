@@ -14,6 +14,9 @@
 - [ ] Config: Flatten filter lists
 - [ ] Core: User plugins
 - [ ] Core: show docstring of individual filters, actions in help
+- [ ] Core: Use Jinja2 native types instead of python format strings?
+            This would allow method execution. Maybe works nicely with taggo?
+- [ ] Action: DeleteFolderIfEmpty
 - [ ] Action: Zip
 - [ ] Action: E-Mail
 - [ ] Action: Print (on printer)
@@ -26,6 +29,10 @@
 - [ ] Filter: TaggoFile
 
 ## Done:
+- [x] Documentation: glob syntax  @2018-07-06
+- [x] Documentation: {relative_path}  @2018-07-06
+- [x] Core: add {relative_path} variable  @2018-07-06
+- [x] Config: glob support (needs automatic basedir detection)  @2018-07-06
 - [x] Core: Show location of files in subfolders  @2018-03-19
 - [x] Filter: Extension - remove colon  @2018-03-13
 - [x] Documentation: subfolders  @2018-03-13

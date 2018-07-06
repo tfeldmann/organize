@@ -76,20 +76,21 @@ class Copy(Action):
         self.overwrite = overwrite
         self.log = logging.getLogger(__name__)
 
-    def run(self, basedir: Path, path: Path, attrs: dict, simulate: bool):
-        full_path = fullpath(path)
+    def run(self, attrs: dict, simulate: bool):
+        path = attrs['path']
+        basedir = attrs['basedir']
 
-        expanded_dest = self.fill_template_tags(self.dest, basedir, path, attrs)
+        expanded_dest = self.fill_template_tags(self.dest, attrs)
         # if only a folder path is given we append the filename to have the full
         # path. We use os.path for that because pathlib removes trailing slashes
         if expanded_dest.endswith(('\\', '/')):
             expanded_dest = os.path.join(expanded_dest, path.name)
 
         new_path = fullpath(expanded_dest)
-        if new_path.exists() and not new_path.samefile(full_path):
+        if new_path.exists() and not new_path.samefile(path):
             if self.overwrite:
                 self.print('File already exists')
-                Trash().run(basedir, path=new_path, attrs=attrs, simulate=simulate)
+                Trash().run({'path': new_path}, simulate=simulate)
             else:
                 new_path = find_unused_filename(new_path)
 
@@ -97,8 +98,8 @@ class Copy(Action):
         if not simulate:
             self.log.info('Creating folder if not exists: %s', new_path.parent)
             new_path.parent.mkdir(parents=True, exist_ok=True)
-            self.log.info('Copying "%s" to "%s"', full_path, new_path)
-            shutil.copy2(src=str(full_path), dst=str(new_path))
+            self.log.info('Copying "%s" to "%s"', path, new_path)
+            shutil.copy2(src=str(path), dst=str(new_path))
 
         # the next actions should handle the original file
         return None

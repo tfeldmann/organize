@@ -1,3 +1,4 @@
+import re
 import sys
 from collections import OrderedDict
 
@@ -10,6 +11,18 @@ if sys.version_info < (3, 6):
 else:
     from pathlib import Path
 
+unescaped_wildcard = re.compile(r'(?<!\\)\*+')
+
+
+def splitglob(globstr):
+    """ split a string with wildcards into a base folder and globstring """
+    path = fullpath(globstr)
+    parts = path.parts
+    for i, part in enumerate(parts):
+        if unescaped_wildcard.match(part):
+            return (Path(*parts[:i]), str(Path(*parts[i:])))
+    return (path, '')
+
 
 def fullpath(path):
     """ Expand '~' and resolve the given path """
@@ -20,7 +33,7 @@ def bold(text):
     # inspired by a feature request from the clint library
     # https://github.com/kennethreitz/clint/issues/157
     if sys.stdout.isatty():
-        return ''.join([colorama.Style.BRIGHT, text, colorama.Style.NORMAL])
+        return ''.join([colorama.Style.BRIGHT, str(text), colorama.Style.NORMAL])
     return text
 
 
