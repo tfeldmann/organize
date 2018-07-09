@@ -1,5 +1,8 @@
 # Changelog
 
+## in progress
+- Fixes a bug where glob wildcards are not detected correctly
+
 ## v1.3
 - Glob support in folder configuration.
 - New variable {relative_path} is now available in actions.

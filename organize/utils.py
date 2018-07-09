@@ -11,12 +11,12 @@ if sys.version_info < (3, 6):
 else:
     from pathlib import Path
 
-unescaped_wildcard = re.compile(r'(?<!\\)\*+')
+unescaped_wildcard = re.compile(r'(?<!\\)[\*\?\[]+')
 
 
 def splitglob(globstr):
     """ split a string with wildcards into a base folder and globstring """
-    path = fullpath(globstr)
+    path = fullpath(globstr.strip())
     parts = path.parts
     for i, part in enumerate(parts):
         if unescaped_wildcard.match(part):
