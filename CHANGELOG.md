@@ -2,6 +2,8 @@
 
 ## in progress
 - Fixes a bug where glob wildcards are not detected correctly
+- Adds support for excluding folders and files via glob syntax.
+- Makes sure that files are only handled once per rule.
 
 ## v1.3
 - Glob support in folder configuration.

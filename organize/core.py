@@ -19,15 +19,22 @@ Job.__doc__ = """
 
 
 def all_files_for_rule(rule):
+    files = {}
     for folderstr in rule.folders:
-        basedir, globstr = splitglob(folderstr)
+        exclude_flag = folderstr.startswith('!')
+        basedir, globstr = splitglob(folderstr.lstrip('!'))
         if not globstr:
             globstr = '**/*.*' if rule.subfolders else '*.*'
         for path in basedir.glob(globstr):
             if path.is_file() and (
                     rule.system_files or
                     path.name not in ('thumbs.db', 'desktop.ini', '.DS_Store')):
-                yield (folderstr, basedir, path)
+                if not exclude_flag:
+                    files[path] = (folderstr, basedir)
+                elif path in files:
+                    del files[path]
+    for path, (folderstr, basedir) in files.items():
+        yield (folderstr, basedir, path)
 
 
 def find_jobs(rules):

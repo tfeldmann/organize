@@ -26,9 +26,10 @@
 - [ ] Filter: id3 tag data
 - [ ] Filter: Exif data (camera__contains, ...)
 - [ ] Filter: MD5
-- [ ] Filter: TaggoFile
+- [ ] Filter: Hashtags
 
 ## Done:
+- [x] Config: '!' before globstr to exclude folders  @2018-07-09
 - [x] Documentation: glob syntax  @2018-07-06
 - [x] Documentation: {relative_path}  @2018-07-06
 - [x] Core: add {relative_path} variable  @2018-07-06

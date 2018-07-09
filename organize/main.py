@@ -76,7 +76,7 @@ root:
     level: DEBUG
     handlers: [file]
 """.format(filename=str(log_path))
-logging.config.dictConfig(yaml.load(LOGGING))
+logging.config.dictConfig(yaml.load(LOGGING, Loader=yaml.SafeLoader))
 logger = logging.getLogger(__name__)
 
 

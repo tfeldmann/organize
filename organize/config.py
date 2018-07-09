@@ -10,6 +10,12 @@ from .utils import Path, first_key, flatten
 logger = logging.getLogger(__name__)
 Rule = namedtuple('Rule', 'filters actions folders subfolders system_files')
 
+# disable yaml constructors for strings starting with exclamation marks
+# https://stackoverflow.com/a/13281292/300783
+def default_yaml_constructor(loader, tag_suffix, node):
+    return tag_suffix + ' ' + node.value
+yaml.add_multi_constructor('', default_yaml_constructor)
+
 
 class Config:
 

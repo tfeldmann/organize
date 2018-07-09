@@ -67,7 +67,7 @@ Each rule defines ``folders``, ``filters`` (optional) and ``actions``.
 Other optional per rule settings:
 
 - ``enabled`` can be used to temporarily disable single rules. Default = true
-- ``subfolders`` specifies whether subfolders should be included in the search. Default = false. Only applies if you don't use globstrings in the folders.
+- ``subfolders`` specifies whether subfolders should be included in the search. Default = false. This setting only applies to folders without glob wildcards.
 - ``system_files`` specifies whether to include system files (desktop.ini, thumbs.db, .DS_Store) in the search. Default = false
 
 
