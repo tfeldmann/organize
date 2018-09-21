@@ -19,7 +19,7 @@ def splitglob(globstr):
     path = fullpath(globstr.strip())
     parts = path.parts
     for i, part in enumerate(parts):
-        if unescaped_wildcard.match(part):
+        if unescaped_wildcard.search(part):
             return (Path(*parts[:i]), str(Path(*parts[i:])))
     return (path, '')
 

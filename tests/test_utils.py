@@ -6,6 +6,15 @@ def test_splitglob():
     assert (
         splitglob('/Test/\* tmp\*/*[!H]/**/*.*') ==
         (Path('/Test/\* tmp\*'), '*[!H]/**/*.*'))
+    assert (
+        splitglob('~/Downloads/Program 0.1*.exe') ==
+        (Path.home() / 'Downloads', 'Program 0.1*.exe'))
+    assert (
+        splitglob('~/Downloads/Program[ms].exe') ==
+        (Path.home() / 'Downloads', 'Program[ms].exe'))
+    assert (
+        splitglob('~/Downloads/Program.exe') ==
+        (Path.home() / 'Downloads' / 'Program.exe', ''))
 
 
 def test_unused_filename_basic(mock_exists):
@@ -20,7 +29,8 @@ def test_unused_filename_multiple(mock_exists):
 
 def test_unused_filename_increase(mock_exists):
     mock_exists.side_effect = [True, False]
-    assert find_unused_filename(Path('somefile 7.jpg')) == Path('somefile 9.jpg')
+    assert find_unused_filename(
+        Path('somefile 7.jpg')) == Path('somefile 9.jpg')
 
 
 def test_unused_filename_increase_digit(mock_exists):
