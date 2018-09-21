@@ -124,18 +124,57 @@ You can use globstrings to recurse through subdirectories (alternatively you can
       actions:
         - Echo: 'base {basedir}, path {path}, relative: {relative_path}'
 
-You can use globstrings to exclude folders based on name.
 
-The following example recurses through all subdirectories in your downloads folder except ``~/Downloads/Software`` and finds files with ending in ``.c`` and ``.h``.
+The following example recurses through all subdirectories in your downloads folder and finds files with ending in ``.c`` and ``.h``.
 
 .. code-block:: yaml
   :caption: config.yaml
 
   rules:
     - folders:
-        - '~/Downloads/*[!Software]/**/*.[c|h]'
+        - '~/Downloads/**/*.[c|h]'
       actions:
         - Echo: '{path}'
+
+
+Excluding files and folders
+---------------------------
+Files and folders can be excluded by prepending an exclamation mark. The following example selects all files
+in ``~/Downloads`` and its subfolders - excluding the folder ``Software``:
+
+.. code-block:: yaml
+  :caption: config.yaml
+
+  rules:
+    - folders:
+        - '~/Downloads/**/*'
+        - '! ~/Downloads/Software'
+      actions:
+        - Echo: '{path}'
+
+
+Globstrings can be used to exclude only specific files / folders. This example:
+
+  - adds all files in ``~/Downloads``
+  - exludes files from that list whose name contains the word ``system`` ending in ``.bak``
+  - adds all files from ``~/Documents``
+  - excludes the file ``~/Documents/important.txt``.
+
+.. code-block:: yaml
+  :caption: config.yaml
+
+  rules:
+    - folders:
+        - '~/Downloads/**/*'
+        - '! ~/Downloads/**/*system*.bak'
+        - '~/Documents'
+        - '! ~/Documents/important.txt'
+      actions:
+        - Echo: '{path}'
+
+.. note::
+  - Files and folders are included and excluded in the order you specify them!
+  - Please make sure your are putting the exclamation mark within quotation marks.
 
 
 Aliases

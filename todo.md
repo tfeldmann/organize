@@ -3,6 +3,7 @@
 ## Next up:
 - [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='3 Gb')
+- [ ] Filter: Content / FileContent (?)
 
 ## Maybe sometime:
 - [ ] Config: 'exclude' directive in rule (like 'filter') -> mode any, all?
@@ -24,11 +25,12 @@
 - [ ] Action: Symlink
 - [ ] Filter: Python (+ docs)
 - [ ] Filter: id3 tag data
-- [ ] Filter: Exif data (camera__contains, ...)
+- [ ] Filter: Exif data (camera__contains, ...) (https://pypi.org/project/ExifRead/)
 - [ ] Filter: MD5
 - [ ] Filter: Hashtags
 
 ## Done:
+- [x] Documentation: Glob folder / file exclusion  @2018-09-21
 - [x] Config: '!' before globstr to exclude folders  @2018-07-09
 - [x] Documentation: glob syntax  @2018-07-06
 - [x] Documentation: {relative_path}  @2018-07-06
