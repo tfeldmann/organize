@@ -3,9 +3,10 @@
 ## Next up:
 - [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='3 Gb')
-- [ ] Filter: Content / FileContent (?)
+- [ ] Filter: Content / FileContent (#10)
 
 ## Maybe sometime:
+- [ ] Config: Import config files from custom locations (#14)
 - [ ] Config: 'exclude' directive in rule (like 'filter') -> mode any, all?
 - [ ] Config: Case insensitive filter and action matching
 - [ ] Config: Rule names
@@ -17,6 +18,7 @@
 - [ ] Core: show docstring of individual filters, actions in help
 - [ ] Core: Use Jinja2 native types instead of python format strings?
             This would allow method execution. Maybe works nicely with taggo?
+- [ ] Core: Undo where possible (#16)
 - [ ] Action: DeleteFolderIfEmpty
 - [ ] Action: Zip
 - [ ] Action: E-Mail
@@ -27,9 +29,12 @@
 - [ ] Filter: id3 tag data
 - [ ] Filter: Exif data (camera__contains, ...) (https://pypi.org/project/ExifRead/)
 - [ ] Filter: MD5
-- [ ] Filter: Hashtags
+- [ ] Filter: Hashtags (#1)
+- [ ] Filter: CreationDate (#13)
 
 ## Done:
+- [x] Filter: Add `counter_separator` option to Move, Rename, Copy  @2018-10-05
+- [x] Documentation: for `counter_separator`  @2018-10-05
 - [x] Documentation: Glob folder / file exclusion  @2018-09-21
 - [x] Config: '!' before globstr to exclude folders  @2018-07-09
 - [x] Documentation: glob syntax  @2018-07-06
@@ -86,4 +91,3 @@
 - [ ] Config: A way to exclude common system files (.DS_Store, ...) (`exclude`)
 - [ ] Filter: PaperVdi (too specific, can be done with Regex)
 - [ ] Filter: Invoice1and1 (too specific and fragile)
-- [ ] Undo (cannot work with python code and shell scripts)

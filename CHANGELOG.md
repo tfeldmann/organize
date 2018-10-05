@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.1 (2018-10-05)
+- A custom separator ``counter_separator`` can now be set in the actions Move,
+  Copy and Rename.
+
 ## v1.4 (2018-09-21)
 - Fixes a bug where glob wildcards are not detected correctly
 - Adds support for excluding folders and files via glob syntax.
