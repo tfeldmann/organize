@@ -6,15 +6,15 @@ Actions
 
 Move
 ----
-.. autoclass:: Move(dest, [overwrite=False])
+.. autoclass:: Move(dest, [overwrite=False], [counter_separator=' '])
 
 Copy
 ----
-.. autoclass:: Copy(dest, [overwrite=False])
+.. autoclass:: Copy(dest, [overwrite=False], [counter_separator=' '])
 
 Rename
 ------
-.. autoclass:: Rename(dest, [overwrite=False])
+.. autoclass:: Rename(dest, [overwrite=False], [counter_separator=' '])
 
 Trash
 -----

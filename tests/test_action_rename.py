@@ -97,6 +97,21 @@ def test_already_exists_multiple(mock_exists, mock_samefile, mock_rename, mock_t
     assert new_path is not None
 
 
+def test_already_exists_multiple_separator(mock_exists, mock_samefile, mock_rename, mock_trash):
+    attrs = {
+        'basedir': Path.home(),
+        'path': Path.home() / 'test.py',
+    }
+    mock_exists.side_effect = [True, True, True, False]
+    mock_samefile.return_value = False
+    rename = Rename(name='asd.txt', overwrite=False, counter_separator='-')
+    new_path = rename.run(attrs, False)
+    mock_exists.assert_called()
+    mock_trash.assert_not_called()
+    mock_rename.assert_called_with(Path('~/asd-4.txt').expanduser())
+    assert new_path is not None
+
+
 def test_attrs(mock_exists, mock_samefile, mock_rename, mock_trash):
     attrs = {
         'basedir': Path.home(),

@@ -24,6 +24,10 @@ class Copy(Action):
         Otherwise it will start enumerating files (append a counter to the
         filename) to resolve naming conflicts. [Default: False]
 
+    :param str counter_separator:
+        specifies the separator between filename and the appended counter.
+        Only relevant if **overwrite** is disabled. [Default: ``\' \'``]
+
     Examples:
         - Copy all pdfs into `~/Desktop/somefolder/` and keep filenames
 
@@ -55,7 +59,10 @@ class Copy(Action):
                       overwrite: true
 
         - Copy into the folder `Invoices`. Keep the filename but do not
-          overwrite existing files (adds an index to the file)
+          overwrite existing files. To prevent overwriting files, an index is
+          added to the filename, so `somefile.jpg` becomes `somefile 2.jpg`.
+          The counter separator is `' '` by default, but can be changed using
+          the `counter_separator` property.
 
           .. code-block:: yaml
             :caption: config.yaml
@@ -69,11 +76,13 @@ class Copy(Action):
                   - Copy:
                       dest: '~/Documents/Invoices/'
                       overwrite: false
+                      counter_separator: '_'
     """
 
-    def __init__(self, dest: str, overwrite=False):
+    def __init__(self, dest: str, overwrite=False, counter_separator=' '):
         self.dest = dest
         self.overwrite = overwrite
+        self.counter_separator = counter_separator
         self.log = logging.getLogger(__name__)
 
     def run(self, attrs: dict, simulate: bool):
@@ -92,7 +101,8 @@ class Copy(Action):
                 self.print('File already exists')
                 Trash().run({'path': new_path}, simulate=simulate)
             else:
-                new_path = find_unused_filename(new_path)
+                new_path = find_unused_filename(
+                    path=new_path, separator=self.counter_separator)
 
         self.print('Copy to "%s"' % new_path)
         if not simulate:

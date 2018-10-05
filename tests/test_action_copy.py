@@ -94,6 +94,25 @@ def test_already_exists_multiple(mock_exists, mock_samefile, mock_copy, mock_tra
         dst=os.path.join(USER_DIR, 'folder', 'test 4.py'))
 
 
+def test_already_exists_multiple_with_separator(mock_exists, mock_samefile,
+                                                mock_copy, mock_trash,
+                                                mock_mkdir):
+    attrs = {
+        'basedir': Path.home(),
+        'path': Path.home() / 'test_2.py',
+    }
+    mock_exists.side_effect = [True, True, True, False]
+    mock_samefile.return_value = False
+    copy = Copy(dest='~/folder/', overwrite=False, counter_separator='_')
+    copy.run(attrs, False)
+    mock_mkdir.assert_called_with(exist_ok=True, parents=True)
+    mock_exists.assert_called_with()
+    mock_trash.assert_not_called()
+    mock_copy.assert_called_with(
+        src=os.path.join(USER_DIR, 'test_2.py'),
+        dst=os.path.join(USER_DIR, 'folder', 'test_5.py'))
+
+
 def test_makedirs(mock_parent, mock_copy, mock_trash):
     attrs = {
         'basedir': Path.home(),

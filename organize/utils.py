@@ -76,22 +76,31 @@ class DotDict(OrderedDict):
         return '{%s}' % ', '.join('%r: %r' % (key, self[key]) for key in self)
 
 
-def find_unused_filename(path: Path) -> Path:
-    """
-    we assume path already exists. This function then adds a counter to the
-    filename until we find a unused filename.
-    """
+def increment_filename_version(path: Path, separator=' ') -> Path:
     stem = path.stem
     try:
-        splitstem = stem.split(' ')
+        # try to find any existing counter
+        splitstem = stem.split(separator)  # raises ValueError on missing sep
         if len(splitstem) < 2:
             raise ValueError()
-        count = int(splitstem[-1])
-        stem = ' '.join(splitstem[:-1])
+        counter = int(splitstem[-1])
+        stem = separator.join(splitstem[:-1])
     except (ValueError, IndexError):
-        count = 1
+        # not found, we start with 1
+        counter = 1
+    return path.with_name('{stem}{sep}{cnt}{suffix}'.format(
+        stem=stem, sep=separator, cnt=(counter + 1), suffix=path.suffix))
+
+
+def find_unused_filename(path: Path, separator=' ') -> Path:
+    """
+    We assume the given path already exists. This function adds a counter to the
+    filename until we find a unused filename.
+    """
+    # TODO: Check whether the assumption can be eliminated for cleaner code.
+    # TODO: Optimization: The counter only needs to be parsed once.
+    tmp = path
     while True:
-        count += 1
-        tmp_path = path.with_name('%s %s%s' % (stem, count, path.suffix))
-        if not tmp_path.exists():
-            return tmp_path
+        tmp = increment_filename_version(tmp, separator=separator)
+        if not tmp.exists():
+            return tmp

@@ -21,6 +21,10 @@ class Rename(Action):
         Otherwise it will start enumerating files (append a counter to the
         filename) to resolve naming conflicts. [Default: False]
 
+    :param str counter_separator:
+        specifies the separator between filename and the appended counter.
+        Only relevant if **overwrite** is disabled. [Default: ``\' \'``]
+
     Examples:
         - Convert all .PDF file extensions to lowercase (.pdf):
 
@@ -47,12 +51,13 @@ class Rename(Action):
                   - Rename: "{path.stem}.{extension.lower}"
     """
 
-    def __init__(self, name: str, overwrite=False):
+    def __init__(self, name: str, overwrite=False, counter_separator=' '):
         if os.path.sep in name:
             ValueError('Rename only takes a filename as argument. To move '
                        'files between folders use the Move action.')
         self.name = name
         self.overwrite = overwrite
+        self.counter_separator = counter_separator
         self.log = logging.getLogger(__name__)
 
     def run(self, attrs: dict, simulate: bool) -> Path:
@@ -68,7 +73,8 @@ class Rename(Action):
                 self.print('File already exists')
                 Trash().run({'path': new_path}, simulate=simulate)
             else:
-                new_path = find_unused_filename(new_path)
+                new_path = find_unused_filename(
+                    path=new_path, separator=self.counter_separator)
 
         # do nothing if the new name is equal to the old name and the file is
         # the same
@@ -82,4 +88,5 @@ class Rename(Action):
         return new_path
 
     def __str__(self):
-        return 'Rename(name=%s, overwrite=%s)' % (self.name, self.overwrite)
+        return 'Rename(name=%s, overwrite=%s, sep=%s)' % (
+            self.name, self.overwrite, self.counter_separator)
