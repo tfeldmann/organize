@@ -99,7 +99,6 @@ def main():
     # > organize sim / run
     else:
         try:
-            print(args)
             if args['<config_path>'] is not None:
               abs_path = Path(args['<config_path>'])
               print(abs_path)
