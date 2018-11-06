@@ -138,8 +138,8 @@ Command line interface
   The file management automation tool.
 
   Usage:
-      organize sim
-      organize run
+      organize sim [<config_path>]
+      organize run [<config_path>]
       organize config [--open-folder | --path | --debug]
       organize list
       organize --help

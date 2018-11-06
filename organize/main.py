@@ -2,8 +2,8 @@
 The file management automation tool.
 
 Usage:
-    organize sim
-    organize run
+    organize sim [<config_path>]
+    organize run [<config_path>]
     organize config [--open-folder | --path | --debug]
     organize list
     organize --help
@@ -82,6 +82,7 @@ logger = logging.getLogger(__name__)
 
 def main():
     """ entry point for the command line interface """
+    print('__doc__', __doc__, '__doc__')
     args = docopt(__doc__, version=__version__, help=True)
     # > organize config
     if args['config']:
@@ -99,7 +100,13 @@ def main():
     # > organize sim / run
     else:
         try:
-            config = Config.from_file(config_path)
+            print(args)
+            if args['<config_path>'] is not None:
+              abs_path = Path(args['<config_path>'])
+              print(abs_path)
+              config = Config.from_file(abs_path)
+            else:
+              config = Config.from_file(config_path)
             execute_rules(config.rules, simulate=args['sim'])
         except Config.Error as e:
             logger.exception(e)

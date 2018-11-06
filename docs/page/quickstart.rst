@@ -51,6 +51,10 @@ For example your configuration file could look like this:
 .. note::
   You can run ``$ organize config --path`` to show the full path to the configuration file.
 
+Custom config file path
+--------------------
+
+You can use ``$ organize run /path/to/config/file`` to supply a different config file.
 
 Simulate and run
 ----------------
