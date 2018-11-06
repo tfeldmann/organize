@@ -82,7 +82,6 @@ logger = logging.getLogger(__name__)
 
 def main():
     """ entry point for the command line interface """
-    print('__doc__', __doc__, '__doc__')
     args = docopt(__doc__, version=__version__, help=True)
     # > organize config
     if args['config']:
