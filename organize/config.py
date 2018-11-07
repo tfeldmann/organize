@@ -122,7 +122,7 @@ class Config:
     @property
     def rules(self) -> List[Rule]:
         """ :returns: A list of instantiated Rules """
-        if 'rules' not in self.config:
+        if self.config is None or 'rules' not in self.config:
             raise self.NoRulesFoundError()
         result = []
         for i, rule_item in enumerate(self.config['rules']):
