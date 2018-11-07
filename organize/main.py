@@ -101,7 +101,6 @@ def main():
         try:
             if args['<config_path>'] is not None:
               abs_path = Path(args['<config_path>'])
-              print(abs_path)
               config = Config.from_file(abs_path)
             else:
               config = Config.from_file(config_path)
