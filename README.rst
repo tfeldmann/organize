@@ -1,6 +1,4 @@
 organize (forked by mope)
 ========
 
-- ~~small PRs pending~~
-- currently adding exif and folder operations support
-- might add GUI in a separate repo later
+This forked repo's master branch contains features I'm working on (or maybe PRs are pending). 
