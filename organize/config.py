@@ -8,7 +8,7 @@ from . import actions, filters
 from .utils import Path, first_key, flatten
 
 logger = logging.getLogger(__name__)
-Rule = namedtuple('Rule', 'filters actions folders subfolders system_files')
+Rule = namedtuple('Rule', 'filters actions folders subfolders system_files target_folders')
 
 # disable yaml constructors for strings starting with exclamation marks
 # https://stackoverflow.com/a/13281292/300783
@@ -146,6 +146,7 @@ class Config:
                 filters=rule_filters,
                 actions=rule_actions,
                 subfolders=rule_item.get('subfolders', False),
+                target_folders=rule_item.get('target_folders', False),
                 system_files=rule_item.get('system_files', False),
             )
             result.append(rule)

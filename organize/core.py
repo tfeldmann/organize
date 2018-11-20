@@ -32,7 +32,7 @@ def all_files_for_rule(rule):
         else:
             raise ValueError("Path does not exist: {}".format(folderstr))
         for path in basedir.glob(globstr):
-            if path.is_file() and (
+            if (path.is_file() == (not rule.target_folders)) and (
                     rule.system_files or
                     path.name not in ('thumbs.db', 'desktop.ini', '.DS_Store')):
                 if not exclude_flag:
