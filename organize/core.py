@@ -29,6 +29,8 @@ def all_files_for_rule(rule):
             # this allows specifying single files
             globstr = basedir.name
             basedir = basedir.parent
+        else:
+            raise ValueError("Path does not exist: {}".format(folderstr))
         for path in basedir.glob(globstr):
             if path.is_file() and (
                     rule.system_files or
