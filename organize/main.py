@@ -27,7 +27,6 @@ Full documentation: https://organize.readthedocs.io
 import logging
 import logging.config
 import os
-import subprocess
 import sys
 
 import appdirs
@@ -120,9 +119,11 @@ def main():
 
 def config_edit():
     """ open the config file in $EDITOR or default text editor """
+    # attention: the env variable might contain command line arguments.
+    # https://github.com/tfeldmann/organize/issues/24
     editor = os.getenv('EDITOR')
     if editor:
-        subprocess.call([editor, str(config_path)])
+        os.system('%s "%s"' % (editor, config_path))
     else:
         open_in_filemanager(config_path)
 

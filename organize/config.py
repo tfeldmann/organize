@@ -39,7 +39,7 @@ class Config:
             return cls.from_string(f.read())
 
     def yaml(self) -> str:
-        if 'rules' not in self.config:
+        if not (self.config and 'rules' in self.config):
             raise self.NoRulesFoundError()
         data = {'rules': self.config['rules']}
         yaml.Dumper.ignore_aliases = lambda self, data: True
@@ -122,7 +122,8 @@ class Config:
     @property
     def rules(self) -> List[Rule]:
         """ :returns: A list of instantiated Rules """
-        if self.config is None or 'rules' not in self.config:
+
+        if not (self.config and 'rules' in self.config):
             raise self.NoRulesFoundError()
         result = []
         for i, rule_item in enumerate(self.config['rules']):

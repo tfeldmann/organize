@@ -77,7 +77,7 @@ class Move(Action):
                   - Extension:
                       - pdf
                 actions:
-                  - Copy:
+                  - Move:
                       dest: '~/Documents/Invoices/'
                       overwrite: false
                       counter_separator: '_'

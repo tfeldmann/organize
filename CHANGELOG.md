@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.4.2 (2018-11-14)
+- Fixes a bug with command line arguments in the ``$EDITOR`` environment
+  variable.
+- Fixes a bug where an empty config wouldn't show the correct error message.
+- Fix binary wheel creation in setup.py by using environment markers
+
 ## v1.4.1 (2018-10-05)
 - A custom separator ``counter_separator`` can now be set in the actions Move,
   Copy and Rename.
