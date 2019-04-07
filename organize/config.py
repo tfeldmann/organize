@@ -25,7 +25,7 @@ class Config:
     @classmethod
     def parse_yaml(cls, config: str) -> dict:
         try:
-            return yaml.load(config)
+            return yaml.safe_load(config)
         except yaml.YAMLError as e:
             raise cls.ParsingError(e)
 
