@@ -18,7 +18,7 @@ class Filesize(Filter):
         Will match files having a size equal equal to or bigger than specified size.
 
     Combined use of both parameters in a single Filesize filter will only match if the file satisfies both conditions.
-    
+
     :returns:
         - ``{filesize}`` -- File size in bytes
 
@@ -31,9 +31,8 @@ class Filesize(Filter):
             rules:
               - folders: '~/Downloads'
                 filters:
-                  - FileSize:
-                      - smaller: 5m
-                      - bigger: 1m
+                  - Filesize:
+                      - bigger: 500m
                 actions:
                   - Trash
 
