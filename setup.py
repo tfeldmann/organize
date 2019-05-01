@@ -1,6 +1,4 @@
 import os
-import sys
-
 from setuptools import find_packages, setup
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
