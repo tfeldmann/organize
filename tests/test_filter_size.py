@@ -1,6 +1,7 @@
 from organize.filters import FileSize
 import mock
 
+
 def test_matching():
     situations = [
         (1, FileSize(smaller='1b', bigger='2b'), False),
@@ -16,9 +17,17 @@ def test_matching():
         (42, FileSize(), True),
     ]
 
-    for mocksize, filter, result in situations:
-        # override '_get_file_size' class function to return the byte values specified in the test
+    for mocksize, sizefilter, result in situations:
         def new_get_file_size(self, _):
             return mocksize
+        # override '_get_file_size' class function to return the byte values specified in the test
         with mock.patch.object(FileSize, '_get_file_size', new=new_get_file_size):
-            assert filter.matches('/whatever/path') == result
+            assert sizefilter.matches('/whatever/path') == result
+
+
+def test_parse():
+    def new_get_file_size(self, _):
+        return 420001
+    with mock.patch.object(FileSize, '_get_file_size', new=new_get_file_size):
+        result = FileSize().parse('/whatever/path/')
+        assert result['filesize'] == 420001
