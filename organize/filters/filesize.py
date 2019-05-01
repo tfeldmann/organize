@@ -36,8 +36,15 @@ class FileSize(Filter):
 
     @staticmethod
     def _parse_size_arg(size_string):
-        size_number, size_unit = re.findall(r'([0-9\.]+)\s*([A-Za-z]+)', size_string)[0]
+        size_string = size_string.lower().strip()
+        size_number = re.findall(r'^([0-9\.]+)', size_string)[0]
+        size_unit = re.findall(r'([a-z]+)$', size_string)
+        if len(size_unit)>0:
+            size_unit=size_unit[0]
+        else:
+            size_unit='b'
         unit_lookup = {
+            'b': 0,
             'k': 3,
             'm': 6,
             'g': 9,
@@ -68,5 +75,4 @@ class FileSize(Filter):
         return os.path.getsize(path)
 
     def __str__(self):
-        return 'FileSize(file_size=%d, mode=%s)' % (
-            self.file_size, self.mode)
+        return f'FileSize({self.bigger} <= filesize <= {self.smaller})'
