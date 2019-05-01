@@ -4,16 +4,21 @@ import re
 import os
 
 
-class FileSize(Filter):
+class Filesize(Filter):
     """
     Matches files by last modified date
 
     :param str smaller:
-        Will match files smaller than specified size. Valid format examples: 1g, 4Gb, 1.5MB
+        Will match files having a size equal to or smaller than specified size.
+
+        Valid format examples: ``1g``, ``4G``, ``1.5MB``, ``5000`` The if no unit is given, bytes is assumed.
+        Use ``bigger: 1`` to test for empty files.
 
     :param str bigger:
-        Will match files bigger than specified size. Valid format examples: 1g, 4Gb, 1.5MB
+        Will match files having a size equal equal to or bigger than specified size.
 
+    Combined use of both parameters in a single Filesize filter will only match if the file satisfies both conditions.
+    
     :returns:
         - ``{filesize}`` -- File size in bytes
 
@@ -27,7 +32,7 @@ class FileSize(Filter):
               - folders: '~/Downloads'
                 filters:
                   - FileSize:
-                      - smaller: 5g
+                      - smaller: 5m
                       - bigger: 1m
                 actions:
                   - Trash
