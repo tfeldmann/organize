@@ -18,7 +18,7 @@ Job.__doc__ = """
 """
 
 
-def all_files_for_rule(rule):
+def get_paths_for_rule(rule):
     files = {}
     for folderstr in rule.folders:
         exclude_flag = folderstr.startswith('!')
@@ -32,7 +32,7 @@ def all_files_for_rule(rule):
         else:
             raise ValueError("Path does not exist: {}".format(folderstr))
         for path in basedir.glob(globstr):
-            if (path.is_file() == (not rule.target_folders)) and (
+            if (path.is_file() == (not rule.targets_folders)) and (
                     rule.system_files or
                     path.name not in ('thumbs.db', 'desktop.ini', '.DS_Store')):
                 if not exclude_flag:
@@ -42,15 +42,25 @@ def all_files_for_rule(rule):
     for path, (folderstr, basedir) in files.items():
         yield (folderstr, basedir, path)
 
-
 def find_jobs(rules):
     for rule in rules:
-        for folderstr, basedir, path in all_files_for_rule(rule):
-            if all(f.matches(path) for f in rule.filters):
-                yield Job(
-                    folderstr=folderstr, basedir=basedir, path=path,
-                    filters=rule.filters, actions=rule.actions)
-
+        if not rule.targets_folders:
+            for folderstr, basedir, filepath in get_paths_for_rule(rule):
+                if all(f.matches(filepath) for f in rule.filters):
+                    yield Job(
+                        folderstr=folderstr, basedir=basedir, path=filepath,
+                        filters=rule.filters, actions=rule.actions)
+        else:
+            for folderstr, basedir, subfolder in get_paths_for_rule(rule):
+                match = True
+                for subfolder_file in subfolder.glob('**/*'):
+                    if subfolder_file.is_file() and not all(f.matches(subfolder_file) for f in rule.filters):
+                        match = False
+                if match:
+                    print('match')
+                    yield Job(
+                        folderstr=folderstr, basedir=basedir, path=subfolder,
+                        filters=rule.filters, actions=rule.actions)
 
 def group_by_folder(jobs):
     result = defaultdict(list)

@@ -36,7 +36,7 @@ def test_basic():
             ],
             subfolders=False,
             system_files=False,
-            target_folders=False,
+            targets_folders=False,
         ),
         Rule(
             folders=['~/test1', '/test2'],
@@ -44,7 +44,7 @@ def test_basic():
             actions=[Shell(cmd='say {path.stem}')],
             subfolders=False,
             system_files=False,
-            target_folders=False,
+            targets_folders=False,
         )
     ]
 
@@ -90,7 +90,7 @@ def test_yaml_ref():
                 Echo(msg='Hello World')],
             subfolders=False,
             system_files=False,
-            target_folders=False,
+            targets_folders=False,
         ),
         Rule(
             folders=['~/Desktop', '~/Documents', '/more/more'],
@@ -98,7 +98,7 @@ def test_yaml_ref():
             actions=[Trash()],
             subfolders=False,
             system_files=False,
-            target_folders=False,
+            targets_folders=False,
         )
     ]
 
@@ -147,7 +147,7 @@ def test_empty_filters():
             actions=[Trash()],
             subfolders=False,
             system_files=False,
-            target_folders=False,
+            targets_folders=False,
         ),
         Rule(
             folders=['~/'],
@@ -155,6 +155,38 @@ def test_empty_filters():
             actions=[Trash()],
             subfolders=False,
             system_files=False,
-            target_folders=False,
+            targets_folders=False,
+        )
+    ]
+
+
+def test_folderrule_empty_filters():
+    conf = Config.from_string("""
+    rules:
+      - targets_folders
+        folders: '/'
+        filters:
+        actions:
+          - Trash
+        folders: '~/'
+        actions:
+          - Trash
+    """)
+    assert conf.rules == [
+        Rule(
+            folders=['/'],
+            filters=[],
+            actions=[Trash()],
+            subfolders=False,
+            system_files=False,
+            targets_folders=True,
+        ),
+        Rule(
+            folders=['~/'],
+            filters=[],
+            actions=[Trash()],
+            subfolders=False,
+            system_files=False,
+            targets_folders=True,
         )
     ]
