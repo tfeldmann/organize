@@ -7,7 +7,6 @@ from .utils import fullpath, bold, splitglob
 
 logger = logging.getLogger(__name__)
 
-
 Job = namedtuple('Job', 'folderstr basedir path filters actions')
 Job.__doc__ = """
     :param str folderstr: the original folder definition specified in the config
@@ -16,6 +15,8 @@ Job.__doc__ = """
     :param list filters:  the filters that apply to the path
     :param list actions:  the actions which should be executed
 """
+
+SYSTEM_FILES = ['thumbs.db', 'desktop.ini', '.DS_Store']
 
 
 def get_paths_for_rule(rule):
@@ -32,15 +33,14 @@ def get_paths_for_rule(rule):
         else:
             raise ValueError("Path does not exist: {}".format(folderstr))
         for path in basedir.glob(globstr):
-            if (path.is_file() == (not rule.targets_folders)) and (
-                    rule.system_files or
-                    path.name not in ('thumbs.db', 'desktop.ini', '.DS_Store')):
+            if (path.is_file() == (not rule.targets_folders)) and (rule.system_files or path.name not in SYSTEM_FILES):
                 if not exclude_flag:
                     files[path] = (folderstr, basedir)
                 elif path in files:
                     del files[path]
     for path, (folderstr, basedir) in files.items():
         yield (folderstr, basedir, path)
+
 
 def find_jobs(rules):
     for rule in rules:
@@ -53,11 +53,15 @@ def find_jobs(rules):
         else:
             for folderstr, basedir, subfolder in get_paths_for_rule(rule):
                 match = True
-                for subfolder_file in subfolder.glob('**/*'):
-                    if subfolder_file.is_file() and not all(f.matches(subfolder_file) for f in rule.filters):
-                        match = False
+                for filt in rule.filters:
+                    if not filt.matches(subfolder):
+                        match=False
+                        break
+                if filt.targets_folders_settings().match_files_rec:
+                    for subfolder_file in subfolder.glob('**/*'):
+                        if subfolder_file.is_file() and not all(f.matches(subfolder_file) for f in rule.filters):
+                            match = False
                 if match:
-                    print('match')
                     yield Job(
                         folderstr=folderstr, basedir=basedir, path=subfolder,
                         filters=rule.filters, actions=rule.actions)

@@ -1,3 +1,7 @@
+from collections import namedtuple
+
+TargetsFoldersSettings = namedtuple('TargetsFoldersSettings', 'match_files_rec')
+
 class Filter:
 
     def matches(self, path):
@@ -7,6 +11,9 @@ class Filter:
     def parse(self, path):
         """ Return an dict of parsed file properties (optional) """
         return {}
+
+    def targets_folders_settings(self):
+        return TargetsFoldersSettings(match_files_rec=False)
 
     def __str__(self):
         """ Return filter name and properties """

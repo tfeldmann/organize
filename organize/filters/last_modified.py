@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
-from .filter import Filter
-
+from .filter import Filter, TargetsFoldersSettings
 
 class LastModified(Filter):
 
@@ -100,3 +99,10 @@ class LastModified(Filter):
     def __str__(self):
         return 'FileModified(delta=%s, select_mode=%s)' % (
             self.timedelta, self._mode)
+
+    def targets_folders_settings(self):
+        # In the case of a LastModified filter applied to a subfolder of the target folders
+        # using the targets_folders: True setting on the rule:
+        # Go through all the files in the subfolder recursively and make sure they all match
+        # before the filter matches
+        return TargetsFoldersSettings(match_files_rec=True)
