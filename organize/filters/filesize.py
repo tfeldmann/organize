@@ -32,7 +32,7 @@ class Filesize(Filter):
               - folders: '~/Downloads'
                 filters:
                   - Filesize:
-                      - bigger: 500m
+                      bigger: 500m
                 actions:
                   - Trash
 
