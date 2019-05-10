@@ -70,7 +70,7 @@ class Filesize(Filter):
         return {"filesize": file_size}
 
     def _get_file_size(self, path):
-        return os.path.getsize(path)
+        return os.path.getsize(str(path))
 
     def __str__(self):
         return "FileSize({bigger} <= filesize <= {smaller})".format(bigger=self.bigger, smaller=self.smaller)
