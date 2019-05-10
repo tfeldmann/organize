@@ -73,4 +73,4 @@ class Filesize(Filter):
         return os.path.getsize(path)
 
     def __str__(self):
-        return f"FileSize({self.bigger} <= filesize <= {self.smaller})"
+        return "FileSize({bigger} <= filesize <= {smaller})".format(bigger=self.bigger, smaller=self.smaller)
