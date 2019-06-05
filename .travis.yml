@@ -4,10 +4,10 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-  - "3.7"
 install:
   - pip install poetry
   - poetry install
-  - poetry run python main.py
+  - poetry run python main.py list
+  - organize list
 script:
     poetry run py.test
