@@ -1,7 +1,7 @@
 .PHONY: upload upload_prod clean docs
 
 dist:
-	python3 setup.py sdist bdist_wheel
+	poetry build
 
 upload: dist
 	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
