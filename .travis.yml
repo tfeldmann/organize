@@ -6,6 +6,7 @@ python:
   - "3.6"
 install:
   - pip install poetry
+  - poetry check
   - poetry install
   - poetry run python main.py list
   - poetry run python main.py --version

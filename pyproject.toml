@@ -2,13 +2,16 @@
 name = "organize-tool"
 version = "1.4.3"
 description = "The file management automation tool"
+include = ["CHANGELOG.md", "README.rst"]
+packages = [
+    { include = "organize" },
+]
 authors = ["Thomas Feldmann <mail@tfeldmann.de>"]
 license = "MIT"
 readme = "README.rst"
 repository = "https://github.com/tfeldmann/organize"
 documentation = "https://organize.readthedocs.io"
 keywords = ["file", "management", "automation", "tool", "organization", "rules", "yaml"]
-include = ["CHANGELOG.md", "README.rst"]
 classifiers = [
     # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
     "Development Status :: 5 - Production/Stable",
