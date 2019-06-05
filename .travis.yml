@@ -8,6 +8,6 @@ install:
   - pip install poetry
   - poetry install
   - poetry run python main.py list
-  - organize list
+  - poetry run python main.py --version
 script:
     poetry run py.test
