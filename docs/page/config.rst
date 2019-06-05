@@ -26,6 +26,13 @@ All configuration takes place in your `config.yaml` file.
   $ organize config --debug
 
 
+Environment variables
+=====================
+
+- ``$EDITOR`` - The editor used to edit the config file.
+- ``$ORGANIZE_CONFIG`` - The config file path. Is overridden by ``--config-file`` cmd line argument.
+
+
 Rule syntax
 ===========
 The rule configuration is done in `YAML <https://learnxinyminutes.com/docs/yaml/>`_.

@@ -2,9 +2,9 @@
 The file management automation tool.
 
 Usage:
-    organize sim
-    organize run
-    organize config [--open-folder | --path | --debug]
+    organize sim [--config-file=<path>]
+    organize run [--config-file=<path>]
+    organize config [--open-folder | --path | --debug] [--config-file=<path>]
     organize list
     organize --help
     organize --version
@@ -43,6 +43,13 @@ from .utils import Path, bold, flatten, fullpath
 app_dirs = appdirs.AppDirs('organize')
 config_dir = Path(app_dirs.user_config_dir)
 config_path = config_dir / 'config.yaml'
+
+# setting the $ORGANIZE_CONFIG env variable overrides the default config path
+env_config = os.getenv('ORGANIZE_CONFIG')
+if env_config:
+    config_path = Path(env_config).resolve()
+    config_dir = config_path.parent
+
 log_dir = Path(app_dirs.user_log_dir)
 log_path = log_dir / 'organize.log'
 
@@ -82,6 +89,14 @@ logger = logging.getLogger(__name__)
 def main():
     """ entry point for the command line interface """
     args = docopt(__doc__, version=__version__, help=True)
+
+    # override default config file path
+    if args['--config-file']:
+        global config_path
+        global config_dir
+        config_path = Path(args['--config-file']).resolve()
+        config_dir = config_path.parent
+
     # > organize config
     if args['config']:
         if args['--open-folder']:
@@ -133,6 +148,7 @@ def open_in_filemanager(path):
 def config_debug():
     """ prints the config with resolved aliases, checks rules syntax and checks
         whether the given folders exist """
+    puts(str(config_path))
     haserr = False
     # check config syntax
     try:
