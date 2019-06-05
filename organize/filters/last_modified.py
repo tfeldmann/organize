@@ -19,7 +19,7 @@ class LastModified(Filter):
     :param str mode:
         either 'older' or 'newer'. 'older' matches all files last modified
         before the given time, 'newer' matches all files last modified within
-        the given time.
+        the given time. (default = 'older')
 
     :returns:
         - ``{lastmodified.year}`` -- the year the file was last modified
