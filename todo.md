@@ -1,14 +1,13 @@
 # TODO
 
 ## Next up:
-- [ ] Use poetry for dependencies
 - [ ] Clean up global config variable
+- [ ] Format all code with `black`
 - [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='3 Gb')
 - [ ] Filter: Content / FileContent (#10)
 
 ## Maybe sometime:
-- [ ] Config: Import config files from custom locations (#14)
 - [ ] Config: 'exclude' directive in rule (like 'filter') -> mode any, all?
 - [ ] Config: Case insensitive filter and action matching
 - [ ] Config: Rule names
@@ -37,6 +36,8 @@
 - [ ] Filter: Hashtags(query 'people-john,stars>4,USA') -> List / str of hashtags (#1)
 
 ## Done:
+- [x] Use poetry for dependencies  @2019-06-05
+- [x] Config: Import config files from custom locations (#14)  @2019-06-05
 - [x] Filter: Add `counter_separator` option to Move, Rename, Copy  @2018-10-05
 - [x] Documentation: for `counter_separator`  @2018-10-05
 - [x] Documentation: Glob folder / file exclusion  @2018-09-21
