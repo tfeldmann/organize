@@ -39,7 +39,7 @@ class LastModified(Filter):
               - folders: '~/Desktop'
                 filters:
                   - LastModified:
-                      - days: 10
+                      days: 10
                 actions:
                   - Echo: 'Was modified at least 10 days ago'
 
@@ -53,8 +53,8 @@ class LastModified(Filter):
               - folders: '~/Desktop'
                 filters:
                   - LastModified:
-                      - hours: 5
-                      - mode: newer
+                      hours: 5
+                      mode: newer
                 actions:
                   - Echo: 'Was modified within the last 5 hours'
 
