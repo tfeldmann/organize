@@ -14,12 +14,14 @@
 - [ ] Config: Filter modes all, none, any?
 - [ ] Config: jsonschema for user config validation?
 - [ ] Config: Flatten filter lists
+- [ ] Config: Support ansible 'with_item' list syntax
 - [ ] Core: User plugins
 - [ ] Core: show docstring of individual filters, actions in help
 - [ ] Core: Use Jinja2 native types instead of python format strings?
             This would allow method execution. Maybe works nicely with taggo?
 - [ ] Core: Undo where possible (#16)
 - [ ] Action: DeleteFolderIfEmpty
+- [ ] Core: Add Support for S3, SSH, FTP etc. via PyFilesystem
 - [ ] Action: Zip
 - [ ] Action: E-Mail
 - [ ] Action: Print (on printer)
@@ -29,8 +31,8 @@
 - [ ] Filter: id3 tag data
 - [ ] Filter: Exif data (camera__contains, ...) (https://pypi.org/project/ExifRead/)
 - [ ] Filter: MD5
-- [ ] Filter: Hashtags (#1)
 - [ ] Filter: CreationDate (#13)
+- [ ] Filter: Hashtags(query 'people-john,stars>4,USA') -> List / str of hashtags (#1)
 
 ## Done:
 - [x] Filter: Add `counter_separator` option to Move, Rename, Copy  @2018-10-05
