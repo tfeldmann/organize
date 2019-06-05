@@ -1,0 +1,45 @@
+[tool.poetry]
+name = "organize-tool"
+version = "1.4.3"
+description = "The file management automation tool"
+authors = ["Thomas Feldmann <mail@tfeldmann.de>"]
+license = "MIT"
+readme = "README.rst"
+repository = "https://github.com/tfeldmann/organize"
+documentation = "https://organize.readthedocs.io"
+keywords = ["file", "management", "automation", "tool", "organization", "rules", "yaml"]
+include = ["CHANGELOG.md", "README.rst"]
+classifiers = [
+    # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Natural Language :: English",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
+    "Topic :: Utilities",
+]
+
+[tool.poetry.scripts]
+organize = "organize.main:main"
+
+[tool.poetry.dependencies]
+python = "^3.4"
+appdirs = "^1.4"
+docopt = "^0.6.2"
+PyYAML = "^5.1"
+Send2Trash = "^1.5"
+clint = "^0.5.1"
+colorama = "^0.4.1"
+typing = { version = "^3.6", python = "<3.5" }
+pathlib2 = [
+    { version = "^2.3.3", python = "<3.5" },
+    { version = "2.3.0", python = "<3.4" },
+]
+
+[tool.poetry.dev-dependencies]
+pytest = "^4.6"
+mock = "^3.0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

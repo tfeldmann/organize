@@ -5,8 +5,7 @@ python:
   - "3.5"
   - "3.6"
 install:
-  - python setup.py install
-  - pip install mock
-  - pip install -U pytest
+  - pip install poetry
+  - poetry run python main.py
 script:
-    py.test
+    poetry run py.test

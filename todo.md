@@ -1,6 +1,8 @@
 # TODO
 
 ## Next up:
+- [ ] Use poetry for dependencies
+- [ ] Clean up global config variable
 - [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='3 Gb')
 - [ ] Filter: Content / FileContent (#10)

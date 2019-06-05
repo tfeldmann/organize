@@ -4,8 +4,8 @@ from organize.utils import Path, find_unused_filename, splitglob, increment_file
 def test_splitglob():
     assert splitglob('~/Downloads') == (Path.home() / 'Downloads', '')
     assert (
-        splitglob('/Test/\* tmp\*/*[!H]/**/*.*') ==
-        (Path('/Test/\* tmp\*'), '*[!H]/**/*.*'))
+        splitglob(r'/Test/\* tmp\*/*[!H]/**/*.*') ==
+        (Path(r'/Test/\* tmp\*'), '*[!H]/**/*.*'))
     assert (
         splitglob('~/Downloads/Program 0.1*.exe') ==
         (Path.home() / 'Downloads', 'Program 0.1*.exe'))
