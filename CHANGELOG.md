@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.4.3 (2019-06-05)
+- Use safe YAML loader to fix a deprecation warning. (Thanks mope1!)
+- Better error message if a folder does not exist. (Again thanks mope1!)
+- Fix example code in documentation for LastModified filter.
+- Custom config file locations (given by cmd line argument or environment variable).
+- `config --debug` now shows the full path to the config file.
+
 ## v1.4.2 (2018-11-14)
 - Fixes a bug with command line arguments in the ``$EDITOR`` environment
   variable.

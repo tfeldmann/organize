@@ -138,9 +138,9 @@ Command line interface
   The file management automation tool.
 
   Usage:
-      organize sim
-      organize run
-      organize config [--open-folder | --path | --debug]
+      organize sim [--config-file=<path>]
+      organize run [--config-file=<path>]
+      organize config [--open-folder | --path | --debug] [--config-file=<path>]
       organize list
       organize --help
       organize --version
