@@ -1,5 +1,8 @@
 # Changelog
 
+## WIP 
+- Fixed issues with umlauts in configuration file on windows
+
 ## v1.4.3 (2019-06-05)
 - Use safe YAML loader to fix a deprecation warning. (Thanks mope1!)
 - Better error message if a folder does not exist. (Again thanks mope1!)

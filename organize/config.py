@@ -35,7 +35,7 @@ class Config:
 
     @classmethod
     def from_file(cls, path: Path) -> 'Config':
-        with path.open() as f:
+        with path.open(encoding='utf-8') as f:
             return cls.from_string(f.read())
 
     def yaml(self) -> str:
@@ -43,7 +43,7 @@ class Config:
             raise self.NoRulesFoundError()
         data = {'rules': self.config['rules']}
         yaml.Dumper.ignore_aliases = lambda self, data: True
-        return yaml.dump(data, default_flow_style=False, default_style="'")
+        return yaml.dump(data, allow_unicode=True, default_flow_style=False, default_style="'")
 
     @staticmethod
     def parse_folders(rule_item):

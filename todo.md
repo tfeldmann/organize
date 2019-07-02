@@ -1,6 +1,7 @@
 # TODO
 
 ## Next up:
+- [ ] Allow lowercase for action and filter names
 - [ ] Clean up global config variable
 - [ ] Format all code with `black`
 - [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
