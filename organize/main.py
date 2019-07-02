@@ -40,18 +40,18 @@ from .core import execute_rules
 from .utils import Path, bold, flatten, fullpath
 
 # prepare config and log folders
-app_dirs = appdirs.AppDirs('organize')
+app_dirs = appdirs.AppDirs("organize")
 config_dir = Path(app_dirs.user_config_dir)
-config_path = config_dir / 'config.yaml'
+config_path = config_dir / "config.yaml"
 
 # setting the $ORGANIZE_CONFIG env variable overrides the default config path
-env_config = os.getenv('ORGANIZE_CONFIG')
+env_config = os.getenv("ORGANIZE_CONFIG")
 if env_config:
     config_path = Path(env_config).resolve()
     config_dir = config_path.parent
 
 log_dir = Path(app_dirs.user_log_dir)
-log_path = log_dir / 'organize.log'
+log_path = log_dir / "organize.log"
 
 for folder in (config_dir, log_dir):
     folder.mkdir(parents=True, exist_ok=True)
@@ -81,7 +81,9 @@ handlers:
 root:
     level: DEBUG
     handlers: [file]
-""".format(filename=str(log_path))
+""".format(
+    filename=str(log_path)
+)
 logging.config.dictConfig(yaml.load(LOGGING, Loader=yaml.SafeLoader))
 logger = logging.getLogger(__name__)
 
@@ -91,40 +93,40 @@ def main():
     args = docopt(__doc__, version=__version__, help=True)
 
     # override default config file path
-    if args['--config-file']:
+    if args["--config-file"]:
         global config_path
         global config_dir
-        config_path = Path(args['--config-file']).resolve()
+        config_path = Path(args["--config-file"]).resolve()
         config_dir = config_path.parent
 
     # > organize config
-    if args['config']:
-        if args['--open-folder']:
+    if args["config"]:
+        if args["--open-folder"]:
             open_in_filemanager(config_dir)
-        elif args['--path']:
+        elif args["--path"]:
             puts(str(config_path))
-        elif args['--debug']:
+        elif args["--debug"]:
             config_debug()
         else:
             config_edit()
     # > organize list
-    elif args['list']:
+    elif args["list"]:
         list_actions_and_filters()
     # > organize sim / run
     else:
         try:
             config = Config.from_file(config_path)
-            execute_rules(config.rules, simulate=args['sim'])
+            execute_rules(config.rules, simulate=args["sim"])
         except Config.Error as e:
             logger.exception(e)
             print_error(e)
             puts("Try 'organize config --debug' for easier debugging.")
-            puts('Full traceback at: %s' % log_path)
+            puts("Full traceback at: %s" % log_path)
             sys.exit(1)
         except Exception as e:
             logger.exception(e)
             print_error(e)
-            puts('Full traceback at: %s' % log_path)
+            puts("Full traceback at: %s" % log_path)
             sys.exit(1)
 
 
@@ -132,7 +134,7 @@ def config_edit():
     """ open the config file in $EDITOR or default text editor """
     # attention: the env variable might contain command line arguments.
     # https://github.com/tfeldmann/organize/issues/24
-    editor = os.getenv('EDITOR')
+    editor = os.getenv("EDITOR")
     if editor:
         os.system('%s "%s"' % (editor, config_path))
     else:
@@ -142,6 +144,7 @@ def config_edit():
 def open_in_filemanager(path):
     """ opens the given path in file manager, using the default application """
     import webbrowser
+
     webbrowser.open(path.as_uri())
 
 
@@ -152,14 +155,14 @@ def config_debug():
     haserr = False
     # check config syntax
     try:
-        puts(bold('Your configuration as seen by the parser:'))
+        puts(bold("Your configuration as seen by the parser:"))
         with indent(2):
             config = Config.from_file(config_path)
             if not config.config:
-                print_error('Config file is empty')
+                print_error("Config file is empty")
         puts(config.yaml())
         rules = config.rules
-        puts('Config file syntax seems fine!')
+        puts("Config file syntax seems fine!")
     except Config.Error as e:
         haserr = True
         print_error(e)
@@ -172,23 +175,24 @@ def config_debug():
                 puts(colored.yellow('Warning: "%s" does not exist!' % f))
 
     if not haserr:
-        puts(colored.green('No config problems found.', bold=True))
+        puts(colored.green("No config problems found.", bold=True))
 
 
 def list_actions_and_filters():
     """ Prints a list of available actions and filters """
     import inspect
     from organize import filters, actions
-    puts(bold('Filters:'))
+
+    puts(bold("Filters:"))
     with indent(2):
         for name, _ in inspect.getmembers(filters, inspect.isclass):
             puts(name)
     puts()
-    puts(bold('Actions:'))
+    puts(bold("Actions:"))
     with indent(2):
         for name, _ in inspect.getmembers(actions, inspect.isclass):
             puts(name)
 
 
 def print_error(text):
-    puts('%s %s' % (colored.red('ERROR!', bold=True), text))
+    puts("%s %s" % (colored.red("ERROR!", bold=True), text))

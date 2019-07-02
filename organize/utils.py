@@ -11,7 +11,7 @@ if sys.version_info < (3, 6):
 else:
     from pathlib import Path
 
-unescaped_wildcard = re.compile(r'(?<!\\)[\*\?\[]+')
+unescaped_wildcard = re.compile(r"(?<!\\)[\*\?\[]+")
 
 
 def splitglob(globstr):
@@ -21,7 +21,7 @@ def splitglob(globstr):
     for i, part in enumerate(parts):
         if unescaped_wildcard.search(part):
             return (Path(*parts[:i]), str(Path(*parts[i:])))
-    return (path, '')
+    return (path, "")
 
 
 def fullpath(path):
@@ -33,7 +33,7 @@ def bold(text):
     # inspired by a feature request from the clint library
     # https://github.com/kennethreitz/clint/issues/157
     if sys.stdout.isatty():
-        return ''.join([colorama.Style.BRIGHT, str(text), colorama.Style.NORMAL])
+        return "".join([colorama.Style.BRIGHT, str(text), colorama.Style.NORMAL])
     return text
 
 
@@ -50,7 +50,6 @@ def first_key(dic: dict):
 
 
 class DotDict(OrderedDict):
-
     def __getattr__(self, key):
         try:
             return self[key]
@@ -58,7 +57,7 @@ class DotDict(OrderedDict):
             raise AttributeError(key)
 
     def __setattr__(self, key, value):
-        if not key.startswith('_OrderedDict__'):
+        if not key.startswith("_OrderedDict__"):
             self[key] = value
         else:
             OrderedDict.__setattr__(self, key, value)
@@ -73,10 +72,10 @@ class DotDict(OrderedDict):
         return dict.__eq__(self, other)
 
     def __str__(self):
-        return '{%s}' % ', '.join('%r: %r' % (key, self[key]) for key in self)
+        return "{%s}" % ", ".join("%r: %r" % (key, self[key]) for key in self)
 
 
-def increment_filename_version(path: Path, separator=' ') -> Path:
+def increment_filename_version(path: Path, separator=" ") -> Path:
     stem = path.stem
     try:
         # try to find any existing counter
@@ -88,11 +87,14 @@ def increment_filename_version(path: Path, separator=' ') -> Path:
     except (ValueError, IndexError):
         # not found, we start with 1
         counter = 1
-    return path.with_name('{stem}{sep}{cnt}{suffix}'.format(
-        stem=stem, sep=separator, cnt=(counter + 1), suffix=path.suffix))
+    return path.with_name(
+        "{stem}{sep}{cnt}{suffix}".format(
+            stem=stem, sep=separator, cnt=(counter + 1), suffix=path.suffix
+        )
+    )
 
 
-def find_unused_filename(path: Path, separator=' ') -> Path:
+def find_unused_filename(path: Path, separator=" ") -> Path:
     """
     We assume the given path already exists. This function adds a counter to the
     filename until we find a unused filename.

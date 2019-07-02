@@ -28,22 +28,22 @@ def test_basic():
     conf = Config.from_string(config)
     assert conf.rules == [
         Rule(
-            folders=['~/Desktop'],
-            filters=[Extension('.JPG', 'PNG'), Extension('txt')],
+            folders=["~/Desktop"],
+            filters=[Extension(".JPG", "PNG"), Extension("txt")],
             actions=[
-                Move(dest='~/Desktop/New Folder', overwrite=True),
-                Echo(msg='Moved {path}/{extension.upper}')
+                Move(dest="~/Desktop/New Folder", overwrite=True),
+                Echo(msg="Moved {path}/{extension.upper}"),
             ],
             subfolders=False,
             system_files=False,
         ),
         Rule(
-            folders=['~/test1', '/test2'],
+            folders=["~/test1", "/test2"],
             filters=[],
-            actions=[Shell(cmd='say {path.stem}')],
+            actions=[Shell(cmd="say {path.stem}")],
             subfolders=False,
             system_files=False,
-        )
+        ),
     ]
 
 
@@ -79,54 +79,59 @@ def test_yaml_ref():
     conf = Config.from_string(config)
     assert conf.rules == [
         Rule(
-            folders=['~/Desktop', '~/Documents'],
+            folders=["~/Desktop", "~/Documents"],
             filters=[
-                Extension('.wav', '.PNG'),
-                Extension('.wav', '.PNG', 'jpg'),
-                LastModified(days=10)],
-            actions=[
-                Echo(msg='Hello World')],
+                Extension(".wav", ".PNG"),
+                Extension(".wav", ".PNG", "jpg"),
+                LastModified(days=10),
+            ],
+            actions=[Echo(msg="Hello World")],
             subfolders=False,
             system_files=False,
         ),
         Rule(
-            folders=['~/Desktop', '~/Documents', '/more/more'],
+            folders=["~/Desktop", "~/Documents", "/more/more"],
             filters=[],
             actions=[Trash()],
             subfolders=False,
             system_files=False,
-        )
+        ),
     ]
 
 
 def test_error_filter_dict():
-    conf = Config.from_string("""
+    conf = Config.from_string(
+        """
     rules:
       - folders: '/'
         filters:
           Extension: 'jpg'
         actions:
           - Trash
-    """)
+    """
+    )
     with pytest.raises(Config.FiltersNoListError):
         _ = conf.rules
 
 
 def test_error_action_dict():
-    conf = Config.from_string("""
+    conf = Config.from_string(
+        """
     rules:
       - folders: '/'
         filters:
           - Extension: 'jpg'
         actions:
           Trash
-    """)
+    """
+    )
     with pytest.raises(Config.ActionsNoListError):
         _ = conf.rules
 
 
 def test_empty_filters():
-    conf = Config.from_string("""
+    conf = Config.from_string(
+        """
     rules:
       - folders: '/'
         filters:
@@ -135,20 +140,21 @@ def test_empty_filters():
       - folders: '~/'
         actions:
           - Trash
-    """)
+    """
+    )
     assert conf.rules == [
         Rule(
-            folders=['/'],
+            folders=["/"],
             filters=[],
             actions=[Trash()],
             subfolders=False,
             system_files=False,
         ),
         Rule(
-            folders=['~/'],
+            folders=["~/"],
             filters=[],
             actions=[Trash()],
             subfolders=False,
             system_files=False,
-        )
+        ),
     ]

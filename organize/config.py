@@ -8,17 +8,18 @@ from . import actions, filters
 from .utils import Path, first_key, flatten
 
 logger = logging.getLogger(__name__)
-Rule = namedtuple('Rule', 'filters actions folders subfolders system_files')
+Rule = namedtuple("Rule", "filters actions folders subfolders system_files")
 
 # disable yaml constructors for strings starting with exclamation marks
 # https://stackoverflow.com/a/13281292/300783
 def default_yaml_constructor(loader, tag_suffix, node):
-    return tag_suffix + ' ' + node.value
-yaml.add_multi_constructor('', default_yaml_constructor)
+    return tag_suffix + " " + node.value
+
+
+yaml.add_multi_constructor("", default_yaml_constructor)
 
 
 class Config:
-
     def __init__(self, config: dict):  # type: (dict)
         self.config = config
 
@@ -30,38 +31,40 @@ class Config:
             raise cls.ParsingError(e)
 
     @classmethod
-    def from_string(cls, config: str) -> 'Config':
+    def from_string(cls, config: str) -> "Config":
         return cls(cls.parse_yaml(config))
 
     @classmethod
-    def from_file(cls, path: Path) -> 'Config':
-        with path.open(encoding='utf-8') as f:
+    def from_file(cls, path: Path) -> "Config":
+        with path.open(encoding="utf-8") as f:
             return cls.from_string(f.read())
 
     def yaml(self) -> str:
-        if not (self.config and 'rules' in self.config):
+        if not (self.config and "rules" in self.config):
             raise self.NoRulesFoundError()
-        data = {'rules': self.config['rules']}
+        data = {"rules": self.config["rules"]}
         yaml.Dumper.ignore_aliases = lambda self, data: True
-        return yaml.dump(data, allow_unicode=True, default_flow_style=False, default_style="'")
+        return yaml.dump(
+            data, allow_unicode=True, default_flow_style=False, default_style="'"
+        )
 
     @staticmethod
     def parse_folders(rule_item):
         # the folder list is flattened so we can use encapsulated list
         # definitions in the config file.
-        yield from flatten(rule_item['folders'])
+        yield from flatten(rule_item["folders"])
 
     def _get_filter_class_by_name(self, name):
         try:
             return getattr(filters, name)
         except AttributeError as e:
-            raise self.Error('%s is no valid filter' % name) from e
+            raise self.Error("%s is no valid filter" % name) from e
 
     def _get_action_class_by_name(self, name):
         try:
             return getattr(actions, name)
         except AttributeError as e:
-            raise self.Error('%s is no valid action' % name) from e
+            raise self.Error("%s is no valid action" % name) from e
 
     @staticmethod
     def _class_instance_with_args(Cls, args):
@@ -76,7 +79,7 @@ class Config:
     def instantiate_filters(self, rule_item):
         # filter list can be empty
         try:
-            filter_list = rule_item['filters']
+            filter_list = rule_item["filters"]
         except KeyError:
             return
         if not filter_list:
@@ -99,10 +102,10 @@ class Config:
                 filter_class = self._get_filter_class_by_name(name)
                 yield filter_class()
             else:
-                raise self.Error('Unknown filter: %s' % filter_item)
+                raise self.Error("Unknown filter: %s" % filter_item)
 
     def instantiate_actions(self, rule_item):
-        action_list = rule_item['actions']
+        action_list = rule_item["actions"]
         if not isinstance(action_list, list):
             raise self.ActionsNoListError()
 
@@ -117,17 +120,17 @@ class Config:
                 action_class = self._get_action_class_by_name(name)
                 yield action_class()
             else:
-                raise self.Error('Unknown action: %s' % action_item)
+                raise self.Error("Unknown action: %s" % action_item)
 
     @property
     def rules(self) -> List[Rule]:
         """ :returns: A list of instantiated Rules """
-        if not (self.config and 'rules' in self.config):
+        if not (self.config and "rules" in self.config):
             raise self.NoRulesFoundError()
         result = []
-        for i, rule_item in enumerate(self.config['rules']):
+        for i, rule_item in enumerate(self.config["rules"]):
             # skip disabled rules
-            if not rule_item.get('enabled', True):
+            if not rule_item.get("enabled", True):
                 continue
 
             rule_folders = list(self.parse_folders(rule_item))
@@ -135,18 +138,18 @@ class Config:
             rule_actions = list(self.instantiate_actions(rule_item))
 
             if not rule_folders:
-                logger.warning('No folders given for rule %s!', i + 1)
+                logger.warning("No folders given for rule %s!", i + 1)
             if not rule_filters:
-                logger.warning('No filters given for rule %s!', i + 1)
+                logger.warning("No filters given for rule %s!", i + 1)
             if not rule_actions:
-                logger.warning('No actions given for rule %s!', i + 1)
+                logger.warning("No actions given for rule %s!", i + 1)
 
             rule = Rule(
                 folders=rule_folders,
                 filters=rule_filters,
                 actions=rule_actions,
-                subfolders=rule_item.get('subfolders', False),
-                system_files=rule_item.get('system_files', False),
+                subfolders=rule_item.get("subfolders", False),
+                system_files=rule_item.get("system_files", False),
             )
             result.append(rule)
         return result
@@ -156,7 +159,7 @@ class Config:
 
     class NoRulesFoundError(Error):
         def __str__(self):
-            return 'No rules found in configuration file'
+            return "No rules found in configuration file"
 
     class ParsingError(Error):
         pass
@@ -172,8 +175,8 @@ class Config:
 
     class FiltersNoListError(Error):
         def __str__(self):
-            return 'Please specify your filters as a YAML list'
+            return "Please specify your filters as a YAML list"
 
     class ActionsNoListError(Error):
         def __str__(self):
-            return 'Please specify your actions as a YAML list'
+            return "Please specify your actions as a YAML list"

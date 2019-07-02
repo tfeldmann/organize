@@ -3,9 +3,8 @@ from .filter import Filter
 
 
 class ExtensionResult:
-
     def __init__(self, ext):
-        self.ext = ext[1:] if ext.startswith('.') else ext
+        self.ext = ext[1:] if ext.startswith(".") else ext
 
     @property
     def lower(self):
@@ -98,13 +97,12 @@ class Extension(Filter):
     """
 
     def __init__(self, *extensions):
-        self.extensions = list(
-            map(self.normalize_extension, flatten(list(extensions))))
+        self.extensions = list(map(self.normalize_extension, flatten(list(extensions))))
 
     @staticmethod
     def normalize_extension(ext):
         """ strip colon and convert to lowercase """
-        if ext.startswith('.'):
+        if ext.startswith("."):
             return ext[1:].lower()
         else:
             return ext.lower()
@@ -118,7 +116,7 @@ class Extension(Filter):
 
     def parse(self, path):
         result = ExtensionResult(path.suffix)
-        return {'extension': result}
+        return {"extension": result}
 
     def __str__(self):
-        return 'Extension(%s)' % ', '.join(self.extensions)
+        return "Extension(%s)" % ", ".join(self.extensions)

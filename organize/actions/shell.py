@@ -33,7 +33,7 @@ class Shell(Action):
 
     def run(self, attrs: dict, simulate: bool):
         full_cmd = self.fill_template_tags(self.cmd, attrs)
-        self.print('$ %s' % full_cmd)
+        self.print("$ %s" % full_cmd)
         if not simulate:
             # we use call instead of run to be compatible with python < 3.5
             self.log.info('Executing command "%s" in shell.', full_cmd)

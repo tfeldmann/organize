@@ -54,4 +54,4 @@ class Regex(Filter):
 
     def parse(self, path):
         result = DotDict(self.expr.match(path.name).groupdict())
-        return {'regex': result}
+        return {"regex": result}

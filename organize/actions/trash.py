@@ -31,9 +31,10 @@ class Trash(Action):
         self.log = logging.getLogger(__name__)
 
     def run(self, attrs: dict, simulate: bool):
-        path = attrs['path']
+        path = attrs["path"]
         from send2trash import send2trash
+
         self.print('Trash "%s"' % path)
         if not simulate:
-            self.log.info('Moving file %s into trash.', path)
+            self.log.info("Moving file %s into trash.", path)
             send2trash(str(path))

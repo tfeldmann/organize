@@ -63,16 +63,19 @@ class Python(Action):
 
     def run(self, attrs: dict, simulate: bool):
         if simulate:
-            self.print('Code not run in simulation')
+            self.print("Code not run in simulation")
         else:
-            path = attrs['path']
+            path = attrs["path"]
             self.log.info(
                 'Executing python script:\n"""\n%s""" with path="%s", args=%s',
-                self.code, path, attrs)
+                self.code,
+                path,
+                attrs,
+            )
             # local variables for inline function
             locals_ = attrs.copy()
-            locals_['simulate'] = simulate
+            locals_["simulate"] = simulate
             # replace default print function
             globals_ = globals().copy()
-            globals_['print'] = self.print
+            globals_["print"] = self.print
             exec(self.code, globals_, locals_)

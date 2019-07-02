@@ -1,5 +1,4 @@
 class Filter:
-
     def matches(self, path):
         """ Return True if filter applies to path. False otherwise """
         raise NotImplementedError
@@ -13,9 +12,7 @@ class Filter:
         return self.__class__.__name__
 
     def __repr__(self):
-        return '<%s>' % str(self)
+        return "<%s>" % str(self)
 
     def __eq__(self, other):
-        return (
-            isinstance(other, self.__class__) and
-            self.__dict__ == other.__dict__)
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
