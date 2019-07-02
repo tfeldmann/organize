@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "organize-tool"
-version = "1.4.3"
+version = "1.4.4"
 description = "The file management automation tool"
 include = ["CHANGELOG.md", "README.rst"]
 packages = [
