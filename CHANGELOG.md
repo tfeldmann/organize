@@ -1,7 +1,7 @@
 # Changelog
 
 ## v1.4.4 (2019-07-02)
-- Fixes issues with umlauts in config file on windows
+- Fixes issues #36 with umlauts in config file on windows
 
 ## v1.4.3 (2019-06-05)
 - Use safe YAML loader to fix a deprecation warning. (Thanks mope1!)
