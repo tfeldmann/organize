@@ -1,9 +1,9 @@
 # TODO
 
 ## Next up:
-- [ ] Allow lowercase for action and filter names
-- [ ] Clean up global config variable
-- [ ] Format all code with `black`
+- [ ] Core: Clean up global config variable
+- [ ] Config: Allow lowercase for action and filter names
+- [ ] Config: Allow one yaml document per rule syntax ("---")
 - [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='3 Gb')
 - [ ] Filter: Content / FileContent (#10)
@@ -37,6 +37,7 @@
 - [ ] Filter: Hashtags(query 'people-john,stars>4,USA') -> List / str of hashtags (#1)
 
 ## Done:
+- [x] Format all code with `black`  @2019-07-02
 - [x] Use poetry for dependencies  @2019-06-05
 - [x] Config: Import config files from custom locations (#14)  @2019-06-05
 - [x] Filter: Add `counter_separator` option to Move, Rename, Copy  @2018-10-05
