@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.4.5 (2019-07-03)
+- Filter and Actions names are now case-insensitive
+
 ## v1.4.4 (2019-07-02)
 - Fixes issues #36 with umlauts in config file on windows
 
