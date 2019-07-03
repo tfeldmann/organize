@@ -72,15 +72,15 @@ class LastModified(Filter):
                   - Move: '~/Documents/PDF/{lastmodified.year}/'
     """
 
-    def __init__(self, days=0, hours=0, minutes=0, seconds=0, mode='older'):
+    def __init__(self, days=0, hours=0, minutes=0, seconds=0, mode="older"):
         self._mode = mode.strip().lower()
-        if self._mode not in ('older', 'newer'):
-            raise ValueError(
-                "Unknown option for 'mode': must be 'older' or 'newer'.")
+        if self._mode not in ("older", "newer"):
+            raise ValueError("Unknown option for 'mode': must be 'older' or 'newer'.")
         else:
-            self.is_older = (self._mode == 'older')
+            self.is_older = self._mode == "older"
         self.timedelta = timedelta(
-            days=days, hours=hours, minutes=minutes, seconds=seconds)
+            days=days, hours=hours, minutes=minutes, seconds=seconds
+        )
 
     def matches(self, path):
         file_modified = self._last_modified(path)
@@ -92,11 +92,10 @@ class LastModified(Filter):
 
     def parse(self, path):
         file_modified = self._last_modified(path)
-        return {'lastmodified': file_modified}
+        return {"lastmodified": file_modified}
 
     def _last_modified(self, path):
         return datetime.fromtimestamp(path.stat().st_mtime)
 
     def __str__(self):
-        return 'FileModified(delta=%s, select_mode=%s)' % (
-            self.timedelta, self._mode)
+        return "FileModified(delta=%s, select_mode=%s)" % (self.timedelta, self._mode)

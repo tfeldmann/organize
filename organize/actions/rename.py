@@ -51,17 +51,19 @@ class Rename(Action):
                   - Rename: "{path.stem}.{extension.lower}"
     """
 
-    def __init__(self, name: str, overwrite=False, counter_separator=' '):
+    def __init__(self, name: str, overwrite=False, counter_separator=" "):
         if os.path.sep in name:
-            ValueError('Rename only takes a filename as argument. To move '
-                       'files between folders use the Move action.')
+            ValueError(
+                "Rename only takes a filename as argument. To move files between "
+                "folders use the Move action."
+            )
         self.name = name
         self.overwrite = overwrite
         self.counter_separator = counter_separator
         self.log = logging.getLogger(__name__)
 
     def run(self, attrs: dict, simulate: bool) -> Path:
-        path = attrs['path']
+        path = attrs["path"]
         expanded_name = self.fill_template_tags(self.name, attrs)
         new_path = path.parent / expanded_name
 
@@ -70,16 +72,17 @@ class Rename(Action):
         new_path_samefile = new_path_exists and new_path.samefile(path)
         if new_path_exists and not new_path_samefile:
             if self.overwrite:
-                self.print('File already exists')
-                Trash().run({'path': new_path}, simulate=simulate)
+                self.print("File already exists")
+                Trash().run({"path": new_path}, simulate=simulate)
             else:
                 new_path = find_unused_filename(
-                    path=new_path, separator=self.counter_separator)
+                    path=new_path, separator=self.counter_separator
+                )
 
         # do nothing if the new name is equal to the old name and the file is
         # the same
         if new_path_samefile and new_path == path:
-            self.print('Keep name')
+            self.print("Keep name")
         else:
             self.print('New name: "%s"' % new_path.name)
             if not simulate:
@@ -88,5 +91,8 @@ class Rename(Action):
         return new_path
 
     def __str__(self):
-        return 'Rename(name=%s, overwrite=%s, sep=%s)' % (
-            self.name, self.overwrite, self.counter_separator)
+        return "Rename(name=%s, overwrite=%s, sep=%s)" % (
+            self.name,
+            self.overwrite,
+            self.counter_separator,
+        )

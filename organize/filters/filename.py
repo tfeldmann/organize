@@ -50,8 +50,7 @@ class Filename(Filter):
                   - Echo: 'Found a match.'
     """
 
-    def __init__(self, startswith='', contains='', endswith='',
-                 case_sensitive=True):
+    def __init__(self, startswith="", contains="", endswith="", case_sensitive=True):
         self.startswith = startswith
         self.contains = contains
         self.endswith = endswith
@@ -65,9 +64,10 @@ class Filename(Filter):
     def matches(self, path):
         filename = self._filename(path)
         return (
-            filename.startswith(self.startswith) and
-            filename.endswith(self.endswith) and
-            self.contains in filename)
+            filename.startswith(self.startswith)
+            and filename.endswith(self.endswith)
+            and self.contains in filename
+        )
 
     def _filename(self, path):
         if not self.case_sensitive:

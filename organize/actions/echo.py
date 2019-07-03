@@ -71,13 +71,13 @@ class Echo(Action):
         self.log = logging.getLogger(__name__)
 
     def run(self, attrs: dict, simulate: bool):
-        path = attrs['path']
+        path = attrs["path"]
         self.log.debug(
-            'Echo msg "%s" for path: "%s" with attrs: "%s"',
-            self.msg, path, attrs)
+            'Echo msg "%s" for path: "%s" with attrs: "%s"', self.msg, path, attrs
+        )
         full_msg = self.fill_template_tags(self.msg, attrs)
-        self.log.info('Console output: %s', full_msg)
-        self.print('%s' % full_msg)
+        self.log.info("Console output: %s", full_msg)
+        self.print("%s" % full_msg)
 
     def __str__(self):
         return 'Echo(msg="%s")' % self.msg
