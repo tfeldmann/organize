@@ -47,6 +47,48 @@ def test_basic():
     ]
 
 
+def test_lowercase():
+    config = """
+    rules:
+      - folders: '~/Desktop'
+        filters:
+          - extension:
+            - jpg
+            - png
+          - extension: txt
+        actions:
+          - move: {dest: '~/Desktop/New Folder', overwrite: true}
+          - EC_HO: 'Moved {path}/{extension.upper}'
+      - folders:
+          - '~/test1'
+          - /test2
+        filters:
+        actions:
+          - SHELL:
+              cmd: 'say {path.stem}'
+    """
+    conf = Config.from_string(config)
+    assert conf.rules == [
+        Rule(
+            folders=["~/Desktop"],
+            filters=[Extension(".JPG", "PNG"), Extension("txt")],
+            actions=[
+                Move(dest="~/Desktop/New Folder", overwrite=True),
+                Echo(msg="Moved {path}/{extension.upper}"),
+            ],
+            subfolders=False,
+            system_files=False,
+        ),
+        Rule(
+            folders=["~/test1", "/test2"],
+            filters=[],
+            actions=[Shell(cmd="say {path.stem}")],
+            subfolders=False,
+            system_files=False,
+        ),
+    ]
+
+
 def test_yaml_ref():
     config = """
     media: &media
@@ -130,8 +172,7 @@ def test_error_action_dict():
 
 
 def test_empty_filters():
-    conf = Config.from_string(
-        """
+    conf = """
     rules:
       - folders: '/'
         filters:
@@ -141,8 +182,7 @@ def test_empty_filters():
         actions:
           - Trash
     """
-    )
-    assert conf.rules == [
+    assert Config.from_string(conf).rules == [
         Rule(
             folders=["/"],
             filters=[],

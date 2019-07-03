@@ -40,24 +40,24 @@ In your shell, run ``$ organize config`` to edit the configuration:
         - folders:
             - ~/Desktop
           filters:
-            - Filename:
+            - filename:
                 startswith: 'Screen Shot'
           actions:
-            - Move: ~/Desktop/Screenshots/
+            - move: ~/Desktop/Screenshots/
 
         # move incomplete downloads older > 30 days into the trash
         - folders:
             - ~/Downloads
           filters:
-            - Extension:
+            - extension:
                 - download
                 - crdownload
                 - part
-            - LastModified:
+            - lastmodified:
                 days: 30
                 mode: older
           actions:
-            - Trash
+            - trash
 
 (alternatively you can run ``$ organize config --path`` to see the full path to
 your ``config.yaml``)
@@ -91,20 +91,20 @@ actions and recursion through subfolders:
       - folders: '~/Documents'
         subfolders: true
         filters:
-          - Extension:
+          - extension:
               - pdf
               - docx
-          - LastModified
+          - lastmodified
         actions:
-          - Move: '~/Documents/{extension.upper}/{lastmodified.year}/'
-          - Shell: 'open "{path}"'
+          - move: '~/Documents/{extension.upper}/{lastmodified.year}-{lastmodified.month:02}/'
+          - shell: 'open "{path}"'
 
 Given we have two files in our ``~/Documents`` folder (or any of its subfolders)
-named ``script.docx`` from year 2018 and ``demo.pdf`` from year 2016 this will
+named ``script.docx`` from january 2018 and ``demo.pdf`` from december 2016 this will
 happen:
 
-- ``script.docx`` will be moved to ``~/Documents/DOCX/2018/script.docx``
-- ``demo.pdf`` will be moved to ``~/Documents/PDF/2016/demo.pdf``
+- ``script.docx`` will be moved to ``~/Documents/DOCX/2018/01/script.docx``
+- ``demo.pdf`` will be moved to ``~/Documents/PDF/2016/12/demo.pdf``
 - The files will be opened (``open`` command in macOS) from their new location.
 
 

@@ -2,15 +2,13 @@
 
 ## Next up:
 - [ ] Core: Clean up global config variable
-- [ ] Config: Allow lowercase for action and filter names
-- [ ] Config: Allow one yaml document per rule syntax ("---")
 - [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='3 Gb')
 - [ ] Filter: Content / FileContent (#10)
 
 ## Maybe sometime:
+- [ ] Config: Allow one yaml document per rule syntax ("---") ?
 - [ ] Config: 'exclude' directive in rule (like 'filter') -> mode any, all?
-- [ ] Config: Case insensitive filter and action matching
 - [ ] Config: Rule names
 - [ ] Config: Warning if multiple rules apply to the same file?
 - [ ] Config: Filter modes all, none, any?
@@ -37,6 +35,7 @@
 - [ ] Filter: Hashtags(query 'people-john,stars>4,USA') -> List / str of hashtags (#1)
 
 ## Done:
+- [x] Config: Case insensitive filter and action matching  @2019-07-03
 - [x] Format all code with `black`  @2019-07-02
 - [x] Use poetry for dependencies  @2019-06-05
 - [x] Config: Import config files from custom locations (#14)  @2019-06-05

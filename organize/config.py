@@ -1,3 +1,4 @@
+import inspect
 import logging
 from collections import namedtuple
 from typing import List
@@ -22,6 +23,14 @@ yaml.add_multi_constructor("", default_yaml_constructor)
 class Config:
     def __init__(self, config: dict):  # type: (dict)
         self.config = config
+        self.filter_by_name = {
+            name.lower(): getattr(filters, name)
+            for name, _ in inspect.getmembers(filters, inspect.isclass)
+        }
+        self.action_by_name = {
+            name.lower(): getattr(actions, name)
+            for name, _ in inspect.getmembers(actions, inspect.isclass)
+        }
 
     @classmethod
     def parse_yaml(cls, config: str) -> dict:
@@ -56,13 +65,13 @@ class Config:
 
     def _get_filter_class_by_name(self, name):
         try:
-            return getattr(filters, name)
+            return self.filter_by_name[name.lower().replace('_', '')]
         except AttributeError as e:
             raise self.Error("%s is no valid filter" % name) from e
 
     def _get_action_class_by_name(self, name):
         try:
-            return getattr(actions, name)
+            return self.action_by_name[name.lower().replace('_', '')]
         except AttributeError as e:
             raise self.Error("%s is no valid action" % name) from e
 

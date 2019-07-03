@@ -48,13 +48,13 @@ Each rule defines ``folders``, ``filters`` (optional) and ``actions``.
         - ~/Desktop
         - /some/folder/
       filters:
-        - LastModified:
+        - lastmodified:
             days: 40
             mode: newer
-        - Extension: pdf
+        - extension: pdf
       actions:
-        - Move: ~/Desktop/Target/
-        - Trash
+        - move: ~/Desktop/Target/
+        - trash
 
     - folders:
         - ~/Inbox
