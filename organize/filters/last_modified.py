@@ -38,10 +38,10 @@ class LastModified(Filter):
             rules:
               - folders: '~/Desktop'
                 filters:
-                  - LastModified:
+                  - lastmodified:
                       days: 10
                 actions:
-                  - Echo: 'Was modified at least 10 days ago'
+                  - echo: 'Was modified at least 10 days ago'
 
         - Show all files on your desktop which were modified within the last
           5 hours:
@@ -52,11 +52,11 @@ class LastModified(Filter):
             rules:
               - folders: '~/Desktop'
                 filters:
-                  - LastModified:
+                  - lastmodified:
                       hours: 5
                       mode: newer
                 actions:
-                  - Echo: 'Was modified within the last 5 hours'
+                  - echo: 'Was modified within the last 5 hours'
 
         - Sort pdfs by year of last modification
 
@@ -66,10 +66,10 @@ class LastModified(Filter):
             rules:
               - folders: '~/Documents'
                 filters:
-                  - Extension: pdf
+                  - extension: pdf
                   - LastModified
                 actions:
-                  - Move: '~/Documents/PDF/{lastmodified.year}/'
+                  - move: '~/Documents/PDF/{lastmodified.year}/'
     """
 
     def __init__(self, days=0, hours=0, minutes=0, seconds=0, mode="older"):

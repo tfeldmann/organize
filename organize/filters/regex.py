@@ -26,9 +26,9 @@ class Regex(Filter):
             rules:
               - folders: '~/Desktop'
                 filters:
-                  - Regex: '^RG(\d{12})-sig\.pdf$'
+                  - regex: '^RG(\d{12})-sig\.pdf$'
                 actions:
-                  - Move: '~/Documents/Invoices/1und1/'
+                  - move: '~/Documents/Invoices/1und1/'
 
         - Match and extract data from filenames with regex named groups:
           This is just like the previous example but we rename the invoice using
@@ -41,9 +41,9 @@ class Regex(Filter):
             rules:
               - folders: ~/Desktop
                 filters:
-                  - Regex: '^RG(?P<the_number>\d{12})-sig\.pdf$'
+                  - regex: '^RG(?P<the_number>\d{12})-sig\.pdf$'
                 actions:
-                  - Move: ~/Documents/Invoices/1und1/{regex.the_number}.pdf
+                  - move: ~/Documents/Invoices/1und1/{regex.the_number}.pdf
     """
 
     def __init__(self, expr):

@@ -21,7 +21,7 @@ class Python(Action):
             rules:
             - folders: '~/Desktop'
               actions:
-                - Python: |
+                - python: |
                     print('The path of the current file is %s' % path)
                     for _ in range(5):
                         print('Heyho, its me from the loop')
@@ -34,9 +34,9 @@ class Python(Action):
             rules:
             - folders: ~/Desktop
               filters:
-                - Regex: '^(?P<name>.*)\.(?P<extension>.*)$'
+                - regex: '^(?P<name>.*)\.(?P<extension>.*)$'
               actions:
-                - Python: |
+                - python: |
                     print('Name: %s' % regex.name)
                     print('Extension: %s' % regex.extension)
 
@@ -49,10 +49,10 @@ class Python(Action):
             rules:
             - folders: ~/Desktop
               filters:
-                - Filename:
+                - filename:
                     startswith: '_'
               actions:
-                - Python: |
+                - python: |
                     import webbrowser
                     webbrowser.open('https://www.google.com/search?q=%s' % path.stem)
     """

@@ -59,9 +59,9 @@ Each rule defines ``folders``, ``filters`` (optional) and ``actions``.
     - folders:
         - ~/Inbox
       filters:
-        - Extension: pdf
+        - extension: pdf
       actions:
-        - Move: ~/otherinbox
+        - move: ~/otherinbox
       # optional settings:
       enabled: true
       subfolders: true
@@ -111,7 +111,7 @@ You can use globstrings in the folder lists. For example to get all files with f
     - folders:
         - '~/Downloads/*_ui.*'
       actions:
-        - Echo: '{path}'
+        - echo: '{path}'
 
 You can use globstrings to recurse through subdirectories (alternatively you can use the ``subfolders: true`` setting as shown below)
 
@@ -122,14 +122,14 @@ You can use globstrings to recurse through subdirectories (alternatively you can
     - folders:
         - '~/Downloads/**/*.*'
       actions:
-        - Echo: 'base {basedir}, path {path}, relative: {relative_path}'
+        - echo: 'base {basedir}, path {path}, relative: {relative_path}'
 
     # alternative syntax
     - folders:
         - ~/Downloads
       subfolders: true
       actions:
-        - Echo: 'base {basedir}, path {path}, relative: {relative_path}'
+        - echo: 'base {basedir}, path {path}, relative: {relative_path}'
 
 
 The following example recurses through all subdirectories in your downloads folder and finds files with ending in ``.c`` and ``.h``.
@@ -141,7 +141,7 @@ The following example recurses through all subdirectories in your downloads fold
     - folders:
         - '~/Downloads/**/*.[c|h]'
       actions:
-        - Echo: '{path}'
+        - echo: '{path}'
 
 
 Excluding files and folders
@@ -157,7 +157,7 @@ in ``~/Downloads`` and its subfolders - excluding the folder ``Software``:
         - '~/Downloads/**/*'
         - '! ~/Downloads/Software'
       actions:
-        - Echo: '{path}'
+        - echo: '{path}'
 
 
 Globstrings can be used to exclude only specific files / folders. This example:
@@ -177,7 +177,7 @@ Globstrings can be used to exclude only specific files / folders. This example:
         - '~/Documents'
         - '! ~/Documents/important.txt'
       actions:
-        - Echo: '{path}'
+        - echo: '{path}'
 
 .. note::
   - Files and folders are included and excluded in the order you specify them!

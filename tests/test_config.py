@@ -10,19 +10,19 @@ def test_basic():
     rules:
       - folders: '~/Desktop'
         filters:
-          - Extension:
+          - extension:
             - jpg
             - png
-          - Extension: txt
+          - extension: txt
         actions:
-          - Move: {dest: '~/Desktop/New Folder', overwrite: true}
-          - Echo: 'Moved {path}/{extension.upper}'
+          - move: {dest: '~/Desktop/New Folder', overwrite: true}
+          - echo: 'Moved {path}/{extension.upper}'
       - folders:
           - '~/test1'
           - /test2
         filters:
         actions:
-          - Shell:
+          - shell:
               cmd: 'say {path.stem}'
     """
     conf = Config.from_string(config)
@@ -47,17 +47,17 @@ def test_basic():
     ]
 
 
-def test_lowercase():
+def test_case_insensitive():
     config = """
     rules:
       - folders: '~/Desktop'
         filters:
           - extension:
-            - jpg
+            - JPg
             - png
-          - extension: txt
+          - Extension: txt
         actions:
-          - move: {dest: '~/Desktop/New Folder', overwrite: true}
+          - moVe: {dest: '~/Desktop/New Folder', overwrite: true}
           - EC_HO: 'Moved {path}/{extension.upper}'
       - folders:
           - '~/test1'
@@ -102,21 +102,21 @@ def test_yaml_ref():
     rules:
       - folders: *all
         filters:
-          - Extension: *media
-          - Extension:
+          - extension: *media
+          - extension:
             - *media
             - jpg
-          - LastModified:
+          - lastmodified:
               days: 10
         actions:
-          - Echo:
+          - echo:
               msg: 'Hello World'
       - folders:
           - *all
           - /more/more
         filters:
         actions:
-          - Trash
+          - trash
     """
     conf = Config.from_string(config)
     assert conf.rules == [
@@ -149,7 +149,7 @@ def test_error_filter_dict():
         filters:
           Extension: 'jpg'
         actions:
-          - Trash
+          - trash
     """
     )
     with pytest.raises(Config.FiltersNoListError):
@@ -162,7 +162,7 @@ def test_error_action_dict():
     rules:
       - folders: '/'
         filters:
-          - Extension: 'jpg'
+          - extension: 'jpg'
         actions:
           Trash
     """
@@ -177,10 +177,10 @@ def test_empty_filters():
       - folders: '/'
         filters:
         actions:
-          - Trash
+          - trash
       - folders: '~/'
         actions:
-          - Trash
+          - trash
     """
     assert Config.from_string(conf).rules == [
         Rule(

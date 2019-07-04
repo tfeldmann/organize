@@ -22,9 +22,9 @@ class Shell(Action):
           rules:
             - folders: '~/Desktop'
               filters:
-                - Extension: pdf
+                - extension: pdf
               actions:
-                - Shell: 'open "{path}"'
+                - shell: 'open "{path}"'
     """
 
     def __init__(self, cmd: str):

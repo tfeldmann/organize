@@ -28,10 +28,10 @@ class Filename(Filter):
             rules:
               - folders: '~/Desktop'
                 filters:
-                  - Filename:
+                  - filename:
                       startswith: Invoice
                 actions:
-                  - Echo: 'This is an invoice'
+                  - echo: 'This is an invoice'
 
         - Match all files starting with 'A' end containing the string 'hole'
           (case insensitive)
@@ -42,12 +42,12 @@ class Filename(Filter):
             rules:
               - folders: '~/Desktop'
                 filters:
-                  - Filename:
+                  - filename:
                       startswith: A
                       contains: hole
                       case_sensitive: false
                 actions:
-                  - Echo: 'Found a match.'
+                  - echo: 'Found a match.'
     """
 
     def __init__(self, startswith="", contains="", endswith="", case_sensitive=True):

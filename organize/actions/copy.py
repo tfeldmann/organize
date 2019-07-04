@@ -37,9 +37,9 @@ class Copy(Action):
             rules:
               - folders: ~/Desktop
                 filters:
-                  - Extension: pdf
+                  - extension: pdf
                 actions:
-                  - Copy: '~/Desktop/somefolder/'
+                  - copy: '~/Desktop/somefolder/'
 
         - Use a placeholder to copy all .pdf files into a "PDF" folder and all .jpg
           files into a "JPG" folder. Existing files will be overwritten.
@@ -50,11 +50,11 @@ class Copy(Action):
             rules:
               - folders: ~/Desktop
                 filters:
-                  - Extension:
+                  - extension:
                       - pdf
                       - jpg
                 actions:
-                  - Copy:
+                  - copy:
                       dest: '~/Desktop/{extension.upper}/'
                       overwrite: true
 
@@ -70,10 +70,10 @@ class Copy(Action):
             rules:
               - folders: ~/Desktop/Invoices
                 filters:
-                  - Extension:
+                  - extension:
                       - pdf
                 actions:
-                  - Copy:
+                  - copy:
                       dest: '~/Documents/Invoices/'
                       overwrite: false
                       counter_separator: '_'

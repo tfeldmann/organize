@@ -30,23 +30,23 @@ For example your configuration file could look like this:
       - folders:
           - ~/Desktop
         filters:
-          - Filename:
+          - filename:
               startswith: Screen Shot
         actions:
-          - Move: ~/Desktop/Screenshots/
+          - move: ~/Desktop/Screenshots/
 
       # move incomplete downloads older > 30 days into the trash
       - folders:
           - ~/Downloads
         filters:
-          - Extension:
+          - extension:
               - crdownload
               - part
               - download
-          - LastModified:
+          - lastmodified:
               days: 30
         actions:
-          - Trash
+          - trash
 
 .. note::
   You can run ``$ organize config --path`` to show the full path to the configuration file.

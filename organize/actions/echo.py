@@ -20,10 +20,10 @@ class Echo(Action):
             rules:
               - folders: ~/Desktop
                 filters:
-                  - LastModified:
+                  - lastmodified:
                       days: 365
                 actions:
-                  - Echo: 'Found old file'
+                  - echo: 'Found old file'
 
         - Prints "Hello World!" and filepath for each file on the desktop:
 
@@ -34,7 +34,7 @@ class Echo(Action):
               - folders:
                   - ~/Desktop
                 actions:
-                  - Echo: 'Hello World! {path}'
+                  - echo: 'Hello World! {path}'
 
         - This will print something like ``Found a PNG: "test.png"`` for each
           file on your desktop:
@@ -48,7 +48,7 @@ class Echo(Action):
                 filters:
                   - Extension
                 actions:
-                  - Echo: 'Found a {extension.upper}: "{path.name}"'
+                  - echo: 'Found a {extension.upper}: "{path.name}"'
 
         - Show the ``{basedir}`` and ``{path}`` of all files in '~/Downloads',
           '~/Desktop' and their subfolders:
@@ -62,8 +62,8 @@ class Echo(Action):
                   - ~/Downloads
                 subfolders: true
                 actions:
-                  - Echo: 'Basedir: {basedir}'
-                  - Echo: 'Path:    {path}'
+                  - echo: 'Basedir: {basedir}'
+                  - echo: 'Path:    {path}'
     """
 
     def __init__(self, msg):

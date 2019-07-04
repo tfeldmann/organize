@@ -34,9 +34,9 @@ class Rename(Action):
             rules:
               - folders: '~/Desktop'
                 filters:
-                  - Extension: PDF
+                  - extension: PDF
                 actions:
-                  - Rename: "{path.stem}.pdf"
+                  - rename: "{path.stem}.pdf"
 
         - Convert **all** file extensions to lowercase:
 
@@ -48,7 +48,7 @@ class Rename(Action):
                 filters:
                   - Extension
                 actions:
-                  - Rename: "{path.stem}.{extension.lower}"
+                  - rename: "{path.stem}.{extension.lower}"
     """
 
     def __init__(self, name: str, overwrite=False, counter_separator=" "):

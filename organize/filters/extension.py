@@ -41,9 +41,9 @@ class Extension(Filter):
             rules:
               - folders: '~/Desktop'
                 filters:
-                  - Extension: png
+                  - extension: png
                 actions:
-                  - Echo: 'Found PNG file: {path}'
+                  - echo: 'Found PNG file: {path}'
 
         - Match multiple file extensions:
 
@@ -53,11 +53,11 @@ class Extension(Filter):
             rules:
               - folders: '~/Desktop'
                 filters:
-                  - Extension:
+                  - extension:
                     - .jpg
                     - jpeg
                 actions:
-                  - Echo: 'Found JPG file: {path}'
+                  - echo: 'Found JPG file: {path}'
 
         - Make all file extensions lowercase:
 
@@ -69,7 +69,7 @@ class Extension(Filter):
                 filters:
                   - Extension
                 actions:
-                  - Rename: '{path.stem}.{extension.lower}'
+                  - rename: '{path.stem}.{extension.lower}'
 
         - Using extension lists:
 
@@ -89,11 +89,11 @@ class Extension(Filter):
             rules:
               - folders: '~/Desktop'
                 filters:
-                  - Extension:
+                  - extension:
                     - *img
                     - *audio
                 actions:
-                  - Echo: 'Found media file: {path}'
+                  - echo: 'Found media file: {path}'
     """
 
     def __init__(self, *extensions):

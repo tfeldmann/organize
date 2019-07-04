@@ -41,11 +41,11 @@ class Move(Action):
             rules:
               - folders: ~/Desktop
                 filters:
-                  - Extension:
+                  - extension:
                       - pdf
                       - jpg
                 actions:
-                  - Move: '~/Desktop/media/'
+                  - move: '~/Desktop/media/'
 
         - Use a placeholder to move all .pdf files into a "PDF" folder and all
           .jpg files into a "JPG" folder. Existing files will be overwritten.
@@ -56,11 +56,11 @@ class Move(Action):
             rules:
               - folders: ~/Desktop
                 filters:
-                  - Extension:
+                  - extension:
                       - pdf
                       - jpg
                 actions:
-                  - Move:
+                  - move:
                       dest: '~/Desktop/{extension.upper}/'
                       overwrite: true
 
@@ -74,10 +74,10 @@ class Move(Action):
             rules:
               - folders: ~/Desktop/Invoices
                 filters:
-                  - Extension:
+                  - extension:
                       - pdf
                 actions:
-                  - Move:
+                  - move:
                       dest: '~/Documents/Invoices/'
                       overwrite: false
                       counter_separator: '_'

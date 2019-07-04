@@ -18,13 +18,13 @@ class Trash(Action):
             rules:
               - folders: '~/Desktop'
               - filters:
-                  - LastModified:
+                  - lastmodified:
                       - days: 365
-                  - Extension:
+                  - extension:
                       - png
                       - jpg
               - actions:
-                  - Trash
+                  - trash
     """
 
     def __init__(self):
