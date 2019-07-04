@@ -103,8 +103,8 @@ Given we have two files in our ``~/Documents`` folder (or any of its subfolders)
 named ``script.docx`` from january 2018 and ``demo.pdf`` from december 2016 this will
 happen:
 
-- ``script.docx`` will be moved to ``~/Documents/DOCX/2018/01/script.docx``
-- ``demo.pdf`` will be moved to ``~/Documents/PDF/2016/12/demo.pdf``
+- ``script.docx`` will be moved to ``~/Documents/DOCX/2018-01/script.docx``
+- ``demo.pdf`` will be moved to ``~/Documents/PDF/2016-12/demo.pdf``
 - The files will be opened (``open`` command in macOS) from their new location.
 
 
