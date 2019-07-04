@@ -1,11 +1,10 @@
 import logging
-from organize.utils import Path
 from .action import Action
 
 
 class Python(Action):
 
-    """
+    r"""
     Execute python code in your config file.
 
     :param str code: The python code to execute

@@ -1,8 +1,6 @@
 import logging
 import subprocess
 
-from organize.utils import Path
-
 from .action import Action
 
 
