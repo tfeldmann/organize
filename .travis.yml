@@ -5,10 +5,9 @@ python:
   - "3.5"
   - "3.6"
 install:
-  - pip install poetry
-  - poetry check
-  - poetry install
-  - poetry run python main.py list
-  - poetry run python main.py --version
+  - pip install -U pip
+  - pip install .
+  - python main.py list
+  - python main.py --version
 script:
-    poetry run py.test
+    py.test
