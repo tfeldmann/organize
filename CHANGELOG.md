@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.5 (2019-07-17)
+- Fixes issue #31 where the {path} variable always resolves to the source path
+- Updated dependencies
+- Exclude changelog and readme from published wheel
+
 ## v1.4.5 (2019-07-03)
 - Filter and Actions names are now case-insensitive
 
