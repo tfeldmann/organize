@@ -34,7 +34,7 @@ def test_into_folder(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkd
         src=os.path.join(USER_DIR, "test.py"),
         dst=os.path.join(USER_DIR, "somefolder", "test.py"),
     )
-    assert new_path is not None
+    assert new_path == Path(USER_DIR) / "somefolder" / "test.py"
 
 
 def test_overwrite(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):

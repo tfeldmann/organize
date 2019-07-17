@@ -73,8 +73,10 @@ def filter_pipeline(job):
 
 def action_pipeline(job: Job, attrs: dict, simulate: bool):
     try:
-        current_path = job.path.resolve()
+        current_path = None
         for action in job.actions:
+            if current_path is not None:
+                attrs["path"] = current_path
             new_path = action.run(attrs=attrs, simulate=simulate)
             if new_path is not None:
                 current_path = new_path

@@ -63,15 +63,19 @@ class Config:
         # definitions in the config file.
         yield from flatten(rule_item["folders"])
 
+    @staticmethod
+    def sanitize_key(key):
+        return key.lower().replace("_", "")
+
     def _get_filter_class_by_name(self, name):
         try:
-            return self.filter_by_name[name.lower().replace('_', '')]
+            return self.filter_by_name[self.sanitize_key(name)]
         except AttributeError as e:
             raise self.Error("%s is no valid filter" % name) from e
 
     def _get_action_class_by_name(self, name):
         try:
-            return self.action_by_name[name.lower().replace('_', '')]
+            return self.action_by_name[self.sanitize_key(name)]
         except AttributeError as e:
             raise self.Error("%s is no valid action" % name) from e
 
