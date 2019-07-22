@@ -143,6 +143,9 @@ The following example recurses through all subdirectories in your downloads fold
       actions:
         - echo: '{path}'
 
+.. note::
+  - You have to target files with the globstring, not folders. So to scan through all folders starting with *log_* you would write ``yourpath/log_*/*``
+
 
 Excluding files and folders
 ---------------------------
