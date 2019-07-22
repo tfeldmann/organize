@@ -15,7 +15,7 @@ def filenames(files):
 
 @pytest.mark.datafiles(FIXTURE_DIR)
 def test_basic(datafiles):
-    os.chdir(datafiles)
+    os.chdir(str(datafiles))
     config = Config.from_string(
         """
         rules:
@@ -39,7 +39,7 @@ def test_basic(datafiles):
 
 @pytest.mark.datafiles(FIXTURE_DIR)
 def test_globstr(datafiles):
-    os.chdir(datafiles)
+    os.chdir(str(datafiles))
     config = Config.from_string(
         """
         rules:
