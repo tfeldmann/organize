@@ -29,3 +29,11 @@ def test_regex_return():
         if valid:
             attrs = regex.parse(path)
             assert attrs["regex"].the_number == result
+
+
+def test_regex_umlaut():
+    regex = Regex(r"^Erträgnisaufstellung-(?P<year>\d*)\.pdf")
+    doc = Path("~/Documents/Erträgnisaufstellung-1998.pdf")
+    assert regex.matches(doc)
+    attrs = regex.parse(doc)
+    assert attrs["regex"].year == "1998"
