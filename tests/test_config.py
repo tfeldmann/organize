@@ -1,29 +1,30 @@
 import pytest
 
+from organize.actions import Echo, Move, Shell, Trash
 from organize.config import Config, Rule
 from organize.filters import Extension, LastModified
-from organize.actions import Move, Echo, Shell, Trash
 
 
 def test_basic():
     config = """
+    ---
     rules:
-      - folders: '~/Desktop'
-        filters:
-          - extension:
-            - jpg
-            - png
-          - extension: txt
-        actions:
-          - move: {dest: '~/Desktop/New Folder', overwrite: true}
-          - echo: 'Moved {path}/{extension.upper}'
-      - folders:
-          - '~/test1'
-          - /test2
-        filters:
-        actions:
-          - shell:
-              cmd: 'say {path.stem}'
+    - folders: '~/Desktop'
+      filters:
+      - extension:
+        - jpg
+        - png
+      - extension: txt
+      actions:
+      - move: {dest: '~/Desktop/New Folder', overwrite: true}
+      - echo: 'Moved {path}/{extension.upper}'
+    - folders:
+      - '~/test1'
+      - /test2
+      filters:
+      actions:
+      - shell:
+          cmd: 'say {path.stem}'
     """
     conf = Config.from_string(config)
     assert conf.rules == [
@@ -145,11 +146,11 @@ def test_error_filter_dict():
     conf = Config.from_string(
         """
     rules:
-      - folders: '/'
-        filters:
-          Extension: 'jpg'
-        actions:
-          - trash
+    - folders: '/'
+      filters:
+        Extension: 'jpg'
+      actions:
+      - trash
     """
     )
     with pytest.raises(Config.FiltersNoListError):
@@ -160,11 +161,11 @@ def test_error_action_dict():
     conf = Config.from_string(
         """
     rules:
-      - folders: '/'
-        filters:
-          - extension: 'jpg'
-        actions:
-          Trash
+    - folders: '/'
+      filters:
+      - extension: 'jpg'
+      actions:
+        Trash
     """
     )
     with pytest.raises(Config.ActionsNoListError):

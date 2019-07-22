@@ -1,5 +1,6 @@
 import inspect
 import logging
+import textwrap
 from collections import namedtuple
 from typing import List
 
@@ -41,7 +42,8 @@ class Config:
 
     @classmethod
     def from_string(cls, config: str) -> "Config":
-        return cls(cls.parse_yaml(config))
+        dedented_config = textwrap.dedent(config)
+        return cls(cls.parse_yaml(dedented_config))
 
     @classmethod
     def from_file(cls, path: Path) -> "Config":
