@@ -10,21 +10,21 @@ TESTDATA = [
 
 
 def test_regex_backslash():
-    regex = Regex("^\.pdf$")
+    regex = Regex(r"^\.pdf$")
     assert regex.matches(Path(".pdf"))
     assert not regex.matches(Path("+pdf"))
     assert not regex.matches(Path("/pdf"))
-    assert not regex.matches(Path("\pdf"))
+    assert not regex.matches(Path(r"\pdf"))
 
 
 def test_regex_basic():
-    regex = Regex("^RG(\d{12})-sig\.pdf$")
+    regex = Regex(r"^RG(\d{12})-sig\.pdf$")
     for path, match, _ in TESTDATA:
         assert regex.matches(path) == match
 
 
 def test_regex_return():
-    regex = Regex("^RG(?P<the_number>\d{12})-sig\.pdf$")
+    regex = Regex(r"^RG(?P<the_number>\d{12})-sig\.pdf$")
     for path, valid, result in TESTDATA:
         if valid:
             attrs = regex.parse(path)
