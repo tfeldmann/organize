@@ -1,5 +1,10 @@
 # Changelog
 
+## WIP
+- Fixes issue #39 where globstrings don't work most of the time.
+- Integration test for issue #39
+- Support indented config files
+
 ## v1.5 (2019-07-17)
 - Fixes issue #31 where the {path} variable always resolves to the source path
 - Updated dependencies
