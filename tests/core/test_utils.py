@@ -16,10 +16,6 @@ def test_splitglob():
         Path.home() / "Downloads",
         "Program 0.1*.exe",
     )
-    assert splitglob("~/Ältere/Erträgnisaufstellung_*.pdf") == (
-        Path.home() / "Ältere",
-        "Erträgnisaufstellung_*.pdf",
-    )
     assert splitglob("~/Downloads/Program[ms].exe") == (
         Path.home() / "Downloads",
         "Program[ms].exe",
@@ -27,6 +23,11 @@ def test_splitglob():
     assert splitglob("~/Downloads/Program.exe") == (
         Path.home() / "Downloads" / "Program.exe",
         "",
+    )
+    # https://github.com/tfeldmann/organize/issues/40
+    assert splitglob("~/Ältere/Erträgnisaufstellung_*.pdf") == (
+        Path.home() / "Ältere",
+        "Erträgnisaufstellung_*.pdf",
     )
     # https://github.com/tfeldmann/organize/issues/39
     assert splitglob("~/Downloads/*.pdf") == (Path.home() / "Downloads", "*.pdf")

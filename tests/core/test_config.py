@@ -7,7 +7,6 @@ from organize.filters import Extension, LastModified
 
 def test_basic():
     config = """
-    ---
     rules:
     - folders: '~/Desktop'
       filters:
@@ -20,7 +19,7 @@ def test_basic():
       - echo: 'Moved {path}/{extension.upper}'
     - folders:
       - '~/test1'
-      - /test2
+      - '/test2'
       filters:
       actions:
       - shell:
@@ -53,9 +52,7 @@ def test_case_insensitive():
     rules:
       - folders: '~/Desktop'
         filters:
-          - extension:
-            - JPg
-            - png
+          - extension: ['JPg', 'png']
           - Extension: txt
         actions:
           - moVe: {dest: '~/Desktop/New Folder', overwrite: true}

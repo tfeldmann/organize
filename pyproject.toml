@@ -41,6 +41,9 @@ pathlib2 = [
 [tool.poetry.dev-dependencies]
 pytest = "^4.6"
 mock = "^3.0"
+pylint = "^2.3"
+pytest-datafiles = "^2.0"
+ipdb = "^0.12.0"
 
 [build-system]
 requires = ["poetry>=0.12"]
