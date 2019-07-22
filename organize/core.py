@@ -23,14 +23,15 @@ def all_files_for_rule(rule):
     for folderstr in rule.folders:
         exclude_flag = folderstr.startswith("!")
         basedir, globstr = splitglob(folderstr.lstrip("!"))
-        if basedir.is_dir() and not globstr:
-            globstr = "**/*" if rule.subfolders else "*"
+        if basedir.is_dir():
+            if not globstr:
+                globstr = "**/*" if rule.subfolders else "*"
         elif basedir.is_file():
             # this allows specifying single files
             globstr = basedir.name
             basedir = basedir.parent
         else:
-            raise ValueError("Path does not exist: {}".format(folderstr))
+            raise ValueError("Path not found: {}".format(folderstr))
         for path in basedir.glob(globstr):
             if path.is_file() and (
                 rule.system_files

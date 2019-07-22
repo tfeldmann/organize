@@ -28,6 +28,8 @@ def test_splitglob():
         Path.home() / "Downloads" / "Program.exe",
         "",
     )
+    # https://github.com/tfeldmann/organize/issues/39
+    assert splitglob("~/Downloads/*.pdf") == (Path.home() / "Downloads", "*.pdf")
 
 
 def test_unused_filename_basic(mock_exists):
