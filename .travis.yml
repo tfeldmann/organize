@@ -7,6 +7,7 @@ python:
 install:
   - pip install -U pip
   - pip install .
+  - pip install pytest-datafiles
   - python main.py list
   - python main.py --version
 script:
