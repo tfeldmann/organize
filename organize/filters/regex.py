@@ -47,7 +47,7 @@ class Regex(Filter):
     """
 
     def __init__(self, expr):
-        self.expr = re.compile(expr)
+        self.expr = re.compile(expr, flags=re.UNICODE)
 
     def matches(self, path):
         return bool(self.expr.match(path.name))
