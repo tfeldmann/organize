@@ -5,6 +5,8 @@
 - [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='3 Gb')
 - [ ] Filter: Content / FileContent (#10)
+- [ ] Core: Normalize to unicode NFKD for all comparisons
+- [ ] Deploy: Test with AppVeyor
 
 ## Maybe sometime:
 - [ ] Config: Allow one yaml document per rule syntax ("---") ?

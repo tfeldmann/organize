@@ -11,7 +11,7 @@ organize
 ========
 **The file management automation tool.**
 
-Install via pip (requirement: Python 3.3+):
+Install via pip (requirement: Python 3.4+):
 
 On macOS / Windows:
 ``$ pip3 install organize-tool``
