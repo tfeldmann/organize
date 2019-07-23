@@ -1,6 +1,7 @@
 import inspect
 import logging
 import textwrap
+import unicodedata
 from collections import namedtuple
 from typing import List
 
@@ -34,16 +35,13 @@ class Config:
         }
 
     @classmethod
-    def parse_yaml(cls, config: str) -> dict:
+    def from_string(cls, config: str) -> "Config":
+        config = unicodedata.normalize("NFKD", config)
+        config = textwrap.dedent(config)
         try:
-            return yaml.safe_load(config)
+            return cls(config=yaml.safe_load(config))
         except yaml.YAMLError as e:
             raise cls.ParsingError(e)
-
-    @classmethod
-    def from_string(cls, config: str) -> "Config":
-        dedented_config = textwrap.dedent(config)
-        return cls(cls.parse_yaml(dedented_config))
 
     @classmethod
     def from_file(cls, path: Path) -> "Config":
