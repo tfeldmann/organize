@@ -33,10 +33,10 @@
 - [ ] Filter: id3 tag data
 - [ ] Filter: Exif data (camera__contains, ...) (https://pypi.org/project/ExifRead/)
 - [ ] Filter: MD5
-- [ ] Filter: CreationDate (#13)
 - [ ] Filter: Hashtags(query 'people-john,stars>4,USA') -> List / str of hashtags (#1)
 
 ## Done:
+- [x] Filter: CreationDate (#13)  @2019-07-23
 - [x] Config: Case insensitive filter and action matching  @2019-07-03
 - [x] Format all code with `black`  @2019-07-02
 - [x] Use poetry for dependencies  @2019-06-05

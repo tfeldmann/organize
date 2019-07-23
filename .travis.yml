@@ -7,7 +7,6 @@ python:
   - "3.6"
   - "3.7"
   - "3.8-dev"
-  - "nightly"
 install:
   - pip install -U pip
   - pip install .

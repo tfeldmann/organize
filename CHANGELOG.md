@@ -1,6 +1,7 @@
 # Changelog
 
-## WIP
+## v1.5.1 (2019-07-23)
+- New filter "Created" to filter by creation date
 - Fixes issue #39 where globstrings don't work most of the time.
 - Integration test for issue #39
 - Support indented config files
