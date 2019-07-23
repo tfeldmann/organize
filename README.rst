@@ -116,6 +116,7 @@ Functionality
 - Extension
 - Regular expression
 - Last modified date (newer, older)
+- Creation date (newer, older)
 - Filename (startswith, endswith, contains)
 
 **Organize your files** (actions):
