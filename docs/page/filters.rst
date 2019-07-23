@@ -16,6 +16,10 @@ LastModified
 ------------
 .. autoclass:: LastModified
 
+Created
+-------
+.. autoclass:: Created
+
 Regex
 -----
 .. autoclass:: Regex
