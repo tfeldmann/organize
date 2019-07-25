@@ -97,7 +97,7 @@ class Created(Filter):
     def _created(self, path):
         # see https://stackoverflow.com/a/39501288/300783
         stat = path.stat()
-        if sys.platform.startswith('win'):
+        if sys.platform.startswith("win"):
             time = stat.st_ctime
         else:
             try:
