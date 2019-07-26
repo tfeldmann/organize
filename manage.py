@@ -1,3 +1,14 @@
+"""
+Helper for managing the release of a new version.
+
+ - reads and validates version number
+ - updates __version__.py
+ - updates pyproject.toml
+ - Searches for 'WIP' in changelog and replaces it with current version and date
+ - creates git tag
+ - pushes to github
+ - publishes on pypi
+"""
 import re
 import argparse
 import subprocess
@@ -10,15 +21,6 @@ CURRENT_FOLDER = Path(__file__).resolve().parent
 
 
 def new_version(args):
-    """ creates and publishes a new version
-    - read and validate version number
-    - update __version__.py
-    - update pyproject.toml
-    - Search for 'WIP' in changelog and replace with current version and date
-    - create git tag
-    - push to github
-    - publish on pypi
-    """
     assert CURRENT_FOLDER == Path.cwd().resolve()
     version = args.version
 
@@ -84,7 +86,7 @@ def new_version(args):
 
     # TODO: create github release with changelog
     # TODO: trigger readthedocs?
-    print("done.")
+    print("Success.")
 
 
 if __name__ == "__main__":
