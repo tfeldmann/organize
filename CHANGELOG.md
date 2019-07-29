@@ -1,5 +1,10 @@
 # Changelog
 
+## WIP
+- Environment variables in folder pathes are now expanded (syntax `$name` or `${name}`
+  and additionally `%name%` on windows).
+  For example this allows the usage of e.g. `%public/Desktop%` in windows.
+
 ## v1.5.1 (2019-07-23)
 - New filter "Created" to filter by creation date
 - Fixes issue #39 where globstrings don't work most of the time.

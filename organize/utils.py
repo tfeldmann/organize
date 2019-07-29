@@ -1,3 +1,4 @@
+import os
 import re
 import sys
 from collections import OrderedDict
@@ -26,7 +27,7 @@ def splitglob(globstr):
 
 def fullpath(path):
     """ Expand '~' and resolve the given path """
-    return Path(path).expanduser().resolve(strict=False)
+    return Path(os.path.expandvars(path)).expanduser().resolve(strict=False)
 
 
 def bold(text):
