@@ -9,7 +9,7 @@
 - [ ] Deploy: Test with AppVeyor
 
 ## Maybe sometime:
-- [ ] Config: Allow one yaml document per rule syntax ("---") ?
+- [ ] Config: Allow one yaml document per rule syntax ("---") for running rules by name
 - [ ] Config: 'exclude' directive in rule (like 'filter') -> mode any, all?
 - [ ] Config: Rule names
 - [ ] Config: Warning if multiple rules apply to the same file?
