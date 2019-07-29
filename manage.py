@@ -1,27 +1,29 @@
-"""
-Helper for managing the release of a new version.
-
- - reads and validates version number
- - updates __version__.py
- - updates pyproject.toml
- - Searches for 'WIP' in changelog and replaces it with current version and date
- - creates git tag
- - pushes to github
- - publishes on pypi
-"""
-import re
 import argparse
+import re
 import subprocess
 from datetime import datetime
 from pathlib import Path
-
 
 SRC_FOLDER = "organize"
 CURRENT_FOLDER = Path(__file__).resolve().parent
 
 
-def new_version(args):
-    assert CURRENT_FOLDER == Path.cwd().resolve()
+def ask_confirm(text):
+    while True:
+        answer = input(f"{text} [Y/n]: ").lower()
+        if answer in ("j", "y", "ja", "yes"):
+            return True
+        if answer in ("n", "no", "nein"):
+            return False
+
+
+def set_version(args):
+    """
+    - reads and validates version number
+    - updates __version__.py
+    - updates pyproject.toml
+    - Searches for 'WIP' in changelog and replaces it with current version and date
+    """
     version = args.version
 
     # read version from input if not given
@@ -36,7 +38,7 @@ def new_version(args):
         version = version[1:]
 
     # safety check
-    if input(f"Creating version v{version}. Continue? [Y/n]").lower() not in ["", "y"]:
+    if not ask_confirm(f"Creating version v{version}. Continue? [Y/n]"):
         return
 
     # update library version
@@ -50,6 +52,7 @@ def new_version(args):
     subprocess.run(["poetry", "version", version], check=True)
 
     # read changelog
+    print("Updating CHANGELOG.md")
     with open(CURRENT_FOLDER / "CHANGELOG.md", "r") as f:
         changelog = f.read()
 
@@ -57,7 +60,7 @@ def new_version(args):
     wip_regex = re.compile(r"## WIP\n(.*?)(?=\n##)", re.MULTILINE | re.DOTALL)
     match = wip_regex.search(changelog)
     if not match:
-        print("No '## WIP' section found in changelog")
+        print('No "## WIP" section found in changelog')
         return
 
     # change WIP to version number and date
@@ -69,17 +72,32 @@ def new_version(args):
     with open(CURRENT_FOLDER / "CHANGELOG.md", "w") as f:
         f.write(changelog)
 
+    print("Success.")
+
+
+def publish(args):
+    """
+    - reads version
+    - creates git tag
+    - pushes to github
+    - publishes on pypi
+    """
+    from organize.__version__ import __version__ as version
+
+    if not ask_confirm(f"Publishing version {version}. Is this correct?"):
+        return
+
     # create git tag ('vXXX')
-    if input("Create tag? [Y/n]").lower() in ["", "y"]:
+    if ask_confirm("Create tag?"):
         subprocess.run(["git", "tag", "-a", f"v{version}", "-m", f"v{version}"])
 
     # push to github
-    if input("Push to github? [Y/n]").lower() in ["", "y"]:
+    if ask_confirm("Push to github?"):
         print("Pushing to github")
         subprocess.run(["git", "push", "--follow-tags"], check=True)
 
     # upload to pypi
-    if input("Publish on Pypi? [Y/n]").lower() in ["", "y"]:
+    if ask_confirm("Publish on Pypi?"):
         subprocess.run(["rm", "-rf", "dist"], check=True)
         subprocess.run(["poetry", "build"], check=True)
         subprocess.run(["poetry", "publish"], check=True)
@@ -89,15 +107,27 @@ def new_version(args):
     print("Success.")
 
 
-if __name__ == "__main__":
+def main():
+    assert CURRENT_FOLDER == Path.cwd().resolve()
+
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
-    parser_new_version = subparsers.add_parser("new_version")
-    parser_new_version.add_argument(
+    parser_version = subparsers.add_parser("version", help="Set the version number")
+    parser_version.add_argument(
         "version", type=str, help="The version number", nargs="?", default=None
     )
-    parser_new_version.set_defaults(func=new_version)
+    parser_version.set_defaults(func=set_version)
 
-    pargs = parser.parse_args()
-    pargs.func(pargs)
+    parser_publish = subparsers.add_parser("publish", help="Publish the project")
+    parser_publish.set_defaults(func=publish)
+
+    args = parser.parse_args()
+    if not vars(args):
+        parser.print_help()
+    else:
+        args.func(args)
+
+
+if __name__ == "__main__":
+    main()
