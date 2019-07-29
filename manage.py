@@ -97,7 +97,7 @@ def publish(args):
     with open(CURRENT_FOLDER / "CHANGELOG.md", "r") as f:
         changelog = f.read()
     wip_regex = re.compile(
-        "## v{}".format(version.replace(".", "\.")) + r".*?\n(.*?)(?=\n##)",
+        "## v{}".format(version.replace(".", r"\.")) + r".*?\n(.*?)(?=\n##)",
         re.MULTILINE | re.DOTALL,
     )
     match = wip_regex.search(changelog)
