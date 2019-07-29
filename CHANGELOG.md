@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v1.5.2 (2019-07-29)
 - Environment variables in folder pathes are now expanded (syntax `$name` or `${name}`
   and additionally `%name%` on windows).
   For example this allows the usage of e.g. `%public/Desktop%` in windows.
