@@ -2,7 +2,10 @@ import argparse
 import re
 import subprocess
 from datetime import datetime
+import getpass
 from pathlib import Path
+
+import requests
 
 SRC_FOLDER = "organize"
 CURRENT_FOLDER = Path(__file__).resolve().parent
@@ -10,7 +13,7 @@ CURRENT_FOLDER = Path(__file__).resolve().parent
 
 def ask_confirm(text):
     while True:
-        answer = input(f"{text} [Y/n]: ").lower()
+        answer = input(f"{text} [y/n]: ").lower()
         if answer in ("j", "y", "ja", "yes"):
             return True
         if answer in ("n", "no", "nein"):
@@ -38,7 +41,7 @@ def set_version(args):
         version = version[1:]
 
     # safety check
-    if not ask_confirm(f"Creating version v{version}. Continue? [Y/n]"):
+    if not ask_confirm(f"Creating version v{version}. Continue?"):
         return
 
     # update library version
@@ -78,14 +81,30 @@ def set_version(args):
 def publish(args):
     """
     - reads version
+    - reads changes from changelog
     - creates git tag
     - pushes to github
     - publishes on pypi
+    - creates github release
     """
     from organize.__version__ import __version__ as version
 
     if not ask_confirm(f"Publishing version {version}. Is this correct?"):
         return
+
+    # extract changes from changelog
+    with open(CURRENT_FOLDER / "CHANGELOG.md", "r") as f:
+        changelog = f.read()
+    wip_regex = re.compile(
+        "## v{}".format(version.replace(".", "\.")) + r".*?\n(.*?)(?=\n##)",
+        re.MULTILINE | re.DOTALL,
+    )
+    match = wip_regex.search(changelog)
+    if not match:
+        print("Failed to extract changes from changelog. Do the versions match?")
+        return
+    changes = match.group(1).strip()
+    print(f"Changes:\n{changes}")
 
     # create git tag ('vXXX')
     if ask_confirm("Create tag?"):
@@ -102,8 +121,22 @@ def publish(args):
         subprocess.run(["poetry", "build"], check=True)
         subprocess.run(["poetry", "publish"], check=True)
 
-    # TODO: create github release with changelog
-    # TODO: trigger readthedocs?
+    # create github release
+    if ask_confirm("Create github release?"):
+        response = requests.post(
+            "https://api.github.com/repos/tfeldmann/organize/releases",
+            auth=(input("Benutzer: "), getpass.getpass()),
+            json={
+                "tag_name": f"v{version}",
+                "target_commitish": "master",
+                "name": f"v{version}",
+                "body": changes,
+                "draft": False,
+                "prerelease": False,
+            },
+        )
+        response.raise_for_status()
+
     print("Success.")
 
 
