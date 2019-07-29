@@ -4,6 +4,8 @@
 - [ ] Config: Rule names
 - [ ] CLI: Run rules by name
 - [ ] Filter: Python (+ docs)
+- [ ] Core: Eliminate unnecessary second filter parsing step
+- [ ] Core: Clean up global config variable
 - [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='3 Gb')
 - [ ] Filter: Content / FileContent (#10)
