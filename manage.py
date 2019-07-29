@@ -1,14 +1,15 @@
 import argparse
+import getpass
 import re
 import subprocess
 from datetime import datetime
-import getpass
 from pathlib import Path
 
 import requests
 
 SRC_FOLDER = "organize"
 CURRENT_FOLDER = Path(__file__).resolve().parent
+GITHUB_API_ENDPOINT = "https://api.github.com/repos/tfeldmann/organize"
 
 
 def ask_confirm(text):
@@ -124,7 +125,7 @@ def publish(args):
     # create github release
     if ask_confirm("Create github release?"):
         response = requests.post(
-            "https://api.github.com/repos/tfeldmann/organize/releases",
+            f"{GITHUB_API_ENDPOINT}/releases",
             auth=(input("Benutzer: "), getpass.getpass()),
             json={
                 "tag_name": f"v{version}",
