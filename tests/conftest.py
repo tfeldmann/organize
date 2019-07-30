@@ -106,4 +106,4 @@ def create_filesystem(tmp_path, files):
         p = tmp_path / Path(f)
         p.parent.mkdir(parents=True, exist_ok=True)
         p.touch()
-    os.chdir(tmp_path)
+    os.chdir(str(tmp_path))
