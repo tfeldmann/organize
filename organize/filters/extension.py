@@ -65,7 +65,7 @@ class Extension(Filter):
             :caption: config.yaml
 
             rules:
-              - folder: '~/Desktop'
+              - folders: '~/Desktop'
                 filters:
                   - Extension
                 actions:
