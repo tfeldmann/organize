@@ -1,0 +1,35 @@
+---
+description: Match multiple file extensions
+config: |
+  rules:
+    - folders: '{folder}'
+      filters:
+        - extension:
+          - .jpg
+          - jpeg
+      actions:
+        - echo: 'Found JPG file: {path}'
+files: ['test.jpg', 'asd.JPG', 'nomatch.jpg.zip', 'camel.jPeG']
+expected:
+  output:
+    - 'Found JPG file: test.jpg'
+    - 'Found JPG file: asd.JPG'
+    - 'Found JPG file: camel.jPeG'
+
+---
+description: Match multiple file extensions 2
+config: |
+  rules:
+    - folders: '~/Desktop'
+      filters:
+        - extension:
+          - .jpg
+          - jpeg
+      actions:
+        - echo: 'Found JPG file: {path}'
+files: ['test.jpg', 'asd.JPG', 'nomatch.jpg.zip', 'camel.jPeG']
+expected:
+  output:
+    - 'Found JPG file: test.jpg'
+    - 'Found JPG file: asd.JPG'
+    - 'Found JPG file: camel.jPeG'

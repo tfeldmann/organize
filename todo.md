@@ -6,9 +6,11 @@
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='3 Gb')
 - [ ] Filter: Content / FileContent (#10)
 - [ ] Core: Normalize to unicode NFKD for all comparisons
-- [ ] Deploy: Test with AppVeyor
+- [ ] Docs: Why use this instead of XYZ? (UTF-8, safe by default, multiplatform quirks,
+            does not spy on you)
 
 ## Maybe sometime:
+- [ ] Deploy: Test with AppVeyor
 - [ ] Config: Allow one yaml document per rule syntax ("---") for running rules by name
 - [ ] Config: 'exclude' directive in rule (like 'filter') -> mode any, all?
 - [ ] Config: Rule names
@@ -22,8 +24,8 @@
 - [ ] Core: Use Jinja2 native types instead of python format strings?
             This would allow method execution. Maybe works nicely with taggo?
 - [ ] Core: Undo where possible (#16)
-- [ ] Action: DeleteFolderIfEmpty
 - [ ] Core: Add Support for S3, SSH, FTP etc. via PyFilesystem
+- [ ] Action: DeleteFolderIfEmpty
 - [ ] Action: Zip
 - [ ] Action: E-Mail
 - [ ] Action: Print (on printer)

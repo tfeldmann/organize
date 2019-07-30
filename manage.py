@@ -76,6 +76,7 @@ def set_version(args):
     with open(CURRENT_FOLDER / "CHANGELOG.md", "w") as f:
         f.write(changelog)
 
+    print("Please push to github and wait for CI to pass.")
     print("Success.")
 
 

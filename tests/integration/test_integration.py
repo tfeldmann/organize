@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 import pytest
+from conftest import create_filesystem
 
 from organize.config import Config
 from organize.core import execute_rules
@@ -11,6 +12,23 @@ FIXTURE_DIR = Path(__file__).parent.absolute() / "01_basic"
 
 def filenames(files):
     return set([Path(str(f)).name for f in files])
+
+
+def test_filename_move(tmp_path):
+    create_filesystem(tmp_path, ["sub/test.PY"])
+    config = Config.from_string(
+        """
+        rules:
+        - folders: 'sub'
+          filters:
+          - Extension
+          actions:
+          - rename: '{path.stem}{path.stem}.{extension.lower}'
+        """
+    )
+    execute_rules(config.rules, simulate=False)
+    assert (tmp_path / "sub" / "testtest.py").exists()
+    assert not (tmp_path / "sub" / "test.PY").exists()
 
 
 @pytest.mark.datafiles(FIXTURE_DIR)
