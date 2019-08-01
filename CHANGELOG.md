@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v1.5.2 (2019-08-01)
 - Filename filter now supports lists.
 
 ## v1.5.2 (2019-07-29)
