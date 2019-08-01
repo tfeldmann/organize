@@ -42,3 +42,42 @@ def test_filename_case():
     assert not filename.matches(Path("~/here/STARCON.begin"))
     assert not filename.matches(Path("~/here/CONEND.begin"))
     assert filename.matches(Path("~/here/STARCONEND.begin"))
+
+
+def test_filename_list():
+    filename = Filename(
+        startswith="_",
+        contains=["1", "A", "3", "6"],
+        endswith=["5", "6"],
+        case_sensitive=False,
+    )
+    assert filename.matches(Path("~/_15.dpf"))
+    assert filename.matches(Path("~/_A5.dpf"))
+    assert filename.matches(Path("~/_A6.dpf"))
+    assert filename.matches(Path("~/_a6.dpf"))
+    assert filename.matches(Path("~/_35.dpf"))
+    assert filename.matches(Path("~/_36.dpf"))
+    assert filename.matches(Path("~/_somethinga56"))
+    assert filename.matches(Path("~/_6"))
+    assert not filename.matches(Path("~/"))
+    assert not filename.matches(Path("~/a_5"))
+
+def test_filename_list_case_sensitive():
+    filename = Filename(
+        startswith="_",
+        contains=["1", "A", "3", "7"],
+        endswith=["5", "6"],
+        case_sensitive=True,
+    )
+    assert filename.matches(Path("~/_15.dpf"))
+    assert filename.matches(Path("~/_A5.dpf"))
+    assert filename.matches(Path("~/_A6.dpf"))
+    assert not filename.matches(Path("~/_a6.dpf"))
+    assert filename.matches(Path("~/_35.dpf"))
+    assert filename.matches(Path("~/_36.dpf"))
+    assert filename.matches(Path("~/_somethingA56"))
+    assert not filename.matches(Path("~/_6"))
+    assert not filename.matches(Path("~/_a5.dpf"))
+    assert not filename.matches(Path("~/-A5.dpf"))
+    assert not filename.matches(Path("~/"))
+    assert not filename.matches(Path("~/_a5"))

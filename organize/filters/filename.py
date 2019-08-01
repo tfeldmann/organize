@@ -48,29 +48,48 @@ class Filename(Filter):
                       case_sensitive: false
                 actions:
                   - echo: 'Found a match.'
+
+        - Match all files starting with 'A' or 'B' containing '5' or '6' and ending with
+          '_end'
+
+          .. code-block:: yaml
+            :caption: config.yaml
+
+            rules:
+              - folders: '~/Desktop'
+                filters:
+                  - filename:
+                      startswith:
+                        - A
+                        - B
+                      contains:
+                        - 5
+                        - 6
+                      endswith: _end
+                      case_sensitive: false
+                actions:
+                  - echo: 'Found a match.'
     """
 
     def __init__(self, startswith="", contains="", endswith="", case_sensitive=True):
-        self.startswith = startswith
-        self.contains = contains
-        self.endswith = endswith
+        self.startswith = self.create_list(startswith, case_sensitive)
+        self.contains = self.create_list(contains, case_sensitive)
+        self.endswith = self.create_list(endswith, case_sensitive)
         self.case_sensitive = case_sensitive
 
-        if not self.case_sensitive:
-            self.startswith = self.startswith.lower()
-            self.contains = self.contains.lower()
-            self.endswith = self.endswith.lower()
-
     def matches(self, path):
-        filename = self._filename(path)
+        filename = path.stem.lower() if not self.case_sensitive else path.stem
         return (
-            filename.startswith(self.startswith)
-            and filename.endswith(self.endswith)
-            and self.contains in filename
+            any(x in filename for x in self.contains)
+            and any(filename.startswith(x) for x in self.startswith)
+            and any(filename.endswith(x) for x in self.endswith)
         )
 
-    def _filename(self, path):
-        if not self.case_sensitive:
-            return path.stem.lower()
-        else:
-            return path.stem
+    @staticmethod
+    def create_list(x, case_sensitive):
+        if isinstance(x, str):
+            x = [x]
+        x = [str(x) for x in x]
+        if not case_sensitive:
+            x = [x.lower() for x in x]
+        return x

@@ -1,12 +1,15 @@
 # Changelog
 
+## WIP
+- Filename filter now supports lists.
+
 ## v1.5.2 (2019-07-29)
 - Environment variables in folder pathes are now expanded (syntax `$name` or `${name}`
   and additionally `%name%` on windows).
   For example this allows the usage of e.g. `%public/Desktop%` in windows.
 
 ## v1.5.1 (2019-07-23)
-- New filter "Created" to filter by creation date
+- New filter "Created" to filter by creation date.
 - Fixes issue #39 where globstrings don't work most of the time.
 - Integration test for issue #39
 - Support indented config files
