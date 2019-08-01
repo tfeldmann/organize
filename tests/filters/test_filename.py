@@ -62,6 +62,7 @@ def test_filename_list():
     assert not filename.matches(Path("~/"))
     assert not filename.matches(Path("~/a_5"))
 
+
 def test_filename_list_case_sensitive():
     filename = Filename(
         startswith="_",

@@ -28,9 +28,13 @@ def set_version(args):
     - updates pyproject.toml
     - Searches for 'WIP' in changelog and replaces it with current version and date
     """
-    version = args.version
+    from organize.__version__ import __version__ as current_version
+
+    print(f"Current version is {current_version}.")
 
     # read version from input if not given
+    version = args.version
+
     if not version:
         version = input("Version number: ")
 
@@ -75,6 +79,12 @@ def set_version(args):
     # write changelog
     with open(CURRENT_FOLDER / "CHANGELOG.md", "w") as f:
         f.write(changelog)
+
+    if ask_confirm("Commit changes?"):
+        subprocess.run(
+            ["git", "add", "pyproject.toml", "__version__.py", "CHANGELOG.md"]
+        )
+        subprocess.run(["git", "commit", "-m", f"bump version to v{version}"])
 
     print("Please push to github and wait for CI to pass.")
     print("Success.")
