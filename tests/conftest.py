@@ -16,17 +16,19 @@ class YamlFile(pytest.File):
     def collect(self):
         tests = yaml.safe_load_all(self.fspath.open())
         for test in tests:
-            yield YamlItem(name=test["description"], parent=self, spec=test)
+            yield YamlItem(parent=self, name=test["description"], spec=test)
 
 
 class YamlItem(pytest.Item):
-    def __init__(self, name, parent, spec):
+    def __init__(self, parent, name, spec):
         super().__init__(name, parent)
+        self.name = name
         self.spec = spec
 
     def runtest(self):
         if not "config" in self.spec:
-            raise YamlException(self, name, value)
+            raise YamlException("no config found")
+
 
     def repr_failure(self, excinfo):
         """ called when self.runtest() raises an exception. """
@@ -41,6 +43,14 @@ class YamlItem(pytest.Item):
 
     def reportinfo(self):
         return self.fspath, 0, "usecase: %s" % self.name
+
+
+def create_filesystem(tmp_path, files):
+    for f in files:
+        p = tmp_path / Path(f)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.touch()
+    os.chdir(str(tmp_path))
 
 
 class YamlException(Exception):
@@ -101,9 +111,3 @@ def mock_mkdir():
         yield mck
 
 
-def create_filesystem(tmp_path, files):
-    for f in files:
-        p = tmp_path / Path(f)
-        p.parent.mkdir(parents=True, exist_ok=True)
-        p.touch()
-    os.chdir(str(tmp_path))
