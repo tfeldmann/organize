@@ -1,6 +1,9 @@
 # TODO
 
 ## Next up:
+- [ ] Tests: Integration tests
+- [ ] Config: Rule names
+- [ ] CLI: Run rules by name
 - [ ] Core: Clean up global config variable
 - [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='3 Gb')
@@ -13,7 +16,6 @@
 - [ ] Deploy: Test with AppVeyor
 - [ ] Config: Allow one yaml document per rule syntax ("---") for running rules by name
 - [ ] Config: 'exclude' directive in rule (like 'filter') -> mode any, all?
-- [ ] Config: Rule names
 - [ ] Config: Warning if multiple rules apply to the same file?
 - [ ] Config: Filter modes all, none, any?
 - [ ] Config: jsonschema for user config validation?
