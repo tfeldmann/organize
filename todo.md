@@ -16,7 +16,7 @@
 - [ ] Config: 'exclude' directive in rule (like 'filter') -> mode any, all?
 - [ ] Config: Warning if multiple rules apply to the same file?
 - [ ] Config: Filter modes all, none, any?
-- [ ] Config: jsonschema for user config validation?
+- [ ] Config: schema (github.com/keleshev/schema) or jsonschema for config validation?
 - [ ] Config: Flatten filter lists
 - [ ] Config: Support ansible 'with_item' list syntax
 - [ ] Core: User plugins
