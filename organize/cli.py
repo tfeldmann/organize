@@ -41,9 +41,9 @@ from .utils import Path, bold, flatten, fullpath
 logger = logging.getLogger("organize")
 
 
-def main():
+def main(argv=None):
     """ entry point for the command line interface """
-    args = docopt(__doc__, version=__version__, help=True)
+    args = docopt(__doc__, argv=argv, version=__version__, help=True)
 
     # override default config file path
     if args["--config-file"]:
@@ -63,9 +63,11 @@ def main():
             config_debug(config_path)
         else:
             config_edit(config_path)
+
     # > organize list
     elif args["list"]:
         list_actions_and_filters()
+
     # > organize sim / run
     else:
         try:
