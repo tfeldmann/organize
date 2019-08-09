@@ -40,6 +40,7 @@
 - [ ] Filter: Hashtags(query 'people-john,stars>4,USA') -> List / str of hashtags (#1)
 
 ## Done:
+- [x] Core: Clean up global config variable  @2019-08-09
 - [x] Filter: CreationDate (#13)  @2019-07-23
 - [x] Config: Case insensitive filter and action matching  @2019-07-03
 - [x] Format all code with `black`  @2019-07-02

@@ -22,7 +22,7 @@ classifiers = [
 ]
 
 [tool.poetry.scripts]
-organize = "organize.main:main"
+organize = "organize.cli:main"
 
 [tool.poetry.dependencies]
 python = "^3.4"

@@ -1,5 +1,5 @@
 """
-The file management automation tool.
+organize -- The file management automation tool.
 
 Usage:
     organize sim [--config-file=<path>]
@@ -24,68 +24,21 @@ Options:
 
 Full documentation: https://organize.readthedocs.io
 """
-import logging
-import logging.config
 import os
 import sys
+import logging
+from pathlib import Path
 
-import appdirs
-import yaml
 from clint.textui import colored, indent, puts
 from docopt import docopt
 
+from . import CONFIG_DIR, CONFIG_PATH, LOG_PATH
 from .__version__ import __version__
-from .config import Config
 from .core import execute_rules
+from .config import Config
 from .utils import Path, bold, flatten, fullpath
 
-# prepare config and log folders
-app_dirs = appdirs.AppDirs("organize")
-config_dir = Path(app_dirs.user_config_dir)
-config_path = config_dir / "config.yaml"
-
-# setting the $ORGANIZE_CONFIG env variable overrides the default config path
-env_config = os.getenv("ORGANIZE_CONFIG")
-if env_config:
-    config_path = Path(env_config).resolve()
-    config_dir = config_path.parent
-
-log_dir = Path(app_dirs.user_log_dir)
-log_path = log_dir / "organize.log"
-
-for folder in (config_dir, log_dir):
-    folder.mkdir(parents=True, exist_ok=True)
-if not config_path.exists():
-    config_path.touch()
-
-# configure logging
-LOGGING = """
-version: 1
-disable_existing_loggers: false
-formatters:
-    simple:
-        format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-handlers:
-    console:
-        class: logging.StreamHandler
-        level: DEBUG
-        formatter: simple
-        stream: ext://sys.stdout
-    file:
-        class: logging.handlers.TimedRotatingFileHandler
-        level: DEBUG
-        filename: {filename}
-        formatter: simple
-        when: midnight
-        backupCount: 35
-root:
-    level: DEBUG
-    handlers: [file]
-""".format(
-    filename=str(log_path)
-)
-logging.config.dictConfig(yaml.load(LOGGING, Loader=yaml.SafeLoader))
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("organize")
 
 
 def main():
@@ -94,10 +47,11 @@ def main():
 
     # override default config file path
     if args["--config-file"]:
-        global config_path
-        global config_dir
         config_path = Path(args["--config-file"]).resolve()
         config_dir = config_path.parent
+    else:
+        config_dir = CONFIG_DIR
+        config_path = CONFIG_PATH
 
     # > organize config
     if args["config"]:
@@ -106,9 +60,9 @@ def main():
         elif args["--path"]:
             puts(str(config_path))
         elif args["--debug"]:
-            config_debug()
+            config_debug(config_path)
         else:
-            config_edit()
+            config_edit(config_path)
     # > organize list
     elif args["list"]:
         list_actions_and_filters()
@@ -121,16 +75,16 @@ def main():
             logger.exception(e)
             print_error(e)
             puts("Try 'organize config --debug' for easier debugging.")
-            puts("Full traceback at: %s" % log_path)
+            puts("Full traceback at: %s" % LOG_PATH)
             sys.exit(1)
         except Exception as e:
             logger.exception(e)
             print_error(e)
-            puts("Full traceback at: %s" % log_path)
+            puts("Full traceback at: %s" % LOG_PATH)
             sys.exit(1)
 
 
-def config_edit():
+def config_edit(config_path):
     """ open the config file in $EDITOR or default text editor """
     # attention: the env variable might contain command line arguments.
     # https://github.com/tfeldmann/organize/issues/24
@@ -148,7 +102,7 @@ def open_in_filemanager(path):
     webbrowser.open(path.as_uri())
 
 
-def config_debug():
+def config_debug(config_path):
     """ prints the config with resolved aliases, checks rules syntax and checks
         whether the given folders exist """
     puts(str(config_path))
