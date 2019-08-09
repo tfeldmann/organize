@@ -6,6 +6,8 @@ from pathlib import Path
 import appdirs
 import yaml
 
+from .__version__ import __version__
+
 # prepare config and log folders
 APP_DIRS = appdirs.AppDirs("organize")
 

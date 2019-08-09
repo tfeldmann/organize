@@ -12,7 +12,7 @@ if sys.version_info < (3, 6):
 else:
     from pathlib import Path
 
-unescaped_wildcard = re.compile(r"(?<!\\)[\*\?\[]+")
+WILDCARD_REGEX = re.compile(r"(?<!\\)[\*\?\[]+")
 
 
 def splitglob(globstr):
@@ -20,7 +20,7 @@ def splitglob(globstr):
     path = fullpath(globstr.strip())
     parts = path.parts
     for i, part in enumerate(parts):
-        if unescaped_wildcard.search(part):
+        if WILDCARD_REGEX.search(part):
             return (Path(*parts[:i]), str(Path(*parts[i:])))
     return (path, "")
 

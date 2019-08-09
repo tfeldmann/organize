@@ -33,7 +33,7 @@ from clint.textui import colored, indent, puts
 from docopt import docopt
 
 from . import CONFIG_DIR, CONFIG_PATH, LOG_PATH
-from .__version__ import __version__
+from . import __version__
 from .core import execute_rules
 from .config import Config
 from .utils import Path, bold, flatten, fullpath
@@ -103,8 +103,9 @@ def open_in_filemanager(path):
 
 
 def config_debug(config_path):
-    """ prints the config with resolved aliases, checks rules syntax and checks
-        whether the given folders exist """
+    """ prints the config with resolved yaml aliases, checks rules syntax and checks
+        whether the given folders exist
+    """
     puts(str(config_path))
     haserr = False
     # check config syntax
