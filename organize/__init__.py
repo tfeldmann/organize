@@ -1,12 +1,12 @@
 import os
 import logging
 import logging.config
-from pathlib import Path
 
 import appdirs
 import yaml
 
 from .__version__ import __version__
+from .utils import Path
 
 # prepare config and log folders
 APP_DIRS = appdirs.AppDirs("organize")

@@ -1,11 +1,11 @@
 import os
-from pathlib import Path
 
 import pytest
 from conftest import create_filesystem
 
 from organize.config import Config
 from organize.core import execute_rules
+from organize.utils import Path
 
 FIXTURE_DIR = Path(__file__).parent.absolute() / "01_basic"
 

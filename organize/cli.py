@@ -27,7 +27,6 @@ Full documentation: https://organize.readthedocs.io
 import os
 import sys
 import logging
-from pathlib import Path
 
 from clint.textui import colored, indent, puts
 from docopt import docopt
