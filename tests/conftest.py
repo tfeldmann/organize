@@ -77,3 +77,8 @@ def mock_mkdir():
     with patch.object(Path, "mkdir") as mck:
         yield mck
 
+
+@pytest.fixture
+def mock_echo():
+    with patch("organize.actions.Echo.print") as mck:
+        yield mck

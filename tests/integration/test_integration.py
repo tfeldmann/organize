@@ -1,6 +1,5 @@
 from conftest import assertdir, create_filesystem
 from organize.cli import main
-from organize.utils import Path
 
 
 def test_filename_move(tmp_path):
