@@ -11,9 +11,9 @@ def test_min():
     created = Created(days=10, hours=12, mode="older")
     with patch.object(created, "_created") as mock_cr:
         mock_cr.return_value = now - timedelta(days=10, hours=0)
-        assert not created.matches(Path("~"))
+        assert created.run(Path("~")) is None
         mock_cr.return_value = now - timedelta(days=10, hours=13)
-        assert created.matches(Path("~"))
+        assert created.run(Path("~"))
 
 
 def test_max():
@@ -21,6 +21,6 @@ def test_max():
     created = Created(days=10, hours=12, mode="newer")
     with patch.object(created, "_created") as mock_cr:
         mock_cr.return_value = now - timedelta(days=10, hours=0)
-        assert created.matches(Path("~"))
+        assert created.run(Path("~"))
         mock_cr.return_value = now - timedelta(days=10, hours=13)
-        assert not created.matches(Path("~"))
+        assert created.run(Path("~")) is None

@@ -2,7 +2,7 @@ import logging
 import os
 import shutil
 
-from organize.utils import Path, fullpath, find_unused_filename
+from organize.utils import Path, find_unused_filename, fullpath
 
 from .action import Action
 from .trash import Trash

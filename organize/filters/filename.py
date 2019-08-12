@@ -77,7 +77,7 @@ class Filename(Filter):
         self.endswith = self.create_list(endswith, case_sensitive)
         self.case_sensitive = case_sensitive
 
-    def matches(self, path):
+    def run(self, path):
         filename = path.stem.lower() if not self.case_sensitive else path.stem
         return (
             any(x in filename for x in self.contains)

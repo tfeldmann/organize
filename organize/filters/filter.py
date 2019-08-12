@@ -1,11 +1,7 @@
 class Filter:
-    def matches(self, path):
-        """ Return True if filter applies to path. False otherwise """
-        raise NotImplementedError
-
-    def parse(self, path):
+    def run(self, path):
         """ Return an dict of parsed file properties (optional) """
-        return {}
+        return NotImplementedError()
 
     def __str__(self):
         """ Return filter name and properties """
