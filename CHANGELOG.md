@@ -2,7 +2,7 @@
 
 ## WIP
 - The organize module can now be run directly: `python3 -m organize`
-- Various code cleanups
+- Various code cleanups and speedups.
 
 ## v1.5.3 (2019-08-01)
 - Filename filter now supports lists.
