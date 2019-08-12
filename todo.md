@@ -1,9 +1,9 @@
 # TODO
 
 ## Next up:
-- [ ] Tests: Integration tests
 - [ ] Config: Rule names
 - [ ] CLI: Run rules by name
+- [ ] Filter: Python (+ docs)
 - [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='3 Gb')
 - [ ] Filter: Content / FileContent (#10)
@@ -32,13 +32,13 @@
 - [ ] Action: Notify (desktop notification)
 - [ ] Action: Symlink
 - [ ] Filter: UserConfirmation (erase with "\r\033[K")
-- [ ] Filter: Python (+ docs)
 - [ ] Filter: id3 tag data
 - [ ] Filter: Exif data (camera__contains, ...) (https://pypi.org/project/ExifRead/)
 - [ ] Filter: MD5
 - [ ] Filter: Hashtags(query 'people-john,stars>4,USA') -> List / str of hashtags (#1)
 
 ## Done:
+- [x] Tests: Integration tests  @2019-08-12
 - [x] Core: Clean up global config variable  @2019-08-09
 - [x] Filter: CreationDate (#13)  @2019-07-23
 - [x] Config: Case insensitive filter and action matching  @2019-07-03
