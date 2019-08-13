@@ -1,10 +1,10 @@
-import os
 import logging
 import logging.config
+import os
 
 import appdirs
-import yaml
 import colorama
+import yaml
 
 from .__version__ import __version__
 from .utils import Path
@@ -27,6 +27,8 @@ LOG_PATH = LOG_DIR / "organize.log"
 
 for folder in (CONFIG_DIR, LOG_DIR):
     folder.mkdir(parents=True, exist_ok=True)
+
+# create empty config file if it does not exist
 if not CONFIG_PATH.exists():
     CONFIG_PATH.touch()
 
@@ -56,4 +58,4 @@ root:
 """.format(
     filename=str(LOG_PATH)
 )
-logging.config.dictConfig(yaml.load(LOGGING_CONFIG, Loader=yaml.SafeLoader))
+logging.config.dictConfig(yaml.safe_load(LOGGING_CONFIG))
