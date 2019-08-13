@@ -2,13 +2,9 @@ from clint.textui import puts
 
 
 class Filter:
-    def matches(self, path):
-        """ Return True if filter applies to path. False otherwise """
-        raise NotImplementedError
-
-    def parse(self, path):
+    def run(self, path):
         """ Return an dict of parsed file properties (optional) """
-        return {}
+        return NotImplementedError()
 
     def print(self, msg):
         """ print a message for the user """

@@ -2,10 +2,12 @@ import logging
 import os
 import shutil
 
-from organize.utils import Path, fullpath, find_unused_filename
+from organize.utils import find_unused_filename, fullpath
 
 from .action import Action
 from .trash import Trash
+
+logger = logging.getLogger(__name__)
 
 
 class Move(Action):
@@ -87,11 +89,9 @@ class Move(Action):
         self.dest = dest
         self.overwrite = overwrite
         self.counter_separator = counter_separator
-        self.log = logging.getLogger(__name__)
 
     def run(self, attrs: dict, simulate: bool):
         path = attrs["path"]
-        basedir = attrs["basedir"]
 
         expanded_dest = self.fill_template_tags(self.dest, attrs)
         # if only a folder path is given we append the filename to have the full
@@ -116,9 +116,9 @@ class Move(Action):
         else:
             self.print('Move to "%s"' % new_path)
             if not simulate:
-                self.log.info("Creating folder if not exists: %s", new_path.parent)
+                logger.info("Creating folder if not exists: %s", new_path.parent)
                 new_path.parent.mkdir(parents=True, exist_ok=True)
-                self.log.info('Moving "%s" to "%s"', path, new_path)
+                logger.info('Moving "%s" to "%s"', path, new_path)
                 shutil.move(src=str(path), dst=str(new_path))
         return new_path
 

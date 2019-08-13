@@ -65,7 +65,7 @@ class Extension(Filter):
             :caption: config.yaml
 
             rules:
-              - folder: '~/Desktop'
+              - folders: '~/Desktop'
                 filters:
                   - Extension
                 actions:
@@ -114,9 +114,10 @@ class Extension(Filter):
             return False
         return self.normalize_extension(path.suffix) in self.extensions
 
-    def parse(self, path):
-        result = ExtensionResult(path.suffix)
-        return {"extension": result}
+    def run(self, path):
+        if self.matches(path):
+            result = ExtensionResult(path.suffix)
+            return {"extension": result}
 
     def __str__(self):
         return "Extension(%s)" % ", ".join(self.extensions)

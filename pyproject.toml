@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "organize-tool"
-version = "1.5.1"
+version = "1.5.3"
 description = "The file management automation tool"
 packages = [
     { include = "organize" },
@@ -22,7 +22,7 @@ classifiers = [
 ]
 
 [tool.poetry.scripts]
-organize = "organize.main:main"
+organize = "organize.cli:main"
 
 [tool.poetry.dependencies]
 python = "^3.4"
@@ -30,7 +30,6 @@ appdirs = "^1.4"
 docopt = "^0.6.2"
 PyYAML = "^5.1"
 Send2Trash = "^1.5"
-clint = "^0.5.1"
 colorama = "^0.4.1"
 typing = { version = "^3.6", python = "<3.5" }
 pathlib2 = [
@@ -42,7 +41,6 @@ pathlib2 = [
 pytest = "^4.6"
 mock = "^3.0"
 pylint = "^2.3"
-pytest-datafiles = "^2.0"
 ipdb = "^0.12.0"
 
 [build-system]

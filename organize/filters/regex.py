@@ -49,9 +49,8 @@ class Regex(Filter):
     def __init__(self, expr):
         self.expr = re.compile(expr, flags=re.UNICODE)
 
-    def matches(self, path):
-        return bool(self.expr.match(path.name))
-
-    def parse(self, path):
-        result = DotDict(self.expr.match(path.name).groupdict())
-        return {"regex": result}
+    def run(self, path):
+        match = self.expr.match(path.name)
+        if match:
+            result = DotDict(match.groupdict())
+            return {"regex": result}

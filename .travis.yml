@@ -9,8 +9,8 @@ python:
   - "3.8-dev"
 install:
   - pip install -U pip
+  - pip install -U pytest pytest-datafiles
   - pip install .
-  - pip install pytest-datafiles
   - python main.py list
   - python main.py --version
 script:

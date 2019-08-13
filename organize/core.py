@@ -1,9 +1,10 @@
 import logging
-from collections import defaultdict, namedtuple
+from collections import namedtuple
+from textwrap import indent
 
-from clint.textui import colored, indent, puts
+from colorama import Fore, Style
 
-from .utils import fullpath, bold, splitglob
+from .utils import dict_merge, splitglob
 
 logger = logging.getLogger(__name__)
 
@@ -21,8 +22,9 @@ Job.__doc__ = """
 def all_files_for_rule(rule):
     files = {}
     for folderstr in rule.folders:
+        folderstr = folderstr.strip()
         exclude_flag = folderstr.startswith("!")
-        basedir, globstr = splitglob(folderstr.lstrip("!"))
+        basedir, globstr = splitglob(folderstr.lstrip("!").strip())
         if basedir.is_dir():
             if not globstr:
                 globstr = "**/*" if rule.subfolders else "*"
@@ -45,31 +47,27 @@ def all_files_for_rule(rule):
         yield (folderstr, basedir, path)
 
 
-def find_jobs(rules):
+def create_jobs(rules):
     for rule in rules:
         for folderstr, basedir, path in all_files_for_rule(rule):
-            if all(f.matches(path) for f in rule.filters):
-                yield Job(
-                    folderstr=folderstr,
-                    basedir=basedir,
-                    path=path,
-                    filters=rule.filters,
-                    actions=rule.actions,
-                )
-
-
-def group_by_folder(jobs):
-    result = defaultdict(list)
-    for job in jobs:
-        result[job.folderstr].append(job)
-    return result
+            yield Job(
+                folderstr=folderstr,
+                basedir=basedir,
+                path=path,
+                filters=rule.filters,
+                actions=rule.actions,
+            )
 
 
 def filter_pipeline(job):
-    result = {}
+    args = dict()
     for filter_ in job.filters:
-        result.update(filter_.parse(job.path))
-    return result
+        result = filter_.run(job.path)
+        if isinstance(result, dict):
+            args = dict_merge(args, result)
+        elif not result:
+            return
+    return args
 
 
 def action_pipeline(job: Job, attrs: dict, simulate: bool):
@@ -83,39 +81,42 @@ def action_pipeline(job: Job, attrs: dict, simulate: bool):
                 current_path = new_path
     except Exception as e:
         logger.exception(e)
-        action.print("%s %s" % (colored.red("ERROR!", bold=True), e))
+        action.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
+
+
+def run_jobs(jobs, simulate):
+    for job in sorted(jobs, key=lambda x: (x.folderstr, x.basedir, x.path)):
+        attrs = filter_pipeline(job)
+        if attrs is not None:
+            path = job.path
+            basedir = job.basedir
+            relative_path = path.relative_to(basedir)
+            yield (job.folderstr, str(relative_path))
+            attrs["path"] = path
+            attrs["basedir"] = basedir
+            attrs["relative_path"] = relative_path
+            action_pipeline(job=job, attrs=attrs, simulate=simulate)
 
 
 def execute_rules(rules, simulate):
-    jobs = list(find_jobs(rules))
-    if not jobs:
+    jobs = create_jobs(rules=rules)
+
+    if simulate:
+        print(Fore.GREEN + Style.BRIGHT + "SIMULATION ~~~")
+
+    prev_folderstr = None
+    for folderstr, relative_path in run_jobs(jobs=jobs, simulate=simulate):
+        if folderstr != prev_folderstr:
+            if prev_folderstr is not None:
+                print()
+            print("Folder %s:" % (Style.BRIGHT + folderstr))
+            prev_folderstr = folderstr
+        print(indent("File %s:" % (Style.BRIGHT + relative_path), " " * 2))
+
+    if prev_folderstr is None:
         msg = "Nothing to do."
         logger.info(msg)
-        puts(msg)
-        return
+        print(msg)
 
-    jobs_by_folder = group_by_folder(jobs)
-    first = True
     if simulate:
-        puts(colored.green("SIMULATION ~~~", bold=True))
-    for folder, jobs in sorted(jobs_by_folder.items()):
-        # newline between folders
-        if not first:
-            puts()
-        first = False
-
-        puts("Folder %s:" % bold(folder))
-        with indent(2):
-            for job in jobs:
-                path = job.path
-                basedir = job.basedir
-                relative_path = path.relative_to(basedir)
-                puts("File %s:" % bold(relative_path))
-                with indent(2):
-                    attrs = filter_pipeline(job)
-                    attrs["path"] = path
-                    attrs["basedir"] = basedir
-                    attrs["relative_path"] = relative_path
-                    action_pipeline(job=job, attrs=attrs, simulate=simulate)
-    if simulate:
-        puts(colored.green("~~~ SIMULATION", bold=True))
+        print(Fore.GREEN + Style.BRIGHT + "~~~ SIMULATION")

@@ -1,6 +1,27 @@
+import os
+
 import pytest
 from mock import patch
+
 from organize.utils import Path
+
+
+def create_filesystem(tmp_path, files, config):
+    # create files
+    for f in files:
+        p = tmp_path / "files" / Path(f)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.touch()
+    # create config
+    with (tmp_path / "config.yaml").open("w") as f:
+        f.write(config)
+    # change working directory
+    os.chdir(str(tmp_path))
+
+
+def assertdir(path, *files):
+    os.chdir(str(path / "files"))
+    assert set(files) == set(str(x) for x in Path(".").glob("**/*") if x.is_file())
 
 
 @pytest.fixture
@@ -54,4 +75,10 @@ def mock_parent():
 @pytest.fixture
 def mock_mkdir():
     with patch.object(Path, "mkdir") as mck:
+        yield mck
+
+
+@pytest.fixture
+def mock_echo():
+    with patch("organize.actions.Echo.print") as mck:
         yield mck

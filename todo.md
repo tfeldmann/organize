@@ -2,41 +2,45 @@
 
 ## Next up:
 - [ ] Core: Eliminate unnecessary second filter parsing step
-- [ ] Core: Clean up global config variable
+- [ ] Config: Rule names
+- [ ] CLI: Run rules by name
+- [ ] Filter: Python (+ docs)
 - [ ] Filter: Duplicates (https://stackoverflow.com/a/36113168/300783)
 - [ ] Filter: FileSize(bigger_than='2 MB', smaller_than='3 Gb')
 - [ ] Filter: Content / FileContent (#10)
 - [ ] Core: Normalize to unicode NFKD for all comparisons
-- [ ] Deploy: Test with AppVeyor
+- [ ] Docs: Add readme section: "Why use this instead of XYZ?"
+            (UTF-8, safe by default, multiplatform quirks, does not spy on you)
 
 ## Maybe sometime:
-- [ ] Config: Allow one yaml document per rule syntax ("---") for running rules by name
+- [ ] Deploy: Test with AppVeyor
 - [ ] Config: 'exclude' directive in rule (like 'filter') -> mode any, all?
-- [ ] Config: Rule names
 - [ ] Config: Warning if multiple rules apply to the same file?
 - [ ] Config: Filter modes all, none, any?
-- [ ] Config: jsonschema for user config validation?
+- [ ] Config: schema (github.com/keleshev/schema) or jsonschema for config validation?
 - [ ] Config: Flatten filter lists
 - [ ] Config: Support ansible 'with_item' list syntax
 - [ ] Core: User plugins
-- [ ] Core: show docstring of individual filters, actions in help
 - [ ] Core: Use Jinja2 native types instead of python format strings?
             This would allow method execution. Maybe works nicely with taggo?
 - [ ] Core: Undo where possible (#16)
-- [ ] Action: DeleteFolderIfEmpty
 - [ ] Core: Add Support for S3, SSH, FTP etc. via PyFilesystem
+- [ ] CLI: List should show your rules instead of available actions and filters
+- [ ] Action: DeleteFolderIfEmpty
 - [ ] Action: Zip
 - [ ] Action: E-Mail
 - [ ] Action: Print (on printer)
 - [ ] Action: Notify (desktop notification)
 - [ ] Action: Symlink
-- [ ] Filter: Python (+ docs)
+- [ ] Filter: UserConfirmation (erase with "\r\033[K")
 - [ ] Filter: id3 tag data
 - [ ] Filter: Exif data (camera__contains, ...) (https://pypi.org/project/ExifRead/)
 - [ ] Filter: MD5
 - [ ] Filter: Hashtags(query 'people-john,stars>4,USA') -> List / str of hashtags (#1)
 
 ## Done:
+- [x] Tests: Integration tests  @2019-08-12
+- [x] Core: Clean up global config variable  @2019-08-09
 - [x] Filter: CreationDate (#13)  @2019-07-23
 - [x] Config: Case insensitive filter and action matching  @2019-07-03
 - [x] Format all code with `black`  @2019-07-02
@@ -94,9 +98,19 @@
 - [x] Action: Move
 
 ## Dismissed:
-- [ ] Filter: IncompleteDownloads (Can be done with Extension)
-- [ ] Filter: FileType(type='media') (`file` utility not available on windows)
-- [ ] Config: A way to exclude dotfiles (can be done with the `exclude` syntax)
-- [ ] Config: A way to exclude common system files (.DS_Store, ...) (`exclude`)
-- [ ] Filter: PaperVdi (too specific, can be done with Regex)
-- [ ] Filter: Invoice1and1 (too specific and fragile)
+- [ ] Core: show docstring of individual filters, actions in help 
+      => not interesting and that's what the docs are for
+- [ ] Config: Allow one yaml document per rule syntax ("---") for running rules by name
+      => each rule gets a name
+- [ ] Filter: IncompleteDownloads
+      => Can be done with Extension
+- [ ] Filter: FileType(type='media') 
+      => `file` utility not available on windows
+- [ ] Config: A way to exclude dotfiles
+      => can be done with the `exclude` syntax
+- [ ] Config: A way to exclude common system files (.DS_Store, ...) 
+      => can be done with `exclude` syntax
+- [ ] Filter: PaperVdi
+      => too specific, can be done with Regex
+- [ ] Filter: Invoice1and1
+      => too specific and fragile

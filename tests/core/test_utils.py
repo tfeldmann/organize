@@ -3,6 +3,7 @@ from organize.utils import (
     find_unused_filename,
     splitglob,
     increment_filename_version,
+    dict_merge,
 )
 
 
@@ -85,3 +86,58 @@ def test_increment_filename_version_no_separator():
     assert increment_filename_version(Path("test 10.7z"), separator="") == Path(
         "test 102.7z"
     )
+
+
+def test_merges_dicts():
+    a = {"a": 1, "b": {"b1": 2, "b2": 3}}
+    b = {"a": 1, "b": {"b1": 4}}
+
+    assert dict_merge(a, b)["a"] == 1
+    assert dict_merge(a, b)["b"]["b2"] == 3
+    assert dict_merge(a, b)["b"]["b1"] == 4
+
+
+def test_returns_copy():
+    a = {"regex": {"first": "A", "second": "B"}}
+    b = {"regex": {"third": "C"}}
+
+    x = dict_merge(a, b)
+    a["regex"]["first"] = "X"
+    assert x["regex"]["first"] == "A"
+    assert x["regex"]["second"] == "B"
+    assert x["regex"]["third"] == "C"
+
+
+def test_inserts_new_keys():
+    """Will it insert new keys by default?"""
+    a = {"a": 1, "b": {"b1": 2, "b2": 3}}
+    b = {"a": 1, "b": {"b1": 4, "b3": 5}, "c": 6}
+
+    assert dict_merge(a, b)["a"] == 1
+    assert dict_merge(a, b)["b"]["b2"] == 3
+    assert dict_merge(a, b)["b"]["b1"] == 4
+    assert dict_merge(a, b)["b"]["b3"] == 5
+    assert dict_merge(a, b)["c"] == 6
+
+
+def test_does_not_insert_new_keys():
+    """Will it avoid inserting new keys when required?"""
+    a = {"a": 1, "b": {"b1": 2, "b2": 3}}
+    b = {"a": 1, "b": {"b1": 4, "b3": 5}, "c": 6}
+
+    assert dict_merge(a, b, add_keys=False)["a"] == 1
+    assert dict_merge(a, b, add_keys=False)["b"]["b2"] == 3
+    assert dict_merge(a, b, add_keys=False)["b"]["b1"] == 4
+    try:
+        assert dict_merge(a, b, add_keys=False)["b"]["b3"] == 5
+    except KeyError:
+        pass
+    else:
+        raise Exception("New keys added when they should not be")
+
+    try:
+        assert dict_merge(a, b, add_keys=False)["b"]["b3"] == 6
+    except KeyError:
+        pass
+    else:
+        raise Exception("New keys added when they should not be")

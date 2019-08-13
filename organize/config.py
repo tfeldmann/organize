@@ -14,11 +14,11 @@ Rule = namedtuple("Rule", "filters actions folders subfolders system_files")
 
 # disable yaml constructors for strings starting with exclamation marks
 # https://stackoverflow.com/a/13281292/300783
-def default_yaml_constructor(loader, tag_suffix, node):
-    return tag_suffix + " " + node.value
+def default_yaml_cnst(loader, tag_suffix, node):
+    return str(node.tag)
 
 
-yaml.add_multi_constructor("", default_yaml_constructor)
+yaml.add_multi_constructor("", default_yaml_cnst, Loader=yaml.SafeLoader)
 
 
 class Config:
@@ -36,7 +36,7 @@ class Config:
     @classmethod
     def parse_yaml(cls, config: str) -> dict:
         try:
-            return yaml.safe_load(config)
+            return yaml.load(config, Loader=yaml.SafeLoader)
         except yaml.YAMLError as e:
             raise cls.ParsingError(e)
 

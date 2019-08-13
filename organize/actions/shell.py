@@ -3,6 +3,8 @@ import subprocess
 
 from .action import Action
 
+logger = logging.getLogger(__name__)
+
 
 class Shell(Action):
 
@@ -27,14 +29,13 @@ class Shell(Action):
 
     def __init__(self, cmd: str):
         self.cmd = cmd
-        self.log = logging.getLogger(__name__)
 
     def run(self, attrs: dict, simulate: bool):
         full_cmd = self.fill_template_tags(self.cmd, attrs)
         self.print("$ %s" % full_cmd)
         if not simulate:
             # we use call instead of run to be compatible with python < 3.5
-            self.log.info('Executing command "%s" in shell.', full_cmd)
+            logger.info('Executing command "%s" in shell.', full_cmd)
             subprocess.call(full_cmd, shell=True)
 
     def __str__(self):

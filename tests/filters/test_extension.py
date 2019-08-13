@@ -12,26 +12,26 @@ def test_extension():
         (Path("~/somefile.pdf"), True),
     ]
     for path, match in testpathes:
-        assert extension.matches(path) == match
+        assert bool(extension.run(path)) == match
 
 
 def test_extension_empty():
     extension = Extension()
-    assert extension.matches(Path("~/test.txt"))
+    assert extension.run(Path("~/test.txt"))
 
 
 def test_extension_result():
     path = Path("~/somefile.TxT")
     extension = Extension("txt")
-    assert extension.matches(path)
-    result = extension.parse(path)["extension"]
+    assert extension.run(path)
+    result = extension.run(path)["extension"]
     assert str(result) == "TxT"
     assert result.lower == "txt"
     assert result.upper == "TXT"
 
     extension = Extension(".txt")
-    assert extension.matches(path)
-    result = extension.parse(path)["extension"]
+    assert extension.run(path)
+    result = extension.run(path)["extension"]
     assert str(result) == "TxT"
     assert result.lower == "txt"
     assert result.upper == "TXT"

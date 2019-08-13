@@ -82,17 +82,14 @@ class Created(Filter):
             days=days, hours=hours, minutes=minutes, seconds=seconds
         )
 
-    def matches(self, path):
+    def run(self, path):
         created_date = self._created(path)
         reference_date = datetime.now() - self.timedelta
-        if self.is_older:
-            return created_date <= reference_date
-        else:
-            return created_date >= reference_date
-
-    def parse(self, path):
-        created_date = self._created(path)
-        return {"created": created_date}
+        match = (self.is_older and created_date <= reference_date) or (
+            not self.is_older and created_date >= reference_date
+        )
+        if match:
+            return {"created": created_date}
 
     def _created(self, path):
         # see https://stackoverflow.com/a/39501288/300783
