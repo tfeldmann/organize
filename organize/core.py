@@ -1,9 +1,10 @@
 import logging
 from collections import namedtuple
+from textwrap import indent
 
-from clint.textui import colored, indent, puts
+from colorama import Fore, Style
 
-from .utils import bold, dict_merge, splitglob
+from .utils import dict_merge, splitglob
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +81,7 @@ def action_pipeline(job: Job, attrs: dict, simulate: bool):
                 current_path = new_path
     except Exception as e:
         logger.exception(e)
-        action.print("%s %s" % (colored.red("ERROR!", bold=True), e))
+        action.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
 
 
 def run_jobs(jobs, simulate):
@@ -94,30 +95,28 @@ def run_jobs(jobs, simulate):
             attrs["path"] = path
             attrs["basedir"] = basedir
             attrs["relative_path"] = relative_path
-            with indent(2):
-                action_pipeline(job=job, attrs=attrs, simulate=simulate)
+            action_pipeline(job=job, attrs=attrs, simulate=simulate)
 
 
 def execute_rules(rules, simulate):
     jobs = create_jobs(rules=rules)
 
     if simulate:
-        puts(colored.green("SIMULATION ~~~", bold=True))
+        print(Fore.GREEN + Style.BRIGHT + "SIMULATION ~~~")
 
     prev_folderstr = None
     for folderstr, relative_path in run_jobs(jobs=jobs, simulate=simulate):
         if folderstr != prev_folderstr:
             if prev_folderstr is not None:
-                puts()
-            puts("Folder %s:" % bold(folderstr))
+                print()
+            print("Folder %s:" % (Style.BRIGHT + folderstr))
             prev_folderstr = folderstr
-        with indent(2):
-            puts("File %s:" % bold(relative_path))
+        print(indent("File %s:" % (Style.BRIGHT + relative_path), " " * 2))
 
     if prev_folderstr is None:
         msg = "Nothing to do."
         logger.info(msg)
-        puts(msg)
+        print(msg)
 
     if simulate:
-        puts(colored.green("~~~ SIMULATION", bold=True))
+        print(Fore.GREEN + Style.BRIGHT + "~~~ SIMULATION")

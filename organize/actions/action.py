@@ -1,5 +1,6 @@
+from textwrap import indent
 from typing import Optional
-from clint.textui import puts
+
 from organize.utils import Path
 
 
@@ -18,7 +19,7 @@ class Action:
 
     def print(self, msg):
         """ print a message for the user """
-        puts("- [%s] %s" % (self.__class__.__name__, msg))
+        print(indent("- [%s] %s" % (self.__class__.__name__, msg), " " * 4))
 
     @staticmethod
     def fill_template_tags(msg: str, attrs: dict) -> str:

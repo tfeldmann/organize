@@ -4,9 +4,12 @@ import logging.config
 
 import appdirs
 import yaml
+import colorama
 
 from .__version__ import __version__
 from .utils import Path
+
+colorama.init(autoreset=True)
 
 # prepare config and log folders
 APP_DIRS = appdirs.AppDirs("organize")

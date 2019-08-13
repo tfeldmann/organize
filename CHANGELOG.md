@@ -3,6 +3,9 @@
 ## WIP
 - The organize module can now be run directly: `python3 -m organize`
 - Various code cleanups and speedups.
+- Fixes an issue with globstring file exclusion.
+- Remove `clint` dependency (no longer maintained).
+- Added various integration tests
 
 ## v1.5.3 (2019-08-01)
 - Filename filter now supports lists.

@@ -32,14 +32,6 @@ def fullpath(path):
     return Path(os.path.expandvars(path)).expanduser().resolve(strict=False)
 
 
-def bold(text):
-    # inspired by a feature request from the clint library
-    # https://github.com/kennethreitz/clint/issues/157
-    if sys.stdout.isatty():
-        return "".join([colorama.Style.BRIGHT, str(text), colorama.Style.NORMAL])
-    return text
-
-
 def flatten(arr):
     if arr == []:
         return []

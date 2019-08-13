@@ -24,18 +24,17 @@ Options:
 
 Full documentation: https://organize.readthedocs.io
 """
+import logging
 import os
 import sys
-import logging
 
-from clint.textui import colored, indent, puts
+from colorama import Fore, Style
 from docopt import docopt
 
-from . import CONFIG_DIR, CONFIG_PATH, LOG_PATH
-from . import __version__
-from .core import execute_rules
+from . import CONFIG_DIR, CONFIG_PATH, LOG_PATH, __version__
 from .config import Config
-from .utils import Path, bold, flatten, fullpath
+from .core import execute_rules
+from .utils import Path, flatten, fullpath
 
 logger = logging.getLogger("organize")
 
@@ -57,7 +56,7 @@ def main(argv=None):
         if args["--open-folder"]:
             open_in_filemanager(config_dir)
         elif args["--path"]:
-            puts(str(config_path))
+            print(str(config_path))
         elif args["--debug"]:
             config_debug(config_path)
         else:
@@ -75,13 +74,13 @@ def main(argv=None):
         except Config.Error as e:
             logger.exception(e)
             print_error(e)
-            puts("Try 'organize config --debug' for easier debugging.")
-            puts("Full traceback at: %s" % LOG_PATH)
+            print("Try 'organize config --debug' for easier debugging.")
+            print("Full traceback at: %s" % LOG_PATH)
             sys.exit(1)
         except Exception as e:
             logger.exception(e)
             print_error(e)
-            puts("Full traceback at: %s" % LOG_PATH)
+            print("Full traceback at: %s" % LOG_PATH)
             sys.exit(1)
 
 
@@ -107,18 +106,18 @@ def config_debug(config_path):
     """ prints the config with resolved yaml aliases, checks rules syntax and checks
         whether the given folders exist
     """
-    puts(str(config_path))
+    print(str(config_path))
     haserr = False
     # check config syntax
     try:
-        puts(bold("Your configuration as seen by the parser:"))
-        with indent(2):
-            config = Config.from_file(config_path)
-            if not config.config:
-                print_error("Config file is empty")
-        puts(config.yaml())
+        print(Style.BRIGHT + "Your configuration as seen by the parser:")
+        config = Config.from_file(config_path)
+        if not config.config:
+            print_error("Config file is empty")
+            return
+        print(config.yaml())
         rules = config.rules
-        puts("Config file syntax seems fine!")
+        print("Config file syntax seems fine!")
     except Config.Error as e:
         haserr = True
         print_error(e)
@@ -128,10 +127,10 @@ def config_debug(config_path):
         for f in allfolders:
             if not fullpath(f).exists():
                 haserr = True
-                puts(colored.yellow('Warning: "%s" does not exist!' % f))
+                print(Fore.YELLOW + 'Warning: "%s" does not exist!' % f)
 
     if not haserr:
-        puts(colored.green("No config problems found.", bold=True))
+        print(Fore.GREEN + Style.BRIGHT + "No config problems found.")
 
 
 def list_actions_and_filters():
@@ -139,16 +138,14 @@ def list_actions_and_filters():
     import inspect
     from organize import filters, actions
 
-    puts(bold("Filters:"))
-    with indent(2):
-        for name, _ in inspect.getmembers(filters, inspect.isclass):
-            puts(name)
-    puts()
-    puts(bold("Actions:"))
-    with indent(2):
-        for name, _ in inspect.getmembers(actions, inspect.isclass):
-            puts(name)
+    print(Style.BRIGHT + "Filters:")
+    for name, _ in inspect.getmembers(filters, inspect.isclass):
+        print("  " + name)
+    print()
+    print(Style.BRIGHT + "Actions:")
+    for name, _ in inspect.getmembers(actions, inspect.isclass):
+        print("  " + name)
 
 
 def print_error(text):
-    puts("%s %s" % (colored.red("ERROR!", bold=True), text))
+    print(Style.BRIGHT + Fore.RED + "ERROR:" + Style.RESET_ALL + " " + text)
