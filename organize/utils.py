@@ -5,8 +5,6 @@ from collections import OrderedDict
 from collections.abc import Mapping
 from copy import deepcopy
 
-import colorama
-
 # in python < 3.6 the pathlib module misses some features so we have to import
 # a backported alternative
 if sys.version_info < (3, 6):
