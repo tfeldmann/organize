@@ -7,7 +7,7 @@ def test_basic():
         """
         print(path)
         return 1
-    """
+        """
     )
-    assert p.matches(path=Path.home())
-    assert p.parse(path=Path.home()) == {"python": 1}
+    assert p.run(path=Path.home())
+    assert p.run(path=Path.home()) == {"python": 1}
