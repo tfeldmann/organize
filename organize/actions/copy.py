@@ -7,6 +7,8 @@ from organize.utils import Path, find_unused_filename, fullpath
 from .action import Action
 from .trash import Trash
 
+logger = logging.getLogger(__name__)
+
 
 class Copy(Action):
 
@@ -83,11 +85,9 @@ class Copy(Action):
         self.dest = dest
         self.overwrite = overwrite
         self.counter_separator = counter_separator
-        self.log = logging.getLogger(__name__)
 
     def run(self, attrs: dict, simulate: bool):
         path = attrs["path"]
-        basedir = attrs["basedir"]
 
         expanded_dest = self.fill_template_tags(self.dest, attrs)
         # if only a folder path is given we append the filename to have the full
@@ -107,9 +107,9 @@ class Copy(Action):
 
         self.print('Copy to "%s"' % new_path)
         if not simulate:
-            self.log.info("Creating folder if not exists: %s", new_path.parent)
+            logger.info("Creating folder if not exists: %s", new_path.parent)
             new_path.parent.mkdir(parents=True, exist_ok=True)
-            self.log.info('Copying "%s" to "%s"', path, new_path)
+            logger.info('Copying "%s" to "%s"', path, new_path)
             shutil.copy2(src=str(path), dst=str(new_path))
 
         # the next actions should handle the original file

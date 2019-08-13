@@ -1,10 +1,12 @@
-import os
 import logging
+import os
 
-from organize.utils import Path, fullpath, find_unused_filename
+from organize.utils import Path, find_unused_filename
 
 from .action import Action
 from .trash import Trash
+
+logger = logging.getLogger(__name__)
 
 
 class Rename(Action):
@@ -60,7 +62,6 @@ class Rename(Action):
         self.name = name
         self.overwrite = overwrite
         self.counter_separator = counter_separator
-        self.log = logging.getLogger(__name__)
 
     def run(self, attrs: dict, simulate: bool) -> Path:
         path = attrs["path"]
@@ -86,7 +87,7 @@ class Rename(Action):
         else:
             self.print('New name: "%s"' % new_path.name)
             if not simulate:
-                self.log.info('Renaming "%s" to "%s".', path, new_path)
+                logger.info('Renaming "%s" to "%s".', path, new_path)
                 path.rename(new_path)
         return new_path
 
