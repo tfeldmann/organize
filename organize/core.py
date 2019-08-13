@@ -21,8 +21,9 @@ Job.__doc__ = """
 def all_files_for_rule(rule):
     files = {}
     for folderstr in rule.folders:
+        folderstr = folderstr.strip()
         exclude_flag = folderstr.startswith("!")
-        basedir, globstr = splitglob(folderstr.lstrip("!"))
+        basedir, globstr = splitglob(folderstr.lstrip("!").strip())
         if basedir.is_dir():
             if not globstr:
                 globstr = "**/*" if rule.subfolders else "*"
