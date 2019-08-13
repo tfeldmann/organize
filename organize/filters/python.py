@@ -1,7 +1,5 @@
 import textwrap
 
-from organize.utils import DotDict, flatten
-
 from .filter import Filter
 
 
@@ -9,7 +7,7 @@ class Python(Filter):
     def __init__(self, code):
         self.code = textwrap.dedent(code)
         if "return" not in self.code:
-            raise Exception("No return statement found in your code!")
+            raise ValueError("No return statement found in your code!")
 
         # bind usercode to class as new method
         method = (
@@ -23,11 +21,10 @@ class Python(Filter):
         exec(method, globals_, {"self": self})
 
     def usercode(self, path):
+        # this method is reassigned to user's code.
         raise NotImplementedError("No code given")
 
-    def matches(self, path):
-        return self.usercode(path)
-
-    def parse(self, path):
-        result = DotDict(self.usercode(path))
-        return {"python": result}
+    def run(self, path):
+        result = self.usercode(path)
+        if result:
+            return {"python": result}

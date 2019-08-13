@@ -1,5 +1,4 @@
 import re
-from organize.utils import DotDict
 from .filter import Filter
 
 
@@ -52,5 +51,5 @@ class Regex(Filter):
     def run(self, path):
         match = self.expr.match(path.name)
         if match:
-            result = DotDict(match.groupdict())
+            result = match.groupdict()
             return {"regex": result}

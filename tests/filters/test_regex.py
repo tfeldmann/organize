@@ -28,7 +28,7 @@ def test_regex_return():
     for path, valid, result in TESTDATA:
         if valid:
             attrs = regex.run(path)
-            assert attrs["regex"].the_number == result
+            assert attrs == {"regex": {"the_number": result}}
 
 
 def test_regex_umlaut():
@@ -36,4 +36,4 @@ def test_regex_umlaut():
     doc = Path("~/Documents/Erträgnisaufstellung-1998.pdf")
     assert regex.run(doc)
     attrs = regex.run(doc)
-    assert attrs["regex"].year == "1998"
+    assert attrs == {"regex": {"year": "1998"}}

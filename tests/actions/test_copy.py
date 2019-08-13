@@ -1,7 +1,7 @@
 import os
 
 from organize.actions import Copy
-from organize.utils import DotDict, Path
+from organize.utils import Path
 
 USER_DIR = os.path.expanduser("~")
 
@@ -117,7 +117,7 @@ def test_attrs(mock_exists, mock_samefile, mock_copy, mock_trash, mock_mkdir):
     attrs = {
         "basedir": Path.home(),
         "path": Path.home() / "test.py",
-        "nr": DotDict({"upper": 1}),
+        "nr": {"upper": 1},
     }
     mock_exists.return_value = False
     mock_samefile.return_value = False
