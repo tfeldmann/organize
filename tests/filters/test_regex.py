@@ -14,7 +14,7 @@ def test_regex_backslash():
     assert regex.run(Path(".pdf"))
     assert not regex.run(Path("+pdf"))
     assert not regex.run(Path("/pdf"))
-    assert not regex.run(Path(r"\pdf"))
+    assert not regex.run(Path("\\pdf"))
 
 
 def test_regex_basic():

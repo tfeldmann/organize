@@ -4,7 +4,7 @@ from .filter import Filter
 
 class Regex(Filter):
 
-    """
+    r"""
     Matches filenames with the given regular expression
 
     :param str expr:
