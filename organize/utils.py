@@ -53,8 +53,10 @@ class DotDict(dict):
         od = dict(*args, **kwargs)
         for key, val in od.items():
             if isinstance(val, Mapping):
-                val = DotDict(val)
-            self[key] = val
+                value = DotDict(val)
+            else:
+                value = val
+            self[key] = value
 
     def __delattr__(self, name):
         try:
