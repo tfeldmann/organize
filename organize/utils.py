@@ -25,8 +25,8 @@ def splitglob(globstr):
 
 
 def fullpath(path):
-    """ Expand '~' and resolve the given path """
-    return Path(os.path.expandvars(path)).expanduser().resolve(strict=False)
+    """ Expand '~' and resolve the given path. Path can be a string or a Path obj. """
+    return Path(os.path.expandvars(str(path))).expanduser().resolve(strict=False)
 
 
 def flatten(arr):
@@ -35,6 +35,13 @@ def flatten(arr):
     if not isinstance(arr, list):
         return [arr]
     return flatten(arr[0]) + flatten(arr[1:])
+
+
+def flattened_string_list(x, case_sensitive=True):
+    x = [str(x) for x in flatten(x)]
+    if not case_sensitive:
+        x = [x.lower() for x in x]
+    return x
 
 
 def first_key(dic: dict):
