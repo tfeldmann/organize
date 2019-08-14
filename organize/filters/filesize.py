@@ -1,12 +1,56 @@
-from datetime import datetime, timedelta
-from .filter import Filter
+import operator
 import re
-import os
+
+from ..utils import fullpath, flattened_string_list
+from .filter import Filter
+
+OPERATORS = {
+    "<": operator.lt,
+    "<=": operator.le,
+    "==": operator.eq,
+    "=": operator.eq,
+    "": operator.eq,
+    ">=": operator.ge,
+    ">": operator.gt,
+}
+SIZE_REGEX = re.compile(
+    r"^(?P<op>[<>=]*)(?P<num>(\d*\.)?\d+)(?P<unit>[kmgtpezy]?i?)b?$"
+)
 
 
-class Filesize(Filter):
+def create_constrains(inp):
     """
-    Matches files by last modified date
+    Given an input string it returns a list of tuples (comparison operator,
+    number of bytes).
+
+    Accepted formats are: '30k', '>= 5 TiB, <10tb', '< 60 tb', ...
+    Calculation is in bytes, even if the 'b' is lowercase. If an 'i' is present
+    we calculate base 1024.
+    """
+    result = set()
+    parts = inp.replace(" ", "").lower().split(",")
+    for part in parts:
+        try:
+            match = SIZE_REGEX.match(part).groupdict()
+            op = OPERATORS[match["op"]]
+            num = float(match["num"]) if "." in match["num"] else int(match["num"])
+            unit = match["unit"]
+            base = 1024 if unit.endswith("i") else 1000
+            exp = "kmgtpezy".index(unit[0]) + 1 if unit else 0
+            numbytes = num * base ** exp
+            result.add((op, numbytes))
+        except (AttributeError, KeyError, IndexError, ValueError, TypeError) as e:
+            raise ValueError("Invalid size format: %s" % part) from e
+    return result
+
+
+def satisfies_constrains(size, constrains):
+    return all(op(size, p_size) for op, p_size in constrains)
+
+
+class FileSize(Filter):
+    """
+    Matches files by file size
 
     :param str smaller:
         Will match files having a size equal to or smaller than specified size.
@@ -38,39 +82,19 @@ class Filesize(Filter):
 
     """
 
-    @staticmethod
-    def _parse_size_arg(size_string):
-        size_string = size_string.lower().strip()
-        size_number = re.findall(r"^([0-9\.]+)", size_string)[0]
-        size_unit = re.findall(r"([a-z]+)$", size_string)
-        if len(size_unit) > 0:
-            size_unit = size_unit[0]
-        else:
-            size_unit = "b"
-        unit_lookup = {"b": 0, "k": 3, "m": 6, "g": 9, "t": 12, "p": 15}
-        return float(size_number) * pow(10, unit_lookup[size_unit.strip().lower()[0]])
+    def __init__(self, *conditions):
+        self.conditions = ", ".join(flattened_string_list(list(conditions)))
+        self.constrains = create_constrains(self.conditions)
+        if not self.constrains:
+            raise ValueError("No size(s) given!")
 
-    def __init__(self, smaller=None, bigger=None):
-        if smaller is not None:
-            smaller = self._parse_size_arg(smaller)
-        if bigger is not None:
-            bigger = self._parse_size_arg(bigger)
+    def matches(self, filesize):
+        return all(op(filesize, c_size) for op, c_size in self.constrains)
 
-        self.smaller = smaller
-        self.bigger = bigger
-
-    def matches(self, path):
-        file_size = self._get_file_size(path)
-        return (self.smaller is None or (file_size <= self.smaller)) and (
-            self.bigger is None or (file_size >= self.bigger)
-        )
-
-    def parse(self, path):
-        file_size = self._get_file_size(path)
-        return {"filesize": file_size}
-
-    def _get_file_size(self, path):
-        return os.path.getsize(str(path))
+    def run(self, path):
+        file_size = fullpath(path).stat().st_size
+        if self.matches(file_size):
+            return {"filesize": {"bytes": file_size, "conditions": self.conditions}}
 
     def __str__(self):
-        return "FileSize({bigger} <= filesize <= {smaller})".format(bigger=self.bigger, smaller=self.smaller)
+        return "FileSize({})".format(" ".join(self.conditions))
