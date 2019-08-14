@@ -1,6 +1,7 @@
 # TODO
 
 ## Next up:
+- [ ] Core: Eliminate unnecessary second filter parsing step
 - [ ] Config: Rule names
 - [ ] CLI: Run rules by name
 - [ ] Filter: Python (+ docs)
