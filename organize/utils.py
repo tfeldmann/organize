@@ -73,6 +73,16 @@ class DotDict(dict):
 
     __setattr__ = dict.__setitem__
 
+    def merge(self, other):
+        for k, v in other.items():
+            if isinstance(v, Mapping):
+                if isinstance(self.get(k), dict):
+                    self[k].merge(v)
+                else:
+                    self[k] = DotDict(v)
+            else:
+                self[k] = v
+
 
 def increment_filename_version(path: Path, separator=" ") -> Path:
     stem = path.stem

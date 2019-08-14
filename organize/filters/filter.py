@@ -2,7 +2,7 @@ from textwrap import indent
 
 
 class Filter:
-    def run(self, path):
+    def run(self, attrs):
         """ Return an dict of parsed file properties (optional) """
         return NotImplementedError()
 

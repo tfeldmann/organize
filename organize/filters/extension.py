@@ -114,9 +114,9 @@ class Extension(Filter):
             return False
         return self.normalize_extension(path.suffix) in self.extensions
 
-    def run(self, path):
-        if self.matches(path):
-            result = ExtensionResult(path.suffix)
+    def run(self, attrs):
+        if self.matches(attrs.path):
+            result = ExtensionResult(attrs.path.suffix)
             return {"extension": result}
 
     def __str__(self):

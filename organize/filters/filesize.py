@@ -93,8 +93,8 @@ class FileSize(Filter):
     def matches(self, filesize):
         return all(op(filesize, c_size) for op, c_size in self.constrains)
 
-    def run(self, path):
-        file_size = fullpath(path).stat().st_size
+    def run(self, attrs):
+        file_size = fullpath(attrs.path).stat().st_size
         if self.matches(file_size):
             return {"filesize": {"bytes": file_size}}
 

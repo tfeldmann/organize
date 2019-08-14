@@ -82,8 +82,8 @@ class LastModified(Filter):
             days=days, hours=hours, minutes=minutes, seconds=seconds
         )
 
-    def run(self, path):
-        file_modified = self._last_modified(path)
+    def run(self, attrs):
+        file_modified = self._last_modified(attrs.path)
         reference_date = datetime.now() - self.timedelta
         match = (self.is_older and file_modified <= reference_date) or (
             not self.is_older and file_modified >= reference_date

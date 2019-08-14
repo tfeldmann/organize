@@ -2,12 +2,13 @@ import os
 
 from organize.actions import Rename
 from organize.compat import Path
+from organize.utils import DotDict
 
 USER_DIR = os.path.expanduser("~")
 
 
 def test_tilde_expansion(mock_exists, mock_samefile, mock_rename, mock_trash):
-    attrs = {"basedir": Path.home(), "path": Path.home() / "test.py"}
+    attrs = DotDict({"basedir": Path.home(), "path": Path.home() / "test.py"})
     mock_exists.return_value = False
     mock_samefile.return_value = False
     rename = Rename(name="newname.py", overwrite=False)
@@ -20,7 +21,7 @@ def test_tilde_expansion(mock_exists, mock_samefile, mock_rename, mock_trash):
 
 
 def test_overwrite(mock_exists, mock_samefile, mock_rename, mock_trash):
-    attrs = {"basedir": Path.home(), "path": Path.home() / "test.py"}
+    attrs = DotDict({"basedir": Path.home(), "path": Path.home() / "test.py"})
     mock_exists.return_value = True
     mock_samefile.return_value = False
     rename = Rename(name="{path.stem} Kopie.py", overwrite=True)
@@ -32,7 +33,7 @@ def test_overwrite(mock_exists, mock_samefile, mock_rename, mock_trash):
 
 
 def test_already_exists(mock_exists, mock_samefile, mock_rename, mock_trash):
-    attrs = {"basedir": Path.home(), "path": Path.home() / "test.py"}
+    attrs = DotDict({"basedir": Path.home(), "path": Path.home() / "test.py"})
     mock_exists.side_effect = [True, False]
     mock_samefile.return_value = False
     rename = Rename(name="asd.txt", overwrite=False)
@@ -44,7 +45,7 @@ def test_already_exists(mock_exists, mock_samefile, mock_rename, mock_trash):
 
 
 def test_overwrite_samefile(mock_exists, mock_samefile, mock_rename, mock_trash):
-    attrs = {"basedir": Path.home(), "path": Path.home() / "test.PDF"}
+    attrs = DotDict({"basedir": Path.home(), "path": Path.home() / "test.PDF"})
     mock_exists.return_value = True
     mock_samefile.return_value = True
     rename = Rename(name="{path.stem}.pdf", overwrite=False)
@@ -56,7 +57,7 @@ def test_overwrite_samefile(mock_exists, mock_samefile, mock_rename, mock_trash)
 
 
 def test_keep_name(mock_exists, mock_samefile, mock_rename, mock_trash):
-    attrs = {"basedir": Path.home(), "path": Path.home() / "test.pdf"}
+    attrs = DotDict({"basedir": Path.home(), "path": Path.home() / "test.pdf"})
     mock_exists.return_value = True
     mock_samefile.return_value = True
     rename = Rename(name="{path.stem}.pdf", overwrite=False)
@@ -68,7 +69,7 @@ def test_keep_name(mock_exists, mock_samefile, mock_rename, mock_trash):
 
 
 def test_already_exists_multiple(mock_exists, mock_samefile, mock_rename, mock_trash):
-    attrs = {"basedir": Path.home(), "path": Path.home() / "test.py"}
+    attrs = DotDict({"basedir": Path.home(), "path": Path.home() / "test.py"})
     mock_exists.side_effect = [True, True, True, False]
     mock_samefile.return_value = False
     rename = Rename(name="asd.txt", overwrite=False)
@@ -82,7 +83,7 @@ def test_already_exists_multiple(mock_exists, mock_samefile, mock_rename, mock_t
 def test_already_exists_multiple_separator(
     mock_exists, mock_samefile, mock_rename, mock_trash
 ):
-    attrs = {"basedir": Path.home(), "path": Path.home() / "test.py"}
+    attrs = DotDict({"basedir": Path.home(), "path": Path.home() / "test.py"})
     mock_exists.side_effect = [True, True, True, False]
     mock_samefile.return_value = False
     rename = Rename(name="asd.txt", overwrite=False, counter_separator="-")
@@ -94,11 +95,9 @@ def test_already_exists_multiple_separator(
 
 
 def test_attrs(mock_exists, mock_samefile, mock_rename, mock_trash):
-    attrs = {
-        "basedir": Path.home(),
-        "path": Path.home() / "test.py",
-        "nr": {"upper": 1},
-    }
+    attrs = DotDict(
+        {"basedir": Path.home(), "path": Path.home() / "test.py", "nr": {"upper": 1}}
+    )
     mock_exists.return_value = False
     mock_samefile.return_value = False
     rename = Rename(name="{nr.upper}-{path.stem} Kopie.py")

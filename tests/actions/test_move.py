@@ -2,12 +2,13 @@ import os
 
 from organize.actions import Move
 from organize.compat import Path
+from organize.utils import DotDict
 
 USER_DIR = os.path.expanduser("~")
 
 
 def test_tilde_expansion(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
-    attrs = {"basedir": Path.home(), "path": Path.home() / "test.py"}
+    attrs = DotDict({"basedir": Path.home(), "path": Path.home() / "test.py"})
     mock_exists.return_value = False
     mock_samefile.return_value = False
     move = Move(dest="~/newname.py", overwrite=False)
@@ -22,7 +23,7 @@ def test_tilde_expansion(mock_exists, mock_samefile, mock_move, mock_trash, mock
 
 
 def test_into_folder(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
-    attrs = {"basedir": Path.home(), "path": Path.home() / "test.py"}
+    attrs = DotDict({"basedir": Path.home(), "path": Path.home() / "test.py"})
     mock_exists.return_value = False
     mock_samefile.return_value = False
     move = Move(dest="~/somefolder/", overwrite=False)
@@ -38,7 +39,7 @@ def test_into_folder(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkd
 
 
 def test_overwrite(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
-    attrs = {"basedir": Path.home(), "path": Path.home() / "test.py"}
+    attrs = DotDict({"basedir": Path.home(), "path": Path.home() / "test.py"})
     mock_exists.return_value = True
     mock_samefile.return_value = False
     move = Move(dest="~/somefolder/", overwrite=True)
@@ -54,7 +55,7 @@ def test_overwrite(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir
 
 
 def test_already_exists(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
-    attrs = {"basedir": Path.home(), "path": Path.home() / "test.py"}
+    attrs = DotDict({"basedir": Path.home(), "path": Path.home() / "test.py"})
     mock_exists.side_effect = [True, False]
     mock_samefile.return_value = False
     move = Move(dest="~/folder/", overwrite=False)
@@ -72,7 +73,7 @@ def test_already_exists(mock_exists, mock_samefile, mock_move, mock_trash, mock_
 def test_already_exists_multiple(
     mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir
 ):
-    attrs = {"basedir": Path.home(), "path": Path.home() / "test.py"}
+    attrs = DotDict({"basedir": Path.home(), "path": Path.home() / "test.py"})
     mock_exists.side_effect = [True, True, True, False]
     mock_samefile.return_value = False
     move = Move(dest="~/folder/", overwrite=False)
@@ -90,7 +91,7 @@ def test_already_exists_multiple(
 def test_already_exists_multiple_separator(
     mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir
 ):
-    attrs = {"basedir": Path.home(), "path": Path.home() / "test.py"}
+    attrs = DotDict({"basedir": Path.home(), "path": Path.home() / "test.py"})
     mock_exists.side_effect = [True, True, True, False]
     mock_samefile.return_value = False
     move = Move(dest="~/folder/", overwrite=False, counter_separator="_")
@@ -106,7 +107,7 @@ def test_already_exists_multiple_separator(
 
 
 def test_makedirs(mock_parent, mock_move, mock_trash):
-    attrs = {"basedir": Path.home(), "path": Path.home() / "test.py"}
+    attrs = DotDict({"basedir": Path.home(), "path": Path.home() / "test.py"})
     move = Move(dest="~/some/new/folder/", overwrite=False)
     new_path = move.run(attrs, False)
     mock_parent.mkdir.assert_called_with(parents=True, exist_ok=True)
@@ -119,11 +120,11 @@ def test_makedirs(mock_parent, mock_move, mock_trash):
 
 
 def test_attrs(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
-    attrs = {
+    attrs = DotDict({
         "basedir": Path.home(),
         "path": Path.home() / "test.py",
         "nr": {"upper": 1},
-    }
+    })
     mock_exists.return_value = False
     mock_samefile.return_value = False
     move = Move(dest="~/{nr.upper}-name.py", overwrite=False)
@@ -138,7 +139,7 @@ def test_attrs(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
 
 
 def test_path(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
-    attrs = {"basedir": Path.home(), "path": Path.home() / "test.py"}
+    attrs = DotDict({"basedir": Path.home(), "path": Path.home() / "test.py"})
     mock_exists.return_value = False
     mock_samefile.return_value = False
     move = Move(dest="~/{path.stem}/{path.suffix}/{path.name}", overwrite=False)
@@ -154,7 +155,7 @@ def test_path(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
 
 
 def test_keep_location(mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir):
-    attrs = {"basedir": Path.home(), "path": Path.home() / "test.py"}
+    attrs = DotDict({"basedir": Path.home(), "path": Path.home() / "test.py"})
     mock_exists.return_value = True
     mock_samefile.return_value = True
     move = Move(dest="~/test.py")
@@ -169,7 +170,7 @@ def test_keep_location(mock_exists, mock_samefile, mock_move, mock_trash, mock_m
 def test_dont_keep_case_sensitive(
     mock_exists, mock_samefile, mock_move, mock_trash, mock_mkdir
 ):
-    attrs = {"basedir": Path.home(), "path": Path.home() / "test.py"}
+    attrs = DotDict({"basedir": Path.home(), "path": Path.home() / "test.py"})
     mock_exists.return_value = True
     mock_samefile.return_value = True
     move = Move(dest="~/TEST.PY")

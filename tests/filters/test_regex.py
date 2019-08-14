@@ -1,5 +1,6 @@
 from organize.compat import Path
 from organize.filters import Regex
+from organize.utils import DotDict
 
 
 TESTDATA = [
@@ -11,29 +12,29 @@ TESTDATA = [
 
 def test_regex_backslash():
     regex = Regex(r"^\.pdf$")
-    assert regex.run(Path(".pdf"))
-    assert not regex.run(Path("+pdf"))
-    assert not regex.run(Path("/pdf"))
-    assert not regex.run(Path("\\pdf"))
+    assert regex.matches(Path(".pdf"))
+    assert not regex.matches(Path("+pdf"))
+    assert not regex.matches(Path("/pdf"))
+    assert not regex.matches(Path("\\pdf"))
 
 
 def test_regex_basic():
     regex = Regex(r"^RG(\d{12})-sig\.pdf$")
     for path, match, _ in TESTDATA:
-        assert bool(regex.run(path)) == match
+        assert bool(regex.matches(path)) == match
 
 
 def test_regex_return():
     regex = Regex(r"^RG(?P<the_number>\d{12})-sig\.pdf$")
     for path, valid, result in TESTDATA:
         if valid:
-            attrs = regex.run(path)
-            assert attrs == {"regex": {"the_number": result}}
+            dct = regex.run(DotDict({"path": path}))
+            assert dct == {"regex": {"the_number": result}}
 
 
 def test_regex_umlaut():
     regex = Regex(r"^Erträgnisaufstellung-(?P<year>\d*)\.pdf")
     doc = Path("~/Documents/Erträgnisaufstellung-1998.pdf")
-    assert regex.run(doc)
-    attrs = regex.run(doc)
-    assert attrs == {"regex": {"year": "1998"}}
+    assert regex.matches(doc)
+    dct = regex.run(DotDict({"path": doc}))
+    assert dct == {"regex": {"year": "1998"}}

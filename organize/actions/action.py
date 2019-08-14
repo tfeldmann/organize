@@ -14,7 +14,7 @@ class TemplateAttributeError(Error):
 
 
 class Action:
-    def run(self, attrs: dict, simulate: bool) -> Optional[Path]:
+    def run(self, attrs, simulate: bool) -> Optional[Path]:
         # if you change the file path, return the new path here
         raise NotImplementedError
 
@@ -23,7 +23,7 @@ class Action:
         print(indent("- [%s] %s" % (self.__class__.__name__, msg), " " * 4))
 
     @staticmethod
-    def fill_template_tags(msg: str, attrs: dict) -> str:
+    def fill_template_tags(msg: str, attrs) -> str:
         try:
             return msg.format(**DotDict(attrs))
         except AttributeError as exc:

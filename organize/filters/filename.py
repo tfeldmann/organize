@@ -77,13 +77,18 @@ class Filename(Filter):
         self.endswith = self.create_list(endswith, case_sensitive)
         self.case_sensitive = case_sensitive
 
-    def run(self, path):
-        filename = path.stem.lower() if not self.case_sensitive else path.stem
+    def matches(self, path):
+        filename = path.stem
+        if not self.case_sensitive:
+            filename = filename.lower()
         return (
             any(x in filename for x in self.contains)
             and any(filename.startswith(x) for x in self.startswith)
             and any(filename.endswith(x) for x in self.endswith)
         )
+
+    def run(self, attrs):
+        return self.matches(attrs.path)
 
     @staticmethod
     def create_list(x, case_sensitive):

@@ -4,7 +4,7 @@ from textwrap import indent
 
 from colorama import Fore, Style
 
-from .utils import dict_merge, splitglob
+from .utils import DotDict, splitglob
 
 logger = logging.getLogger(__name__)
 
@@ -59,43 +59,46 @@ def create_jobs(rules):
             )
 
 
-def filter_pipeline(job):
-    args = dict()
-    for filter_ in job.filters:
-        result = filter_.run(job.path)
-        if isinstance(result, dict):
-            args = dict_merge(args, result)
-        elif not result:
-            return
-    return args
+def filter_pipeline(filters, attrs):
+    for filter_ in filters:
+        try:
+            result = filter_.run(attrs)
+            if isinstance(result, dict):
+                attrs.merge(result)
+            elif not result:
+                # filters might return a simple True / False. Exit early if a filter does
+                # not match
+                return False
+        except Exception as e:
+            logger.exception(e)
+            filter_.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
+            return False
+    return True
 
 
-def action_pipeline(job: Job, attrs: dict, simulate: bool):
-    try:
-        current_path = None
-        for action in job.actions:
-            if current_path is not None:
-                attrs["path"] = current_path
+def action_pipeline(actions, attrs, simulate: bool):
+    for action in actions:
+        try:
             new_path = action.run(attrs=attrs, simulate=simulate)
+            # jobs may return a changed path to indicate moved files
             if new_path is not None:
-                current_path = new_path
-    except Exception as e:
-        logger.exception(e)
-        action.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
+                attrs.path = new_path
+        except Exception as e:
+            logger.exception(e)
+            action.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
+            return
 
 
 def run_jobs(jobs, simulate):
     for job in sorted(jobs, key=lambda x: (x.folderstr, x.basedir, x.path)):
-        attrs = filter_pipeline(job)
-        if attrs is not None:
-            path = job.path
-            basedir = job.basedir
-            relative_path = path.relative_to(basedir)
-            yield (job.folderstr, str(relative_path))
-            attrs["path"] = path
-            attrs["basedir"] = basedir
-            attrs["relative_path"] = relative_path
-            action_pipeline(job=job, attrs=attrs, simulate=simulate)
+        attrs = DotDict(path=job.path, basedir=job.basedir)
+        # the relative path is kept even is the path changes.
+        attrs.relative_path = attrs.path.relative_to(attrs.basedir)
+
+        match = filter_pipeline(filters=job.filters, attrs=attrs)
+        if match:
+            yield (job.folderstr, attrs.relative_path)
+            action_pipeline(actions=job.actions, attrs=attrs, simulate=simulate)
 
 
 def execute_rules(rules, simulate):
@@ -111,7 +114,7 @@ def execute_rules(rules, simulate):
                 print()
             print("Folder %s:" % (Style.BRIGHT + folderstr))
             prev_folderstr = folderstr
-        print(indent("File %s:" % (Style.BRIGHT + relative_path), " " * 2))
+        print(indent("File %s%s:" % (Style.BRIGHT, relative_path), " " * 2))
 
     if prev_folderstr is None:
         msg = "Nothing to do."
