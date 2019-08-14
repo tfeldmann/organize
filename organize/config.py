@@ -7,7 +7,8 @@ from typing import List
 import yaml
 
 from . import actions, filters
-from .utils import Path, first_key, flatten
+from .compat import Path
+from .utils import first_key, flatten
 
 logger = logging.getLogger(__name__)
 Rule = namedtuple("Rule", "filters actions folders subfolders system_files")

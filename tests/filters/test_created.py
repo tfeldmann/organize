@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from mock import patch
 
 from organize.filters import Created
-from organize.utils import Path
+from organize.compat import Path
 
 
 def test_min():

@@ -1,6 +1,6 @@
 import logging
 
-from organize.utils import Path
+from organize.compat import Path
 
 from .action import Action
 

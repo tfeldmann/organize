@@ -1,5 +1,5 @@
 from organize.actions import Echo
-from organize.utils import Path
+from organize.compat import Path
 
 from mock import patch
 

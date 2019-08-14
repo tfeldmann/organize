@@ -2,7 +2,8 @@ import logging
 import os
 import shutil
 
-from organize.utils import Path, find_unused_filename, fullpath
+from organize.compat import Path
+from organize.utils import find_unused_filename, fullpath
 
 from .action import Action
 from .trash import Trash

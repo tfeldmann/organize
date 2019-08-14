@@ -1,5 +1,5 @@
 from organize.filters import Python
-from organize.utils import Path
+from organize.compat import Path
 
 
 def test_basic():

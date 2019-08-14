@@ -1,4 +1,4 @@
-from organize.utils import Path
+from organize.compat import Path
 from organize.filters import Filename
 
 

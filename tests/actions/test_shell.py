@@ -1,7 +1,7 @@
 from mock import patch
 
 from organize.actions import Shell
-from organize.utils import Path
+from organize.compat import Path
 
 
 def test_shell_basic():

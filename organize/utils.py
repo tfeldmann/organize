@@ -1,15 +1,9 @@
 import os
 import re
-import sys
 from collections.abc import Mapping
 from copy import deepcopy
 
-# in python < 3.6 the pathlib module misses some features so we have to import
-# a backported alternative
-if sys.version_info < (3, 6):
-    from pathlib2 import Path
-else:
-    from pathlib import Path
+from .compat import Path
 
 WILDCARD_REGEX = re.compile(r"(?<!\\)[\*\?\[]+")
 

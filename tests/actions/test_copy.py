@@ -1,7 +1,7 @@
 import os
 
 from organize.actions import Copy
-from organize.utils import Path
+from organize.compat import Path
 
 USER_DIR = os.path.expanduser("~")
 

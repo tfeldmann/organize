@@ -3,7 +3,7 @@ import os
 import pytest
 from mock import patch
 
-from organize.utils import Path
+from organize.compat import Path
 
 
 def create_filesystem(tmp_path, files, config):

@@ -1,7 +1,8 @@
 from textwrap import indent
 from typing import Optional
 
-from organize.utils import Path, DotDict
+from organize.compat import Path
+from organize.utils import DotDict
 
 
 class Error(Exception):

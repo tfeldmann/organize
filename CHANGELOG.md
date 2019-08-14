@@ -1,11 +1,12 @@
 # Changelog
 
 ## WIP
-- Added `Python`-filter.
+- Added filter: `Python`
+- Added filter: `FileSize`
 - The organize module can now be run directly: `python3 -m organize`
 - Various code simplifications and speedups.
 - Fixes an issue with globstring file exclusion.
-- Remove `clint` dependency (no longer maintained).
+- Remove `clint` dependency as it is no longer maintained.
 - Added various integration tests
 
 ## v1.5.3 (2019-08-01)

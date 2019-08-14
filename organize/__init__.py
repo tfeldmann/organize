@@ -7,7 +7,7 @@ import colorama
 import yaml
 
 from .__version__ import __version__
-from .utils import Path
+from .compat import Path
 
 colorama.init(autoreset=True)
 
