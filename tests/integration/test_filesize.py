@@ -36,21 +36,21 @@ def test_basic(tmp_path, mock_echo):
           filters:
             - filesize: '> 1kb, <= 1.0 KiB'
           actions:
-            - echo: '{path.name} {filesize.bytes} ({filesize.conditions})'
+            - echo: '{path.name} {filesize.bytes}'
         - folders: files
           filters:
             - filesize:
               - '> 0.5 kb'
               - '<1.0 KiB'
           actions:
-            - echo: '2/3 {filesize.bytes} ({filesize.conditions})'
+            - echo: '2/3 {filesize.bytes}'
         """,
     )
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
     mock_echo.assert_has_calls(
         [
-            call("halffull 1010 (> 1kb, <= 1.0 KiB)"),
-            call("2/3 666 (> 0.5 kb, <1.0 KiB)"),
+            call("halffull 1010"),
+            call("2/3 666"),
         ],
         any_order=True,
     )

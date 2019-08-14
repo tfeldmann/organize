@@ -12,9 +12,9 @@ Filename
 --------
 .. autoclass:: Filename
 
-Filesize
+FileSize
 --------
-.. autoclass:: Filesize
+.. autoclass:: FileSize
 
 LastModified
 ------------

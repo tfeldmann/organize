@@ -1,7 +1,8 @@
 import operator
 import re
 
-from ..utils import fullpath, flattened_string_list
+from organize.utils import flattened_string_list, fullpath
+
 from .filter import Filter
 
 OPERATORS = {
@@ -52,12 +53,21 @@ class FileSize(Filter):
     """
     Matches files by file size
 
-    :param [str, ...] conditions:
+    :param str conditions:
 
-    Combined use of both parameters in a single Filesize filter will only match if the file satisfies both conditions.
+    Accepts file size conditions, e.g: ``'>= 500 MB'``, ``'< 20k'``, ``'>0'``,
+    ``'= 10 KiB'``.
+
+    It is possible to define both lower and upper conditions like this:
+    ``'>20k, < 1 TB'``, ``'>= 20 Mb, <25 Mb'``. The filter will match if all given
+    conditions are satisfied.
+
+    - Accepts all units from KB to YB.
+    - If no unit is given, kilobytes are assumend.
+    - If binary prefix is given (KiB, GiB) the size is calculated using base 1024.
 
     :returns:
-        - ``{filesize}`` -- File size in bytes
+        - ``{filesize.bytes}`` -- File size in bytes
 
     Examples:
         - Trash big downloads:
@@ -68,10 +78,9 @@ class FileSize(Filter):
             rules:
               - folders: '~/Downloads'
                 filters:
-                  - Filesize:
-                      bigger: 500m
+                  - filesize: '> 500 MB'
                 actions:
-                  - Trash
+                  - trash
 
     """
 
@@ -87,7 +96,7 @@ class FileSize(Filter):
     def run(self, path):
         file_size = fullpath(path).stat().st_size
         if self.matches(file_size):
-            return {"filesize": {"bytes": file_size, "conditions": self.conditions}}
+            return {"filesize": {"bytes": file_size}}
 
     def __str__(self):
         return "FileSize({})".format(" ".join(self.conditions))
