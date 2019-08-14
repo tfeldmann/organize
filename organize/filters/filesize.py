@@ -52,14 +52,7 @@ class FileSize(Filter):
     """
     Matches files by file size
 
-    :param str smaller:
-        Will match files having a size equal to or smaller than specified size.
-
-        Valid format examples: ``1g``, ``4G``, ``1.5MB``, ``5000`` The if no unit is given, bytes is assumed.
-        Use ``bigger: 1`` to test for empty files.
-
-    :param str bigger:
-        Will match files having a size equal equal to or bigger than specified size.
+    :param [str, ...] conditions:
 
     Combined use of both parameters in a single Filesize filter will only match if the file satisfies both conditions.
 

@@ -24,7 +24,12 @@ def test_size_zero(tmp_path, mock_echo):
 def test_basic(tmp_path, mock_echo):
     create_filesystem(
         tmp_path,
-        files=["empty", "full", "halffull", "two_thirds.txt"],
+        files=[
+            "empty",
+            ("full", "0" * 2000),
+            ("halffull", "0" * 1010),
+            ("two_thirds.txt", "0" * 666),
+        ],
         config="""
         rules:
         - folders: files
@@ -41,12 +46,6 @@ def test_basic(tmp_path, mock_echo):
             - echo: '2/3 {filesize.bytes} ({filesize.conditions})'
         """,
     )
-    with open(tmp_path / "files" / "halffull", "w") as h:
-        h.write("0" * 1010)
-    with open(tmp_path / "files" / "full", "w") as h:
-        h.write("0" * 2000)
-    with open(tmp_path / "files" / "two_thirds", "w") as h:
-        h.write("0" * 666)
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
     mock_echo.assert_has_calls(
         [

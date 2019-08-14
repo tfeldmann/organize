@@ -9,9 +9,15 @@ from organize.utils import Path
 def create_filesystem(tmp_path, files, config):
     # create files
     for f in files:
-        p = tmp_path / "files" / Path(f)
+        try:
+            name, content = f
+        except Exception:
+            name = f
+            content = ''
+        p = tmp_path / "files" / Path(name)
         p.parent.mkdir(parents=True, exist_ok=True)
-        p.touch()
+        with p.open("w") as ptr:
+            ptr.write(content)
     # create config
     with (tmp_path / "config.yaml").open("w") as f:
         f.write(config)
