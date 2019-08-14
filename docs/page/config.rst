@@ -99,6 +99,8 @@ The easiest way is to define the rules like this:
       filters: ...
       actions: ...
 
+.. note::
+  - You can use environment variables in your folder names. On windows this means you can use ``%public%/Desktop``, ``%APPDATA%``, ``%PROGRAMDATA%`` etc.
 
 Globstrings
 -----------

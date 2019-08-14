@@ -1,7 +1,7 @@
 from textwrap import indent
 from typing import Optional
 
-from organize.utils import Path
+from organize.utils import Path, DotDict
 
 
 class Error(Exception):
@@ -24,7 +24,7 @@ class Action:
     @staticmethod
     def fill_template_tags(msg: str, attrs: dict) -> str:
         try:
-            return msg.format(**attrs)
+            return msg.format(**DotDict(attrs))
         except AttributeError as exc:
             cause = exc.args[0]
             raise TemplateAttributeError(

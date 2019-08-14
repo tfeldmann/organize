@@ -12,6 +12,7 @@ install:
   - pip install -U pytest
   - pip install .
   - python main.py list
+  - python main.py config --path
   - python main.py --version
 script:
     py.test

@@ -1,8 +1,9 @@
 # Changelog
 
 ## WIP
+- Added `Python`-filter.
 - The organize module can now be run directly: `python3 -m organize`
-- Various code cleanups and speedups.
+- Various code simplifications and speedups.
 - Fixes an issue with globstring file exclusion.
 - Remove `clint` dependency (no longer maintained).
 - Added various integration tests

@@ -1,7 +1,6 @@
 import os
 import re
 import sys
-from collections import OrderedDict
 from collections.abc import Mapping
 from copy import deepcopy
 
@@ -42,30 +41,36 @@ def first_key(dic: dict):
     return list(dic.keys())[0]
 
 
-class DotDict(OrderedDict):
-    def __getattr__(self, key):
-        try:
-            return self[key]
-        except KeyError:
-            raise AttributeError(key)
+class DotDict(dict):
+    """
+    Quick and dirty implementation of a dot-able dict, which allows access and
+    assignment via object properties rather than dict indexing.
+    """
 
-    def __setattr__(self, key, value):
-        if not key.startswith("_OrderedDict__"):
+    def __init__(self, *args, **kwargs):
+        # we could just call super(DotDict, self).__init__(*args, **kwargs)
+        # but that won't get us nested dotdict objects
+        od = dict(*args, **kwargs)
+        for key, val in od.items():
+            if isinstance(val, Mapping):
+                value = DotDict(val)
+            else:
+                value = val
             self[key] = value
-        else:
-            OrderedDict.__setattr__(self, key, value)
 
-    def __delattr__(self, key):
+    def __delattr__(self, name):
         try:
-            self.pop(key)
-        except KeyError:
-            OrderedDict.__delattr__(self, key)
+            del self[name]
+        except KeyError as ex:
+            raise AttributeError("No attribute called: %s" % name) from ex
 
-    def __eq__(self, other):
-        return dict.__eq__(self, other)
+    def __getattr__(self, k):
+        try:
+            return self[k]
+        except KeyError as ex:
+            raise AttributeError("No attribute called: %s" % k) from ex
 
-    def __str__(self):
-        return "{%s}" % ", ".join("%r: %r" % (key, self[key]) for key in self)
+    __setattr__ = dict.__setitem__
 
 
 def increment_filename_version(path: Path, separator=" ") -> Path:

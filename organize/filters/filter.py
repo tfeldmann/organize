@@ -1,7 +1,14 @@
+from textwrap import indent
+
+
 class Filter:
     def run(self, path):
         """ Return an dict of parsed file properties (optional) """
         return NotImplementedError()
+
+    def print(self, msg):
+        """ print a message for the user """
+        print(indent("- [%s] %s" % (self.__class__.__name__, msg), " " * 4))
 
     def __str__(self):
         """ Return filter name and properties """
