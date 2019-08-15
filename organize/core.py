@@ -1,5 +1,6 @@
 import logging
 from collections import namedtuple
+from copy import deepcopy
 from textwrap import indent
 
 from colorama import Fore, Style
@@ -62,7 +63,7 @@ def create_jobs(rules):
 def filter_pipeline(filters, args):
     for filter_ in filters:
         try:
-            result = filter_.pipeline(args)
+            result = filter_.pipeline(deepcopy(args))
             if isinstance(result, dict):
                 args.update(result)
             elif not result:
@@ -79,7 +80,7 @@ def filter_pipeline(filters, args):
 def action_pipeline(actions, args):
     for action in actions:
         try:
-            updates = action.pipeline(args)
+            updates = action.pipeline(deepcopy(args))
             # jobs may return a dict with updates that should be merged into args
             if updates is not None:
                 args.update(updates)
