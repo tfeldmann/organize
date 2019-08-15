@@ -28,7 +28,7 @@ def test_regex_return():
     regex = Regex(r"^RG(?P<the_number>\d{12})-sig\.pdf$")
     for path, valid, result in TESTDATA:
         if valid:
-            dct = regex.run(DotDict({"path": path}))
+            dct = regex.run(path=path)
             assert dct == {"regex": {"the_number": result}}
 
 
@@ -36,5 +36,5 @@ def test_regex_umlaut():
     regex = Regex(r"^Erträgnisaufstellung-(?P<year>\d*)\.pdf")
     doc = Path("~/Documents/Erträgnisaufstellung-1998.pdf")
     assert regex.matches(doc)
-    dct = regex.run(DotDict({"path": doc}))
+    dct = regex.run(path=doc)
     assert dct == {"regex": {"year": "1998"}}

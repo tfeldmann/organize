@@ -147,18 +147,18 @@ def test_does_not_insert_new_keys():
 def test_dotdict_merge():
     a = DotDict()
     b = {1: {2: 2, 3: 3, 4: {5: "fin."}}}
-    a.merge(b)
+    a.update(b)
     assert a == b
     b[1][2] = 5
     assert a != b
 
-    a.merge({1: {4: {5: "new.", 6: "fin."}, 2: "x"}})
+    a.update({1: {4: {5: "new.", 6: "fin."}, 2: "x"}})
     assert a == {1: {2: "x", 3: 3, 4: {5: "new.", 6: "fin."}}}
 
 
 def test_dotdict_keeptype():
     a = DotDict()
-    a.merge({"nr": {"upper": 1}})
+    a.update({"nr": {"upper": 1}})
     assert a.nr.upper == 1
 
     assert "{nr.upper}".format(**a) == "1"

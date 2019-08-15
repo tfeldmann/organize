@@ -62,20 +62,18 @@ class Python(Action):
     def __init__(self, code):
         self.code = code
 
-    def run(self, attrs: dict, simulate: bool):
+    def pipeline(self, args):
+        simulate = args["simulate"]
         if simulate:
-            self.print("Code not run in simulation")
+            self.print("Code not run in simulation (args=%s)" % args)
         else:
-            path = attrs["path"]
             logger.info(
-                'Executing python script:\n"""\n%s""", path="%s", args=%s',
+                'Executing python script:\n"""\n%s""", args=%s',
                 self.code,
-                path,
-                attrs,
+                args,
             )
             # local variables for inline function
-            locals_ = attrs.copy()
-            locals_["simulate"] = simulate
+            locals_ = args
             # replace default print function
             globals_ = globals().copy()
             globals_["print"] = self.print

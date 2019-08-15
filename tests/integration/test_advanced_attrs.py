@@ -17,15 +17,15 @@ def test_codepost_usecase(tmp_path):
           filters:
             - regex: (?P<firstname>\w+)-(?P<lastname>\w+)\..*
             - python: |
-                print(attrs)
+                print(args)
                 emails = {
                     "Betts": "dbetts@mail.de",
                     "Cornish": "acornish@google.com",
                     "Bean": "dbean@aol.com",
                     "Frey": "l-frey@frey.org",
                 }
-                if attrs.regex.lastname in emails: # get emails from wherever
-                    return {"mail": emails[attrs.regex.lastname]}
+                if args.regex.lastname in emails: # get emails from wherever
+                    return {"mail": emails[args.regex.lastname]}
           actions:
             - rename: '{python.mail}.txt'
         """,

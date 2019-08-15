@@ -19,7 +19,7 @@ class Python(Filter):
 
         # the user's code becomes a method of the filter instance
         self.method = (
-            "def _usercode(attrs):\n"
+            "def _usercode(args):\n"
             + textwrap.indent(self.code, "    ")
             + "\n"
             + "self.usercode = _usercode"
@@ -28,10 +28,10 @@ class Python(Filter):
         globals_["print"] = self.print
         exec(self.method, globals_, {"self": self})
 
-    def usercode(self, attrs):
+    def usercode(self, args):
         raise NotImplementedError("No user code given")
 
-    def run(self, attrs):
-        result = self.usercode(attrs)
+    def pipeline(self, args):
+        result = self.usercode(args)
         if result:
             return {"python": result}

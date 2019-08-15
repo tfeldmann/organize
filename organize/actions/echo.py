@@ -1,7 +1,5 @@
 import logging
 
-from organize.compat import Path
-
 from .action import Action
 
 logger = logging.getLogger(__name__)
@@ -74,10 +72,10 @@ class Echo(Action):
         self.msg = msg
         self.log = logging.getLogger(__name__)
 
-    def run(self, attrs: dict, simulate: bool):
-        path = attrs["path"]
-        logger.debug('Echo msg "%s", path: "%s", attrs: "%s"', self.msg, path, attrs)
-        full_msg = self.fill_template_tags(self.msg, attrs)
+    def pipeline(self, args):
+        path = args["path"]
+        logger.debug('Echo msg "%s", path: "%s", args: "%s"', self.msg, path, args)
+        full_msg = self.fill_template_tags(self.msg, args)
         logger.info("Console output: %s", full_msg)
         self.print("%s" % full_msg)
 

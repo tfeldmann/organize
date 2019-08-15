@@ -1,7 +1,6 @@
 from textwrap import indent
 from typing import Optional
 
-from organize.compat import Path
 from organize.utils import DotDict
 
 
@@ -14,8 +13,10 @@ class TemplateAttributeError(Error):
 
 
 class Action:
-    def run(self, attrs, simulate: bool) -> Optional[Path]:
-        # if you change the file path, return the new path here
+    def run(self, **kwargs):
+        return self.pipeline(DotDict(kwargs))
+
+    def pipeline(self, args: DotDict) -> Optional[dict]:
         raise NotImplementedError
 
     def print(self, msg):
@@ -23,9 +24,9 @@ class Action:
         print(indent("- [%s] %s" % (self.__class__.__name__, msg), " " * 4))
 
     @staticmethod
-    def fill_template_tags(msg: str, attrs) -> str:
+    def fill_template_tags(msg: str, args) -> str:
         try:
-            return msg.format(**DotDict(attrs))
+            return msg.format(**args)
         except AttributeError as exc:
             cause = exc.args[0]
             raise TemplateAttributeError(

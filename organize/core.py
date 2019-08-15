@@ -59,15 +59,15 @@ def create_jobs(rules):
             )
 
 
-def filter_pipeline(filters, attrs):
+def filter_pipeline(filters, args):
     for filter_ in filters:
         try:
-            result = filter_.run(attrs)
+            result = filter_.pipeline(args)
             if isinstance(result, dict):
-                attrs.merge(result)
+                args.update(result)
             elif not result:
-                # filters might return a simple True / False. Exit early if a filter does
-                # not match
+                # filters might return a simple True / False.
+                # Exit early if a filter does # not match.
                 return False
         except Exception as e:
             logger.exception(e)
@@ -76,13 +76,13 @@ def filter_pipeline(filters, attrs):
     return True
 
 
-def action_pipeline(actions, attrs, simulate: bool):
+def action_pipeline(actions, args):
     for action in actions:
         try:
-            new_path = action.run(attrs=attrs, simulate=simulate)
-            # jobs may return a changed path to indicate moved files
-            if new_path is not None:
-                attrs.path = new_path
+            updates = action.pipeline(args)
+            # jobs may return a dict with updates that should be merged into args
+            if updates is not None:
+                args.update(updates)
         except Exception as e:
             logger.exception(e)
             action.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
@@ -91,14 +91,13 @@ def action_pipeline(actions, attrs, simulate: bool):
 
 def run_jobs(jobs, simulate):
     for job in sorted(jobs, key=lambda x: (x.folderstr, x.basedir, x.path)):
-        attrs = DotDict(path=job.path, basedir=job.basedir)
-        # the relative path is kept even is the path changes.
-        attrs.relative_path = attrs.path.relative_to(attrs.basedir)
-
-        match = filter_pipeline(filters=job.filters, attrs=attrs)
+        args = DotDict(path=job.path, basedir=job.basedir, simulate=simulate)
+        # the relative path should be kept even is the path changes.
+        args.relative_path = args.path.relative_to(args.basedir)
+        match = filter_pipeline(filters=job.filters, args=args)
         if match:
-            yield (job.folderstr, attrs.relative_path)
-            action_pipeline(actions=job.actions, attrs=attrs, simulate=simulate)
+            yield (job.folderstr, args.relative_path)
+            action_pipeline(actions=job.actions, args=args)
 
 
 def execute_rules(rules, simulate):

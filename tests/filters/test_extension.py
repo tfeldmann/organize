@@ -1,6 +1,5 @@
 from organize.compat import Path
 from organize.filters import Extension
-from organize.utils import DotDict
 
 
 def test_extension():
@@ -25,14 +24,14 @@ def test_extension_result():
     path = Path("~/somefile.TxT")
     extension = Extension("txt")
     assert extension.matches(path)
-    result = extension.run(DotDict(path=path))["extension"]
+    result = extension.run(path=path)["extension"]
     assert str(result) == "TxT"
     assert result.lower == "txt"
     assert result.upper == "TXT"
 
     extension = Extension(".txt")
     assert extension.matches(path)
-    result = extension.run(DotDict(path=path))["extension"]
+    result = extension.run(path=path)["extension"]
     assert str(result) == "TxT"
     assert result.lower == "txt"
     assert result.upper == "TXT"

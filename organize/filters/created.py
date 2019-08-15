@@ -82,8 +82,8 @@ class Created(Filter):
             days=days, hours=hours, minutes=minutes, seconds=seconds
         )
 
-    def run(self, attrs):
-        created_date = self._created(attrs.path)
+    def pipeline(self, args):
+        created_date = self._created(args.path)
         reference_date = datetime.now() - self.timedelta
         match = (self.is_older and created_date <= reference_date) or (
             not self.is_older and created_date >= reference_date

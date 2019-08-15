@@ -51,8 +51,8 @@ class Regex(Filter):
     def matches(self, path):
         return self.expr.search(path.name)
 
-    def run(self, attrs):
-        match = self.matches(attrs.path)
+    def pipeline(self, args):
+        match = self.matches(args.path)
         if match:
             result = match.groupdict()
             return {"regex": result}

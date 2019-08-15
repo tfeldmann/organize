@@ -4,7 +4,6 @@ from mock import patch
 
 from organize.compat import Path
 from organize.filters import LastModified
-from organize.utils import DotDict
 
 
 def test_min():
@@ -12,9 +11,9 @@ def test_min():
     last_modified = LastModified(days=10, hours=12, mode="older")
     with patch.object(last_modified, "_last_modified") as mock_lm:
         mock_lm.return_value = now - timedelta(days=10, hours=0)
-        assert not last_modified.run(DotDict(path=Path("~")))
+        assert not last_modified.run(path=Path("~"))
         mock_lm.return_value = now - timedelta(days=10, hours=13)
-        assert last_modified.run(DotDict(path=Path("~")))
+        assert last_modified.run(path=Path("~"))
 
 
 def test_max():
@@ -22,6 +21,6 @@ def test_max():
     last_modified = LastModified(days=10, hours=12, mode="newer")
     with patch.object(last_modified, "_last_modified") as mock_lm:
         mock_lm.return_value = now - timedelta(days=10, hours=0)
-        assert last_modified.run(DotDict(path=Path("~")))
+        assert last_modified.run(path=Path("~"))
         mock_lm.return_value = now - timedelta(days=10, hours=13)
-        assert not last_modified.run(DotDict(path=Path("~")))
+        assert not last_modified.run(path=Path("~"))

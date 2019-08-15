@@ -87,8 +87,8 @@ class Filename(Filter):
             and any(filename.endswith(x) for x in self.endswith)
         )
 
-    def run(self, attrs):
-        return self.matches(attrs.path)
+    def pipeline(self, args):
+        return self.matches(args.path)
 
     @staticmethod
     def create_list(x, case_sensitive):

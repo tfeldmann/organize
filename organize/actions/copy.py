@@ -2,8 +2,7 @@ import logging
 import os
 import shutil
 
-from organize.compat import Path
-from organize.utils import find_unused_filename, fullpath
+from organize.utils import find_unused_filename, fullpath, DotDict
 
 from .action import Action
 from .trash import Trash
@@ -87,10 +86,11 @@ class Copy(Action):
         self.overwrite = overwrite
         self.counter_separator = counter_separator
 
-    def run(self, attrs: dict, simulate: bool):
-        path = attrs["path"]
+    def pipeline(self, args):
+        path = args["path"]
+        simulate = args["simulate"]
 
-        expanded_dest = self.fill_template_tags(self.dest, attrs)
+        expanded_dest = self.fill_template_tags(self.dest, args)
         # if only a folder path is given we append the filename to have the full
         # path. We use os.path for that because pathlib removes trailing slashes
         if expanded_dest.endswith(("\\", "/")):
@@ -100,7 +100,7 @@ class Copy(Action):
         if new_path.exists() and not new_path.samefile(path):
             if self.overwrite:
                 self.print("File already exists")
-                Trash().run({"path": new_path}, simulate=simulate)
+                Trash().run(path=new_path, simulate=simulate)
             else:
                 new_path = find_unused_filename(
                     path=new_path, separator=self.counter_separator

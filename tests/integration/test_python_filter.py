@@ -14,7 +14,7 @@ def test_python(tmp_path, mock_echo):
           filters:
             - extension: txt
             - python: |
-                return int(attrs.path.name.split('.')[0][-2:]) * 100
+                return int(args.path.name.split('.')[0][-2:]) * 100
           actions:
             - echo: '{python}'
         """,
@@ -41,8 +41,8 @@ def test_python_dict(tmp_path, mock_echo):
             - extension: txt
             - python: |
                 return {
-                    "name": attrs.path.name[:3],
-                    "code": int(attrs.path.name.split('.')[0][-2:]) * 100,
+                    "name": args.path.name[:3],
+                    "code": int(args.path.name.split('.')[0][-2:]) * 100,
                 }
             actions:
             - echo: '{python.code} {python.name}'
