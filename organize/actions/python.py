@@ -1,4 +1,5 @@
 import logging
+import textwrap
 
 from .action import Action
 
@@ -60,10 +61,24 @@ class Python(Action):
     """
 
     def __init__(self, code):
-        self.code = code
+        self.code = textwrap.dedent(code)
+
+        # the user's code becomes a method of the filter instance
+        self.method = (
+            "def _usercode(args):\n"
+            + textwrap.indent(self.code, "    ")
+            + "\n"
+            + "self.usercode = _usercode"
+        )
+        globals_ = globals().copy()
+        globals_["print"] = self.print
+        exec(self.method, globals_, {"self": self})
+
+    def usercode(self, args):
+        raise NotImplementedError("No user code given")
 
     def pipeline(self, args):
-        simulate = args["simulate"]
+        simulate = args.simulate
         if simulate:
             self.print("Code not run in simulation (args=%s)" % args)
         else:
@@ -72,9 +87,4 @@ class Python(Action):
                 self.code,
                 args,
             )
-            # local variables for inline function
-            locals_ = args
-            # replace default print function
-            globals_ = globals().copy()
-            globals_["print"] = self.print
-            exec(self.code, globals_, locals_)
+            return self.usercode(args)

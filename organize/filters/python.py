@@ -33,5 +33,5 @@ class Python(Filter):
 
     def pipeline(self, args):
         result = self.usercode(args)
-        if result:
+        if result not in (False, None):
             return {"python": result}

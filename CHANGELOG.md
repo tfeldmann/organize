@@ -3,11 +3,16 @@
 ## WIP
 - Added filter: `Python`
 - Added filter: `FileSize`
+- Placeholder variables can now be used in filters.
 - The organize module can now be run directly: `python3 -m organize`
 - Various code simplifications and speedups.
 - Fixes an issue with globstring file exclusion.
 - Remove `clint` dependency as it is no longer maintained.
 - Added various integration tests
+
+Breaking:
+- In python filter and action you now have to access the placeholder variables through
+  the `args` variable.
 
 ## v1.5.3 (2019-08-01)
 - Filename filter now supports lists.

@@ -10,6 +10,7 @@ def test_codepost_usecase(tmp_path):
             "Alaina-Cornish.txt",
             "Dimitri-Bean.txt",
             "Lowri-Frey.txt",
+            "Someunknown-User.txt",
         ],
         config=r"""
         rules:
@@ -17,7 +18,6 @@ def test_codepost_usecase(tmp_path):
           filters:
             - regex: (?P<firstname>\w+)-(?P<lastname>\w+)\..*
             - python: |
-                print(args)
                 emails = {
                     "Betts": "dbetts@mail.de",
                     "Cornish": "acornish@google.com",
@@ -37,4 +37,5 @@ def test_codepost_usecase(tmp_path):
         "acornish@google.com.txt",
         "dbean@aol.com.txt",
         "l-frey@frey.org.txt",
+        "Someunknown-User.txt",  # no email found
     )
