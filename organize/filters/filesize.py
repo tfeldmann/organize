@@ -19,7 +19,7 @@ SIZE_REGEX = re.compile(
 )
 
 
-def create_constrains(inp):
+def create_constrains(inp: str):
     """
     Given an input string it returns a list of tuples (comparison operator,
     number of bytes).
@@ -78,9 +78,26 @@ class FileSize(Filter):
             rules:
               - folders: '~/Downloads'
                 filters:
-                  - filesize: '> 500 MB'
+                  - filesize: '> 0.5 GB'
                 actions:
                   - trash
+
+        - Move all JPEGS bigger > 1MB and <10 MB. Search all subfolders and keep the´
+          original relative path.
+
+          .. code-block:: yaml
+            :caption: config.yaml
+
+            rules:
+              - folders: '~/Pictures'
+                subfolders: true
+                filters:
+                  - extension:
+                      - jpg
+                      - jpeg
+                  - filesize: '>1mb, <10mb'
+                actions:
+                  - move: '~/Pictures/sorted/{relative_path}/'
 
     """
 

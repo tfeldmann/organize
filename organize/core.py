@@ -1,4 +1,5 @@
 import logging
+import shutil
 from collections import namedtuple
 from copy import deepcopy
 from textwrap import indent
@@ -100,10 +101,13 @@ def run_jobs(jobs, simulate):
 
 
 def execute_rules(rules, simulate):
+    cols, _ = shutil.get_terminal_size(fallback=(79, 20))
+    simulation_msg = Fore.GREEN + Style.BRIGHT + " SIMULATION ".center(cols, '~')
+
     jobs = create_jobs(rules=rules)
 
     if simulate:
-        print(Fore.GREEN + Style.BRIGHT + "SIMULATION ~~~")
+        print(simulation_msg)
 
     prev_folderstr = None
     for folderstr, relative_path in run_jobs(jobs=jobs, simulate=simulate):
@@ -120,4 +124,4 @@ def execute_rules(rules, simulate):
         print(msg)
 
     if simulate:
-        print(Fore.GREEN + Style.BRIGHT + "~~~ SIMULATION")
+        print(simulation_msg)

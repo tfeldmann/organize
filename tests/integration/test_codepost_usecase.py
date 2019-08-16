@@ -16,6 +16,7 @@ def test_codepost_usecase(tmp_path):
         rules:
         - folders: files
           filters:
+            - extension: txt
             - regex: (?P<firstname>\w+)-(?P<lastname>\w+)\..*
             - python: |
                 emails = {
