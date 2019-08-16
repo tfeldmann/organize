@@ -8,6 +8,7 @@ from colorama import Fore, Style
 from .utils import DotDict, splitglob
 
 logger = logging.getLogger(__name__)
+SYSTEM_FILES = ("thumbs.db", "desktop.ini", ".DS_Store")
 
 
 Job = namedtuple("Job", "folderstr basedir path filters actions")
@@ -36,10 +37,7 @@ def all_files_for_rule(rule):
         else:
             raise ValueError("Path not found: {}".format(folderstr))
         for path in basedir.glob(globstr):
-            if path.is_file() and (
-                rule.system_files
-                or path.name not in ("thumbs.db", "desktop.ini", ".DS_Store")
-            ):
+            if path.is_file() and (rule.system_files or path.name not in SYSTEM_FILES):
                 if not exclude_flag:
                     files[path] = (folderstr, basedir)
                 elif path in files:
