@@ -14,7 +14,7 @@ def test_print_substitution():
 def test_code_execution():
     with patch.object(Python, "print") as mock_print:
         path = Path("/some/folder")
-        python = Python("print(args.x)\nprint(args.path)")
+        python = Python("print(x)\nprint(path)")
         python.run(path=path, x=42, simulate=False)
         mock_print.assert_any_call(42)
         mock_print.assert_any_call(path)

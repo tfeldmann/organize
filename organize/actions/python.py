@@ -63,28 +63,23 @@ class Python(Action):
     def __init__(self, code):
         self.code = textwrap.dedent(code)
 
-        # the user's code becomes a method of the filter instance
-        self.method = (
-            "def _usercode(args):\n"
-            + textwrap.indent(self.code, "    ")
-            + "\n"
-            + "self.usercode = _usercode"
-        )
+    def create_method(self, name, argnames, code):
         globals_ = globals().copy()
         globals_["print"] = self.print
-        exec(self.method, globals_, {"self": self})
-
-    def usercode(self, args):
-        raise NotImplementedError("No user code given")
+        locals_ = locals().copy()
+        locals_["self"] = self
+        funccode = "def {fnc}__({arg}):\n{cod}\n\nself.{fnc} = {fnc}__\n".format(
+            fnc=name,
+            arg=", ".join(argnames),
+            cod=textwrap.indent(textwrap.dedent(code), " " * 4),
+        )
+        exec(funccode, globals_, locals_)  # pylint: disable=exec-used
 
     def pipeline(self, args):
         simulate = args.simulate
         if simulate:
             self.print("Code not run in simulation (args=%s)" % args)
         else:
-            logger.info(
-                'Executing python script:\n"""\n%s""", args=%s',
-                self.code,
-                args,
-            )
-            return self.usercode(args)
+            logger.info('Executing python:\n"""\n%s\n""", args=%s', self.code, args)
+            self.create_method(name="usercode", argnames=args.keys(), code=self.code)
+            return self.usercode(**args)  # pylint: disable=no-member

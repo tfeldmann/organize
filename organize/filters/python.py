@@ -17,21 +17,20 @@ class Python(Filter):
         if "return" not in self.code:
             raise ValueError("No return statement found in your code!")
 
-        # the user's code becomes a method of the filter instance
-        self.method = (
-            "def _usercode(args):\n"
-            + textwrap.indent(self.code, "    ")
-            + "\n"
-            + "self.usercode = _usercode"
-        )
+    def create_method(self, name, argnames, code):
         globals_ = globals().copy()
         globals_["print"] = self.print
-        exec(self.method, globals_, {"self": self})
-
-    def usercode(self, args):
-        raise NotImplementedError("No user code given")
+        locals_ = locals().copy()
+        locals_["self"] = self
+        funccode = "def {fnc}__({arg}):\n{cod}\n\nself.{fnc} = {fnc}__\n".format(
+            fnc=name,
+            arg=", ".join(argnames),
+            cod=textwrap.indent(textwrap.dedent(code), " " * 4),
+        )
+        exec(funccode, globals_, locals_)  # pylint: disable=exec-used
 
     def pipeline(self, args):
-        result = self.usercode(args)
+        self.create_method(name="usercode", argnames=args.keys(), code=self.code)
+        result = self.usercode(**args)  # pylint: disable=no-member
         if result not in (False, None):
             return {"python": result}

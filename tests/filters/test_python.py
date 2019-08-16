@@ -5,7 +5,7 @@ from organize.compat import Path
 def test_basic():
     p = Python(
         """
-        print(args.path)
+        print(path)
         return 1
         """
     )
