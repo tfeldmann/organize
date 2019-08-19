@@ -13,6 +13,8 @@ class TemplateAttributeError(Error):
 
 
 class Action:
+    pre_print_hook = None
+
     def run(self, **kwargs):
         return self.pipeline(DotDict(kwargs))
 
@@ -21,6 +23,8 @@ class Action:
 
     def print(self, msg):
         """ print a message for the user """
+        if callable(self.pre_print_hook):
+            self.pre_print_hook()  # pylint: disable=not-callable
         print(indent("- [%s] %s" % (self.__class__.__name__, msg), " " * 4))
 
     @staticmethod

@@ -67,7 +67,6 @@ class Python(Action):
         globals_ = globals().copy()
         globals_["print"] = self.print
         locals_ = locals().copy()
-        locals_["self"] = self
         funccode = "def {fnc}__({arg}):\n{cod}\n\nself.{fnc} = {fnc}__\n".format(
             fnc=name,
             arg=", ".join(argnames),
@@ -78,8 +77,9 @@ class Python(Action):
     def pipeline(self, args):
         simulate = args.simulate
         if simulate:
-            self.print("Code not run in simulation (args=%s)" % args)
+            self.print("Code not run in simulation." % args)
         else:
             logger.info('Executing python:\n"""\n%s\n""", args=%s', self.code, args)
             self.create_method(name="usercode", argnames=args.keys(), code=self.code)
+            self.print("Running python script.")
             return self.usercode(**args)  # pylint: disable=no-member

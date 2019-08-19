@@ -6,6 +6,8 @@ from textwrap import indent
 
 from colorama import Fore, Style
 
+from .actions.action import Action
+from .filters.filter import Filter
 from .utils import DotDict, splitglob
 
 logger = logging.getLogger(__name__)
@@ -60,6 +62,10 @@ def create_jobs(rules):
 
 
 def filter_pipeline(filters, args):
+    """
+    run the filter pipeline.
+    Returns True on a match, False otherwise and updates `args` in the process.
+    """
     for filter_ in filters:
         try:
             result = filter_.pipeline(deepcopy(args))
@@ -67,7 +73,7 @@ def filter_pipeline(filters, args):
                 args.update(result)
             elif not result:
                 # filters might return a simple True / False.
-                # Exit early if a filter does # not match.
+                # Exit early if a filter does not match.
                 return False
         except Exception as e:
             logger.exception(e)
@@ -86,39 +92,70 @@ def action_pipeline(actions, args):
         except Exception as e:
             logger.exception(e)
             action.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
-            return
+            return False
+    return True
+
+
+class OutputHelper:
+    """
+    class to track the current folder / file and print only changes.
+    This is needed because we only want to output the current folder and file if the
+    filter or action prints something.
+    """
+
+    def __init__(self):
+        self.curr_folder = None
+        self.curr_path = None
+        self.prev_folder = None
+        self.prev_path = None
+
+    def set_location(self, folder, path):
+        self.curr_folder = folder
+        self.curr_path = path
+
+    def pre_print(self):
+        if self.curr_folder != self.prev_folder:
+            if self.prev_folder is not None:
+                print()  # ensure newline between folders
+            print("Folder %s%s:" % (Style.BRIGHT, self.curr_folder))
+            self.prev_folder = self.curr_folder
+
+        if self.curr_path != self.prev_path:
+            print(indent("File %s%s:" % (Style.BRIGHT, self.curr_path), " " * 2))
+            self.prev_path = self.curr_path
 
 
 def run_jobs(jobs, simulate):
+    """ :returns: The number of successfully handled files """
+    count = [0, 0]
+    output_helper = OutputHelper()
+    Action.pre_print_hook = output_helper.pre_print
+    Filter.pre_print_hook = output_helper.pre_print
+
     for job in sorted(jobs, key=lambda x: (x.folderstr, x.basedir, x.path)):
         args = DotDict(path=job.path, basedir=job.basedir, simulate=simulate)
-        # the relative path should be kept even is the path changes.
+        # the relative path should be kept even if the path changes.
         args.relative_path = args.path.relative_to(args.basedir)
+
+        output_helper.set_location(job.basedir, args.relative_path)
         match = filter_pipeline(filters=job.filters, args=args)
         if match:
-            yield (job.folderstr, args.relative_path)
-            action_pipeline(actions=job.actions, args=args)
+            success = action_pipeline(actions=job.actions, args=args)
+            count[success] += 1
+    return count
 
 
 def execute_rules(rules, simulate):
     cols, _ = shutil.get_terminal_size(fallback=(79, 20))
-    simulation_msg = Fore.GREEN + Style.BRIGHT + " SIMULATION ".center(cols, '~')
+    simulation_msg = Fore.GREEN + Style.BRIGHT + " SIMULATION ".center(cols, "~")
 
     jobs = create_jobs(rules=rules)
 
     if simulate:
         print(simulation_msg)
 
-    prev_folderstr = None
-    for folderstr, relative_path in run_jobs(jobs=jobs, simulate=simulate):
-        if folderstr != prev_folderstr:
-            if prev_folderstr is not None:
-                print()
-            print("Folder %s:" % (Style.BRIGHT + folderstr))
-            prev_folderstr = folderstr
-        print(indent("File %s%s:" % (Style.BRIGHT, relative_path), " " * 2))
-
-    if prev_folderstr is None:
+    success, failed = run_jobs(jobs=jobs, simulate=simulate)
+    if success == failed == 0:
         msg = "Nothing to do."
         logger.info(msg)
         print(msg)
