@@ -154,8 +154,8 @@ def execute_rules(rules, simulate):
     if simulate:
         print(simulation_msg)
 
-    success, failed = run_jobs(jobs=jobs, simulate=simulate)
-    if success == failed == 0:
+    failed, succeded = run_jobs(jobs=jobs, simulate=simulate)
+    if succeded == failed == 0:
         msg = "Nothing to do."
         logger.info(msg)
         print(msg)
