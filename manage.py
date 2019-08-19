@@ -82,7 +82,7 @@ def set_version(args):
 
     if ask_confirm("Commit changes?"):
         subprocess.run(
-            ["git", "add", "pyproject.toml", "__version__.py", "CHANGELOG.md"]
+            ["git", "add", "pyproject.toml", "*/__version__.py", "CHANGELOG.md"]
         )
         subprocess.run(["git", "commit", "-m", f"bump version to v{version}"])
 
