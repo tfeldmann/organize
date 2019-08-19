@@ -1,4 +1,5 @@
 import logging
+import textwrap
 
 from .action import Action
 
@@ -60,23 +61,25 @@ class Python(Action):
     """
 
     def __init__(self, code):
-        self.code = code
+        self.code = textwrap.dedent(code)
 
-    def run(self, attrs: dict, simulate: bool):
+    def create_method(self, name, argnames, code):
+        globals_ = globals().copy()
+        globals_["print"] = self.print
+        locals_ = locals().copy()
+        funccode = "def {fnc}__({arg}):\n{cod}\n\nself.{fnc} = {fnc}__\n".format(
+            fnc=name,
+            arg=", ".join(argnames),
+            cod=textwrap.indent(textwrap.dedent(code), " " * 4),
+        )
+        exec(funccode, globals_, locals_)  # pylint: disable=exec-used
+
+    def pipeline(self, args):
+        simulate = args.simulate
         if simulate:
-            self.print("Code not run in simulation")
+            self.print("Code not run in simulation." % args)
         else:
-            path = attrs["path"]
-            logger.info(
-                'Executing python script:\n"""\n%s""", path="%s", args=%s',
-                self.code,
-                path,
-                attrs,
-            )
-            # local variables for inline function
-            locals_ = attrs.copy()
-            locals_["simulate"] = simulate
-            # replace default print function
-            globals_ = globals().copy()
-            globals_["print"] = self.print
-            exec(self.code, globals_, locals_)
+            logger.info('Executing python:\n"""\n%s\n""", args=%s', self.code, args)
+            self.create_method(name="usercode", argnames=args.keys(), code=self.code)
+            self.print("Running python script.")
+            return self.usercode(**args)  # pylint: disable=no-member

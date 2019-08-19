@@ -148,5 +148,5 @@ def list_actions_and_filters():
         print("  " + name)
 
 
-def print_error(text):
-    print(Style.BRIGHT + Fore.RED + "ERROR:" + Style.RESET_ALL + " " + text)
+def print_error(e):
+    print(Style.BRIGHT + Fore.RED + "ERROR:" + Style.RESET_ALL + " %s" % e)

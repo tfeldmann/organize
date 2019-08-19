@@ -73,6 +73,23 @@ class DotDict(dict):
 
     __setattr__ = dict.__setitem__
 
+    def update(self, other):
+        """ recursively update the dotdict instance with another dicts items """
+        for key, val in other.items():
+            if isinstance(val, Mapping):
+                if isinstance(self.get(key), dict):
+                    self[key].update(val)
+                else:
+                    self[key] = __class__(val)
+            else:
+                self[key] = val
+
+    def merge(self, other):
+        """ recursively merge values from another dict and return a new instance """
+        new_dct = deepcopy(self)
+        new_dct.update(other)
+        return new_dct
+
 
 def increment_filename_version(path: Path, separator=" ") -> Path:
     stem = path.stem

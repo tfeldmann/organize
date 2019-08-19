@@ -29,8 +29,9 @@ class Trash(Action):
                   - trash
     """
 
-    def run(self, attrs: dict, simulate: bool):
-        path = attrs["path"]
+    def pipeline(self, args):
+        path = args.path
+        simulate = args.simulate
         from send2trash import send2trash
 
         self.print('Trash "%s"' % path)
