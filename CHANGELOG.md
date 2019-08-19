@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v1.6 (2019-08-19)
 - Added filter: `Python`
 - Added filter: `FileSize`
 - The organize module can now be run directly: `python3 -m organize`
