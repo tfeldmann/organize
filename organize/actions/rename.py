@@ -1,7 +1,6 @@
 import logging
 import os
 
-from organize.compat import Path
 from organize.utils import find_unused_filename
 
 from .action import Action
@@ -64,9 +63,10 @@ class Rename(Action):
         self.overwrite = overwrite
         self.counter_separator = counter_separator
 
-    def run(self, attrs: dict, simulate: bool) -> Path:
-        path = attrs["path"]
-        expanded_name = self.fill_template_tags(self.name, attrs)
+    def pipeline(self, args):
+        path = args["path"]
+        simulate = args["simulate"]
+        expanded_name = self.fill_template_tags(self.name, args)
         new_path = path.parent / expanded_name
 
         # handle filename collisions
@@ -75,7 +75,7 @@ class Rename(Action):
         if new_path_exists and not new_path_samefile:
             if self.overwrite:
                 self.print("File already exists")
-                Trash().run({"path": new_path}, simulate=simulate)
+                Trash().run(path=new_path, simulate=simulate)
             else:
                 new_path = find_unused_filename(
                     path=new_path, separator=self.counter_separator

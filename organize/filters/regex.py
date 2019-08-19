@@ -48,8 +48,11 @@ class Regex(Filter):
     def __init__(self, expr):
         self.expr = re.compile(expr, flags=re.UNICODE)
 
-    def run(self, path):
-        match = self.expr.match(path.name)
+    def matches(self, path):
+        return self.expr.search(path.name)
+
+    def pipeline(self, args):
+        match = self.matches(args.path)
         if match:
             result = match.groupdict()
             return {"regex": result}

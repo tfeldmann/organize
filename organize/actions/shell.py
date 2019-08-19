@@ -30,10 +30,10 @@ class Shell(Action):
     def __init__(self, cmd: str):
         self.cmd = cmd
 
-    def run(self, attrs: dict, simulate: bool):
-        full_cmd = self.fill_template_tags(self.cmd, attrs)
+    def pipeline(self, args):
+        full_cmd = self.fill_template_tags(self.cmd, args)
         self.print("$ %s" % full_cmd)
-        if not simulate:
+        if not args.simulate:
             # we use call instead of run to be compatible with python < 3.5
             logger.info('Executing command "%s" in shell.', full_cmd)
             subprocess.call(full_cmd, shell=True)

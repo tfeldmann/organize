@@ -8,6 +8,7 @@
 - Fixes an issue with globstring file exclusion.
 - Remove `clint` dependency as it is no longer maintained.
 - Added various integration tests
+- The "~~ SIMULATION ~~"-banner now takes up the whole terminal width
 
 ## v1.5.3 (2019-08-01)
 - Filename filter now supports lists.

@@ -1,3 +1,4 @@
+import pytest
 from mock import call
 
 from conftest import create_filesystem
@@ -51,6 +52,35 @@ def test_basic(tmp_path, mock_echo):
         [
             call("halffull 1010"),
             call("2/3 666"),
+        ],
+        any_order=True,
+    )
+
+@pytest.mark.skip(reason="TODO")
+def test_python_args(tmp_path, mock_echo):
+    create_filesystem(
+        tmp_path,
+        files=[
+            "empty",
+            ("full", "0" * 2000),
+            ("halffull", "0" * 1010),
+            ("two_thirds.txt", "0" * 666),
+        ],
+        config="""
+        rules:
+        - folders: files
+          filters:
+            - python: |
+                return 2000
+            - filesize: '= {python}b'
+          actions:
+            - echo: '{path.name} {filesize.bytes}'
+        """,
+    )
+    main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
+    mock_echo.assert_has_calls(
+        [
+            call("full 2000"),
         ],
         any_order=True,
     )

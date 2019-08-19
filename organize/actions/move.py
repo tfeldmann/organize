@@ -2,7 +2,7 @@ import logging
 import os
 import shutil
 
-from organize.utils import find_unused_filename, fullpath
+from organize.utils import DotDict, find_unused_filename, fullpath
 
 from .action import Action
 from .trash import Trash
@@ -90,10 +90,11 @@ class Move(Action):
         self.overwrite = overwrite
         self.counter_separator = counter_separator
 
-    def run(self, attrs: dict, simulate: bool):
-        path = attrs["path"]
+    def pipeline(self, args):
+        path = args["path"]
+        simulate = args["simulate"]
 
-        expanded_dest = self.fill_template_tags(self.dest, attrs)
+        expanded_dest = self.fill_template_tags(self.dest, args)
         # if only a folder path is given we append the filename to have the full
         # path. We use os.path for that because pathlib removes trailing slashes
         if expanded_dest.endswith(("\\", "/")):
@@ -105,7 +106,7 @@ class Move(Action):
         if new_path_exists and not new_path_samefile:
             if self.overwrite:
                 self.print("File already exists")
-                Trash().run({"path": new_path}, simulate=simulate)
+                Trash().run(path=new_path, simulate=simulate)
             else:
                 new_path = find_unused_filename(
                     path=new_path, separator=self.counter_separator
@@ -120,7 +121,8 @@ class Move(Action):
                 new_path.parent.mkdir(parents=True, exist_ok=True)
                 logger.info('Moving "%s" to "%s"', path, new_path)
                 shutil.move(src=str(path), dst=str(new_path))
-        return new_path
+
+        return {"path": new_path}
 
     def __str__(self):
         return "Move(dest=%s, overwrite=%s)" % (self.dest, self.overwrite)

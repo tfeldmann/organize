@@ -24,6 +24,10 @@ Created
 -------
 .. autoclass:: Created
 
+Python
+------
+.. autoclass:: Python
+
 Regex
 -----
 .. autoclass:: Regex

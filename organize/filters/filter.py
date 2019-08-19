@@ -1,14 +1,23 @@
 from textwrap import indent
+from typing import Optional
+
+from organize.utils import DotDict
 
 
 class Filter:
-    def run(self, path):
-        """ Return an dict of parsed file properties (optional) """
-        return NotImplementedError()
+    pre_print_hook = None
+
+    def run(self, **kwargs):
+        return self.pipeline(DotDict(kwargs))
+
+    def pipeline(self, args: DotDict) -> Optional[dict]:
+        raise NotImplementedError
 
     def print(self, msg):
         """ print a message for the user """
-        print(indent("- [%s] %s" % (self.__class__.__name__, msg), " " * 4))
+        if callable(self.pre_print_hook):
+            self.pre_print_hook()  # pylint: disable=not-callable
+        print(indent("- (%s) %s" % (self.__class__.__name__, msg), " " * 4))
 
     def __str__(self):
         """ Return filter name and properties """
