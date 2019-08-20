@@ -91,7 +91,10 @@ rules:
           case_sensitive: false
     actions:
       - move: ~/Documents/Shopping/
+```
 
+```yaml
+rules:
   # move incomplete downloads older > 30 days into the trash
   - folders: ~/Downloads
     filters:
@@ -104,7 +107,10 @@ rules:
           mode: older
     actions:
       - trash
+```
 
+```yaml
+rules:
   # delete empty files from downloads and desktop
   - folders: 
       - ~/Downloads
@@ -113,7 +119,10 @@ rules:
       - filesize: 0
     actions:
       - trash
+```
 
+```yaml
+rules:
   # move screenshots into "Screenshots" folder
   - folders: ~/Desktop
     filters:
@@ -121,7 +130,10 @@ rules:
           startswith: 'Screen Shot'
     actions:
       - move: ~/Desktop/Screenshots/
+```
 
+```yaml
+rules:
   # organize your font files but keep the folder structure:
   #   "~/Downloads/favourites/helvetica/helvetica-bold.ttf"
   #     is moved to
