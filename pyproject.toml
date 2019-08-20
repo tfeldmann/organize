@@ -7,7 +7,7 @@ packages = [
 ]
 authors = ["Thomas Feldmann <mail@tfeldmann.de>"]
 license = "MIT"
-readme = "README.rst"
+readme = "README.md"
 repository = "https://github.com/tfeldmann/organize"
 documentation = "https://organize.readthedocs.io"
 keywords = ["file", "management", "automation", "tool", "organization", "rules", "yaml"]
