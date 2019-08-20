@@ -73,7 +73,7 @@ Congratulations, you just automated your first task. You can now run `organize r
 > There is so much more. You want to rename / copy files, run custom shell- or python scripts, match filenames with regular expressions or use placeholder variables? organize has you covered. Have a look at the advanced usage example below!
 
 
-### Example rules
+## Example rules
 Here are some examples of simple organization and cleanup rules. Modify to your needs!
 
 ```yaml
