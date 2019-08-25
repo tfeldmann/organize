@@ -57,32 +57,41 @@ class DotDict(dict):
                 value = DotDict(val)
             else:
                 value = val
-            self[key] = value
+            self[self.normkey(key)] = value
 
-    def __delattr__(self, name):
+    @staticmethod
+    def normkey(key):
+        if isinstance(key, str):
+            return key.lower()
+        else:
+            return key
+
+    def __delattr__(self, key):
         try:
-            del self[name]
+            del self[self.normkey(key)]
         except KeyError as ex:
-            raise AttributeError("No attribute called: %s" % name) from ex
+            raise AttributeError("No attribute called: %s" % key) from ex
 
-    def __getattr__(self, k):
+    def __getattr__(self, key):
         try:
-            return self[k]
+            return self[self.normkey(key)]
         except KeyError as ex:
-            raise AttributeError("No attribute called: %s" % k) from ex
+            raise AttributeError("No attribute called: %s" % key) from ex
 
-    __setattr__ = dict.__setitem__
+    def __setattr__(self, key, value):
+        self[self.normkey(key)] = value
 
     def update(self, other):
         """ recursively update the dotdict instance with another dicts items """
         for key, val in other.items():
+            normkey = self.normkey(key)
             if isinstance(val, Mapping):
-                if isinstance(self.get(key), dict):
-                    self[key].update(val)
+                if isinstance(self.get(normkey), dict):
+                    self[normkey].update(val)
                 else:
-                    self[key] = __class__(val)
+                    self[normkey] = __class__(val)
             else:
-                self[key] = val
+                self[normkey] = val
 
     def merge(self, other):
         """ recursively merge values from another dict and return a new instance """
