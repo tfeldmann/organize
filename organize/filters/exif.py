@@ -26,8 +26,15 @@ class Exif(Filter):
 
     def matches(self, path):
         with path.open("rb") as f:
-            tags = exifread.process_file(f, details=False)
+            exiftags = exifread.process_file(f, details=False)
+            if not exiftags:
+                return False
+
+            tags = {k.lower(): v for k, v in exiftags.items()}
             if tags:
+                for key, _ in self.kwargs.items():
+                    if key.lower() not in tags:
+                        return False
                 return self.convert_tags(tags)
 
     def pipeline(self, args):

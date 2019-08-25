@@ -46,6 +46,7 @@ class DotDict(dict):
     """
     Quick and dirty implementation of a dot-able dict, which allows access and
     assignment via object properties rather than dict indexing.
+    Keys are case insensitive.
     """
 
     def __init__(self, *args, **kwargs):
