@@ -50,6 +50,7 @@ class DotDict(dict):
     """
 
     def __init__(self, *args, **kwargs):
+        super().__init__()
         # we could just call super(DotDict, self).__init__(*args, **kwargs)
         # but that won't get us nested dotdict objects
         od = dict(*args, **kwargs)

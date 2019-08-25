@@ -75,7 +75,7 @@ def filter_pipeline(filters, args):
                 # filters might return a simple True / False.
                 # Exit early if a filter does not match.
                 return False
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
             logger.exception(e)
             filter_.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
             return False
@@ -89,7 +89,7 @@ def action_pipeline(actions, args):
             # jobs may return a dict with updates that should be merged into args
             if updates is not None:
                 args.update(updates)
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
             logger.exception(e)
             action.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
             return False

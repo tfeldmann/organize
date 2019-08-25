@@ -78,7 +78,7 @@ def main(argv=None):
             print("Try 'organize config --debug' for easier debugging.")
             print("Full traceback at: %s" % LOG_PATH)
             sys.exit(1)
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
             logger.exception(e)
             print_error(e)
             print("Full traceback at: %s" % LOG_PATH)
