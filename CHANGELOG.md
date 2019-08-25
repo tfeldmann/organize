@@ -1,5 +1,8 @@
 # Changelog
 
+## WIP
+- Placeholder variable properties are now case insensitve
+
 ## v1.6 (2019-08-19)
 - Added filter: `Python`
 - Added filter: `FileSize`
