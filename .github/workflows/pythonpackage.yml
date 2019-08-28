@@ -1,4 +1,4 @@
-name: organize
+name: pythonpackage
 
 on: [push]
 
@@ -9,7 +9,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.4, 3.5, 3.6, 3.7]
+        python-version: [3.5, 3.6, 3.7]
 
     steps:
     - uses: actions/checkout@v1
@@ -34,6 +34,6 @@ jobs:
         pytest
     - name: General info
       run: |
-        python main.py list
-        python main.py config --path
-        python main.py --version
+        organize list
+        organize config --path
+        organize --version
