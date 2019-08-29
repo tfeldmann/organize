@@ -41,6 +41,8 @@ pathlib2 = [
 pytest = "^4.6"
 pylint = "^2.3"
 ipdb = "^0.12.0"
+mock = "^3.0"
+flake8 = "^3.7"
 
 [build-system]
 requires = ["poetry>=0.12"]

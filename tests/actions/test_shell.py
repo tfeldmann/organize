@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from mock import patch
 
 from organize.actions import Shell
 from organize.compat import Path

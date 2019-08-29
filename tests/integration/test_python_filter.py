@@ -1,4 +1,4 @@
-from unittest.mock import call
+from mock import call
 
 from conftest import assertdir, create_filesystem
 from organize.cli import main
