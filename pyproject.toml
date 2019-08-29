@@ -39,7 +39,6 @@ pathlib2 = [
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.6"
-mock = "^3.0"
 pylint = "^2.3"
 ipdb = "^0.12.0"
 

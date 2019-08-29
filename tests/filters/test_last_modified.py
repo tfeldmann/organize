@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from mock import patch
+from unittest.mock import patch
 
 from organize.compat import Path
 from organize.filters import LastModified
