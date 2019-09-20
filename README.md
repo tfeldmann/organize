@@ -16,6 +16,14 @@
 <a href="https://organize.readthedocs.io/" target="_blank">Full documentation at Read the docs</a>
 </p>
 
+- [About](#about)
+- [Getting started](#getting-started)
+  - [Installation](#installation)
+  - [Creating your first rule](#creating-your-first-rule)
+- [Example rules](#example-rules)
+- [Advanced usage](#advanced-usage)
+- [Command line interface](#command-line-interface)
+
 ## About
 Your desktop is a mess? You cannot find anything in your downloads and
 documents? Sorting and renaming all these files by hand is too tedious?
