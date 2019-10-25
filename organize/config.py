@@ -13,6 +13,7 @@ from .utils import first_key, flatten
 logger = logging.getLogger(__name__)
 Rule = namedtuple("Rule", "filters actions folders subfolders system_files")
 
+
 # disable yaml constructors for strings starting with exclamation marks
 # https://stackoverflow.com/a/13281292/300783
 def default_yaml_cnst(loader, tag_suffix, node):

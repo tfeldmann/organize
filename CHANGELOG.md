@@ -1,5 +1,8 @@
 # Changelog
 
+## WIP
+- Shows a warning for missing folders instead of raising an exception.
+
 ## v1.6 (2019-08-19)
 - Added filter: `Python`
 - Added filter: `FileSize`
