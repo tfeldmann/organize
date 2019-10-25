@@ -13,7 +13,7 @@ def test_tilde_expansion(mock_exists, mock_samefile, mock_rename, mock_trash):
     mock_samefile.return_value = False
     rename = Rename(name="newname.py", overwrite=False)
     new_path = rename.run(**ARGS)
-    mock_exists.assert_called()
+    assert mock_exists.call_count > 0
     mock_trash.assert_not_called()
     expected_path = (Path.home() / "newname.py").expanduser()
     mock_rename.assert_called_with(expected_path)
@@ -25,7 +25,7 @@ def test_overwrite(mock_exists, mock_samefile, mock_rename, mock_trash):
     mock_samefile.return_value = False
     rename = Rename(name="{path.stem} Kopie.py", overwrite=True)
     new_path = rename.run(**ARGS)
-    mock_exists.assert_called()
+    assert mock_exists.call_count > 0
     mock_trash.assert_called_with(os.path.join(USER_DIR, "test Kopie.py"))
     mock_rename.assert_called_with(Path("~/test Kopie.py").expanduser())
     assert new_path is not None
@@ -36,7 +36,7 @@ def test_already_exists(mock_exists, mock_samefile, mock_rename, mock_trash):
     mock_samefile.return_value = False
     rename = Rename(name="asd.txt", overwrite=False)
     new_path = rename.run(**ARGS)
-    mock_exists.assert_called()
+    assert mock_exists.call_count > 0
     mock_trash.assert_not_called()
     mock_rename.assert_called_with(Path("~/asd 2.txt").expanduser())
     assert new_path is not None
@@ -48,7 +48,7 @@ def test_overwrite_samefile(mock_exists, mock_samefile, mock_rename, mock_trash)
     mock_samefile.return_value = True
     rename = Rename(name="{path.stem}.pdf", overwrite=False)
     new_path = rename.run(**args)
-    mock_exists.assert_called()
+    assert mock_exists.call_count > 0
     mock_trash.assert_not_called()
     mock_rename.assert_called_with((Path.home() / "test.pdf").expanduser())
     assert new_path is not None
@@ -60,7 +60,7 @@ def test_keep_name(mock_exists, mock_samefile, mock_rename, mock_trash):
     mock_samefile.return_value = True
     rename = Rename(name="{path.stem}.pdf", overwrite=False)
     new_path = rename.run(**args)
-    mock_exists.assert_called()
+    assert mock_exists.call_count > 0
     mock_trash.assert_not_called()
     mock_rename.assert_not_called()
     assert new_path is not None
@@ -71,7 +71,7 @@ def test_already_exists_multiple(mock_exists, mock_samefile, mock_rename, mock_t
     mock_samefile.return_value = False
     rename = Rename(name="asd.txt", overwrite=False)
     new_path = rename.run(**ARGS)
-    mock_exists.assert_called()
+    assert mock_exists.call_count > 0
     mock_trash.assert_not_called()
     mock_rename.assert_called_with(Path("~/asd 4.txt").expanduser())
     assert new_path is not None
@@ -84,7 +84,7 @@ def test_already_exists_multiple_separator(
     mock_samefile.return_value = False
     rename = Rename(name="asd.txt", overwrite=False, counter_separator="-")
     new_path = rename.run(**ARGS)
-    mock_exists.assert_called()
+    assert mock_exists.call_count > 0
     mock_trash.assert_not_called()
     mock_rename.assert_called_with(Path("~/asd-4.txt").expanduser())
     assert new_path is not None
@@ -102,7 +102,7 @@ def test_args(mock_exists, mock_samefile, mock_rename, mock_trash):
     mock_samefile.return_value = False
     rename = Rename(name="{nr.upper}-{path.stem} Kopie.py")
     new_path = rename.run(**args)
-    mock_exists.assert_called()
+    assert mock_exists.call_count > 0
     mock_trash.assert_not_called()
     mock_rename.assert_called_with(Path("~/1-test Kopie.py").expanduser())
     assert new_path is not None
