@@ -31,7 +31,8 @@ import sys
 from colorama import Fore, Style
 from docopt import docopt
 
-from . import CONFIG_DIR, CONFIG_PATH, LOG_PATH, __version__
+from . import CONFIG_DIR, CONFIG_PATH, LOG_PATH
+from .__version__ import __version__
 from .compat import Path
 from .config import Config
 from .core import execute_rules
