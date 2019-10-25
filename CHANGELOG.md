@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v1.6.1 (2019-10-25)
 - Shows a warning for missing folders instead of raising an exception.
 
 ## v1.6 (2019-08-19)
