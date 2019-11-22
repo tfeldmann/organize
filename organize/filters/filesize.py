@@ -1,8 +1,8 @@
 import operator
 import re
-from typing import Callable, Optional, Set, Tuple, Sequence, Dict
+from typing import Callable, Dict, Optional, Sequence, Set, Tuple
 
-from organize.utils import flattened_string_list, fullpath
+from organize.utils import DotDict, flattened_string_list, fullpath
 
 from .filter import Filter
 
@@ -110,10 +110,10 @@ class FileSize(Filter):
         if not self.constrains:
             raise ValueError("No size(s) given!")
 
-    def matches(self, filesize) -> bool:
+    def matches(self, filesize: int) -> bool:
         return all(op(filesize, c_size) for op, c_size in self.constrains)
 
-    def pipeline(self, args) -> Optional[Dict[str, Dict[str, int]]]:
+    def pipeline(self, args: DotDict) -> Optional[Dict[str, Dict[str, int]]]:
         file_size = fullpath(args.path).stat().st_size
         if self.matches(file_size):
             return {"filesize": {"bytes": file_size}}

@@ -2,7 +2,7 @@ import logging
 import shutil
 from copy import deepcopy
 from textwrap import indent
-from typing import NamedTuple, Sequence, Set, Optional
+from typing import NamedTuple, Optional, Sequence, Set
 
 from colorama import Fore, Style  # type: ignore
 
@@ -20,8 +20,8 @@ Job = NamedTuple(
         ("folderstr", str),
         ("basedir", Path),
         ("path", Path),
-        ("filters", Sequence),
-        ("actions", Sequence),
+        ("filters", Sequence[Filter]),
+        ("actions", Sequence[Action]),
     ],
 )
 Job.__doc__ = """
@@ -142,7 +142,7 @@ def all_files_for_rule(rule):
         yield (folderstr, basedir, path)
 
 
-def run_jobs(jobs, simulate):
+def run_jobs(jobs: Sequence[Job], simulate: bool):
     """ :returns: The number of successfully handled files """
     count = [0, 0]
     Action.pre_print_hook = output_helper.pre_print
@@ -151,7 +151,7 @@ def run_jobs(jobs, simulate):
     for job in sorted(jobs, key=lambda x: (x.folderstr, x.basedir, x.path)):
         args = DotDict(path=job.path, basedir=job.basedir, simulate=simulate)
         # the relative path should be kept even if the path changes.
-        args.relative_path = args.path.relative_to(args.basedir)
+        args["relative_path"] = args["path"].relative_to(args["basedir"])
 
         output_helper.set_location(job.basedir, args.relative_path)
         match = filter_pipeline(filters=job.filters, args=args)
@@ -161,7 +161,7 @@ def run_jobs(jobs, simulate):
     return count
 
 
-def filter_pipeline(filters, args):
+def filter_pipeline(filters: Sequence[Filter], args: DotDict):
     """
     run the filter pipeline.
     Returns True on a match, False otherwise and updates `args` in the process.
@@ -182,7 +182,7 @@ def filter_pipeline(filters, args):
     return True
 
 
-def action_pipeline(actions, args):
+def action_pipeline(actions: Sequence[Action], args: DotDict):
     for action in actions:
         try:
             updates = action.pipeline(deepcopy(args))

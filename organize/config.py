@@ -1,8 +1,7 @@
 import inspect
 import logging
 import textwrap
-from collections import namedtuple
-from typing import List, NamedTuple
+from typing import Dict, Generator, List, NamedTuple, Sequence
 
 import yaml
 
@@ -11,8 +10,16 @@ from .compat import Path
 from .utils import first_key, flatten
 
 logger = logging.getLogger(__name__)
-Rule = namedtuple("Rule", "filters actions folders subfolders system_files")
-
+Rule = NamedTuple(
+    "Rule",
+    [
+        ("filters", Sequence[filters.filter.Filter]),
+        ("actions", Sequence[actions.action.Action]),
+        ("folders", Sequence[Path]),
+        ("subfolders", bool),
+        ("system_files", bool),
+    ],
+)
 
 # disable yaml constructors for strings starting with exclamation marks
 # https://stackoverflow.com/a/13281292/300783
@@ -24,7 +31,7 @@ yaml.add_multi_constructor("", default_yaml_cnst, Loader=yaml.SafeLoader)
 
 
 class Config:
-    def __init__(self, config: dict):
+    def __init__(self, config: dict) -> None:
         self.config = config
         self.filter_by_name = {
             name.lower(): getattr(filters, name)
@@ -62,7 +69,7 @@ class Config:
         )
 
     @staticmethod
-    def parse_folders(rule_item):
+    def parse_folders(rule_item) -> Generator: # TODO: clearer type hint
         # the folder list is flattened so we can use encapsulated list
         # definitions in the config file.
         yield from flatten(rule_item["folders"])

@@ -2,14 +2,14 @@ import os
 import re
 from collections.abc import Mapping
 from copy import deepcopy
-from typing import Any, Sequence, Union
+from typing import Any, Sequence, Tuple, Union, List, Hashable
 
 from .compat import Path
 
 WILDCARD_REGEX = re.compile(r"(?<!\\)[\*\?\[]+")
 
 
-def splitglob(globstr):
+def splitglob(globstr: str) -> Tuple[Path, str]:
     """ split a string with wildcards into a base folder and globstring """
     path = fullpath(globstr.strip())
     parts = path.parts
@@ -24,7 +24,7 @@ def fullpath(path: Union[str, Path]) -> Path:
     return Path(os.path.expandvars(str(path))).expanduser().resolve(strict=False)
 
 
-def flatten(arr):
+def flatten(arr: List[Any]) -> List[Any]:
     if arr == []:
         return []
     if not isinstance(arr, list):
@@ -39,7 +39,7 @@ def flattened_string_list(x, case_sensitive=True) -> Sequence[str]:
     return x
 
 
-def first_key(dic: Mapping) -> Any:
+def first_key(dic: Mapping) -> Hashable:
     return list(dic.keys())[0]
 
 
@@ -85,7 +85,7 @@ class DotDict(dict):
             else:
                 self[key] = val
 
-    def merge(self, other) -> DotDict:
+    def merge(self, other) -> Mapping:
         """ recursively merge values from another dict and return a new instance """
         new_dct = deepcopy(self)
         new_dct.update(other)
