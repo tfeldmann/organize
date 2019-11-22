@@ -100,7 +100,7 @@ class Created(Filter):
     def _created(self, path: Path) -> datetime:
         # see https://stackoverflow.com/a/39501288/300783
         stat = path.stat()
-        time = 0
+        time = 0  # type: SupportsFloat
         if sys.platform.startswith("win"):
             time = stat.st_ctime
         else:
