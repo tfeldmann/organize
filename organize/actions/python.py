@@ -1,8 +1,9 @@
 import logging
 import textwrap
-from typing import Any, Mapping, Optional
+from typing import Any, Mapping, Optional, Iterable
 
 from organize.utils import DotDict
+
 from .action import Action
 
 logger = logging.getLogger(__name__)
@@ -65,7 +66,10 @@ class Python(Action):
     def __init__(self, code) -> None:
         self.code = textwrap.dedent(code)
 
-    def create_method(self, name, argnames, code) -> None:
+    def usercode(self, *args, **kwargs) -> Optional[Any]:
+        pass  # will be overwritten by `create_method`
+
+    def create_method(self, name: str, argnames: Iterable[str], code: str) -> None:
         globals_ = globals().copy()
         globals_["print"] = self.print
         locals_ = locals().copy()
@@ -86,5 +90,5 @@ class Python(Action):
         self.create_method(name="usercode", argnames=args.keys(), code=self.code)
         self.print("Running python script.")
 
-        result = self.usercode(**args) # type: ignore  # pylint: disable=no-member
+        result = self.usercode(**args)  # pylint: disable=assignment-from-no-return
         return result

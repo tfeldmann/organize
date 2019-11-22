@@ -1,4 +1,7 @@
 import logging
+from typing import Mapping
+
+from organize.compat import Path
 
 from .action import Action
 
@@ -29,9 +32,9 @@ class Trash(Action):
                   - trash
     """
 
-    def pipeline(self, args):
-        path = args.path
-        simulate = args.simulate
+    def pipeline(self, args: Mapping):
+        path = args["path"]  # type: Path
+        simulate = args["simulate"]  # type: bool
         from send2trash import send2trash  # type: ignore
 
         self.print('Trash "%s"' % path)

@@ -2,8 +2,8 @@ import logging
 import os
 from typing import Mapping
 
-from organize.utils import find_unused_filename
 from organize.compat import Path
+from organize.utils import find_unused_filename
 
 from .action import Action
 from .trash import Trash
@@ -65,7 +65,7 @@ class Rename(Action):
         self.overwrite = overwrite
         self.counter_separator = counter_separator
 
-    def pipeline(self, args) -> Mapping[str, Path]:
+    def pipeline(self, args: Mapping) -> Mapping[str, Path]:
         path = args["path"]  # type: Path
         simulate = args["simulate"]
         expanded_name = self.fill_template_tags(self.name, args)

@@ -1,4 +1,4 @@
-from typing import Any, List, Union
+from typing import Any, List, Mapping, Union
 
 from organize.compat import Path
 
@@ -93,8 +93,8 @@ class Filename(Filter):
             and any(filename.endswith(x) for x in self.endswith)
         )
 
-    def pipeline(self, args) -> bool:
-        return self.matches(args.path)
+    def pipeline(self, args: Mapping) -> bool:
+        return self.matches(args["path"])
 
     @staticmethod
     def create_list(x: Union[str, List[Any]], case_sensitive: bool) -> List[str]:

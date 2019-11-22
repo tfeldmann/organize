@@ -1,21 +1,23 @@
 import inspect
 import logging
 import textwrap
-from typing import Dict, Generator, List, NamedTuple, Sequence
+from typing import Generator, List, Mapping, NamedTuple, Optional, Sequence, Union
 
 import yaml
 
 from . import actions, filters
+from .actions.action import Action
 from .compat import Path
+from .filters.filter import Filter
 from .utils import first_key, flatten
 
 logger = logging.getLogger(__name__)
 Rule = NamedTuple(
     "Rule",
     [
-        ("filters", Sequence[filters.filter.Filter]),
-        ("actions", Sequence[actions.action.Action]),
-        ("folders", Sequence[Path]),
+        ("filters", Sequence[Filter]),
+        ("actions", Sequence[Action]),
+        ("folders", Sequence[str]),
         ("subfolders", bool),
         ("system_files", bool),
     ],
@@ -69,7 +71,7 @@ class Config:
         )
 
     @staticmethod
-    def parse_folders(rule_item) -> Generator: # TODO: clearer type hint
+    def parse_folders(rule_item) -> Generator[str, None, None]:
         # the folder list is flattened so we can use encapsulated list
         # definitions in the config file.
         yield from flatten(rule_item["folders"])
@@ -100,7 +102,7 @@ class Config:
             return Cls(**args)
         return Cls(args)
 
-    def instantiate_filters(self, rule_item):
+    def instantiate_filters(self, rule_item) -> Generator[Filter, None, None]:
         # filter list can be empty
         try:
             filter_list = rule_item["filters"]
@@ -112,9 +114,10 @@ class Config:
             raise self.FiltersNoListError()
 
         for filter_item in filter_list:
-            # filter with arguments
             if filter_item is None:
-                yield None
+                # TODO: don't know what this should be
+                continue
+            # filter with arguments
             elif isinstance(filter_item, dict):
                 name = first_key(filter_item)
                 args = filter_item[name]
@@ -128,7 +131,7 @@ class Config:
             else:
                 raise self.Error("Unknown filter: %s" % filter_item)
 
-    def instantiate_actions(self, rule_item):
+    def instantiate_actions(self, rule_item) -> Generator[Action, None, None]:
         action_list = rule_item["actions"]
         if not isinstance(action_list, list):
             raise self.ActionsNoListError()

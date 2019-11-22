@@ -1,5 +1,7 @@
 import re
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Mapping, Optional
+
+from organize.compat import Path
 
 from .filter import Filter
 
@@ -50,11 +52,11 @@ class Regex(Filter):
     def __init__(self, expr) -> None:
         self.expr = re.compile(expr, flags=re.UNICODE)
 
-    def matches(self, path) -> Any:
+    def matches(self, path: Path) -> Any:
         return self.expr.search(path.name)
 
-    def pipeline(self, args) -> Optional[Dict[str, Dict]]:
-        match = self.matches(args.path)
+    def pipeline(self, args: Mapping) -> Optional[Dict[str, Dict]]:
+        match = self.matches(args["path"])
         if match:
             result = match.groupdict()
             return {"regex": result}

@@ -4,7 +4,7 @@ import shutil
 from typing import Mapping
 
 from organize.compat import Path
-from organize.utils import find_unused_filename, fullpath
+from organize.utils import DotDict, find_unused_filename, fullpath
 
 from .action import Action
 from .trash import Trash
@@ -92,7 +92,7 @@ class Move(Action):
         self.overwrite = overwrite
         self.counter_separator = counter_separator
 
-    def pipeline(self, args) -> Mapping[str, Path]:
+    def pipeline(self, args: DotDict) -> Mapping[str, Path]:
         path = args["path"]
         simulate = args["simulate"]
 

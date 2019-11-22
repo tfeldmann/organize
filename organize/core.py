@@ -2,12 +2,13 @@ import logging
 import shutil
 from copy import deepcopy
 from textwrap import indent
-from typing import NamedTuple, Optional, Sequence, Set
+from typing import Generator, Iterable, List, NamedTuple, Optional, Sequence, Set, Tuple
 
 from colorama import Fore, Style  # type: ignore
 
 from .actions.action import Action
 from .compat import Path
+from .config import Rule
 from .filters.filter import Filter
 from .utils import DotDict, splitglob
 
@@ -42,10 +43,10 @@ class OutputHelper:
 
     def __init__(self) -> None:
         self.not_found = set()  # type: Set[str]
-        self.curr_folder = None # type: Optional[Path]
-        self.curr_path = None # type: Optional[Path]
-        self.prev_folder = None # type: Optional[Path]
-        self.prev_path = None # type: Optional[Path]
+        self.curr_folder = None  # type: Optional[Path]
+        self.curr_path = None  # type: Optional[Path]
+        self.prev_folder = None  # type: Optional[Path]
+        self.prev_path = None  # type: Optional[Path]
 
     def set_location(self, folder: Path, path: Path) -> None:
         self.curr_folder = folder
@@ -77,7 +78,7 @@ class OutputHelper:
 output_helper = OutputHelper()
 
 
-def execute_rules(rules, simulate: bool):
+def execute_rules(rules: Iterable[Rule], simulate: bool) -> None:
     cols, _ = shutil.get_terminal_size(fallback=(79, 20))
     simulation_msg = Fore.GREEN + Style.BRIGHT + " SIMULATION ".center(cols, "~")
 
@@ -96,7 +97,7 @@ def execute_rules(rules, simulate: bool):
         print(simulation_msg)
 
 
-def create_jobs(rules):
+def create_jobs(rules: Iterable[Rule]) -> Generator[Job, None, None]:
     """ creates `Job` data structures for every path handled in each rule """
     for rule in rules:
         for folderstr, basedir, path in all_files_for_rule(rule):
@@ -109,7 +110,7 @@ def create_jobs(rules):
             )
 
 
-def all_files_for_rule(rule):
+def all_files_for_rule(rule: Rule) -> Generator[Tuple[str, Path, Path], None, None]:
     files = dict()
     for folderstr in rule.folders:
         folderstr = folderstr.strip()
@@ -142,7 +143,7 @@ def all_files_for_rule(rule):
         yield (folderstr, basedir, path)
 
 
-def run_jobs(jobs: Sequence[Job], simulate: bool):
+def run_jobs(jobs: Iterable[Job], simulate: bool) -> List[int]:
     """ :returns: The number of successfully handled files """
     count = [0, 0]
     Action.pre_print_hook = output_helper.pre_print
@@ -161,7 +162,7 @@ def run_jobs(jobs: Sequence[Job], simulate: bool):
     return count
 
 
-def filter_pipeline(filters: Sequence[Filter], args: DotDict):
+def filter_pipeline(filters: Iterable[Filter], args: DotDict) -> bool:
     """
     run the filter pipeline.
     Returns True on a match, False otherwise and updates `args` in the process.
@@ -182,7 +183,7 @@ def filter_pipeline(filters: Sequence[Filter], args: DotDict):
     return True
 
 
-def action_pipeline(actions: Sequence[Action], args: DotDict):
+def action_pipeline(actions: Iterable[Action], args: DotDict) -> bool:
     for action in actions:
         try:
             updates = action.pipeline(deepcopy(args))
