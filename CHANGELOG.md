@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v1.6.2 (2019-11-22)
 - Fix `Rename` action (`'PosixPath' object has no attribute 'items'`).
 - Use type hints everywhere.
 
