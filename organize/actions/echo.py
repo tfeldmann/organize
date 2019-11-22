@@ -68,16 +68,16 @@ class Echo(Action):
                   - echo: 'Path:    {path}'
     """
 
-    def __init__(self, msg):
+    def __init__(self, msg) -> None:
         self.msg = msg
         self.log = logging.getLogger(__name__)
 
-    def pipeline(self, args):
+    def pipeline(self, args) -> None:
         path = args["path"]
         logger.debug('Echo msg "%s", path: "%s", args: "%s"', self.msg, path, args)
         full_msg = self.fill_template_tags(self.msg, args)
         logger.info("Console output: %s", full_msg)
         self.print("%s" % full_msg)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return 'Echo(msg="%s")' % self.msg

@@ -1,5 +1,5 @@
 from textwrap import indent
-from typing import Optional
+from typing import Any, Mapping, Optional, Callable
 
 from organize.utils import DotDict
 
@@ -13,15 +13,15 @@ class TemplateAttributeError(Error):
 
 
 class Action:
-    pre_print_hook = None
+    pre_print_hook = None # type: Optional[Callable]
 
-    def run(self, **kwargs):
+    def run(self, **kwargs) -> Optional[Mapping[str, Any]]:
         return self.pipeline(DotDict(kwargs))
 
-    def pipeline(self, args: DotDict) -> Optional[dict]:
+    def pipeline(self, args: DotDict) -> Optional[Mapping[str, Any]]:
         raise NotImplementedError
 
-    def print(self, msg):
+    def print(self, msg) -> None:
         """ print a message for the user """
         if callable(self.pre_print_hook):
             self.pre_print_hook()  # pylint: disable=not-callable
@@ -37,11 +37,11 @@ class Action:
                 'Missing template variable %s for "%s"' % (cause, msg)
             )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.__class__.__name__
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<%s>" % str(self)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__

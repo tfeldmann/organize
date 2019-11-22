@@ -1,4 +1,9 @@
 from datetime import datetime, timedelta
+from typing import Dict, Optional
+
+from organize.compat import Path
+from organize.utils import DotDict
+
 from .filter import Filter
 
 
@@ -82,7 +87,7 @@ class LastModified(Filter):
             days=days, hours=hours, minutes=minutes, seconds=seconds
         )
 
-    def pipeline(self, args):
+    def pipeline(self, args: DotDict) -> Optional[Dict[str, datetime]]:
         file_modified = self._last_modified(args.path)
         reference_date = datetime.now() - self.timedelta
         match = (self.is_older and file_modified <= reference_date) or (
@@ -90,9 +95,10 @@ class LastModified(Filter):
         )
         if match:
             return {"lastmodified": file_modified}
+        return None
 
-    def _last_modified(self, path):
+    def _last_modified(self, path: Path) -> datetime:
         return datetime.fromtimestamp(path.stat().st_mtime)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "FileModified(delta=%s, select_mode=%s)" % (self.timedelta, self._mode)

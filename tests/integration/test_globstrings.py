@@ -93,6 +93,7 @@ def test_globstr_subfolder_serious(tmp_path):
         "dub/test.pdf",
     )
 
+
 def test_globstr_exclude(tmp_path):
     create_filesystem(
         tmp_path,
@@ -118,12 +119,9 @@ def test_globstr_exclude(tmp_path):
     )
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
     assertdir(
-        tmp_path,
-        "Test.pdf",
-        "Invoice.pdf",
-        "Start.txt",
-        "exclude/test.pdf",
+        tmp_path, "Test.pdf", "Invoice.pdf", "Start.txt", "exclude/test.pdf",
     )
+
 
 def test_globstr_subfolder_setting(tmp_path):
     create_filesystem(

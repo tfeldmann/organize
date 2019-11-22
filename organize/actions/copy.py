@@ -2,7 +2,7 @@ import logging
 import os
 import shutil
 
-from organize.utils import find_unused_filename, fullpath
+from organize.utils import Mapping, find_unused_filename, fullpath
 
 from .action import Action
 from .trash import Trash
@@ -81,12 +81,12 @@ class Copy(Action):
                       counter_separator: '_'
     """
 
-    def __init__(self, dest: str, overwrite=False, counter_separator=" "):
+    def __init__(self, dest: str, overwrite=False, counter_separator=" ") -> None:
         self.dest = dest
         self.overwrite = overwrite
         self.counter_separator = counter_separator
 
-    def pipeline(self, args):
+    def pipeline(self, args: Mapping) -> None:
         path = args["path"]
         simulate = args["simulate"]
 
@@ -116,5 +116,5 @@ class Copy(Action):
         # the next actions should handle the original file
         return None
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "Copy(dest=%s, overwrite=%s)" % (self.dest, self.overwrite)

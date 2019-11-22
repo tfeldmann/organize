@@ -1,4 +1,8 @@
 import re
+from typing import Any, Dict, Mapping, Optional
+
+from organize.compat import Path
+
 from .filter import Filter
 
 
@@ -45,14 +49,15 @@ class Regex(Filter):
                   - move: ~/Documents/Invoices/1und1/{regex.the_number}.pdf
     """
 
-    def __init__(self, expr):
+    def __init__(self, expr) -> None:
         self.expr = re.compile(expr, flags=re.UNICODE)
 
-    def matches(self, path):
+    def matches(self, path: Path) -> Any:
         return self.expr.search(path.name)
 
-    def pipeline(self, args):
-        match = self.matches(args.path)
+    def pipeline(self, args: Mapping) -> Optional[Dict[str, Dict]]:
+        match = self.matches(args["path"])
         if match:
             result = match.groupdict()
             return {"regex": result}
+        return None
