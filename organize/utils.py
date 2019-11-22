@@ -2,6 +2,7 @@ import os
 import re
 from collections.abc import Mapping
 from copy import deepcopy
+from typing import Any, Sequence, Union
 
 from .compat import Path
 
@@ -18,7 +19,7 @@ def splitglob(globstr):
     return (path, "")
 
 
-def fullpath(path):
+def fullpath(path: Union[str, Path]) -> Path:
     """ Expand '~' and resolve the given path. Path can be a string or a Path obj. """
     return Path(os.path.expandvars(str(path))).expanduser().resolve(strict=False)
 
@@ -31,14 +32,14 @@ def flatten(arr):
     return flatten(arr[0]) + flatten(arr[1:])
 
 
-def flattened_string_list(x, case_sensitive=True):
+def flattened_string_list(x, case_sensitive=True) -> Sequence[str]:
     x = [str(x) for x in flatten(x)]
     if not case_sensitive:
         x = [x.lower() for x in x]
     return x
 
 
-def first_key(dic: dict):
+def first_key(dic: Mapping) -> Any:
     return list(dic.keys())[0]
 
 
@@ -71,7 +72,7 @@ class DotDict(dict):
         except KeyError as ex:
             raise AttributeError("No attribute called: %s" % k) from ex
 
-    __setattr__ = dict.__setitem__
+    __setattr__ = dict.__setitem__  # type: ignore
 
     def update(self, other):
         """ recursively update the dotdict instance with another dicts items """
@@ -84,7 +85,7 @@ class DotDict(dict):
             else:
                 self[key] = val
 
-    def merge(self, other):
+    def merge(self, other) -> DotDict:
         """ recursively merge values from another dict and return a new instance """
         new_dct = deepcopy(self)
         new_dct.update(other)

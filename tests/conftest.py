@@ -4,6 +4,7 @@ import pytest
 from unittest.mock import patch
 
 from organize.compat import Path
+from organize.utils import DotDict
 
 
 def create_filesystem(tmp_path, files, config):
@@ -13,7 +14,7 @@ def create_filesystem(tmp_path, files, config):
             name, content = f
         except Exception:
             name = f
-            content = ''
+            content = ""
         p = tmp_path / "files" / Path(name)
         p.parent.mkdir(parents=True, exist_ok=True)
         with p.open("w") as ptr:

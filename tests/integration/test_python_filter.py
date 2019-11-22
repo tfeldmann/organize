@@ -21,12 +21,7 @@ def test_python(tmp_path, mock_echo):
     )
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
     mock_echo.assert_has_calls(
-        (
-            call("100"),
-            call("200"),
-            call("300"),
-        ),
-        any_order=True,
+        (call("100"), call("200"), call("300"),), any_order=True,
     )
 
 
@@ -74,13 +69,9 @@ def test_python_dict(tmp_path, mock_echo):
     )
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
     mock_echo.assert_has_calls(
-        (
-            call("100 foo"),
-            call("200 bar"),
-            call("300 baz"),
-        ),
-        any_order=True,
+        (call("100 foo"), call("200 bar"), call("300 baz"),), any_order=True,
     )
+
 
 def test_name_reverser(tmp_path):
     create_filesystem(

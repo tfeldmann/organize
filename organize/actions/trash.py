@@ -32,7 +32,7 @@ class Trash(Action):
     def pipeline(self, args):
         path = args.path
         simulate = args.simulate
-        from send2trash import send2trash
+        from send2trash import send2trash  # type: ignore
 
         self.print('Trash "%s"' % path)
         if not simulate:

@@ -1,5 +1,6 @@
 import operator
 import re
+from typing import Callable, Optional, Set, Tuple, Sequence, Dict
 
 from organize.utils import flattened_string_list, fullpath
 
@@ -19,7 +20,7 @@ SIZE_REGEX = re.compile(
 )
 
 
-def create_constrains(inp: str):
+def create_constrains(inp: str) -> Set[Tuple[Callable[[int, int], bool], int]]:
     """
     Given an input string it returns a list of tuples (comparison operator,
     number of bytes).
@@ -28,18 +29,20 @@ def create_constrains(inp: str):
     Calculation is in bytes, even if the 'b' is lowercase. If an 'i' is present
     we calculate base 1024.
     """
-    result = set()
+    result = set()  # type: Set[Tuple[Callable[[int, int], bool], int]]
     parts = inp.replace(" ", "").lower().split(",")
     for part in parts:
         try:
-            match = SIZE_REGEX.match(part).groupdict()
-            op = OPERATORS[match["op"]]
-            num = float(match["num"]) if "." in match["num"] else int(match["num"])
-            unit = match["unit"]
-            base = 1024 if unit.endswith("i") else 1000
-            exp = "kmgtpezy".index(unit[0]) + 1 if unit else 0
-            numbytes = num * base ** exp
-            result.add((op, numbytes))
+            reg_match = SIZE_REGEX.match(part)
+            if reg_match:
+                match = reg_match.groupdict()
+                op = OPERATORS[match["op"]]
+                num = float(match["num"]) if "." in match["num"] else int(match["num"])
+                unit = match["unit"]
+                base = 1024 if unit.endswith("i") else 1000
+                exp = "kmgtpezy".index(unit[0]) + 1 if unit else 0
+                numbytes = num * base ** exp
+                result.add((op, numbytes))
         except (AttributeError, KeyError, IndexError, ValueError, TypeError) as e:
             raise ValueError("Invalid size format: %s" % part) from e
     return result
@@ -101,19 +104,20 @@ class FileSize(Filter):
 
     """
 
-    def __init__(self, *conditions):
+    def __init__(self, *conditions: Sequence[str]) -> None:
         self.conditions = ", ".join(flattened_string_list(list(conditions)))
         self.constrains = create_constrains(self.conditions)
         if not self.constrains:
             raise ValueError("No size(s) given!")
 
-    def matches(self, filesize):
+    def matches(self, filesize) -> bool:
         return all(op(filesize, c_size) for op, c_size in self.constrains)
 
-    def pipeline(self, args):
+    def pipeline(self, args) -> Optional[Dict[str, Dict[str, int]]]:
         file_size = fullpath(args.path).stat().st_size
         if self.matches(file_size):
             return {"filesize": {"bytes": file_size}}
+        return None
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "FileSize({})".format(" ".join(self.conditions))

@@ -1,7 +1,9 @@
 import logging
 import os
 import shutil
+from typing import Mapping
 
+from organize.compat import Path
 from organize.utils import find_unused_filename, fullpath
 
 from .action import Action
@@ -90,7 +92,7 @@ class Move(Action):
         self.overwrite = overwrite
         self.counter_separator = counter_separator
 
-    def pipeline(self, args):
+    def pipeline(self, args) -> Mapping[str, Path]:
         path = args["path"]
         simulate = args["simulate"]
 
@@ -124,5 +126,5 @@ class Move(Action):
 
         return {"path": new_path}
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "Move(dest=%s, overwrite=%s)" % (self.dest, self.overwrite)

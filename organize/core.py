@@ -1,19 +1,29 @@
 import logging
 import shutil
-from collections import namedtuple
 from copy import deepcopy
 from textwrap import indent
+from typing import NamedTuple, Sequence, Set, Optional
 
-from colorama import Fore, Style
+from colorama import Fore, Style  # type: ignore
 
 from .actions.action import Action
+from .compat import Path
 from .filters.filter import Filter
 from .utils import DotDict, splitglob
 
 logger = logging.getLogger(__name__)
 SYSTEM_FILES = ("thumbs.db", "desktop.ini", ".DS_Store")
 
-Job = namedtuple("Job", "folderstr basedir path filters actions")
+Job = NamedTuple(
+    "Job",
+    [
+        ("folderstr", str),
+        ("basedir", Path),
+        ("path", Path),
+        ("filters", Sequence),
+        ("actions", Sequence),
+    ],
+)
 Job.__doc__ = """
     :param str folderstr: the original folder definition specified in the config
     :param Path basedir:  the job's base folder
@@ -30,18 +40,18 @@ class OutputHelper:
     filter or action prints something.
     """
 
-    def __init__(self):
-        self.not_found = set()
-        self.curr_folder = None
-        self.curr_path = None
-        self.prev_folder = None
-        self.prev_path = None
+    def __init__(self) -> None:
+        self.not_found = set()  # type: Set[str]
+        self.curr_folder = None # type: Optional[Path]
+        self.curr_path = None # type: Optional[Path]
+        self.prev_folder = None # type: Optional[Path]
+        self.prev_path = None # type: Optional[Path]
 
-    def set_location(self, folder, path):
+    def set_location(self, folder: Path, path: Path) -> None:
         self.curr_folder = folder
         self.curr_path = path
 
-    def pre_print(self):
+    def pre_print(self) -> None:
         """
         pre-print hook that is called everytime the moment before a filter or action is
         about to print something to the cli
@@ -56,7 +66,7 @@ class OutputHelper:
             print(indent("File %s%s:" % (Style.BRIGHT, self.curr_path), " " * 2))
             self.prev_path = self.curr_path
 
-    def print_path_not_found(self, folderstr):
+    def print_path_not_found(self, folderstr: str) -> None:
         if folderstr not in self.not_found:
             self.not_found.add(folderstr)
             msg = "Path not found: {}".format(folderstr)
@@ -67,7 +77,7 @@ class OutputHelper:
 output_helper = OutputHelper()
 
 
-def execute_rules(rules, simulate):
+def execute_rules(rules, simulate: bool):
     cols, _ = shutil.get_terminal_size(fallback=(79, 20))
     simulation_msg = Fore.GREEN + Style.BRIGHT + " SIMULATION ".center(cols, "~")
 

@@ -2,7 +2,7 @@ import inspect
 import logging
 import textwrap
 from collections import namedtuple
-from typing import List
+from typing import List, NamedTuple
 
 import yaml
 
@@ -24,7 +24,7 @@ yaml.add_multi_constructor("", default_yaml_cnst, Loader=yaml.SafeLoader)
 
 
 class Config:
-    def __init__(self, config: dict):  # type: (dict)
+    def __init__(self, config: dict):
         self.config = config
         self.filter_by_name = {
             name.lower(): getattr(filters, name)
@@ -56,7 +56,7 @@ class Config:
         if not (self.config and "rules" in self.config):
             raise self.NoRulesFoundError()
         data = {"rules": self.config["rules"]}
-        yaml.Dumper.ignore_aliases = lambda self, data: True
+        yaml.Dumper.ignore_aliases = lambda self, data: True  # type: ignore
         return yaml.dump(
             data, allow_unicode=True, default_flow_style=False, default_style="'"
         )

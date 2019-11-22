@@ -1,6 +1,8 @@
 import logging
 import textwrap
+from typing import Any, Mapping, Optional
 
+from organize.utils import DotDict
 from .action import Action
 
 logger = logging.getLogger(__name__)
@@ -60,10 +62,10 @@ class Python(Action):
                     webbrowser.open('https://www.google.com/search?q=%s' % path.stem)
     """
 
-    def __init__(self, code):
+    def __init__(self, code) -> None:
         self.code = textwrap.dedent(code)
 
-    def create_method(self, name, argnames, code):
+    def create_method(self, name, argnames, code) -> None:
         globals_ = globals().copy()
         globals_["print"] = self.print
         locals_ = locals().copy()
@@ -74,12 +76,15 @@ class Python(Action):
         )
         exec(funccode, globals_, locals_)  # pylint: disable=exec-used
 
-    def pipeline(self, args):
+    def pipeline(self, args: DotDict) -> Optional[Mapping[str, Any]]:
         simulate = args.simulate
         if simulate:
-            self.print("Code not run in simulation." % args)
-        else:
-            logger.info('Executing python:\n"""\n%s\n""", args=%s', self.code, args)
-            self.create_method(name="usercode", argnames=args.keys(), code=self.code)
-            self.print("Running python script.")
-            return self.usercode(**args)  # pylint: disable=no-member
+            self.print("Code not run in simulation. (Args: %s)" % args)
+            return None
+
+        logger.info('Executing python:\n"""\n%s\n""", args=%s', self.code, args)
+        self.create_method(name="usercode", argnames=args.keys(), code=self.code)
+        self.print("Running python script.")
+
+        result = self.usercode(**args) # type: ignore  # pylint: disable=no-member
+        return result
