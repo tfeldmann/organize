@@ -100,7 +100,7 @@ class Created(Filter):
     def _created(self, path: Path) -> datetime:
         # see https://stackoverflow.com/a/39501288/300783
         stat = path.stat()
-        time = 0  # type: SupportsFloat
+        time = 0
         if sys.platform.startswith("win"):
             time = stat.st_ctime
         else:
@@ -110,7 +110,7 @@ class Created(Filter):
                 # We're probably on Linux. No easy way to get creation dates here,
                 # so we'll settle for when its content was last modified.
                 time = stat.st_mtime
-        return datetime.fromtimestamp(time)
+        return datetime.fromtimestamp(float(time))
 
     def __str__(self):
         return "Created(delta=%s, select_mode=%s)" % (self.timedelta, self._mode)
