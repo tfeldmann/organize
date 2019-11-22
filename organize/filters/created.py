@@ -108,7 +108,7 @@ class Created(Filter):
             except AttributeError:
                 # We're probably on Linux. No easy way to get creation dates here,
                 # so we'll settle for when its content was last modified.
-                time = stat.st_mtime
+                time = int(stat.st_mtime)  # convert to int
         return datetime.fromtimestamp(time)
 
     def __str__(self):
