@@ -1,6 +1,6 @@
 import sys
 from datetime import datetime, timedelta
-from typing import Dict, Optional
+from typing import Dict, Optional, SupportsFloat
 
 from organize.compat import Path
 from organize.utils import DotDict
@@ -100,6 +100,7 @@ class Created(Filter):
     def _created(self, path: Path) -> datetime:
         # see https://stackoverflow.com/a/39501288/300783
         stat = path.stat()
+        time = 0  # type: SupportsFloat
         if sys.platform.startswith("win"):
             time = stat.st_ctime
         else:
@@ -108,7 +109,7 @@ class Created(Filter):
             except AttributeError:
                 # We're probably on Linux. No easy way to get creation dates here,
                 # so we'll settle for when its content was last modified.
-                time = int(stat.st_mtime)  # convert to int
+                time = stat.st_mtime
         return datetime.fromtimestamp(time)
 
     def __str__(self):
