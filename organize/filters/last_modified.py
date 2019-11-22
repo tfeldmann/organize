@@ -92,7 +92,7 @@ class LastModified(Filter):
             return {"lastmodified": file_modified}
 
     def _last_modified(self, path):
-        return datetime.fromtimestamp(float(path.stat().st_mtime))
+        return datetime.fromtimestamp(path.stat().st_mtime)
 
     def __str__(self):
         return "FileModified(delta=%s, select_mode=%s)" % (self.timedelta, self._mode)
