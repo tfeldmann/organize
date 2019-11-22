@@ -53,7 +53,7 @@ def test_basic(tmp_path, mock_echo):
     )
 
 
-@pytest.mark.skip(reason="TODO")
+@pytest.mark.skip(reason="TODO - template vars in filters not supported")
 def test_python_args(tmp_path, mock_echo):
     create_filesystem(
         tmp_path,
