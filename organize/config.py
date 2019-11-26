@@ -45,16 +45,12 @@ class Config:
         }
 
     @classmethod
-    def parse_yaml(cls, config: str) -> dict:
-        try:
-            return yaml.load(config, Loader=yaml.SafeLoader)
-        except yaml.YAMLError as e:
-            raise cls.ParsingError(e)
-
-    @classmethod
     def from_string(cls, config: str) -> "Config":
         dedented_config = textwrap.dedent(config)
-        return cls(cls.parse_yaml(dedented_config))
+        try:
+            return cls(yaml.load(dedented_config, Loader=yaml.SafeLoader))
+        except yaml.YAMLError as e:
+            raise cls.ParsingError(e)
 
     @classmethod
     def from_file(cls, path: Path) -> "Config":
