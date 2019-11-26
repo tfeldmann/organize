@@ -61,7 +61,7 @@ author = "Thomas Feldmann"
 # The short X.Y version.
 src_dir = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 sys.path.insert(0, src_dir)
-from organize import __version__
+from organize.__version__ import __version__
 
 version = __version__
 # The full version, including alpha/beta/rc tags.

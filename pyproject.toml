@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "organize-tool"
-version = "1.6"
+version = "1.6.2"
 description = "The file management automation tool"
 packages = [
     { include = "organize" },
@@ -40,7 +40,6 @@ exifread = "^2.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.6"
-mock = "^3.0"
 pylint = "^2.3"
 ipdb = "^0.12.0"
 

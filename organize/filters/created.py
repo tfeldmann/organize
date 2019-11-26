@@ -1,5 +1,10 @@
 import sys
 from datetime import datetime, timedelta
+from typing import Dict, Optional, SupportsFloat
+
+from organize.compat import Path
+from organize.utils import DotDict
+
 from .filter import Filter
 
 
@@ -72,7 +77,7 @@ class Created(Filter):
                   - move: '~/Documents/PDF/{created.year}/'
     """
 
-    def __init__(self, days=0, hours=0, minutes=0, seconds=0, mode="older"):
+    def __init__(self, days=0, hours=0, minutes=0, seconds=0, mode="older") -> None:
         self._mode = mode.strip().lower()
         if self._mode not in ("older", "newer"):
             raise ValueError("Unknown option for 'mode': must be 'older' or 'newer'.")
@@ -82,7 +87,7 @@ class Created(Filter):
             days=days, hours=hours, minutes=minutes, seconds=seconds
         )
 
-    def pipeline(self, args):
+    def pipeline(self, args: DotDict) -> Optional[Dict[str, datetime]]:
         created_date = self._created(args.path)
         reference_date = datetime.now() - self.timedelta
         match = (self.is_older and created_date <= reference_date) or (
@@ -90,10 +95,12 @@ class Created(Filter):
         )
         if match:
             return {"created": created_date}
+        return None
 
-    def _created(self, path):
+    def _created(self, path: Path) -> datetime:
         # see https://stackoverflow.com/a/39501288/300783
         stat = path.stat()
+        time = 0  # type: SupportsFloat
         if sys.platform.startswith("win"):
             time = stat.st_ctime
         else:
@@ -103,7 +110,7 @@ class Created(Filter):
                 # We're probably on Linux. No easy way to get creation dates here,
                 # so we'll settle for when its content was last modified.
                 time = stat.st_mtime
-        return datetime.fromtimestamp(time)
+        return datetime.fromtimestamp(float(time))
 
     def __str__(self):
         return "Created(delta=%s, select_mode=%s)" % (self.timedelta, self._mode)

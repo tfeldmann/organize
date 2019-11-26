@@ -1,17 +1,27 @@
 import inspect
 import logging
 import textwrap
-from collections import namedtuple
-from typing import List
+from typing import Generator, List, Mapping, NamedTuple, Sequence
 
 import yaml
 
 from . import actions, filters
+from .actions.action import Action
 from .compat import Path
+from .filters.filter import Filter
 from .utils import first_key, flatten
 
 logger = logging.getLogger(__name__)
-Rule = namedtuple("Rule", "filters actions folders subfolders system_files")
+Rule = NamedTuple(
+    "Rule",
+    [
+        ("filters", Sequence[Filter]),
+        ("actions", Sequence[Action]),
+        ("folders", Sequence[str]),
+        ("subfolders", bool),
+        ("system_files", bool),
+    ],
+)
 
 # disable yaml constructors for strings starting with exclamation marks
 # https://stackoverflow.com/a/13281292/300783
@@ -23,7 +33,7 @@ yaml.add_multi_constructor("", default_yaml_cnst, Loader=yaml.SafeLoader)
 
 
 class Config:
-    def __init__(self, config: dict):  # type: (dict)
+    def __init__(self, config: dict) -> None:
         self.config = config
         self.filter_by_name = {
             name.lower(): getattr(filters, name)
@@ -35,16 +45,12 @@ class Config:
         }
 
     @classmethod
-    def parse_yaml(cls, config: str) -> dict:
-        try:
-            return yaml.load(config, Loader=yaml.SafeLoader)
-        except yaml.YAMLError as e:
-            raise cls.ParsingError(e)
-
-    @classmethod
     def from_string(cls, config: str) -> "Config":
         dedented_config = textwrap.dedent(config)
-        return cls(cls.parse_yaml(dedented_config))
+        try:
+            return cls(yaml.load(dedented_config, Loader=yaml.SafeLoader))
+        except yaml.YAMLError as e:
+            raise cls.ParsingError(e)
 
     @classmethod
     def from_file(cls, path: Path) -> "Config":
@@ -55,13 +61,13 @@ class Config:
         if not (self.config and "rules" in self.config):
             raise self.NoRulesFoundError()
         data = {"rules": self.config["rules"]}
-        yaml.Dumper.ignore_aliases = lambda self, data: True
+        yaml.Dumper.ignore_aliases = lambda self, data: True  # type: ignore
         return yaml.dump(
             data, allow_unicode=True, default_flow_style=False, default_style="'"
         )
 
     @staticmethod
-    def parse_folders(rule_item):
+    def parse_folders(rule_item) -> Generator[str, None, None]:
         # the folder list is flattened so we can use encapsulated list
         # definitions in the config file.
         yield from flatten(rule_item["folders"])
@@ -92,7 +98,7 @@ class Config:
             return Cls(**args)
         return Cls(args)
 
-    def instantiate_filters(self, rule_item):
+    def instantiate_filters(self, rule_item: Mapping) -> Generator[Filter, None, None]:
         # filter list can be empty
         try:
             filter_list = rule_item["filters"]
@@ -104,9 +110,10 @@ class Config:
             raise self.FiltersNoListError()
 
         for filter_item in filter_list:
-            # filter with arguments
             if filter_item is None:
-                yield None
+                # TODO: don't know what this should be
+                continue
+            # filter with arguments
             elif isinstance(filter_item, dict):
                 name = first_key(filter_item)
                 args = filter_item[name]
@@ -120,7 +127,7 @@ class Config:
             else:
                 raise self.Error("Unknown filter: %s" % filter_item)
 
-    def instantiate_actions(self, rule_item):
+    def instantiate_actions(self, rule_item: Mapping) -> Generator[Action, None, None]:
         action_list = rule_item["actions"]
         if not isinstance(action_list, list):
             raise self.ActionsNoListError()

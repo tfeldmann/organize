@@ -1,19 +1,20 @@
 from organize.actions import Echo
 from organize.compat import Path
 
-from mock import patch
+from unittest.mock import patch
+
 
 def test_echo_basic():
     echo = Echo("Hello World")
     with patch.object(echo, "print") as m:
-        echo.run(path=Path('~'), simulate=False)
+        echo.run(path=Path("~"), simulate=False)
         m.assert_called_with("Hello World")
 
 
 def test_echo_args():
     echo = Echo("This is the year {year}")
     with patch.object(echo, "print") as m:
-        echo.run(path=Path('~'), simulate=False, year=2017)
+        echo.run(path=Path("~"), simulate=False, year=2017)
         m.assert_called_with("This is the year 2017")
 
 

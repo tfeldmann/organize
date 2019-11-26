@@ -1,4 +1,4 @@
-from mock import call
+from unittest.mock import call
 
 from conftest import create_filesystem
 from organize.cli import main
@@ -21,9 +21,6 @@ def test_multiple_regex_placeholders(tmp_path, mock_echo):
     )
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
     mock_echo.assert_has_calls(
-        (
-            call("test 123 test-123 jpg"),
-            call("other 456 other-456 pdf"),
-        ),
+        (call("test 123 test-123 jpg"), call("other 456 other-456 pdf"),),
         any_order=True,
     )

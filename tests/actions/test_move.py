@@ -163,8 +163,8 @@ def test_dont_keep_case_sensitive(
     mock_samefile.return_value = True
     move = Move(dest="~/TEST.PY")
     updates = move.run(**ARGS)
-    mock_mkdir.assert_called()
+    assert mock_mkdir.call_count > 0
     mock_exists.assert_called_with()
     mock_trash.assert_not_called()
-    mock_move.assert_called()
+    assert mock_move.call_count > 0
     assert updates is not None

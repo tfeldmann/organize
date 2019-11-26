@@ -1,20 +1,30 @@
 import logging
 import shutil
-from collections import namedtuple
 from copy import deepcopy
 from textwrap import indent
+from typing import Generator, Iterable, List, NamedTuple, Optional, Sequence, Set, Tuple
 
-from colorama import Fore, Style
+from colorama import Fore, Style  # type: ignore
 
 from .actions.action import Action
+from .compat import Path
+from .config import Rule
 from .filters.filter import Filter
 from .utils import DotDict, splitglob
 
 logger = logging.getLogger(__name__)
 SYSTEM_FILES = ("thumbs.db", "desktop.ini", ".DS_Store")
 
-
-Job = namedtuple("Job", "folderstr basedir path filters actions")
+Job = NamedTuple(
+    "Job",
+    [
+        ("folderstr", str),
+        ("basedir", Path),
+        ("path", Path),
+        ("filters", Sequence[Filter]),
+        ("actions", Sequence[Action]),
+    ],
+)
 Job.__doc__ = """
     :param str folderstr: the original folder definition specified in the config
     :param Path basedir:  the job's base folder
@@ -24,32 +34,71 @@ Job.__doc__ = """
 """
 
 
-def all_files_for_rule(rule):
-    files = {}
-    for folderstr in rule.folders:
-        folderstr = folderstr.strip()
-        exclude_flag = folderstr.startswith("!")
-        basedir, globstr = splitglob(folderstr.lstrip("!").strip())
-        if basedir.is_dir():
-            if not globstr:
-                globstr = "**/*" if rule.subfolders else "*"
-        elif basedir.is_file():
-            # this allows specifying single files
-            globstr = basedir.name
-            basedir = basedir.parent
-        else:
-            raise ValueError("Path not found: {}".format(folderstr))
-        for path in basedir.glob(globstr):
-            if path.is_file() and (rule.system_files or path.name not in SYSTEM_FILES):
-                if not exclude_flag:
-                    files[path] = (folderstr, basedir)
-                elif path in files:
-                    del files[path]
-    for path, (folderstr, basedir) in files.items():
-        yield (folderstr, basedir, path)
+class OutputHelper:
+    """
+    class to track the current folder / file and print only changes.
+    This is needed because we only want to output the current folder and file if the
+    filter or action prints something.
+    """
+
+    def __init__(self) -> None:
+        self.not_found = set()  # type: Set[str]
+        self.curr_folder = None  # type: Optional[Path]
+        self.curr_path = None  # type: Optional[Path]
+        self.prev_folder = None  # type: Optional[Path]
+        self.prev_path = None  # type: Optional[Path]
+
+    def set_location(self, folder: Path, path: Path) -> None:
+        self.curr_folder = folder
+        self.curr_path = path
+
+    def pre_print(self) -> None:
+        """
+        pre-print hook that is called everytime the moment before a filter or action is
+        about to print something to the cli
+        """
+        if self.curr_folder != self.prev_folder:
+            if self.prev_folder is not None:
+                print()  # ensure newline between folders
+            print("Folder %s%s:" % (Style.BRIGHT, self.curr_folder))
+            self.prev_folder = self.curr_folder
+
+        if self.curr_path != self.prev_path:
+            print(indent("File %s%s:" % (Style.BRIGHT, self.curr_path), " " * 2))
+            self.prev_path = self.curr_path
+
+    def print_path_not_found(self, folderstr: str) -> None:
+        if folderstr not in self.not_found:
+            self.not_found.add(folderstr)
+            msg = "Path not found: {}".format(folderstr)
+            print(Fore.YELLOW + Style.BRIGHT + msg)
+            logger.warning(msg)
 
 
-def create_jobs(rules):
+output_helper = OutputHelper()
+
+
+def execute_rules(rules: Iterable[Rule], simulate: bool) -> None:
+    cols, _ = shutil.get_terminal_size(fallback=(79, 20))
+    simulation_msg = Fore.GREEN + Style.BRIGHT + " SIMULATION ".center(cols, "~")
+
+    jobs = create_jobs(rules=rules)
+
+    if simulate:
+        print(simulation_msg)
+
+    failed, succeded = run_jobs(jobs=jobs, simulate=simulate)
+    if succeded == failed == 0:
+        msg = "Nothing to do."
+        logger.info(msg)
+        print(msg)
+
+    if simulate:
+        print(simulation_msg)
+
+
+def create_jobs(rules: Iterable[Rule]) -> Generator[Job, None, None]:
+    """ creates `Job` data structures for every path handled in each rule """
     for rule in rules:
         for folderstr, basedir, path in all_files_for_rule(rule):
             yield Job(
@@ -61,7 +110,59 @@ def create_jobs(rules):
             )
 
 
-def filter_pipeline(filters, args):
+def all_files_for_rule(rule: Rule) -> Generator[Tuple[str, Path, Path], None, None]:
+    files = dict()
+    for folderstr in rule.folders:
+        folderstr = folderstr.strip()
+
+        # check whether the file / folder is prefixed with `!` to be excluded
+        exclude_flag = folderstr.startswith("!")
+
+        # assemble glob expression
+        basedir, globstr = splitglob(folderstr.lstrip("!").strip())
+        if basedir.is_dir():
+            if not globstr:
+                globstr = "**/*" if rule.subfolders else "*"
+        elif basedir.is_file():
+            # this allows specifying single files
+            globstr = basedir.name
+            basedir = basedir.parent
+        else:
+            output_helper.print_path_not_found(folderstr)
+            continue
+
+        # iterate files in basedir and add to / remove from result dict
+        for path in basedir.glob(globstr):
+            if path.is_file() and (rule.system_files or path.name not in SYSTEM_FILES):
+                if not exclude_flag:
+                    files[path] = (folderstr, basedir)
+                elif path in files:
+                    del files[path]
+
+    for path, (folderstr, basedir) in files.items():
+        yield (folderstr, basedir, path)
+
+
+def run_jobs(jobs: Iterable[Job], simulate: bool) -> List[int]:
+    """ :returns: The number of successfully handled files """
+    count = [0, 0]
+    Action.pre_print_hook = output_helper.pre_print
+    Filter.pre_print_hook = output_helper.pre_print
+
+    for job in sorted(jobs, key=lambda x: (x.folderstr, x.basedir, x.path)):
+        args = DotDict(path=job.path, basedir=job.basedir, simulate=simulate)
+        # the relative path should be kept even if the path changes.
+        args["relative_path"] = args["path"].relative_to(args["basedir"])
+
+        output_helper.set_location(job.basedir, args.relative_path)
+        match = filter_pipeline(filters=job.filters, args=args)
+        if match:
+            success = action_pipeline(actions=job.actions, args=args)
+            count[success] += 1
+    return count
+
+
+def filter_pipeline(filters: Iterable[Filter], args: DotDict) -> bool:
     """
     run the filter pipeline.
     Returns True on a match, False otherwise and updates `args` in the process.
@@ -82,7 +183,7 @@ def filter_pipeline(filters, args):
     return True
 
 
-def action_pipeline(actions, args):
+def action_pipeline(actions: Iterable[Action], args: DotDict) -> bool:
     for action in actions:
         try:
             updates = action.pipeline(deepcopy(args))
@@ -94,71 +195,3 @@ def action_pipeline(actions, args):
             action.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
             return False
     return True
-
-
-class OutputHelper:
-    """
-    class to track the current folder / file and print only changes.
-    This is needed because we only want to output the current folder and file if the
-    filter or action prints something.
-    """
-
-    def __init__(self):
-        self.curr_folder = None
-        self.curr_path = None
-        self.prev_folder = None
-        self.prev_path = None
-
-    def set_location(self, folder, path):
-        self.curr_folder = folder
-        self.curr_path = path
-
-    def pre_print(self):
-        if self.curr_folder != self.prev_folder:
-            if self.prev_folder is not None:
-                print()  # ensure newline between folders
-            print("Folder %s%s:" % (Style.BRIGHT, self.curr_folder))
-            self.prev_folder = self.curr_folder
-
-        if self.curr_path != self.prev_path:
-            print(indent("File %s%s:" % (Style.BRIGHT, self.curr_path), " " * 2))
-            self.prev_path = self.curr_path
-
-
-def run_jobs(jobs, simulate):
-    """ :returns: The number of successfully handled files """
-    count = [0, 0]
-    output_helper = OutputHelper()
-    Action.pre_print_hook = output_helper.pre_print
-    Filter.pre_print_hook = output_helper.pre_print
-
-    for job in sorted(jobs, key=lambda x: (x.folderstr, x.basedir, x.path)):
-        args = DotDict(path=job.path, basedir=job.basedir, simulate=simulate)
-        # the relative path should be kept even if the path changes.
-        args.relative_path = args.path.relative_to(args.basedir)
-
-        output_helper.set_location(job.basedir, args.relative_path)
-        match = filter_pipeline(filters=job.filters, args=args)
-        if match:
-            success = action_pipeline(actions=job.actions, args=args)
-            count[success] += 1
-    return count
-
-
-def execute_rules(rules, simulate):
-    cols, _ = shutil.get_terminal_size(fallback=(79, 20))
-    simulation_msg = Fore.GREEN + Style.BRIGHT + " SIMULATION ".center(cols, "~")
-
-    jobs = create_jobs(rules=rules)
-
-    if simulate:
-        print(simulation_msg)
-
-    failed, succeded = run_jobs(jobs=jobs, simulate=simulate)
-    if succeded == failed == 0:
-        msg = "Nothing to do."
-        logger.info(msg)
-        print(msg)
-
-    if simulate:
-        print(simulation_msg)

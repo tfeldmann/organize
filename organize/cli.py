@@ -27,11 +27,13 @@ Full documentation: https://organize.readthedocs.io
 import logging
 import os
 import sys
+from typing import Union
 
-from colorama import Fore, Style
-from docopt import docopt
+from colorama import Fore, Style  # type: ignore
+from docopt import docopt  # type: ignore
 
-from . import CONFIG_DIR, CONFIG_PATH, LOG_PATH, __version__
+from . import CONFIG_DIR, CONFIG_PATH, LOG_PATH
+from .__version__ import __version__
 from .compat import Path
 from .config import Config
 from .core import execute_rules
@@ -85,7 +87,7 @@ def main(argv=None):
             sys.exit(1)
 
 
-def config_edit(config_path):
+def config_edit(config_path: Path) -> None:
     """ open the config file in $EDITOR or default text editor """
     # attention: the env variable might contain command line arguments.
     # https://github.com/tfeldmann/organize/issues/24
@@ -96,14 +98,14 @@ def config_edit(config_path):
         open_in_filemanager(config_path)
 
 
-def open_in_filemanager(path):
+def open_in_filemanager(path: Path) -> None:
     """ opens the given path in file manager, using the default application """
-    import webbrowser
+    import webbrowser  # pylint: disable=import-outside-toplevel
 
     webbrowser.open(path.as_uri())
 
 
-def config_debug(config_path):
+def config_debug(config_path: Path) -> None:
     """ prints the config with resolved yaml aliases, checks rules syntax and checks
         whether the given folders exist
     """
@@ -134,10 +136,10 @@ def config_debug(config_path):
         print(Fore.GREEN + Style.BRIGHT + "No config problems found.")
 
 
-def list_actions_and_filters():
+def list_actions_and_filters() -> None:
     """ Prints a list of available actions and filters """
-    import inspect
-    from organize import filters, actions
+    import inspect  # pylint: disable=import-outside-toplevel
+    from organize import filters, actions  # pylint: disable=import-outside-toplevel
 
     print(Style.BRIGHT + "Filters:")
     for name, _ in inspect.getmembers(filters, inspect.isclass):
@@ -148,5 +150,5 @@ def list_actions_and_filters():
         print("  " + name)
 
 
-def print_error(e):
+def print_error(e: Union[Exception, str]) -> None:
     print(Style.BRIGHT + Fore.RED + "ERROR:" + Style.RESET_ALL + " %s" % e)

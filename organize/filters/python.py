@@ -1,4 +1,5 @@
 import textwrap
+from typing import Any, Dict, Optional, Sequence
 
 from .filter import Filter
 
@@ -86,12 +87,15 @@ class Python(Filter):
 
     """
 
-    def __init__(self, code):
+    def __init__(self, code) -> None:
         self.code = textwrap.dedent(code)
         if "return" not in self.code:
             raise ValueError("No return statement found in your code!")
 
-    def create_method(self, name, argnames, code):
+    def usercode(self, *args, **kwargs) -> Optional[Any]:
+        pass  # will be overwritten by `create_method`
+
+    def create_method(self, name: str, argnames: Sequence[str], code: str) -> None:
         globals_ = globals().copy()
         globals_["print"] = self.print
         locals_ = locals().copy()
@@ -103,8 +107,9 @@ class Python(Filter):
         )
         exec(funccode, globals_, locals_)  # pylint: disable=exec-used
 
-    def pipeline(self, args):
+    def pipeline(self, args) -> Optional[Dict[str, Any]]:
         self.create_method(name="usercode", argnames=args.keys(), code=self.code)
-        result = self.usercode(**args)  # pylint: disable=no-member
+        result = self.usercode(**args)  # pylint: disable=assignment-from-no-return
         if result not in (False, None):
             return {"python": result}
+        return None

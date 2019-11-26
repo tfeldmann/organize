@@ -3,6 +3,13 @@
 ## WIP
 - Placeholder variable properties are now case insensitve
 
+## v1.6.2 (2019-11-22)
+- Fix `Rename` action (`'PosixPath' object has no attribute 'items'`).
+- Use type hints everywhere.
+
+## v1.6.1 (2019-10-25)
+- Shows a warning for missing folders instead of raising an exception.
+
 ## v1.6 (2019-08-19)
 - Added filter: `Python`
 - Added filter: `FileSize`

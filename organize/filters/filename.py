@@ -1,3 +1,7 @@
+from typing import Any, List, Mapping, Union
+
+from organize.compat import Path
+
 from .filter import Filter
 
 
@@ -71,13 +75,15 @@ class Filename(Filter):
                   - echo: 'Found a match.'
     """
 
-    def __init__(self, startswith="", contains="", endswith="", case_sensitive=True):
+    def __init__(
+        self, startswith="", contains="", endswith="", case_sensitive=True
+    ) -> None:
         self.startswith = self.create_list(startswith, case_sensitive)
         self.contains = self.create_list(contains, case_sensitive)
         self.endswith = self.create_list(endswith, case_sensitive)
         self.case_sensitive = case_sensitive
 
-    def matches(self, path):
+    def matches(self, path: Path) -> bool:
         filename = path.stem
         if not self.case_sensitive:
             filename = filename.lower()
@@ -87,11 +93,11 @@ class Filename(Filter):
             and any(filename.endswith(x) for x in self.endswith)
         )
 
-    def pipeline(self, args):
-        return self.matches(args.path)
+    def pipeline(self, args: Mapping) -> bool:
+        return self.matches(args["path"])
 
     @staticmethod
-    def create_list(x, case_sensitive):
+    def create_list(x: Union[str, List[Any]], case_sensitive: bool) -> List[str]:
         if isinstance(x, str):
             x = [x]
         x = [str(x) for x in x]
