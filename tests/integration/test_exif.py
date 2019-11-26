@@ -21,9 +21,11 @@ def test_exif(tmp_path):
         rules:
         - folders: files
           filters:
+            - extension: jpg
             - exif
           actions:
             - move: 'files/{exif.image.model}/'
+            - echo: "{exif}"
         """,
     )
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
@@ -35,4 +37,62 @@ def test_exif(tmp_path):
         "iPhone 6s/3.jpg",
         "iPhone 6s/4.jpg",
         "iPhone 5s/5.jpg",
+    )
+
+
+def test_exif_filter_single(tmp_path):
+    """ Filter by camera """
+    copy_resources(tmp_path)
+    create_filesystem(
+        tmp_path,
+        files=["nothing.jpg"],
+        config="""
+        rules:
+        - folders: files
+          filters:
+            - exif:
+                image.model: Nikon D3200
+          actions:
+            - move: 'files/{exif.image.model}/'
+        """,
+    )
+    main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
+    assertdir(
+        tmp_path,
+        "nothing.jpg",
+        "1.jpg",
+        "NIKON D3200/2.jpg",
+        "3.jpg",
+        "4.jpg",
+        "5.jpg",
+    )
+
+
+def test_exif_filter_multiple(tmp_path):
+    """ Filter by camera """
+    copy_resources(tmp_path)
+    create_filesystem(
+        tmp_path,
+        files=["nothing.jpg"],
+        config="""
+        rules:
+        - folders: files
+          filters:
+            - exif:
+                image.make: Apple
+                exif.lensmodel: "iPhone 6s back camera 4.15mm f/2.2"
+          actions:
+            - echo: "{exif.image}"
+            - move: 'files/chosen/'
+        """,
+    )
+    main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
+    assertdir(
+        tmp_path,
+        "nothing.jpg",
+        "1.jpg",
+        "2.jpg",
+        "chosen/3.jpg",
+        "chosen/4.jpg",
+        "5.jpg",
     )
