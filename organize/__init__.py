@@ -54,6 +54,8 @@ handlers:
 root:
     level: DEBUG
     handlers: [file]
+exifread:
+    level: INFO
 """.format(
     filename=str(LOG_PATH)
 )

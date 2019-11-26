@@ -1,10 +1,12 @@
 import os
-
-import pytest
+from typing import Iterable, Tuple, Union
 from unittest.mock import patch
 
+import pytest
+
 from organize.compat import Path
-from organize.utils import DotDict
+
+TESTS_FOLDER = os.path.dirname(os.path.abspath(__file__))
 
 
 def create_filesystem(tmp_path, files, config):
