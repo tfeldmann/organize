@@ -25,7 +25,7 @@ def test_codepost_usecase(tmp_path):
                     "Bean": "dbean@aol.com",
                     "Frey": "l-frey@frey.org",
                 }
-                if regex.lastname in emails: # get emails from wherever
+                if regex.lastname in emails:
                     return {"mail": emails[regex.lastname]}
           actions:
             - rename: '{python.mail}.txt'
@@ -38,5 +38,5 @@ def test_codepost_usecase(tmp_path):
         "acornish@google.com.txt",
         "dbean@aol.com.txt",
         "l-frey@frey.org.txt",
-        "Someunknown-User.txt",  # no email found
+        "Someunknown-User.txt",  # no email found -> keep file
     )
