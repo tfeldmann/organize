@@ -137,7 +137,7 @@ def publish(args):
     if ask_confirm("Create github release?"):
         response = requests.post(
             f"{GITHUB_API_ENDPOINT}/releases",
-            auth=(input("Benutzer: "), getpass.getpass()),
+            auth=(input("Benutzer: "), getpass.getpass(prompt="API token: ")),
             json={
                 "tag_name": f"v{version}",
                 "target_commitish": "master",
