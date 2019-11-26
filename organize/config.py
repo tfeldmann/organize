@@ -1,7 +1,7 @@
 import inspect
 import logging
 import textwrap
-from typing import Generator, List, Mapping, NamedTuple, Optional, Sequence, Union
+from typing import Generator, List, Mapping, NamedTuple, Sequence
 
 import yaml
 
@@ -98,7 +98,7 @@ class Config:
             return Cls(**args)
         return Cls(args)
 
-    def instantiate_filters(self, rule_item) -> Generator[Filter, None, None]:
+    def instantiate_filters(self, rule_item: Mapping) -> Generator[Filter, None, None]:
         # filter list can be empty
         try:
             filter_list = rule_item["filters"]
@@ -127,7 +127,7 @@ class Config:
             else:
                 raise self.Error("Unknown filter: %s" % filter_item)
 
-    def instantiate_actions(self, rule_item) -> Generator[Action, None, None]:
+    def instantiate_actions(self, rule_item: Mapping) -> Generator[Action, None, None]:
         action_list = rule_item["actions"]
         if not isinstance(action_list, list):
             raise self.ActionsNoListError()
