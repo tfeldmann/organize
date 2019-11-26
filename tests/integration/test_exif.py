@@ -68,6 +68,35 @@ def test_exif_filter_single(tmp_path):
     )
 
 
+def test_exif_filter_tag_exists(tmp_path):
+    """ Filter by GPS """
+    copy_resources(tmp_path)
+    create_filesystem(
+        tmp_path,
+        files=["nothing.jpg"],
+        config="""
+        rules:
+        - folders: files
+          filters:
+            - exif:
+               gps.gpsdate
+          actions:
+            - echo: "{exif.gps.gpsdate}"
+            - move: 'files/has_gps/'
+        """,
+    )
+    main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
+    assertdir(
+        tmp_path,
+        "nothing.jpg",
+        "1.jpg",
+        "2.jpg",
+        "has_gps/3.jpg",
+        "has_gps/4.jpg",
+        "has_gps/5.jpg",
+    )
+
+
 def test_exif_filter_multiple(tmp_path):
     """ Filter by camera """
     copy_resources(tmp_path)
