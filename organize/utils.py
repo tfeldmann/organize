@@ -81,7 +81,7 @@ class DotDict(dict):
         except KeyError as ex:
             raise AttributeError("No attribute called: %s" % key) from ex
 
-    def __setattr__(self, key, value):
+    def __setattr__(self, key, value) -> None:
         self[self.normkey(key)] = value
 
     def update(self, other):
