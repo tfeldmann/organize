@@ -36,7 +36,6 @@ class Extension(Filter):
         - ``{extension.upper}`` -- the file extension in UPPERCASE
 
     Examples:
-
         - Match a single file extension:
 
           .. code-block:: yaml

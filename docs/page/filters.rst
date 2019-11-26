@@ -4,6 +4,14 @@
 Filters
 =======
 
+Created
+-------
+.. autoclass:: Created
+
+Exif
+----
+.. autoclass:: Exif
+
 Extension
 ---------
 .. autoclass:: Extension
@@ -20,13 +28,9 @@ LastModified
 ------------
 .. autoclass:: LastModified
 
-Created
--------
-.. autoclass:: Created
-
 Python
 ------
-.. autoclass:: Python
+.. autoclass:: filters.Python
 
 Regex
 -----

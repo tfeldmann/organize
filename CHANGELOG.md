@@ -1,5 +1,9 @@
 # Changelog
 
+## WIP
+- Added filter `Exif` to filter by image exif data.
+- Placeholder variable properties are now case insensitve.
+
 ## v1.6.2 (2019-11-22)
 - Fix `Rename` action (`'PosixPath' object has no attribute 'items'`).
 - Use type hints everywhere.

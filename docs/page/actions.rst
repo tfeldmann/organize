@@ -4,30 +4,30 @@
 Actions
 =======
 
+Copy
+----
+.. autoclass:: Copy(dest, [overwrite=False], [counter_separator=' '])
+
+Echo
+----
+.. autoclass:: Echo
+
 Move
 ----
 .. autoclass:: Move(dest, [overwrite=False], [counter_separator=' '])
 
-Copy
-----
-.. autoclass:: Copy(dest, [overwrite=False], [counter_separator=' '])
+Python
+------
+.. autoclass:: actions.Python
 
 Rename
 ------
 .. autoclass:: Rename(dest, [overwrite=False], [counter_separator=' '])
 
-Trash
------
-.. autoclass:: Trash
-
 Shell
 -----
 .. autoclass:: Shell
 
-Python
-------
-.. autoclass:: Python
-
-Echo
-----
-.. autoclass:: Echo
+Trash
+-----
+.. autoclass:: Trash
