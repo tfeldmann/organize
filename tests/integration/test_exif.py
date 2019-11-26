@@ -6,7 +6,9 @@ from organize.cli import main
 
 
 def copy_resources(tmp_path):
-    shutil.copytree(src=os.path.join(TESTS_FOLDER, "resources"), dst=tmp_path / "files")
+    src = os.path.join(TESTS_FOLDER, "resources")
+    dst = os.path.join(str(tmp_path), "files")
+    shutil.copytree(src=src, dst=dst)
 
 
 def test_exif(tmp_path):
