@@ -1,10 +1,10 @@
 # https://stackoverflow.com/a/36113168/300783
 import hashlib
 import os
-import sys
 from collections import defaultdict
+from typing import DefaultDict as DDict
+from typing import Dict, List, Optional, Set, Union
 
-from organize.compat import Path
 from organize.utils import fullpath
 
 from .filter import Filter
@@ -30,17 +30,17 @@ def get_hash(filename, first_chunk_only=False, hash_algo=hashlib.sha1):
     return hashobj.digest()
 
 
-class Duplicates(Filter):
+class Duplicate(Filter):
     def __init__(self) -> None:
-        self.files_by_size = defaultdict(list)
-        self.files_by_small_hash = defaultdict(list)
-        self.files_by_full_hash = dict()
+        self.files_by_size = defaultdict(list)  # type: DDict[int, List[str]]
+        self.files_by_small_hash = defaultdict(list)  # type: DDict[bytes, List[str]]
+        self.files_by_full_hash = dict()  # type: Dict[bytes, str]
 
         # we keep track of which files we already computed the hashes for so we only do
         # that once.
-        self.small_hash_known = set()
+        self.small_hash_known = set()  # type: Set[str]
 
-    def register_small_hash(self, path):
+    def register_small_hash(self, path: str) -> Optional[bytes]:
         if path not in self.small_hash_known:
             small_hash = get_hash(path, first_chunk_only=True)
             self.files_by_small_hash[small_hash].append(path)
@@ -48,7 +48,7 @@ class Duplicates(Filter):
             return small_hash
         return None  # already registered
 
-    def register_full_hash(self, path):
+    def register_full_hash(self, path: str) -> Optional[str]:
         full_hash = get_hash(path, first_chunk_only=False)
         duplicate = self.files_by_full_hash.get(full_hash)
         if duplicate:
@@ -56,14 +56,12 @@ class Duplicates(Filter):
         self.files_by_full_hash[full_hash] = path
         return None
 
-    def matches(self, path: str):
-        filepath = fullpath(path)
-        file_size = filepath.stat().st_size
-
+    def matches(self, path: str) -> Union[bool, Dict[str, str]]:
         # Check for files with similar size
+        file_size = os.path.getsize(path)
         same_size = self.files_by_size[file_size]
         candidates_fsize = same_size[:]
-        same_size.append(filepath)
+        same_size.append(path)
         if not candidates_fsize:
             # the file is unique in size and cannot be a duplicate
             return False
@@ -72,20 +70,22 @@ class Duplicates(Filter):
         # bytes
         for candidate in candidates_fsize:
             self.register_small_hash(candidate)
-        small_hash = self.register_small_hash(filepath)
+        small_hash = self.register_small_hash(path)
         if not small_hash:
             # the file has already been handled.
             return False
 
         candidates_small = self.files_by_small_hash[small_hash][:-1]
         for candidate in candidates_small:
-            self.register_full_hash(candidate)
-        duplicate = self.register_full_hash(filepath)
+            dup = self.register_full_hash(candidate)
+            # assert not dup, "full hash of %s already registered" % dup
+        duplicate = self.register_full_hash(path)
         if duplicate:
-            return {"duplicates": {"file1": filepath, "file2": duplicate}}
+            return {"duplicate": duplicate}
+        return False
 
     def pipeline(self, args):
         return self.matches(str(fullpath(args["path"])))
 
     def __str__(self) -> str:
-        return "Duplicates()"
+        return "Duplicate()"
