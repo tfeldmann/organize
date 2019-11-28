@@ -11,11 +11,12 @@ def test_duplicate_smallfiles(tmp_path):
         files=[
             ("unique.txt", "I'm unique."),
             ("unique_too.txt", "I'm unique, too."),
-            ("source.txt", CONTENT_SMALL),
+            ("a.txt", CONTENT_SMALL),
             ("copy2.txt", CONTENT_SMALL),
             ("other/copy.txt", CONTENT_SMALL),
             ("other/copy.jpg", CONTENT_SMALL),
-            ("other/large_unique.txt", CONTENT_LARGE),
+            ("large_unique.txt", CONTENT_LARGE),
+            ("other/large.txt", CONTENT_LARGE),
         ],
         config="""
         rules:
@@ -29,7 +30,7 @@ def test_duplicate_smallfiles(tmp_path):
     )
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
     assertdir(
-        tmp_path, "unique.txt", "unique_too.txt", "source.txt", "large_unique.txt"
+        tmp_path, "unique.txt", "unique_too.txt", "a.txt", "large_unique.txt"
     )
 
 
@@ -39,7 +40,7 @@ def test_duplicate_largefiles(tmp_path):
         files=[
             ("unique.txt", CONTENT_LARGE + "1"),
             ("unique_too.txt", CONTENT_LARGE + "2"),
-            ("source.txt", CONTENT_LARGE),
+            ("a.txt", CONTENT_LARGE),
             ("copy2.txt", CONTENT_LARGE),
             ("other/copy.txt", CONTENT_LARGE),
             ("other/copy.jpg", CONTENT_LARGE),
@@ -56,4 +57,4 @@ def test_duplicate_largefiles(tmp_path):
         """,
     )
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
-    assertdir(tmp_path, "unique.txt", "unique_too.txt", "source.txt")
+    assertdir(tmp_path, "unique.txt", "unique_too.txt", "a.txt")

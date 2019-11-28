@@ -32,34 +32,24 @@ def get_hash(filename, first_chunk_only=False, hash_algo=hashlib.sha1):
 
 class Duplicate(Filter):
     def __init__(self) -> None:
-        self.files_by_size = defaultdict(list)  # type: DDict[int, List[str]]
-        self.files_by_small_hash = defaultdict(list)  # type: DDict[bytes, List[str]]
-        self.files_by_full_hash = dict()  # type: Dict[bytes, str]
+        self.files_for_size = defaultdict(list)  # type: DDict[int, List[str]]
+        self.files_for_small_hash = defaultdict(list)  # type: DDict[bytes, List[str]]
+        self.file_for_full_hash = dict()  # type: Dict[bytes, str]
 
         # we keep track of which files we already computed the hashes for so we only do
         # that once.
         self.small_hash_known = set()  # type: Set[str]
-
-    def register_small_hash(self, path: str) -> Optional[bytes]:
-        if path not in self.small_hash_known:
-            small_hash = get_hash(path, first_chunk_only=True)
-            self.files_by_small_hash[small_hash].append(path)
-            self.small_hash_known.add(path)
-            return small_hash
-        return None  # already registered
-
-    def register_full_hash(self, path: str) -> Optional[str]:
-        full_hash = get_hash(path, first_chunk_only=False)
-        duplicate = self.files_by_full_hash.get(full_hash)
-        if duplicate:
-            return duplicate
-        self.files_by_full_hash[full_hash] = path
-        return None
+        self.full_hash_known = set()  # type: Set[str]
 
     def matches(self, path: str) -> Union[bool, Dict[str, str]]:
-        # Check for files with similar size
+        # the exact same path has already been handled. This might happen if path is a
+        # symlink which resolves to file that is already known. We skip these.
+        if path in self.small_hash_known:
+            return False
+
+        # Check for files with equal size
         file_size = os.path.getsize(path)
-        same_size = self.files_by_size[file_size]
+        same_size = self.files_for_size[file_size]
         candidates_fsize = same_size[:]
         same_size.append(path)
         if not candidates_fsize:
@@ -68,20 +58,38 @@ class Duplicate(Filter):
 
         # For all other files with the same file size, get their hash of the first 1024
         # bytes
-        for candidate in candidates_fsize:
-            self.register_small_hash(candidate)
-        small_hash = self.register_small_hash(path)
-        if not small_hash:
-            # the file has already been handled.
+        for c in candidates_fsize:
+            if c not in self.small_hash_known:
+                try:
+                    c_small_hash = get_hash(c, first_chunk_only=True)
+                    self.files_for_small_hash[c_small_hash].append(c)
+                    self.small_hash_known.add(c)
+                except OSError:
+                    pass
+
+        small_hash = get_hash(path, first_chunk_only=True)
+        same_small_hash = self.files_for_small_hash[small_hash]
+        candidates_shash = same_small_hash[:]
+        same_small_hash.append(path)
+        self.small_hash_known.add(path)
+        if not candidates_shash:
+            # the file has a unique small hash and cannot be a duplicate
             return False
 
-        candidates_small = self.files_by_small_hash[small_hash][:-1]
-        for candidate in candidates_small:
-            dup = self.register_full_hash(candidate)
-            # assert not dup, "full hash of %s already registered" % dup
-        duplicate = self.register_full_hash(path)
+        for c in candidates_shash:
+            if c not in self.full_hash_known:
+                try:
+                    c_full_hash = get_hash(c, first_chunk_only=False)
+                    self.file_for_full_hash[c_full_hash] = c
+                    self.full_hash_known.add(c)
+                except OSError:
+                    pass
+
+        full_hash = get_hash(path, first_chunk_only=False)
+        duplicate = self.file_for_full_hash.get(full_hash)
         if duplicate:
             return {"duplicate": duplicate}
+        self.file_for_full_hash[full_hash] = path
         return False
 
     def pipeline(self, args):
