@@ -37,6 +37,7 @@ pathlib2 = [
     { version = "2.3.0", python = "<3.4" },
 ]
 exifread = "^2.1"
+textract = "^1.6.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.6"
