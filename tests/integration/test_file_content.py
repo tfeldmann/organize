@@ -26,4 +26,4 @@ def test_file_content(tmp_path):
         """,
     )
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
-    assertdir(tmp_path, "Invoice_12345.txt", "Test2.txt", "Homework.txt")
+    assertdir(tmp_path, "Homework.txt", "Invoice_12345.txt", "Test2.txt")
