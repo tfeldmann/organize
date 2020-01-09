@@ -38,11 +38,10 @@ class FileContent(Filter):
     """
 
     def __init__(self, expr) -> None:
-        self.expr = re.compile(expr, flags=re.UNICODE)
+        self.expr = re.compile(expr)
 
     def matches(self, path: Path) -> Any:
         content = textract.process(path)
-        print(content)
         return self.expr.search(content.decode('utf-8'))
 
     def pipeline(self, args: Mapping) -> Optional[Dict[str, Dict]]:
