@@ -10,7 +10,7 @@ from .trash import Trash
 logger = logging.getLogger(__name__)
 
 
-CONFLICT_OPTIONS = ("rename_new", "rename_old", "skip", "overwrite")
+CONFLICT_OPTIONS = ("rename_new", "rename_old", "skip", "trash", "overwrite")
 
 
 class Copy(Action):
@@ -126,4 +126,4 @@ class Copy(Action):
         return None
 
     def __str__(self) -> str:
-        return "Copy(dest=%s, overwrite=%s)" % (self.dest, self.overwrite)
+        return "Copy(dest=%s, on_conflict=%s)" % (self.dest, self.on_conflict)
