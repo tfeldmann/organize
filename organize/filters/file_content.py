@@ -1,8 +1,7 @@
 import re
 from typing import Any, Dict, Mapping, Optional
 
-import textract
-
+import textract  # type: ignore
 from organize.compat import Path
 
 from .filter import Filter
@@ -42,7 +41,7 @@ class FileContent(Filter):
 
     def matches(self, path: Path) -> Any:
         content = textract.process(str(path))
-        return self.expr.search(content.decode('utf-8'))
+        return self.expr.search(content.decode("utf-8"))
 
     def pipeline(self, args: Mapping) -> Optional[Dict[str, Dict]]:
         match = self.matches(args["path"])
