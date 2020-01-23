@@ -25,7 +25,7 @@ classifiers = [
 organize = "organize.cli:main"
 
 [tool.poetry.dependencies]
-python = "^3.4"
+python = "^3.5"
 appdirs = "^1.4"
 docopt = "^0.6.2"
 PyYAML = "^5.1"

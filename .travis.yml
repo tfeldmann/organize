@@ -2,7 +2,6 @@ dist: xenial   # required for Python >= 3.7
 sudo: false
 language: python
 python:
-  - "3.4"
   - "3.5"
   - "3.6"
   - "3.7"

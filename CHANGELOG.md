@@ -2,6 +2,7 @@
 
 ## WIP
 - Added action `Delete`.
+- Python 3.4 is officially deprecated and no longer supported.
 
 ## v1.7.0 (2019-11-26)
 - Added filter `Exif` to filter by image exif data.
