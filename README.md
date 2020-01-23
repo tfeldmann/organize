@@ -35,7 +35,7 @@ or File Juggler (Windows).
 
 ## Getting started
 ### Installation
-Python 3.4+ is needed. Install it via your package manager or from [python.org](https://python.org).
+Python 3.5+ is needed. Install it via your package manager or from [python.org](https://python.org).
 
 Installation is done via pip. Note that the package name is `organize-tool`:
 ```bash

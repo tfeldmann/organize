@@ -25,7 +25,7 @@ classifiers = [
 organize = "organize.cli:main"
 
 [tool.poetry.dependencies]
-python = "^3.4"
+python = "^3.5"
 appdirs = "^1.4"
 docopt = "^0.6.2"
 PyYAML = "^5.1"
@@ -37,6 +37,7 @@ pathlib2 = [
     { version = "2.3.0", python = "<3.4" },
 ]
 exifread = "^2.1"
+textract = "^1.6.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.6"
