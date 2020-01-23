@@ -41,7 +41,7 @@ class FileContent(Filter):
         self.expr = re.compile(expr)
 
     def matches(self, path: Path) -> Any:
-        content = textract.process(path)
+        content = textract.process(str(path))
         return self.expr.search(content.decode('utf-8'))
 
     def pipeline(self, args: Mapping) -> Optional[Dict[str, Dict]]:
