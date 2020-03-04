@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v1.8.0 (2020-03-04)
 - Added action `Delete`.
 - Added filter `FileContent`.
 - Python 3.4 is officially deprecated and no longer supported.
