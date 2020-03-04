@@ -38,6 +38,7 @@ pathlib2 = [
 ]
 exifread = "^2.1"
 textract = "^1.6.3"
+pendulum = "^2.0.5"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.6"
