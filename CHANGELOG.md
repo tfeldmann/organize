@@ -4,6 +4,8 @@
 - Added action `Delete`.
 - Added filter `FileContent`.
 - Python 3.4 is officially deprecated and no longer supported.
+- `--config-file` command line option now supports `~` for user folder and expansion
+  of environment variables
 
 ## v1.7.0 (2019-11-26)
 - Added filter `Exif` to filter by image exif data.
