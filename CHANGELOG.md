@@ -6,6 +6,8 @@
 - Python 3.4 is officially deprecated and no longer supported.
 - `--config-file` command line option now supports `~` for user folder and expansion
   of environment variables
+- Added `years`, `months`, `weeks` and `seconds` parameter to filter `created` and 
+  `lastmodified`
 
 ## v1.7.0 (2019-11-26)
 - Added filter `Exif` to filter by image exif data.

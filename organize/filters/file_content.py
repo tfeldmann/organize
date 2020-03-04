@@ -7,6 +7,12 @@ from organize.compat import Path
 from .filter import Filter
 
 
+# not supported: .gif, .jpg, .mp3, .ogg, .png, .tiff, .wav
+SUPPORTED_EXTENSIONS = (
+    ".csv .doc .docx .eml .epub .json .html .msg .odt .pdf .pptx .ps .rtf .txt .xlsx .xls"
+).split()
+
+
 class FileContent(Filter):
 
     r"""
@@ -40,8 +46,13 @@ class FileContent(Filter):
         self.expr = re.compile(expr)
 
     def matches(self, path: Path) -> Any:
-        content = textract.process(str(path))
-        return self.expr.search(content.decode("utf-8"))
+        if path.suffix.lower() not in SUPPORTED_EXTENSIONS:
+            return
+        try:
+            content = textract.process(str(path), errors="ignore")
+            return self.expr.search(content.decode("utf-8", errors="ignore"))
+        except textract.exceptions.CommandLineError:
+            pass
 
     def pipeline(self, args: Mapping) -> Optional[Dict[str, Dict]]:
         match = self.matches(args["path"])

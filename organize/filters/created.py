@@ -117,7 +117,9 @@ class Created(Filter):
 
     def pipeline(self, args: DotDict) -> Optional[Dict[str, pendulum.DateTime]]:
         created_date = self._created(args.path)
-        if self.timedelta.in_seconds():
+        # Pendulum bug: https://github.com/sdispater/pendulum/issues/387
+        # in_words() is a workaround: total_seconds() returns 0 if years are given
+        if self.timedelta.in_words():
             is_past = (created_date + self.timedelta).is_past()
             match = self.is_older == is_past
         else:
