@@ -1,7 +1,7 @@
 import sys
-from datetime import datetime, timedelta
 from typing import Dict, Optional, SupportsFloat
 
+import pendulum
 from organize.compat import Path
 from organize.utils import DotDict
 
@@ -13,14 +13,26 @@ class Created(Filter):
     """
     Matches files by created date
 
-    :param int days:
+    :param int years:
+        specify number of years
+
+    :param int months:
+        specify number of months
+
+    :param float weeks:
+        specify number of weeks
+
+    :param float days:
         specify number of days
 
-    :param int hours:
+    :param float hours:
         specify number of hours
 
-    :param int minutes:
+    :param float minutes:
         specify number of minutes
+
+    :param float seconds:
+        specify number of seconds
 
     :param str mode:
         either 'older' or 'newer'. 'older' matches all files created before the given
@@ -77,27 +89,44 @@ class Created(Filter):
                   - move: '~/Documents/PDF/{created.year}/'
     """
 
-    def __init__(self, days=0, hours=0, minutes=0, seconds=0, mode="older") -> None:
+    def __init__(
+        self,
+        years=0,
+        months=0,
+        weeks=0,
+        days=0,
+        hours=0,
+        minutes=0,
+        seconds=0,
+        mode="older",
+    ) -> None:
         self._mode = mode.strip().lower()
         if self._mode not in ("older", "newer"):
             raise ValueError("Unknown option for 'mode': must be 'older' or 'newer'.")
-        else:
-            self.is_older = self._mode == "older"
-        self.timedelta = timedelta(
-            days=days, hours=hours, minutes=minutes, seconds=seconds
+        self.is_older = self._mode == "older"
+        self.timedelta = pendulum.duration(
+            years=years,
+            months=months,
+            weeks=weeks,
+            days=days,
+            hours=hours,
+            minutes=minutes,
+            seconds=seconds,
         )
+        print(bool(self.timedelta))
 
-    def pipeline(self, args: DotDict) -> Optional[Dict[str, datetime]]:
+    def pipeline(self, args: DotDict) -> Optional[Dict[str, pendulum.DateTime]]:
         created_date = self._created(args.path)
-        reference_date = datetime.now() - self.timedelta
-        match = (self.is_older and created_date <= reference_date) or (
-            not self.is_older and created_date >= reference_date
-        )
+        if self.timedelta.in_seconds():
+            is_past = (created_date + self.timedelta).is_past()
+            match = self.is_older == is_past
+        else:
+            match = True
         if match:
             return {"created": created_date}
         return None
 
-    def _created(self, path: Path) -> datetime:
+    def _created(self, path: Path) -> pendulum.DateTime:
         # see https://stackoverflow.com/a/39501288/300783
         stat = path.stat()
         time = 0  # type: SupportsFloat
@@ -110,7 +139,10 @@ class Created(Filter):
                 # We're probably on Linux. No easy way to get creation dates here,
                 # so we'll settle for when its content was last modified.
                 time = stat.st_mtime
-        return datetime.fromtimestamp(float(time))
+        return pendulum.from_timestamp(float(time))
 
     def __str__(self):
-        return "Created(delta=%s, select_mode=%s)" % (self.timedelta, self._mode)
+        return "[Created] All files %s than %s" % (
+            self._mode,
+            self.timedelta.in_words(),
+        )
