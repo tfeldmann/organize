@@ -109,7 +109,7 @@ class Config:
         if not isinstance(filter_list, list):
             raise self.FiltersNoListError()
 
-        for filter_item in filter_list:
+        for filter_item in flatten(filter_list):
             if filter_item is None:
                 # TODO: don't know what this should be
                 continue
@@ -132,7 +132,7 @@ class Config:
         if not isinstance(action_list, list):
             raise self.ActionsNoListError()
 
-        for action_item in action_list:
+        for action_item in flatten(action_list):
             if isinstance(action_item, dict):
                 name = first_key(action_item)
                 args = action_item[name]
