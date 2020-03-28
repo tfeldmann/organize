@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "organize-tool"
-version = "1.8.0"
+version = "1.8.1"
 description = "The file management automation tool"
 packages = [
     { include = "organize" },

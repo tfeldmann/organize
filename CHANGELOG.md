@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.8.1 (2020-03-28)
+- Flatten filter and action lists to allow enhanced config file configuration (Thanks to @rawdamedia!)
+- Add support for multiline content filters (Thanks to @zor-el!)
+
 ## v1.8.0 (2020-03-04)
 - Added action `Delete`.
 - Added filter `FileContent`.
