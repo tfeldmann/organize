@@ -1,3 +1,5 @@
+import os
+
 from conftest import create_filesystem, assertdir
 from organize.cli import main
 
@@ -7,7 +9,7 @@ def test_file_content(tmp_path):
     create_filesystem(
         tmp_path,
         files=[
-            ("Test1.txt", "Invoice 12345"),
+            ("Test1.txt", "Lorem MegaCorp Ltd. ipsum\nInvoice 12345\nMore text\nID: 98765"),
             ("Test2.txt", "Tests"),
             ("Test3.txt", "My Homework ...")
         ],
@@ -15,9 +17,9 @@ def test_file_content(tmp_path):
         rules:
         - folders: files
           filters:
-            - filecontent: '.*Invoice (?P<number>\w+).*'
+            - filecontent: 'MegaCorp Ltd.+^Invoice (?P<number>\w+)$.+^ID: 98765$'
           actions:
-            - rename: "Invoice_{filecontent.number}.txt"
+            - rename: "MegaCorp_Invoice_{filecontent.number}.txt"
         - folders: files
           filters:
             - filecontent: '.*Homework.*'
@@ -26,4 +28,4 @@ def test_file_content(tmp_path):
         """,
     )
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
-    assertdir(tmp_path, "Homework.txt", "Invoice_12345.txt", "Test2.txt")
+    assertdir(tmp_path, "Homework.txt", "MegaCorp_Invoice_12345.txt", "Test2.txt")

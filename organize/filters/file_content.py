@@ -43,7 +43,7 @@ class FileContent(Filter):
     """
 
     def __init__(self, expr) -> None:
-        self.expr = re.compile(expr)
+        self.expr = re.compile(expr, re.MULTILINE | re.DOTALL)
 
     def matches(self, path: Path) -> Any:
         if path.suffix.lower() not in SUPPORTED_EXTENSIONS:
