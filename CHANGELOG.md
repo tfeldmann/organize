@@ -1,5 +1,8 @@
 # Changelog
 
+## WIP
+- Fix a bug in the filename filter config parsing algorithm with digits-only filenames.
+
 ## v1.8.1 (2020-03-28)
 - Flatten filter and action lists to allow enhanced config file configuration (Thanks to @rawdamedia!)
 - Add support for multiline content filters (Thanks to @zor-el!)

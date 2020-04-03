@@ -97,7 +97,9 @@ class Filename(Filter):
         return self.matches(args["path"])
 
     @staticmethod
-    def create_list(x: Union[str, List[Any]], case_sensitive: bool) -> List[str]:
+    def create_list(x: Union[int, str, List[Any]], case_sensitive: bool) -> List[str]:
+        if isinstance(x, (int, float)):
+            x = str(x)
         if isinstance(x, str):
             x = [x]
         x = [str(x) for x in x]

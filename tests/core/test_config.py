@@ -2,7 +2,7 @@ import pytest
 
 from organize.actions import Echo, Move, Shell, Trash, Rename
 from organize.config import Config, Rule
-from organize.filters import Extension, LastModified, FileContent
+from organize.filters import Extension, LastModified, FileContent, Filename
 
 
 def test_basic():
@@ -245,6 +245,8 @@ def test_flatten_filters_and_actions():
           - filecontent: 'PAID' # regex to id as receivables paid
           - filecontent: '(?P<stem>...)' # regex to extract customer
           - filecontent: '(?P<paid>...)' # regex to extract date paid
+          - filename:
+              startswith: 2020
         actions:
           - *default_actions
           - move: *receivables_paid
@@ -315,6 +317,7 @@ def test_flatten_filters_and_actions():
                 FileContent(expr="PAID"),
                 FileContent(expr="(?P<stem>...)"),
                 FileContent(expr="(?P<paid>...)"),
+                Filename(startswith="2020"),
             ],
             actions=[
                 # default_actions
