@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v1.8.2 (2020-04-03)
 - Fix a bug in the filename filter config parsing algorithm with digits-only filenames.
 
 ## v1.8.1 (2020-03-28)
