@@ -7,16 +7,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macOS-latest, ubuntu-latest, windows-latest]
+        os: [windows-latest, ubuntu-latest, macOS-latest]
         python-version: [3.5, 3.6, 3.7, 3.8]
-        # include:
-        #   - os: windows-2019
-        #     python-version: 3.4
-        #   - os: windows-2019
-        #     python-version: 3.4
-        #   - os: macos-10.14
-        #     python-version: 3.4
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -28,11 +20,11 @@ jobs:
           pip install -U pip setuptools wheel
           pip install .
           pip install mock pytest mypy flake8
-      - name: General info
-        run: |
-          organize list
-          organize config --path
-          organize --version
+      # - name: General info
+      #   run: |
+      #     organize list
+      #     organize config --path
+      #     organize --version
       - name: Check with mypy
         run: |
           mypy -porganize
