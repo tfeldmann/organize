@@ -23,10 +23,10 @@ def create_filesystem(tmp_path, files, config):
             content = ""
         p = tmp_path / "files" / Path(name)
         p.parent.mkdir(parents=True, exist_ok=True)
-        with p.open("w") as ptr:
+        with p.open("w", encoding="utf-8") as ptr:
             ptr.write(content)
     # create config
-    with (tmp_path / "config.yaml").open("w") as f:
+    with (tmp_path / "config.yaml").open("w", encoding="utf-8") as f:
         f.write(config)
     # change working directory
     os.chdir(str(tmp_path))

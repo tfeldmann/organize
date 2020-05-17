@@ -54,7 +54,7 @@ class Config:
 
     @classmethod
     def from_file(cls, path: Path) -> "Config":
-        with path.open(encoding="utf-8") as f:
+        with path.open("r", encoding="utf-8") as f:
             return cls.from_string(f.read())
 
     def yaml(self) -> str:
