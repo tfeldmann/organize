@@ -34,7 +34,9 @@ def create_filesystem(tmp_path, files, config):
 
 def assertdir(path, *files):
     os.chdir(str(path / "files"))
-    assert set(files) == set(str(x) for x in Path(".").glob("**/*") if x.is_file())
+    assert set(Path(x) for x in files) == set(
+        x for x in Path(".").glob("**/*") if x.is_file()
+    )
 
 
 @pytest.fixture
