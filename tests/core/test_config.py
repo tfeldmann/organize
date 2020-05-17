@@ -1,8 +1,8 @@
 import pytest
 
-from organize.actions import Echo, Move, Shell, Trash
+from organize.actions import Echo, Move, Shell, Trash, Rename
 from organize.config import Config, Rule
-from organize.filters import Extension, LastModified
+from organize.filters import Extension, LastModified, FileContent, Filename
 
 
 def test_basic():
@@ -196,3 +196,149 @@ def test_empty_filters():
             system_files=False,
         ),
     ]
+
+
+def test_flatten_filters_and_actions():
+    config = """
+    folder_aliases:
+      Downloads: &downloads ~/Downloads/
+      Payables_due: &payables_due ~/PayablesDue/
+      Payables_paid: &payables_paid ~/Accounting/Expenses/
+      Receivables_due: &receivables_due ~/Receivables/
+      Receivables_paid: &receivables_paid ~/Accounting/Income/
+
+    defaults:
+      filters: &default_filters
+        - extension: pdf
+        - filecontent: '(?P<date>...)'
+      actions: &default_actions
+        - echo: 'Dated: {filecontent.date}'
+        - echo: 'Stem of filename: {filecontent.stem}'
+      post_actions: &default_sorting
+        - rename: '{python.timestamp}-{filecontent.stem}.{extension.lower}'
+        - move: '{path.parent}/{python.quarter}/'
+
+    rules:
+      - folders: *downloads
+        filters:
+          - *default_filters
+          - filecontent: 'Due Date' # regex to id as payable
+          - filecontent: '(?P<stem>...)' # regex to extract supplier
+        actions:
+          - *default_actions
+          - move: *payables_due
+          - *default_sorting
+
+      - folders: *downloads
+        filters:
+          - *default_filters
+          - filecontent: 'Account: 000000000' # regex to id as receivables due
+          - filecontent: '(?P<stem>...)' # regex to extract customer
+        actions:
+          - *default_actions
+          - move: *receivables_due
+          - *default_sorting
+
+      - folders: *downloads
+        filters:
+          - *default_filters
+          - filecontent: 'PAID' # regex to id as receivables paid
+          - filecontent: '(?P<stem>...)' # regex to extract customer
+          - filecontent: '(?P<paid>...)' # regex to extract date paid
+          - filename:
+              startswith: 2020
+        actions:
+          - *default_actions
+          - move: *receivables_paid
+          - *default_sorting
+          - rename: '{filecontent.paid}_{filecontent.stem}.{extension}'
+    """
+    conf = Config.from_string(config)
+    assert conf.rules == [
+        Rule(
+            folders=["~/Downloads/"],
+            filters=[
+                # default_filters
+                Extension("pdf"),
+                FileContent(expr="(?P<date>...)"),
+                # added filters
+                FileContent(expr="Due Date"),
+                FileContent(expr="(?P<stem>...)"),
+            ],
+            actions=[
+                # default_actions
+                Echo(msg="Dated: {filecontent.date}"),
+                Echo(msg="Stem of filename: {filecontent.stem}"),
+                # added actions
+                Move(dest="~/PayablesDue/", overwrite=False),
+                # default_sorting
+                Rename(
+                    name="{python.timestamp}-{filecontent.stem}.{extension.lower}",
+                    overwrite=False,
+                ),
+                Move(dest="{path.parent}/{python.quarter}/", overwrite=False),
+            ],
+            subfolders=False,
+            system_files=False,
+        ),
+        Rule(
+            folders=["~/Downloads/"],
+            filters=[
+                # default_filters
+                Extension("pdf"),
+                FileContent(expr="(?P<date>...)"),
+                # added filters
+                FileContent(expr="Account: 000000000"),
+                FileContent(expr="(?P<stem>...)"),
+            ],
+            actions=[
+                # default_actions
+                Echo(msg="Dated: {filecontent.date}"),
+                Echo(msg="Stem of filename: {filecontent.stem}"),
+                # added actions
+                Move(dest="~/Receivables/", overwrite=False),
+                # default_sorting
+                Rename(
+                    name="{python.timestamp}-{filecontent.stem}.{extension.lower}",
+                    overwrite=False,
+                ),
+                Move(dest="{path.parent}/{python.quarter}/", overwrite=False),
+            ],
+            subfolders=False,
+            system_files=False,
+        ),
+        Rule(
+            folders=["~/Downloads/"],
+            filters=[
+                # default_filters
+                Extension("pdf"),
+                FileContent(expr="(?P<date>...)"),
+                # added filters
+                FileContent(expr="PAID"),
+                FileContent(expr="(?P<stem>...)"),
+                FileContent(expr="(?P<paid>...)"),
+                Filename(startswith="2020"),
+            ],
+            actions=[
+                # default_actions
+                Echo(msg="Dated: {filecontent.date}"),
+                Echo(msg="Stem of filename: {filecontent.stem}"),
+                # added actions
+                Move(dest="~/Accounting/Income/", overwrite=False),
+                # default_sorting
+                Rename(
+                    name="{python.timestamp}-{filecontent.stem}.{extension.lower}",
+                    overwrite=False,
+                ),
+                Move(dest="{path.parent}/{python.quarter}/", overwrite=False),
+                # added actions
+                Rename(
+                    name="{filecontent.paid}_{filecontent.stem}.{extension}",
+                    overwrite=False,
+                ),
+            ],
+            subfolders=False,
+            system_files=False,
+        ),
+    ]
+

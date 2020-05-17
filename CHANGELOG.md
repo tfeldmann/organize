@@ -1,5 +1,35 @@
 # Changelog
 
+## WIP
+- Add filter `Duplicate`.
+
+## v1.8.2 (2020-04-03)
+- Fix a bug in the filename filter config parsing algorithm with digits-only filenames.
+
+## v1.8.1 (2020-03-28)
+- Flatten filter and action lists to allow enhanced config file configuration (Thanks to @rawdamedia!)
+- Add support for multiline content filters (Thanks to @zor-el!)
+
+## v1.8.0 (2020-03-04)
+- Added action `Delete`.
+- Added filter `FileContent`.
+- Python 3.4 is officially deprecated and no longer supported.
+- `--config-file` command line option now supports `~` for user folder and expansion
+  of environment variables
+- Added `years`, `months`, `weeks` and `seconds` parameter to filter `created` and 
+  `lastmodified`
+
+## v1.7.0 (2019-11-26)
+- Added filter `Exif` to filter by image exif data.
+- Placeholder variable properties are now case insensitve.
+
+## v1.6.2 (2019-11-22)
+- Fix `Rename` action (`'PosixPath' object has no attribute 'items'`).
+- Use type hints everywhere.
+
+## v1.6.1 (2019-10-25)
+- Shows a warning for missing folders instead of raising an exception.
+
 ## v1.6 (2019-08-19)
 - Added filter: `Python`
 - Added filter: `FileSize`

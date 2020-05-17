@@ -28,7 +28,7 @@ def set_version(args):
     - updates pyproject.toml
     - Searches for 'WIP' in changelog and replaces it with current version and date
     """
-    from organize import __version__ as current_version
+    from organize.__version__ import __version__ as current_version
 
     print(f"Current version is {current_version}.")
 
@@ -99,7 +99,7 @@ def publish(args):
     - publishes on pypi
     - creates github release
     """
-    from organize import __version__ as version
+    from organize.__version__ import __version__ as version
 
     if not ask_confirm(f"Publishing version {version}. Is this correct?"):
         return
@@ -137,7 +137,7 @@ def publish(args):
     if ask_confirm("Create github release?"):
         response = requests.post(
             f"{GITHUB_API_ENDPOINT}/releases",
-            auth=(input("Benutzer: "), getpass.getpass()),
+            auth=(input("Benutzer: "), getpass.getpass(prompt="API token: ")),
             json={
                 "tag_name": f"v{version}",
                 "target_commitish": "master",

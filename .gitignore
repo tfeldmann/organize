@@ -1,5 +1,5 @@
-issues/
-.pytest_cache/*
+.configs
+.pytest_cache/
 
 # Created by https://www.gitignore.io/api/python
 

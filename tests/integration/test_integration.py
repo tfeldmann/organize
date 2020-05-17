@@ -46,7 +46,7 @@ def test_globstr(tmp_path):
             rules:
               - folders: 'file[s]/*.pdf'
                 actions:
-                  - trash
+                  - delete
         """,
     )
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])

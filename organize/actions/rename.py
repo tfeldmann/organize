@@ -1,6 +1,8 @@
 import logging
 import os
+from typing import Mapping
 
+from organize.compat import Path
 from organize.utils import find_unused_filename
 
 from .action import Action
@@ -53,7 +55,7 @@ class Rename(Action):
                   - rename: "{path.stem}.{extension.lower}"
     """
 
-    def __init__(self, name: str, overwrite=False, counter_separator=" "):
+    def __init__(self, name: str, overwrite=False, counter_separator=" ") -> None:
         if os.path.sep in name:
             ValueError(
                 "Rename only takes a filename as argument. To move files between "
@@ -63,8 +65,8 @@ class Rename(Action):
         self.overwrite = overwrite
         self.counter_separator = counter_separator
 
-    def pipeline(self, args):
-        path = args["path"]
+    def pipeline(self, args: Mapping) -> Mapping[str, Path]:
+        path = args["path"]  # type: Path
         simulate = args["simulate"]
         expanded_name = self.fill_template_tags(self.name, args)
         new_path = path.parent / expanded_name
@@ -90,9 +92,10 @@ class Rename(Action):
             if not simulate:
                 logger.info('Renaming "%s" to "%s".', path, new_path)
                 path.rename(new_path)
-        return new_path
 
-    def __str__(self):
+        return {"path": new_path}
+
+    def __str__(self) -> str:
         return "Rename(name=%s, overwrite=%s, sep=%s)" % (
             self.name,
             self.overwrite,

@@ -49,14 +49,11 @@ def test_basic(tmp_path, mock_echo):
     )
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
     mock_echo.assert_has_calls(
-        [
-            call("halffull 1010"),
-            call("2/3 666"),
-        ],
-        any_order=True,
+        [call("halffull 1010"), call("2/3 666"),], any_order=True,
     )
 
-@pytest.mark.skip(reason="TODO")
+
+@pytest.mark.skip(reason="TODO - template vars in filters not supported")
 def test_python_args(tmp_path, mock_echo):
     create_filesystem(
         tmp_path,
@@ -79,8 +76,5 @@ def test_python_args(tmp_path, mock_echo):
     )
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
     mock_echo.assert_has_calls(
-        [
-            call("full 2000"),
-        ],
-        any_order=True,
+        [call("full 2000"),], any_order=True,
     )

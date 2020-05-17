@@ -1,4 +1,8 @@
-from organize.utils import flatten
+from typing import Dict, Optional, Union
+
+from organize.compat import Path
+from organize.utils import DotDict, flatten
+
 from .filter import Filter
 
 
@@ -32,7 +36,6 @@ class Extension(Filter):
         - ``{extension.upper}`` -- the file extension in UPPERCASE
 
     Examples:
-
         - Match a single file extension:
 
           .. code-block:: yaml
@@ -96,28 +99,29 @@ class Extension(Filter):
                   - echo: 'Found media file: {path}'
     """
 
-    def __init__(self, *extensions):
+    def __init__(self, *extensions) -> None:
         self.extensions = list(map(self.normalize_extension, flatten(list(extensions))))
 
     @staticmethod
-    def normalize_extension(ext):
+    def normalize_extension(ext: str) -> str:
         """ strip colon and convert to lowercase """
         if ext.startswith("."):
             return ext[1:].lower()
         else:
             return ext.lower()
 
-    def matches(self, path):
+    def matches(self, path: Path) -> Union[bool, str]:
         if not self.extensions:
             return True
         if not path.suffix:
             return False
         return self.normalize_extension(path.suffix) in self.extensions
 
-    def pipeline(self, args):
+    def pipeline(self, args: DotDict) -> Optional[Dict[str, ExtensionResult]]:
         if self.matches(args.path):
             result = ExtensionResult(args.path.suffix)
             return {"extension": result}
+        return None
 
     def __str__(self):
         return "Extension(%s)" % ", ".join(self.extensions)

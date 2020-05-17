@@ -1,3 +1,4 @@
+import os
 import logging
 from typing import Mapping
 
@@ -8,14 +9,16 @@ from .action import Action
 logger = logging.getLogger(__name__)
 
 
-class Trash(Action):
+class Delete(Action):
 
     """
-    Move a file into the trash.
+    Delete a file from disk.
+
+    Deleted files have no recovery option!
+    Using the `Trash` action is strongly advised for most use-cases!
 
     Example:
-        - Move all JPGs and PNGs on the desktop which are older than one year
-          into the trash:
+        - Delete all JPGs and PNGs on the desktop which are older than one year:
 
           .. code-block:: yaml
             :caption: config.yaml
@@ -29,15 +32,13 @@ class Trash(Action):
                       - png
                       - jpg
               - actions:
-                  - trash
+                  - delete
     """
 
     def pipeline(self, args: Mapping):
         path = args["path"]  # type: Path
         simulate = args["simulate"]  # type: bool
-        from send2trash import send2trash  # type: ignore
-
-        self.print('Trash "%s"' % path)
+        self.print('Delete "%s"' % path)
         if not simulate:
-            logger.info("Moving file %s into trash.", path)
-            send2trash(str(path))
+            logger.info("Deleting file %s.", path)
+            os.remove(str(path))

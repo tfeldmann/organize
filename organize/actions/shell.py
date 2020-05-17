@@ -1,5 +1,6 @@
 import logging
 import subprocess
+from typing import Mapping
 
 from .action import Action
 
@@ -27,16 +28,16 @@ class Shell(Action):
                 - shell: 'open "{path}"'
     """
 
-    def __init__(self, cmd: str):
+    def __init__(self, cmd: str) -> None:
         self.cmd = cmd
 
-    def pipeline(self, args):
+    def pipeline(self, args: Mapping) -> None:
         full_cmd = self.fill_template_tags(self.cmd, args)
         self.print("$ %s" % full_cmd)
-        if not args.simulate:
+        if not args["simulate"]:
             # we use call instead of run to be compatible with python < 3.5
             logger.info('Executing command "%s" in shell.', full_cmd)
             subprocess.call(full_cmd, shell=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return 'Shell(cmd="%s")' % self.cmd

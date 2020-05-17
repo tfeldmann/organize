@@ -1,4 +1,9 @@
-from datetime import datetime, timedelta
+from typing import Dict, Optional
+
+import pendulum  # type: ignore
+from organize.compat import Path
+from organize.utils import DotDict
+
 from .filter import Filter
 
 
@@ -7,14 +12,26 @@ class LastModified(Filter):
     """
     Matches files by last modified date
 
-    :param int days:
+    :param int years:
+        specify number of years
+
+    :param int months:
+        specify number of months
+
+    :param float weeks:
+        specify number of weeks
+
+    :param float days:
         specify number of days
 
-    :param int hours:
+    :param float hours:
         specify number of hours
 
-    :param int minutes:
+    :param float minutes:
         specify number of minutes
+
+    :param float seconds:
+        specify number of seconds
 
     :param str mode:
         either 'older' or 'newer'. 'older' matches all files last modified
@@ -72,27 +89,49 @@ class LastModified(Filter):
                   - move: '~/Documents/PDF/{lastmodified.year}/'
     """
 
-    def __init__(self, days=0, hours=0, minutes=0, seconds=0, mode="older"):
+    def __init__(
+        self,
+        years=0,
+        months=0,
+        weeks=0,
+        days=0,
+        hours=0,
+        minutes=0,
+        seconds=0,
+        mode="older",
+    ) -> None:
         self._mode = mode.strip().lower()
         if self._mode not in ("older", "newer"):
             raise ValueError("Unknown option for 'mode': must be 'older' or 'newer'.")
-        else:
-            self.is_older = self._mode == "older"
-        self.timedelta = timedelta(
-            days=days, hours=hours, minutes=minutes, seconds=seconds
+        self.is_older = self._mode == "older"
+        self.timedelta = pendulum.duration(
+            years=years,
+            months=months,
+            weeks=weeks,
+            days=days,
+            hours=hours,
+            minutes=minutes,
+            seconds=seconds,
         )
 
-    def pipeline(self, args):
+    def pipeline(self, args: DotDict) -> Optional[Dict[str, pendulum.DateTime]]:
         file_modified = self._last_modified(args.path)
-        reference_date = datetime.now() - self.timedelta
-        match = (self.is_older and file_modified <= reference_date) or (
-            not self.is_older and file_modified >= reference_date
-        )
+        # Pendulum bug: https://github.com/sdispater/pendulum/issues/387
+        # in_words() is a workaround: total_seconds() returns 0 if years are given
+        if self.timedelta.in_words():
+            is_past = (file_modified + self.timedelta).is_past()
+            match = self.is_older == is_past
+        else:
+            match = True
         if match:
             return {"lastmodified": file_modified}
+        return None
 
-    def _last_modified(self, path):
-        return datetime.fromtimestamp(path.stat().st_mtime)
+    def _last_modified(self, path: Path) -> pendulum.DateTime:
+        return pendulum.from_timestamp(float(path.stat().st_mtime))
 
     def __str__(self):
-        return "FileModified(delta=%s, select_mode=%s)" % (self.timedelta, self._mode)
+        return "[LastModified] All files last modified %s than %s" % (
+            self._mode,
+            self.timedelta.in_words(),
+        )

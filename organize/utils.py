@@ -2,13 +2,14 @@ import os
 import re
 from collections.abc import Mapping
 from copy import deepcopy
+from typing import Any, Sequence, Tuple, Union, List, Hashable
 
 from .compat import Path
 
 WILDCARD_REGEX = re.compile(r"(?<!\\)[\*\?\[]+")
 
 
-def splitglob(globstr):
+def splitglob(globstr: str) -> Tuple[Path, str]:
     """ split a string with wildcards into a base folder and globstring """
     path = fullpath(globstr.strip())
     parts = path.parts
@@ -18,12 +19,12 @@ def splitglob(globstr):
     return (path, "")
 
 
-def fullpath(path):
+def fullpath(path: Union[str, Path]) -> Path:
     """ Expand '~' and resolve the given path. Path can be a string or a Path obj. """
     return Path(os.path.expandvars(str(path))).expanduser().resolve(strict=False)
 
 
-def flatten(arr):
+def flatten(arr: List[Any]) -> List[Any]:
     if arr == []:
         return []
     if not isinstance(arr, list):
@@ -31,14 +32,14 @@ def flatten(arr):
     return flatten(arr[0]) + flatten(arr[1:])
 
 
-def flattened_string_list(x, case_sensitive=True):
+def flattened_string_list(x, case_sensitive=True) -> Sequence[str]:
     x = [str(x) for x in flatten(x)]
     if not case_sensitive:
         x = [x.lower() for x in x]
     return x
 
 
-def first_key(dic: dict):
+def first_key(dic: Mapping) -> Hashable:
     return list(dic.keys())[0]
 
 
@@ -46,9 +47,11 @@ class DotDict(dict):
     """
     Quick and dirty implementation of a dot-able dict, which allows access and
     assignment via object properties rather than dict indexing.
+    Keys are case insensitive.
     """
 
     def __init__(self, *args, **kwargs):
+        super().__init__()
         # we could just call super(DotDict, self).__init__(*args, **kwargs)
         # but that won't get us nested dotdict objects
         od = dict(*args, **kwargs)
@@ -57,34 +60,43 @@ class DotDict(dict):
                 value = DotDict(val)
             else:
                 value = val
-            self[key] = value
+            self[self.normkey(key)] = value
 
-    def __delattr__(self, name):
+    @staticmethod
+    def normkey(key):
+        if isinstance(key, str):
+            return key.lower()
+        else:
+            return key
+
+    def __delattr__(self, key):
         try:
-            del self[name]
+            del self[self.normkey(key)]
         except KeyError as ex:
-            raise AttributeError("No attribute called: %s" % name) from ex
+            raise AttributeError("No attribute called: %s" % key) from ex
 
-    def __getattr__(self, k):
+    def __getattr__(self, key):
         try:
-            return self[k]
+            return self[self.normkey(key)]
         except KeyError as ex:
-            raise AttributeError("No attribute called: %s" % k) from ex
+            raise AttributeError("No attribute called: %s" % key) from ex
 
-    __setattr__ = dict.__setitem__
+    def __setattr__(self, key, value) -> None:
+        self[self.normkey(key)] = value
 
     def update(self, other):
         """ recursively update the dotdict instance with another dicts items """
         for key, val in other.items():
+            normkey = self.normkey(key)
             if isinstance(val, Mapping):
-                if isinstance(self.get(key), dict):
-                    self[key].update(val)
+                if isinstance(self.get(normkey), dict):
+                    self[normkey].update(val)
                 else:
-                    self[key] = __class__(val)
+                    self[normkey] = __class__(val)
             else:
-                self[key] = val
+                self[normkey] = val
 
-    def merge(self, other):
+    def merge(self, other) -> Mapping:
         """ recursively merge values from another dict and return a new instance """
         new_dct = deepcopy(self)
         new_dct.update(other)

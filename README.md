@@ -16,6 +16,14 @@
 <a href="https://organize.readthedocs.io/" target="_blank">Full documentation at Read the docs</a>
 </p>
 
+- [About](#about)
+- [Getting started](#getting-started)
+  - [Installation](#installation)
+  - [Creating your first rule](#creating-your-first-rule)
+- [Example rules](#example-rules)
+- [Advanced usage](#advanced-usage)
+- [Command line interface](#command-line-interface)
+
 ## About
 Your desktop is a mess? You cannot find anything in your downloads and
 documents? Sorting and renaming all these files by hand is too tedious?
@@ -27,7 +35,7 @@ or File Juggler (Windows).
 
 ## Getting started
 ### Installation
-Python 3.4+ is needed. Install it via your package manager or from [python.org](https://python.org).
+Python 3.5+ is needed. Install it via your package manager or from [python.org](https://python.org).
 
 Installation is done via pip. Note that the package name is `organize-tool`:
 ```bash
