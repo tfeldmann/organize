@@ -8,6 +8,10 @@ Copy
 ----
 .. autoclass:: Copy(dest, [overwrite=False], [counter_separator=' '])
 
+Delete
+------
+.. autoclass:: Delete
+
 Echo
 ----
 .. autoclass:: Echo

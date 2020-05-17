@@ -48,7 +48,8 @@ def main(argv=None):
 
     # override default config file path
     if args["--config-file"]:
-        config_path = Path(args["--config-file"]).resolve()
+        expanded_path = os.path.expandvars(args["--config-file"])
+        config_path = Path(expanded_path).expanduser().resolve()
         config_dir = config_path.parent
     else:
         config_dir = CONFIG_DIR

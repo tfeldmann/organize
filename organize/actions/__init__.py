@@ -1,4 +1,5 @@
 from .copy import Copy
+from .delete import Delete
 from .echo import Echo
 from .move import Move
 from .python import Python
