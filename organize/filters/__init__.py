@@ -1,4 +1,5 @@
 from .created import Created
+from .duplicate import Duplicate
 from .exif import Exif
 from .extension import Extension
 from .file_content import FileContent
