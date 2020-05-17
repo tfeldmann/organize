@@ -27,13 +27,21 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install .
-          pip install mock
-          pip install pytest
-      - name: Test with pytest
-        run: |
-          pytest
-      - name: check whether the package is installable and usable
+          pip install mock pytest mypy flake8
+      - name: General info
         run: |
           organize list
           organize config --path
           organize --version
+      - name: Check with mypy
+        run: |
+          mypy -porganize
+      - name: Test with pytest
+        run: |
+          pytest
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 --count --select=E9,F63,F7,F82 --show-source --statistics organize
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics organize
