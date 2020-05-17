@@ -17,9 +17,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          pip install -U pip setuptools wheel
-          pip install .
-          pip install mock pytest mypy flake8
+          python -m pip install -U pip setuptools wheel
+          python -m pip install .
+          python -m pip install mock pytest mypy flake8
       # - name: General info
       #   run: |
       #     organize list
@@ -27,13 +27,13 @@ jobs:
       #     organize --version
       - name: Check with mypy
         run: |
-          mypy -porganize
+          python -m mypy -porganize
       - name: Test with pytest
         run: |
-          pytest
+          python -m pytest
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
-          flake8 --count --select=E9,F63,F7,F82 --show-source --statistics organize
+          python -m flake8 --count --select=E9,F63,F7,F82 --show-source --statistics organize
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics organize
+          python -m flake8 --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics organize
