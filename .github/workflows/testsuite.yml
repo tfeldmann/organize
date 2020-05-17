@@ -28,6 +28,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install .
+          pip install mock
           pip install pytest
       - name: Test with pytest
         run: |
