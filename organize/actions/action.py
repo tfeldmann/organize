@@ -13,7 +13,7 @@ class TemplateAttributeError(Error):
 
 
 class Action:
-    pre_print_hook = None # type: Optional[Callable]
+    pre_print_hook = None  # type: Optional[Callable]
 
     def run(self, **kwargs) -> Optional[Mapping[str, Any]]:
         return self.pipeline(DotDict(kwargs))
@@ -25,7 +25,11 @@ class Action:
         """ print a message for the user """
         if callable(self.pre_print_hook):
             self.pre_print_hook()  # pylint: disable=not-callable
-        print(indent("- [%s] %s" % (self.__class__.__name__, msg), " " * 4))
+        # indent multiline message
+        lines = msg.splitlines()
+        print(indent("- [%s] %s" % (self.__class__.__name__, lines[0]), " " * 4))
+        for line in lines[1:]:
+            print(indent(line, " " * 6))
 
     @staticmethod
     def fill_template_tags(msg: str, args) -> str:
