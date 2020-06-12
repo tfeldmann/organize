@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v1.9 (2020-06-12)
 - Add filter `Duplicate`.
 
 ## v1.8.2 (2020-04-03)
