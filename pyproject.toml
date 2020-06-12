@@ -44,6 +44,7 @@ pendulum = "^2.0.5"
 pytest = "^4.6"
 pylint = "^2.3"
 ipdb = "^0.12.0"
+sphinx = "^3.1.0"
 
 [build-system]
 requires = ["poetry>=0.12"]
