@@ -4,7 +4,7 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.utils import COMMASPACE, formatdate
+from email.utils import formatdate
 from pathlib import Path
 
 from .action import Action
@@ -55,13 +55,13 @@ class Email(Action):
         full_subject = self.fill_template_tags(self.subject, args)
         full_message = self.fill_template_tags(self.message, args)
         self.print(
-            "\nRecp: %s\nSubj: %s\n%s"
+            "\nTo:   %s\nSubj: %s\n%s"
             % (", ".join(self.send_to), full_subject, full_message)
         )
         if not simulate:
             msg = MIMEMultipart()
             msg["From"] = self.send_from
-            msg["To"] = COMMASPACE.join(self.send_to)
+            msg["To"] = ", ".join(self.send_to)
             msg["Date"] = formatdate(localtime=True)
             msg["Subject"] = full_subject
 
@@ -72,7 +72,8 @@ class Email(Action):
                 part.set_payload(f.read())
             encoders.encode_base64(part)
             part.add_header(
-                "Content-Disposition", 'attachment; filename="{}"'.format(Path(path).name)
+                "Content-Disposition",
+                'attachment; filename="{}"'.format(Path(path).name),
             )
             msg.attach(part)
 
