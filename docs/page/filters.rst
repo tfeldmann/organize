@@ -8,6 +8,10 @@ Created
 -------
 .. autoclass:: Created
 
+Duplicate
+---------
+.. autoclass:: Duplicate
+
 Exif
 ----
 .. autoclass:: Exif
