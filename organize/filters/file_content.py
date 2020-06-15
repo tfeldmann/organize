@@ -29,6 +29,20 @@ class FileContent(Filter):
 
     Examples:
 
+        - Show the content of all your PDF files:
+
+          .. code-block::yaml
+            :caption: config.yaml
+
+            rules:
+              - folders: ~/Documents
+                filters:
+                  - extension: pdf
+                  - filecontent: '(?P<all>.*)'
+                actions:
+                  - echo: "{filecontent.all}"
+
+
         - Match an invoice with a regular expression and sort by customer:
 
           .. code-block:: yaml
