@@ -8,7 +8,7 @@ import fs
 from colorama import Fore, Style  # type: ignore
 from fs.walk import Walker
 
-from .output import output_helper
+from .output import console_output
 from .utils import DotDict
 
 WILDCARD_REGEX = re.compile(r"(?<!\\)[\*\?\[]+")
@@ -127,7 +127,7 @@ class Organizer:
                 return False
         return True
 
-    def run_for_file(self, path, basedir, simulate=True):
+    def run_single(self, path, basedir, simulate=True):
         # args will be modified in place by action and filter pipeline
         args = DotDict(
             path=Path(fs.path.combine(basedir, path)),
@@ -135,14 +135,14 @@ class Organizer:
             relative_path=Path(path),
             simulate=simulate,
         )
-        output_helper.set_location(args.basedir, args.relative_path)
+        console_output.set_location(args.basedir, args.relative_path)
         match = self.filter_pipeline(args)
         if match:
             success = self.action_pipeline(args)
 
     def run(self, *args, **kwargs):
         for base, path in self.files():
-            self.run_for_file(path=path, basedir=base, *args, **kwargs)
+            self.run_single(path=path, basedir=base, *args, **kwargs)
 
 
 def test():
