@@ -2,12 +2,13 @@ import logging
 import re
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Iterable, Iterator, Mapping, Text, Tuple, Union
+from typing import Iterable, Iterator, Text, Tuple
 
 import fs
+from colorama import Fore, Style  # type: ignore
 from fs.walk import Walker
 
-from . import actions, filters
+from .output import output_helper
 from .utils import DotDict
 
 WILDCARD_REGEX = re.compile(r"(?<!\\)[\*\?\[]+")
@@ -77,7 +78,7 @@ class Organizer:
             config.update(args)
 
             walker = Walker(
-                filter=[glob] if glob else None,
+                filter=tuple(glob) if glob else None,
                 filter_dirs=None,
                 exclude=list(
                     set(config["system_exclude_files"]) | set(config["exclude_files"])
@@ -109,7 +110,7 @@ class Organizer:
                     return False
             except Exception as e:  # pylint: disable=broad-except
                 logger.exception(e)
-                # filter_.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
+                filter_.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
                 return False
         return True
 
@@ -122,7 +123,7 @@ class Organizer:
                     args.update(updates)
             except Exception as e:  # pylint: disable=broad-except
                 logger.exception(e)
-                # action.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
+                action.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
                 return False
         return True
 
@@ -134,6 +135,7 @@ class Organizer:
             relative_path=Path(path),
             simulate=simulate,
         )
+        output_helper.set_location(args.basedir, args.relative_path)
         match = self.filter_pipeline(args)
         if match:
             success = self.action_pipeline(args)
@@ -144,15 +146,14 @@ class Organizer:
 
 
 def test():
+    from . import actions, filters
+
     organizer = Organizer(
         folders=[("~/Documents/", {"max_depth": None}),],
         filters=[filters.Extension("html"),],
         actions=[actions.Echo("{path}")],
     )
-    for path, walker in organizer.walkers():
-        print(path, walker)
-    if input("run? [Y/n]").lower() != "n":
-        organizer.run(simulate=True)
+    organizer.run(simulate=True)
 
 
 if __name__ == "__main__":
