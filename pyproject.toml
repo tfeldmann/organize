@@ -39,12 +39,14 @@ pathlib2 = [
 exifread = "^2.1"
 textract = "^1.6.3"
 pendulum = "^2.0.5"
+fs = "^2.4.11"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.6"
 pylint = "^2.3"
 ipdb = "^0.12.0"
 sphinx = "^3.1.0"
+mypy = "^0.782"
 
 [build-system]
 requires = ["poetry>=0.12"]
