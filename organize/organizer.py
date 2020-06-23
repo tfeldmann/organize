@@ -1,81 +1,84 @@
-import fs
+from typing import Any, Iterable, Iterator, Mapping, Text, Union, Tuple
+
+import fs  # type: ignore
+from fs.walk import Walker
 
 
 class Organizer:
-    def __init__(self, folders, **kwargs):
-        self._folders = folders
-        self._filters = []
+    def __init__(self, folders, filters=None, actions=None, config=None):
+        self.folders = folders
+        self.filters = filters or []
+        self.actions = actions or []
 
         self.config = {
-            "exclude_dirs": [".git", ".svn", ".venv", ".pio"],
-            "exclude_files": [
+            "exclude_dirs": (),
+            "exclude_files": (),
+            "system_exclude_dirs": (".git", ".svn", ".venv", ".pio"),
+            "system_exclude_files": (
                 "thumbs.db",
                 "desktop.ini",
+                "~$*",
                 ".DS_Store",
                 ".localized",
-                "~$*",
-            ],
+            ),
             "max_depth": 0,
             "search": "breadth",
+            "ignore_errors": False,
+            # TODO: "normalize_unicode": False,
+            # TODO: "case_sensitive": True,
         }
-        self.config.update(kwargs)
+        if config:
+            self.config.update(config)
 
-    def folders(self):
-        for f in self._folders:
-            if isinstance(f, str):
-                f = {"path": f}
-            else:
-                assert "path" in f, "No path specified (%s)" % f
-            yield {
-                "path": f["path"],
-                "exclude": f.get("exclude", False),
-            }
+    def walkers(self) -> Iterable[Tuple[Text, Walker]]:
+        for entry in self.folders:
+            if isinstance(entry, str):
+                entry = (entry, {})
 
-    def files(self):
-        for folder in self.folders():
-            folder_fs = fs.open_fs(folder["path"])
-            yield from folder_fs.walk.files(
-                exclude_dirs=folder.get("exclude_dirs", self.config["exclude_dirs"]),
-                exclude=folder.get("exclude_files", self.config["exclude_files"]),
-                max_depth=folder.get("max_depth", self.config["max_depth"]),
-                search=folder.get("search", self.config["search"]),
+            folder, args = entry
+            config = self.config.copy()
+            config.update(args)
+
+            walker = Walker(
+                filter=None,
+                filter_dirs=None,
+                exclude=(
+                    set(config["system_exclude_files"]) | set(config["exclude_files"])
+                ),
+                exclude_dirs=(
+                    set(config["system_exclude_dirs"]) | set(config["exclude_dirs"])
+                ),
+                ignore_errors=config["ignore_errors"],
+                max_depth=config["max_depth"],
+                search=config["search"],
             )
+            yield (folder, walker)
 
-    def files_filtered(self):
-        pass
+    def files(self) -> Iterator[Text]:
+        for path, walker in self.walkers():
+            folder_fs = fs.open_fs(path)
+            yield from walker.files(folder_fs)
 
-    def clear_filters(self):
-        self._filters = []
-
-    def set_filters(self, filters):
-        self._filters = filters
-
-    def add_filters(self, filters):
-        self._filters.extend(filters)
-
-    def run_actions(self, actions):
-        pass
+    def run(self, simulate=True):
+        for f in self.files():
+            print(f)
 
 
 def test():
-    org = Organizer(
+    organizer = Organizer(
         folders=[
-            {"path": "/Users/thomasfeldmann/Downloads/", "max_depth": None,},
-            {"path": "~/Documents", "exclude": True},
+            "~/Documents",
+            ("~/Downloads/", {"max_depth": None}),
+            ("~/Documents", {}),
         ],
+        filters=[],
+        actions=[],
     )
-
-    for f in org.folders():
-        print(f)
-
-    for f in org.files():
-        print(f)
+    for path, walker in organizer.walkers():
+        print(path, walker)
+    if input("run? [Y/n]").lower() != "n":
+        organizer.run(simulate=True)
 
 
 if __name__ == "__main__":
     test()
-
-# f.set_filters(
-#     [filters.Extension("pdf"), filters.Filename(startswith="test"),]
-# )
-# f.run_actions(actions.Echo("{path}"))
