@@ -1,7 +1,27 @@
-from typing import Any, Iterable, Iterator, Mapping, Text, Union, Tuple
+import re
+from typing import Any, Iterable, Iterator, Mapping, Text, Tuple, Union
 
-import fs  # type: ignore
+import fs
 from fs.walk import Walker
+
+WILDCARD_REGEX = re.compile(r"(?<!\\)[\*\?\[]+")
+
+
+def split_glob(pattern):
+    base = []
+    glob_patterns = []
+    force_glob = False
+    recursive = False
+    for component in fs.path.iteratepath(pattern):
+        if force_glob or WILDCARD_REGEX.search(component):
+            if component == "**":
+                recursive = True
+            else:
+                glob_patterns.append(component)
+            force_glob = True
+        else:
+            base.append(component)
+    return (fs.path.join(*base), fs.path.join(*glob_patterns), recursive)
 
 
 class Organizer:
@@ -24,6 +44,7 @@ class Organizer:
             "max_depth": 0,
             "search": "breadth",
             "ignore_errors": False,
+            # TODO: "group_by_folder": False,
             # TODO: "normalize_unicode": False,
             # TODO: "case_sensitive": True,
         }
@@ -32,20 +53,29 @@ class Organizer:
 
     def walkers(self) -> Iterable[Tuple[Text, Walker]]:
         for entry in self.folders:
+            # if only a string is given we pack it into a tuple with empty settings
             if isinstance(entry, str):
                 entry = (entry, {})
 
-            folder, args = entry
+            # split path into base path and glob pattern
+            pattern, args = entry
+            folder, glob, recursive = split_glob(pattern)
+
+            # if a recursive glob pattern and not settings are given, adjust max_depth
+            if "max_depth" not in args and recursive:
+                args["max_depth"] = None
+
+            # combine defaults and folder config
             config = self.config.copy()
             config.update(args)
 
             walker = Walker(
-                filter=None,
+                filter=[glob] if glob else None,
                 filter_dirs=None,
-                exclude=(
+                exclude=list(
                     set(config["system_exclude_files"]) | set(config["exclude_files"])
                 ),
-                exclude_dirs=(
+                exclude_dirs=list(
                     set(config["system_exclude_dirs"]) | set(config["exclude_dirs"])
                 ),
                 ignore_errors=config["ignore_errors"],
@@ -59,15 +89,20 @@ class Organizer:
             folder_fs = fs.open_fs(path)
             yield from walker.files(folder_fs)
 
-    def run(self, simulate=True):
-        for f in self.files():
-            print(f)
+    def run_for_file(self, path, simulate=True):
+        print(path)
+        for filter_ in self.filters:
+            pass
+
+    def run(self, *args, **kwargs):
+        for path in self.files():
+            self.run_for_file(path=path, *args, **kwargs)
 
 
 def test():
     organizer = Organizer(
         folders=[
-            "~/Documents",
+            "~/Documents/",
             ("~/Downloads/", {"max_depth": None}),
             ("~/Documents", {}),
         ],
