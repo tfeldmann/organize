@@ -1,6 +1,8 @@
 from textwrap import indent
 from typing import Any, Callable, Dict, Optional, Union
 
+from colorama import Fore, Style  # type: ignore
+
 from organize.utils import DotDict
 
 FilterResult = Union[Dict[str, Any], bool, None]
@@ -20,6 +22,9 @@ class Filter:
         if callable(self.pre_print_hook):
             self.pre_print_hook()  # pylint: disable=not-callable
         print(indent("- (%s) %s" % (self.__class__.__name__, msg), " " * 4))
+
+    def print_exception(self, exc: Exception) -> None:
+        self.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % exc)
 
     def __str__(self) -> str:
         """ Return filter name and properties """

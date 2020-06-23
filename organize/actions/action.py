@@ -1,5 +1,7 @@
 from textwrap import indent
-from typing import Any, Mapping, Optional, Callable
+from typing import Any, Callable, Mapping, Optional
+
+from colorama import Fore, Style  # type: ignore
 
 from organize.utils import DotDict
 
@@ -13,7 +15,7 @@ class TemplateAttributeError(Error):
 
 
 class Action:
-    pre_print_hook = None # type: Optional[Callable]
+    pre_print_hook = None  # type: Optional[Callable]
 
     def run(self, **kwargs) -> Optional[Mapping[str, Any]]:
         return self.pipeline(DotDict(kwargs))
@@ -26,6 +28,9 @@ class Action:
         if callable(self.pre_print_hook):
             self.pre_print_hook()  # pylint: disable=not-callable
         print(indent("- [%s] %s" % (self.__class__.__name__, msg), " " * 4))
+
+    def print_exception(self, exc: Exception) -> None:
+        self.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % exc)
 
     @staticmethod
     def fill_template_tags(msg: str, args) -> str:

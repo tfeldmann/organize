@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Iterable, Iterator, Text, Tuple
 
 import fs
-from colorama import Fore, Style  # type: ignore
 from fs.walk import Walker
 
 from .output import console_output
@@ -110,7 +109,7 @@ class Organizer:
                     return False
             except Exception as e:  # pylint: disable=broad-except
                 logger.exception(e)
-                filter_.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
+                filter_.exception(e)
                 return False
         return True
 
@@ -123,11 +122,11 @@ class Organizer:
                     args.update(updates)
             except Exception as e:  # pylint: disable=broad-except
                 logger.exception(e)
-                action.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
+                action.print_exception(e)
                 return False
         return True
 
-    def run_single(self, path, basedir, simulate=True):
+    def run_single(self, path, basedir, simulate=True) -> bool:
         # args will be modified in place by action and filter pipeline
         args = DotDict(
             path=Path(fs.path.combine(basedir, path)),
@@ -138,11 +137,27 @@ class Organizer:
         console_output.set_location(args.basedir, args.relative_path)
         match = self.filter_pipeline(args)
         if match:
-            success = self.action_pipeline(args)
+            return self.action_pipeline(args)
 
-    def run(self, *args, **kwargs):
+    def run(self, simulate=True):
+        if simulate:
+            console_output.simulation_banner()
+
+        count = [0, 0]
         for base, path in self.files():
-            self.run_single(path=path, basedir=base, *args, **kwargs)
+            success = self.run_single(path=path, basedir=base, simulate=simulate)
+            if success is not None:
+                count[success] += 1
+        failed, succeded = count
+        if succeded == failed == 0:
+            msg = "Nothing to do."
+            logger.info(msg)
+            print(msg)
+
+        if simulate:
+            console_output.simulation_banner()
+
+        return failed > 0
 
 
 def test():
@@ -150,7 +165,7 @@ def test():
 
     organizer = Organizer(
         folders=[("~/Documents/", {"max_depth": None}),],
-        filters=[filters.Extension("html"),],
+        filters=[filters.Extension("ahtml"),],
         actions=[actions.Echo("{path}")],
     )
     organizer.run(simulate=True)

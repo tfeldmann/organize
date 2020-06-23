@@ -1,4 +1,5 @@
 import logging
+import shutil
 from textwrap import indent
 from typing import Optional, Set
 
@@ -24,6 +25,9 @@ class ConsoleOutput:
         self.curr_path = None  # type: Optional[Path]
         self.prev_folder = None  # type: Optional[Path]
         self.prev_path = None  # type: Optional[Path]
+
+        Action.pre_print_hook = self.pre_print
+        Filter.pre_print_hook = self.pre_print
 
     def set_location(self, folder: Path, path: Path) -> None:
         self.curr_folder = folder
@@ -52,7 +56,10 @@ class ConsoleOutput:
             print(Fore.YELLOW + Style.BRIGHT + msg)
             logger.warning(msg)
 
+    def simulation_banner(self):
+        cols, _ = shutil.get_terminal_size(fallback=(79, 20))
+        simulation_msg = " SIMULATION ".center(cols, "~")
+        print(Fore.GREEN + Style.BRIGHT + simulation_msg)
+
 
 console_output = ConsoleOutput()
-Action.pre_print_hook = console_output.pre_print
-Filter.pre_print_hook = console_output.pre_print
