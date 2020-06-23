@@ -78,7 +78,7 @@ class Organizer:
             config.update(args)
 
             walker = Walker(
-                filter=tuple(glob) if glob else None,
+                filter=[glob] if glob else None,
                 filter_dirs=None,
                 exclude=list(
                     set(config["system_exclude_files"]) | set(config["exclude_files"])
