@@ -1,10 +1,17 @@
+import logging
 import re
+from copy import deepcopy
+from pathlib import Path
 from typing import Any, Iterable, Iterator, Mapping, Text, Tuple, Union
 
 import fs
 from fs.walk import Walker
 
+from . import actions, filters
+from .utils import DotDict
+
 WILDCARD_REGEX = re.compile(r"(?<!\\)[\*\?\[]+")
+logger = logging.getLogger(__name__)
 
 
 def split_glob(pattern):
@@ -84,30 +91,63 @@ class Organizer:
             )
             yield (folder, walker)
 
-    def files(self) -> Iterator[Text]:
+    def files(self) -> Iterator[Tuple[Text, Text]]:
         for path, walker in self.walkers():
             folder_fs = fs.open_fs(path)
-            yield from walker.files(folder_fs)
+            for f in walker.files(folder_fs):
+                yield (path, f)
 
-    def run_for_file(self, path, simulate=True):
-        print(path)
+    def filter_pipeline(self, args: DotDict) -> bool:
         for filter_ in self.filters:
-            pass
+            try:
+                result = filter_.pipeline(deepcopy(args))
+                if isinstance(result, dict):
+                    args.update(result)
+                elif not result:
+                    # filters might return a simple True / False.
+                    # Exit early if a filter does not match.
+                    return False
+            except Exception as e:  # pylint: disable=broad-except
+                logger.exception(e)
+                # filter_.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
+                return False
+        return True
+
+    def action_pipeline(self, args: DotDict) -> bool:
+        for action in self.actions:
+            try:
+                updates = action.pipeline(deepcopy(args))
+                # jobs may return a dict with updates that should be merged into args
+                if updates is not None:
+                    args.update(updates)
+            except Exception as e:  # pylint: disable=broad-except
+                logger.exception(e)
+                # action.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
+                return False
+        return True
+
+    def run_for_file(self, path, basedir, simulate=True):
+        # args will be modified in place by action and filter pipeline
+        args = DotDict(
+            path=Path(fs.path.combine(basedir, path)),
+            basedir=Path(basedir),
+            relative_path=Path(path),
+            simulate=simulate,
+        )
+        match = self.filter_pipeline(args)
+        if match:
+            success = self.action_pipeline(args)
 
     def run(self, *args, **kwargs):
-        for path in self.files():
-            self.run_for_file(path=path, *args, **kwargs)
+        for base, path in self.files():
+            self.run_for_file(path=path, basedir=base, *args, **kwargs)
 
 
 def test():
     organizer = Organizer(
-        folders=[
-            "~/Documents/",
-            ("~/Downloads/", {"max_depth": None}),
-            ("~/Documents", {}),
-        ],
-        filters=[],
-        actions=[],
+        folders=[("~/Documents/", {"max_depth": None}),],
+        filters=[filters.Extension("html"),],
+        actions=[actions.Echo("{path}")],
     )
     for path, walker in organizer.walkers():
         print(path, walker)
