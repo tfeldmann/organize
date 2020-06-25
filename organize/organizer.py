@@ -2,7 +2,7 @@ import logging
 import re
 from copy import deepcopy
 from pathlib import Path
-from typing import Iterable, Iterator, Text, Tuple
+from typing import Iterable, Iterator, Text, Tuple, Mapping
 
 import fs
 from fs.walk import Walker
@@ -32,8 +32,8 @@ def split_glob(pattern):
 
 
 class Organizer:
-    def __init__(self, folders, filters=None, actions=None, config=None):
-        self.folders = folders
+    def __init__(self, folders=None, filters=None, actions=None, config=None):
+        self.folders = folders or []
         self.filters = filters or []
         self.actions = actions or []
 
@@ -58,37 +58,41 @@ class Organizer:
         if config:
             self.config.update(config)
 
+    def walker_settings(self, pattern, args) -> Tuple[Text, Mapping]:
+        # split path into base path and glob pattern
+        folder, glob, recursive = split_glob(pattern)
+
+        # if a recursive glob pattern and not settings are given, adjust max_depth
+        if "max_depth" not in args and recursive:
+            args["max_depth"] = None
+
+        # combine defaults and folder config
+        config = self.config.copy()
+        config.update(args)
+
+        walker_conf = dict(
+            filter=[glob] if glob else None,
+            filter_dirs=None,
+            exclude=list(
+                set(config["system_exclude_files"]) | set(config["exclude_files"])
+            ),
+            exclude_dirs=list(
+                set(config["system_exclude_dirs"]) | set(config["exclude_dirs"])
+            ),
+            ignore_errors=config["ignore_errors"],
+            max_depth=config["max_depth"],
+            search=config["search"],
+        )
+        return (folder, walker_conf)
+
     def walkers(self) -> Iterable[Tuple[Text, Walker]]:
         for entry in self.folders:
-            # if only a string is given we pack it into a tuple with empty settings
             if isinstance(entry, str):
-                entry = (entry, {})
-
-            # split path into base path and glob pattern
-            pattern, args = entry
-            folder, glob, recursive = split_glob(pattern)
-
-            # if a recursive glob pattern and not settings are given, adjust max_depth
-            if "max_depth" not in args and recursive:
-                args["max_depth"] = None
-
-            # combine defaults and folder config
-            config = self.config.copy()
-            config.update(args)
-
-            walker = Walker(
-                filter=[glob] if glob else None,
-                filter_dirs=None,
-                exclude=list(
-                    set(config["system_exclude_files"]) | set(config["exclude_files"])
-                ),
-                exclude_dirs=list(
-                    set(config["system_exclude_dirs"]) | set(config["exclude_dirs"])
-                ),
-                ignore_errors=config["ignore_errors"],
-                max_depth=config["max_depth"],
-                search=config["search"],
-            )
+                pattern, args = entry, {}
+            else:
+                pattern, args = entry
+            folder, conf = self.walker_settings(pattern=pattern, args=args)
+            walker = Walker(**conf)
             yield (folder, walker)
 
     def files(self) -> Iterator[Tuple[Text, Text]]:
@@ -165,7 +169,7 @@ def test():
 
     organizer = Organizer(
         folders=[("~/Documents/", {"max_depth": None}),],
-        filters=[filters.Extension("ahtml"),],
+        filters=[filters.Extension("html"),],
         actions=[actions.Echo("{path}")],
     )
     organizer.run(simulate=True)
