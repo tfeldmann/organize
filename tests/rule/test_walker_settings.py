@@ -1,20 +1,20 @@
 from unittest.mock import call
-from organize.organizer import Organizer
+from organize.rule import Rule
 
 
-def test_organizer():
-    org = Organizer()
-    _, conf = org.walker_settings("~/Documents", {"search": "depth"})
+def test_walker_settings():
+    rule = Rule()
+    _, conf = rule.walker_settings("~/Documents", {"search": "depth"})
     assert conf["search"] == "depth"
 
 def test_glob():
-    org = Organizer()
-    folder, conf = org.walker_settings("~/Documents/*.h", {})
+    rule = Rule()
+    folder, conf = rule.walker_settings("~/Documents/*.h", {})
     assert folder == "~/Documents"
     assert conf["filter"] == ["*.h"]
     assert conf["max_depth"] == 0
 
-    folder, conf = org.walker_settings("~/Documents/**/*.h", {})
+    folder, conf = rule.walker_settings("~/Documents/**/*.h", {})
     assert folder == "~/Documents"
     assert conf["filter"] == ["*.h"]
     assert conf["max_depth"] is None

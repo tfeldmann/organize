@@ -31,7 +31,7 @@ def split_glob(pattern):
     return (fs.path.join(*base), fs.path.join(*glob_patterns), recursive)
 
 
-class Organizer:
+class Rule:
     def __init__(self, folders=None, filters=None, actions=None, config=None):
         self.folders = folders or []
         self.filters = filters or []
@@ -167,12 +167,12 @@ class Organizer:
 def test():
     from . import actions, filters
 
-    organizer = Organizer(
+    rule = Rule(
         folders=[("~/Documents/", {"max_depth": None}),],
         filters=[filters.Extension("html"),],
         actions=[actions.Echo("{path}")],
     )
-    organizer.run(simulate=True)
+    rule.run(simulate=True)
 
 
 if __name__ == "__main__":
