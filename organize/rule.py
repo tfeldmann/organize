@@ -2,11 +2,11 @@ import logging
 import re
 from copy import deepcopy
 from pathlib import Path
-from typing import Iterable, Iterator, Text, Tuple, Mapping
+from typing import Iterable, Iterator, Text, Tuple, Mapping, Optional
 
 import fs
 from fs.walk import Walker
-
+from .glob import Globber
 from .output import console_output
 from .utils import DotDict
 
@@ -14,34 +14,139 @@ WILDCARD_REGEX = re.compile(r"(?<!\\)[\*\?\[]+")
 logger = logging.getLogger(__name__)
 
 
-def split_glob(pattern):
-    base = []
-    glob_patterns = []
+class Folder:
+    """A Folder object globs a single folder for files or folders
+    """
+
+    def __init__(
+        self,
+        path="/",
+        glob="*",
+        *,
+        base_fs="/",
+        case_sensitive=True,
+        exclude_dirs=None,
+        max_depth=None,
+        exclude_files=None,
+        search="breadth",
+        ignore_errors=False,
+    ):
+        self.base_fs = base_fs
+        self.path = path
+        self.glob = glob
+        self.exclude_dirs = exclude_dirs
+        self.case_sensitive = case_sensitive
+        self.exclude_dirs = exclude_dirs
+        self.max_depth = max_depth
+        self.exclude_files = exclude_files
+        self.search = search
+        self.ignore_errors = ignore_errors
+
+    def files(self):
+        file_glob = self.glob.rstrip("/")
+        for path, info in self._glob(file_glob):
+            if info.is_file:
+                yield path
+
+    def dirs(self):
+        dir_glob = self.glob + ("/" if not self.glob.endswith("/") else "")
+        for path, info in self._glob(dir_glob):
+            if info.is_dir:
+                yield path
+
+    def _glob(self, pattern):
+        with fs.open_fs(self.base_fs) as sandbox:
+            globber = Globber(
+                fs=sandbox,
+                pattern=pattern,
+                path=self.path,
+                case_sensitive=self.case_sensitive,
+                exclude_dirs=self.exclude_dirs,
+                max_depth=self.max_depth,
+                exclude=self.exclude_files,
+                search=self.search,
+                ignore_errors=self.ignore_errors,
+            )
+            yield from globber
+
+
+class FolderWalker:
+    """A FolderWalker globs multiple given folders for files or folders.
+    """
+
+    def __init__(self, folders, optimize=True):
+        self.folders = folders
+
+    def files(self):
+        for folder in self.folders:
+            yield from folder.files()
+
+    def dirs(self):
+        for folder in self.folders:
+            yield from folder.files()
+
+
+"""
+Input:
+    osfs://~/Documents/
+    osfs://~/Pictures
+    ! osfs://~/Pictures/Old/*.png
+    osfs://~/Pictures/Old/*_include.png
+    osfs://~/Pictures/Additional
+    osfs://~/Pictures/2020-*/*.png
+    osfs://~/Downloads/Folder1/**/*.*
+    osfs://~/Downloads/Folder2/**/*
+
+
+Entrypoints (group by base path):
+- osfs://~/Documents/
+    - *
+- osfs://~/Pictures/
+    - /Old/
+        - ! *.png
+        - *_include.png
+    - /Additional/
+    - /2020-*/
+        - *.png
+- osfs://~/Downloads/Folder1
+    - **/*.*
+- osfs://~/Downloads/Folder2
+    - **/*
+
+
+"""
+
+
+def create_file_glob(pattern: Text) -> Tuple[Text, Text]:
+    # If the glob pattern ends in a /, it will only match directory paths, otherwise it
+    # will match files and directories.
+    url = ""
+    index = pattern.find("://")  # find filesystem urls
+    if index > 0:
+        url, pattern = pattern[: index + 3], pattern[index + 3 :]
+    base, glob = [], []
     force_glob = False
-    recursive = False
     for component in fs.path.iteratepath(pattern):
         if force_glob or WILDCARD_REGEX.search(component):
-            if component == "**":
-                recursive = True
-            else:
-                glob_patterns.append(component)
+            glob.append(component)
             force_glob = True
         else:
             base.append(component)
-    return (fs.path.join(*base), fs.path.join(*glob_patterns), recursive)
+
+    return (url + fs.path.join(*base), fs.path.join(*glob))
 
 
 class Rule:
-    def __init__(self, folders=None, filters=None, actions=None, config=None):
+    def __init__(self, folders=None, filters=None, actions=None, **kwargs):
         self.folders = folders or []
         self.filters = filters or []
         self.actions = actions or []
 
         self.config = {
-            "exclude_dirs": (),
-            "exclude_files": (),
-            "system_exclude_dirs": (".git", ".svn", ".venv", ".pio"),
-            "system_exclude_files": (
+            "exclude_dirnames": (),
+            "exclude_filenames": (),
+            "system_exclude_dirnames": ("*.git", "*.svn", ".venv", ".pio"),
+            "system_exclude_filenames": (
                 "thumbs.db",
                 "desktop.ini",
                 "~$*",
@@ -51,28 +156,27 @@ class Rule:
             "max_depth": 0,
             "search": "breadth",
             "ignore_errors": False,
-            # TODO: "group_by_folder": False,
-            # TODO: "normalize_unicode": False,
+            "case_sensitive": True,
+            # TODO: "group_by_folder": False,  - only possible in RuleGrouper
+            # TODO: "normalize_unicode": True,
             # TODO: "case_sensitive": True,
         }
-        if config:
-            self.config.update(config)
+        self.config.update(kwargs)
 
     def walker_settings(self, pattern, args) -> Tuple[Text, Mapping]:
-        # split path into base path and glob pattern
-        folder, glob, recursive = split_glob(pattern)
+        parsed_pattern = parse_pattern(pattern)  # type: Pattern
 
         # if a recursive glob pattern and not settings are given, adjust max_depth
-        if "max_depth" not in args and recursive:
-            args["max_depth"] = None
+        if "max_depth" not in args:
+            args["max_depth"] = parsed_pattern.max_depth
 
         # combine defaults and folder config
         config = self.config.copy()
         config.update(args)
 
         walker_conf = dict(
-            filter=[glob] if glob else None,
-            filter_dirs=None,
+            filter=parsed_pattern.glob_files,
+            filter_dirs=parsed_pattern.glob_dirs,
             exclude=list(
                 set(config["system_exclude_files"]) | set(config["exclude_files"])
             ),
@@ -83,7 +187,7 @@ class Rule:
             max_depth=config["max_depth"],
             search=config["search"],
         )
-        return (folder, walker_conf)
+        return (parsed_pattern.base, walker_conf)
 
     def walkers(self) -> Iterable[Tuple[Text, Walker]]:
         for entry in self.folders:
@@ -130,7 +234,7 @@ class Rule:
                 return False
         return True
 
-    def run_single(self, path, basedir, simulate=True) -> bool:
+    def run_single(self, path, basedir, simulate=True) -> Optional[bool]:
         # args will be modified in place by action and filter pipeline
         args = DotDict(
             path=Path(fs.path.combine(basedir, path)),
@@ -142,6 +246,7 @@ class Rule:
         match = self.filter_pipeline(args)
         if match:
             return self.action_pipeline(args)
+        return None
 
     def run(self, simulate=True):
         if simulate:
@@ -168,8 +273,8 @@ def test():
     from . import actions, filters
 
     rule = Rule(
-        folders=[("~/Documents/", {"max_depth": None}),],
-        filters=[filters.Extension("html"),],
+        folders=[Folder(path="~/Documents", glob="**/*")],
+        filters=[filters.Extension("pdf"),],
         actions=[actions.Echo("{path}")],
     )
     rule.run(simulate=True)
