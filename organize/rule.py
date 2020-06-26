@@ -31,21 +31,22 @@ class Folder:
 
     def files(self):
         file_glob = self.glob.rstrip("/")
-        for path, info in self._glob(file_glob):
+        for filesystem, path, info in self._glob(file_glob):
             if info.is_file:
-                yield self.base_fs, path
+                yield filesystem, path
 
     def dirs(self, **kwargs):
         dir_glob = fs.path.forcedir(self.glob)
-        for path, info in self._glob(dir_glob):
+        for filesystem, path, info in self._glob(dir_glob):
             if info.is_dir:
-                yield self.base_fs, path
+                yield filesystem, path
 
     def _glob(self, pattern):
-        with fs.open_fs(self.base_fs) as sandbox:
-            yield from Globber(
-                fs=sandbox, pattern=pattern, path=self.path, **self.kwargs
-            )
+        with fs.open_fs(self.base_fs) as glob_fs:
+            for path, info in Globber(
+                fs=glob_fs, pattern=pattern, path=self.path, **self.kwargs
+            ):
+                yield glob_fs, path, info
 
     @classmethod
     def from_string(cls, string):
