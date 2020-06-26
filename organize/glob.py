@@ -1,6 +1,8 @@
 """
-This file is copied directly from fs.glob and adds additional walker parameters to the
-internal walker.
+This file is based on fs.glob.
+
+Unused stuff is removed and arguments are added which are provided to the internal
+walker object.
 """
 
 from __future__ import unicode_literals
@@ -119,7 +121,7 @@ class Globber(object):
         case_sensitive=True,
         exclude_dirs=None,
         max_depth=None,
-        exclude=None,
+        exclude_files=None,
         search="breadth",
         ignore_errors=False,
     ):
@@ -133,7 +135,7 @@ class Globber(object):
 
         # added parameters
         self.max_depth = max_depth
-        self.exclude = exclude
+        self.exclude_files = exclude_files
         self.search = search
         self.ignore_errors = ignore_errors
 
@@ -147,7 +149,7 @@ class Globber(object):
             case_sensitive=(self.case_sensitive, True),
             exclude_dirs=(self.exclude_dirs, None),
             max_depth=(self.max_depth, None),
-            exclude=(self.exclude, None),
+            exclude_files=(self.exclude_files, None),
             search=(self.search, "breadth"),
             ignore_errors=(self.ignore_errors, False),
         )
@@ -175,7 +177,7 @@ class Globber(object):
             namespaces=namespaces or self.namespaces,
             max_depth=max_depth,
             exclude_dirs=self.exclude_dirs,
-            exclude=self.exclude,
+            exclude=self.exclude_files,
             search=self.search,
             ignore_errors=self.ignore_errors,
         ):

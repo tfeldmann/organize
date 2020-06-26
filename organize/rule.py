@@ -18,56 +18,38 @@ class Folder:
     """A Folder object globs a single folder for files or folders
     """
 
-    def __init__(
-        self,
-        path="/",
-        glob="*",
-        *,
-        base_fs="/",
-        case_sensitive=True,
-        exclude_dirs=None,
-        max_depth=None,
-        exclude_files=None,
-        search="breadth",
-        ignore_errors=False,
-    ):
-        self.base_fs = base_fs
-        self.path = path
+    def __init__(self, path="/", glob="*", *, base_fs="", **kwargs):
+        if not base_fs:
+            self.base_fs = "osfs://" + path
+            self.path = "/"
+        else:
+            self.base_fs = base_fs
+            self.path = path
+
         self.glob = glob
-        self.exclude_dirs = exclude_dirs
-        self.case_sensitive = case_sensitive
-        self.exclude_dirs = exclude_dirs
-        self.max_depth = max_depth
-        self.exclude_files = exclude_files
-        self.search = search
-        self.ignore_errors = ignore_errors
+        self.kwargs = kwargs  # additional walker parameters
 
     def files(self):
         file_glob = self.glob.rstrip("/")
         for path, info in self._glob(file_glob):
             if info.is_file:
-                yield path
+                yield self.base_fs, path
 
-    def dirs(self):
-        dir_glob = self.glob + ("/" if not self.glob.endswith("/") else "")
+    def dirs(self, **kwargs):
+        dir_glob = fs.path.forcedir(self.glob)
         for path, info in self._glob(dir_glob):
             if info.is_dir:
-                yield path
+                yield self.base_fs, path
 
     def _glob(self, pattern):
         with fs.open_fs(self.base_fs) as sandbox:
-            globber = Globber(
-                fs=sandbox,
-                pattern=pattern,
-                path=self.path,
-                case_sensitive=self.case_sensitive,
-                exclude_dirs=self.exclude_dirs,
-                max_depth=self.max_depth,
-                exclude=self.exclude_files,
-                search=self.search,
-                ignore_errors=self.ignore_errors,
+            yield from Globber(
+                fs=sandbox, pattern=pattern, path=self.path, **self.kwargs
             )
-            yield from globber
+
+    @classmethod
+    def from_string(cls, string):
+        raise NotImplementedError()  # TODO
 
 
 class FolderWalker:
@@ -83,7 +65,7 @@ class FolderWalker:
 
     def dirs(self):
         for folder in self.folders:
-            yield from folder.files()
+            yield from folder.dirs()
 
 
 """
@@ -98,7 +80,7 @@ Input:
     osfs://~/Downloads/Folder2/**/*
 
 
-Entrypoints (group by base path):
+Entrypoints (group by base, then group by path elements):
 - osfs://~/Documents/
     - *
 - osfs://~/Pictures/
@@ -112,8 +94,6 @@ Entrypoints (group by base path):
     - **/*.*
 - osfs://~/Downloads/Folder2
     - **/*
-
-
 """
 
 
