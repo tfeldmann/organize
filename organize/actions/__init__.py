@@ -1,6 +1,7 @@
 from .copy import Copy
 from .delete import Delete
 from .echo import Echo
+from .email import Email
 from .move import Move
 from .python import Python
 from .rename import Rename

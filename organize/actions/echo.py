@@ -70,7 +70,6 @@ class Echo(Action):
 
     def __init__(self, msg) -> None:
         self.msg = msg
-        self.log = logging.getLogger(__name__)
 
     def pipeline(self, args) -> None:
         path = args["path"]

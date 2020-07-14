@@ -1,5 +1,8 @@
 # Changelog
 
+## WIP
+- Add `email` action.
+
 ## v1.9 (2020-06-12)
 - Add filter `Duplicate`.
 
