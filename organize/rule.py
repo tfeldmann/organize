@@ -170,12 +170,6 @@ class Rule:
         options=None,
         defaults=None,
     ):
-        """
-        :param folders: A list of folders to include
-        :param exclude: A list of folders to exclude
-        :param filters: A list of filters
-        :param actions: A list of actions
-        """
         self.folders = folders or []
         self.exclude = exclude or []
         self.filters = filters or []
@@ -279,7 +273,7 @@ class Rule:
         self.run(simulate=True)
 
 
-class RuleSet:
+class Ruleset:
     def __init__(self, rules=None, options=None, defaults=None):
         self.rules = rules or []
         self._options = options or {}
@@ -298,30 +292,18 @@ class RuleSet:
 def test():
     from . import actions, filters
 
-    rules = RuleSet(
+    rules = Ruleset(
         [
             Rule(
                 folders=[
-                    Folder(
-                        path=".",
-                        glob="**/*",
-                    ),
-                    Folder(
-                        base_fs="zip://testzip.zip",
-                        glob="**/*",
-                    ),
+                    Folder("~/Desktop", "**/*", options={"max_depth": 2}),
+                    Folder(glob="*", base_fs="zip://testzip.zip"),
                 ],
-                exclude=[
-                    Folder(
-                        path="~/Desktop/Inbox",
-                        glob="**/*",
-                    ),
-                ],
-                filters=[filters.Extension("py")],
+                filters=[filters.Extension("pdf")],
                 actions=[actions.Echo("{extension.upper}")],
+                options={"max_depth": 2},
             )
         ],
-        options={"max_depth": 2},
     )
     rules.sim()
 
