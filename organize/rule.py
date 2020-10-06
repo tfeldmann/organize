@@ -2,10 +2,10 @@
 https://github.com/tfeldmann/organize/pull/85
 """
 import logging
+import os
 import re
 from collections import namedtuple
 from copy import deepcopy
-from os.path import abspath, expanduser, expandvars
 from pathlib import Path
 from typing import Optional
 
@@ -58,33 +58,39 @@ class Folder:
     def __init__(
         self, path="/", glob="*", *, base_fs="osfs:///", options=None, defaults=None
     ):
-        self.base_dir = str(path)
-        self.glob = glob
         self.base_fs = base_fs
-
+        self._base_dir = str(path)
+        self.glob = glob
         self._options = options or {}
         self.defaults = defaults or DEFAULT_OPTIONS
 
+    def options(self):
+        return merge_options(self._options, self.defaults)
+
     def label(self):
-        if self.base_fs.startswith("osfs://"):
-            return self.base_dir
-        else:
-            return self.base_fs + self.base_dir if self.base_dir != "/" else ""
+        if self.base_fs.startswith("osfs"):
+            return self._base_dir
+        return self.base_fs + self._base_dir
+
+    @property
+    def base_dir(self):
+        options = self.options()
+        result = self._base_dir
+        if options["expandvars"]:
+            result = os.path.expandvars(result)
+        # expand user if on osfs
+        if self.base_fs.startswith("osfs"):
+            if options["expanduser"]:
+                result = os.path.expanduser(result)
+            result = os.path.abspath(fs.path.normpath(result))
+        return result
 
     def _glob(self, pattern):
         """ execute the given glob pattern """
-        options = merge_options(self._options, self.defaults)
-
-        path = self.base_dir
-        if options["expanduser"]:
-            path = expanduser(path)
-        if options["expandvars"]:
-            path = expandvars(path)
-        path = abspath(path)
-
+        options = self.options()
         globber_kwargs = dict(
             pattern=pattern,
-            path=path,
+            path=self.base_dir,
             max_depth=options["max_depth"],
             case_sensitive=options["case_sensitive"],
             exclude_dirs=(
@@ -113,7 +119,7 @@ class Folder:
                     path=path,
                 )
 
-    def dirs(self, **kwargs):
+    def dirs(self):
         label = self.label()
         dir_glob = fs.path.forcedir(self.glob)
         for filesystem, path, info in self._glob(pattern=dir_glob):
@@ -156,22 +162,49 @@ class Folder:
 
 class Rule:
     def __init__(
-        self, folders=None, filters=None, actions=None, options=None, defaults=None
+        self,
+        folders=None,
+        exclude=None,
+        filters=None,
+        actions=None,
+        options=None,
+        defaults=None,
     ):
+        """
+        :param folders: A list of folders to include
+        :param exclude: A list of folders to exclude
+        :param filters: A list of filters
+        :param actions: A list of actions
+        """
         self.folders = folders or []
+        self.exclude = exclude or []
         self.filters = filters or []
         self.actions = actions or []
         self._options = options or {}
         self.defaults = defaults or DEFAULT_OPTIONS
+
+        self.excluded = set()
 
     def options(self):
         return merge_options(self._options, self.defaults)
 
     def files(self):
         options = self.options()
+
+        for folder in self.exclude:
+            folder.defaults = options
+            for item in folder.files():
+                desc = item.base_fs.desc(item.path)
+                self.excluded.add(desc)
+
         for folder in self.folders:
             folder.defaults = options
-            yield from folder.files()
+            for item in folder.files():
+                if self.excluded:
+                    desc = item.base_fs.desc(item.path)
+                    if desc in self.excluded:
+                        continue
+                yield item
 
     def dirs(self):
         options = self.options()
@@ -246,7 +279,7 @@ class Rule:
         self.run(simulate=True)
 
 
-class RuleBook:
+class RuleSet:
     def __init__(self, rules=None, options=None, defaults=None):
         self.rules = rules or []
         self._options = options or {}
@@ -265,27 +298,32 @@ class RuleBook:
 def test():
     from . import actions, filters
 
-    book = RuleBook(
+    rules = RuleSet(
         [
             Rule(
                 folders=[
                     Folder(
-                        path="~/Desktop",
+                        path=".",
                         glob="**/*",
                     ),
                     Folder(
                         base_fs="zip://testzip.zip",
-                        path="/",
                         glob="**/*",
                     ),
                 ],
-                filters=[filters.Extension()],
+                exclude=[
+                    Folder(
+                        path="~/Desktop/Inbox",
+                        glob="**/*",
+                    ),
+                ],
+                filters=[filters.Extension("py")],
                 actions=[actions.Echo("{extension.upper}")],
             )
         ],
-        options={"max_depth": 1},
+        options={"max_depth": 2},
     )
-    book.sim()
+    rules.sim()
 
 
 if __name__ == "__main__":
