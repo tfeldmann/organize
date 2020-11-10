@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v1.9.1 (2020-11-10)
 - Add {env} variable
 - Add {now} variable
 
