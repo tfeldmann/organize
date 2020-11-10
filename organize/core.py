@@ -1,6 +1,8 @@
 import logging
+import os
 import shutil
 from copy import deepcopy
+from datetime import datetime
 from textwrap import indent
 from typing import Generator, Iterable, List, NamedTuple, Optional, Sequence, Set, Tuple
 
@@ -150,9 +152,14 @@ def run_jobs(jobs: Iterable[Job], simulate: bool) -> List[int]:
     Filter.pre_print_hook = output_helper.pre_print
 
     for job in sorted(jobs, key=lambda x: (x.folderstr, x.basedir, x.path)):
-        args = DotDict(path=job.path, basedir=job.basedir, simulate=simulate)
-        # the relative path should be kept even if the path changes.
-        args["relative_path"] = args["path"].relative_to(args["basedir"])
+        args = DotDict(
+            path=job.path,
+            basedir=job.basedir,
+            simulate=simulate,
+            relative_path=job.path.relative_to(job.basedir),
+            env=os.environ,
+            now=datetime.now(),
+        )
 
         output_helper.set_location(job.basedir, args.relative_path)
         match = filter_pipeline(filters=job.filters, args=args)

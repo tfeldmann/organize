@@ -1,5 +1,9 @@
 # Changelog
 
+## WIP
+- Add {env} variable
+- Add {now} variable
+
 ## v1.9 (2020-06-12)
 - Add filter `Duplicate`.
 
