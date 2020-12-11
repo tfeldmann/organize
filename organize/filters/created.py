@@ -39,6 +39,9 @@ class Created(Filter):
         time, 'newer' matches all files created within the given time.
         (default = 'older')
 
+    :param str timezone:
+        specify timezone
+
     :returns:
         - ``{created.year}`` -- the year the file was created
         - ``{created.month}`` -- the month the file was created
@@ -87,6 +90,20 @@ class Created(Filter):
                   - created
                 actions:
                   - move: '~/Documents/PDF/{created.year}/'
+
+        - Use specific timezone when processing files
+
+          .. code-block:: yaml
+            :caption: config.yaml
+
+            rules:
+              - folders: '~/Documents'
+                filters:
+                  - extension: pdf
+                  - created:
+                      timezone: "Europe/Moscow"
+                actions:
+                  - move: '~/Documents/PDF/{created.day}/{created.hour}/'
     """
 
     def __init__(
@@ -99,11 +116,13 @@ class Created(Filter):
         minutes=0,
         seconds=0,
         mode="older",
+        timezone=pendulum.tz.local_timezone(),
     ) -> None:
         self._mode = mode.strip().lower()
         if self._mode not in ("older", "newer"):
             raise ValueError("Unknown option for 'mode': must be 'older' or 'newer'.")
         self.is_older = self._mode == "older"
+        self.timezone = timezone
         self.timedelta = pendulum.duration(
             years=years,
             months=months,
@@ -141,7 +160,7 @@ class Created(Filter):
                 # We're probably on Linux. No easy way to get creation dates here,
                 # so we'll settle for when its content was last modified.
                 time = stat.st_mtime
-        return pendulum.from_timestamp(float(time))
+        return pendulum.from_timestamp(float(time), tz=self.timezone)
 
     def __str__(self):
         return "[Created] All files %s than %s" % (

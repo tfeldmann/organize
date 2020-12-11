@@ -38,6 +38,9 @@ class LastModified(Filter):
         before the given time, 'newer' matches all files last modified within
         the given time. (default = 'older')
 
+    :param str timezone:
+        specify timezone
+
     :returns:
         - ``{lastmodified.year}`` -- the year the file was last modified
         - ``{lastmodified.month}`` -- the month the file was last modified
@@ -87,6 +90,20 @@ class LastModified(Filter):
                   - LastModified
                 actions:
                   - move: '~/Documents/PDF/{lastmodified.year}/'
+
+        - Use specific timezone when processing files
+
+          .. code-block:: yaml
+            :caption: config.yaml
+
+            rules:
+              - folders: '~/Documents'
+                filters:
+                  - extension: pdf
+                  - lastmodified:
+                      timezone: "Europe/Moscow"
+                actions:
+                  - move: '~/Documents/PDF/{lastmodified.day}/{lastmodified.hour}/'
     """
 
     def __init__(
@@ -99,11 +116,13 @@ class LastModified(Filter):
         minutes=0,
         seconds=0,
         mode="older",
+        timezone=pendulum.tz.local_timezone(),
     ) -> None:
         self._mode = mode.strip().lower()
         if self._mode not in ("older", "newer"):
             raise ValueError("Unknown option for 'mode': must be 'older' or 'newer'.")
         self.is_older = self._mode == "older"
+        self.timezone = timezone
         self.timedelta = pendulum.duration(
             years=years,
             months=months,
@@ -128,7 +147,7 @@ class LastModified(Filter):
         return None
 
     def _last_modified(self, path: Path) -> pendulum.DateTime:
-        return pendulum.from_timestamp(float(path.stat().st_mtime))
+        return pendulum.from_timestamp(float(path.stat().st_mtime), tz=self.timezone)
 
     def __str__(self):
         return "[LastModified] All files last modified %s than %s" % (
