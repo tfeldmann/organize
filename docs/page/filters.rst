@@ -21,7 +21,7 @@ Extension
 .. autoclass:: Extension
 
 FileContent
----------
+-----------
 .. autoclass:: FileContent
 
 Filename
@@ -35,6 +35,10 @@ FileSize
 LastModified
 ------------
 .. autoclass:: LastModified
+
+MimeType
+------------
+.. autoclass:: MimeType
 
 Python
 ------
