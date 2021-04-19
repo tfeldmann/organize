@@ -1,6 +1,6 @@
-from typing import Any, List, Mapping, Union
+from typing import Any, List, Union, Optional, Dict
 
-import simplematch
+import simplematch  # type: ignore
 
 from organize.compat import Path
 
@@ -99,12 +99,12 @@ class Filename(Filter):
         )
         return is_match
 
-    def pipeline(self, args: Mapping) -> bool:
+    def pipeline(self, args: Dict) -> Optional[Dict[str, Any]]:
         path = args["path"]
         result = self.matches(path)
         if result:
             return {"filename": self.matcher.match(path.stem)}
-        return False
+        return None
 
     @staticmethod
     def create_list(x: Union[int, str, List[Any]], case_sensitive: bool) -> List[str]:
