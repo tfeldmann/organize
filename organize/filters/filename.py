@@ -1,5 +1,7 @@
 from typing import Any, List, Mapping, Union
 
+import simplematch
+
 from organize.compat import Path
 
 from .filter import Filter
@@ -76,8 +78,9 @@ class Filename(Filter):
     """
 
     def __init__(
-        self, startswith="", contains="", endswith="", case_sensitive=True
+        self, match="*", *, startswith="", contains="", endswith="", case_sensitive=True
     ) -> None:
+        self.matcher = simplematch.Matcher(match, case_sensitive=case_sensitive)
         self.startswith = self.create_list(startswith, case_sensitive)
         self.contains = self.create_list(contains, case_sensitive)
         self.endswith = self.create_list(endswith, case_sensitive)
@@ -87,14 +90,21 @@ class Filename(Filter):
         filename = path.stem
         if not self.case_sensitive:
             filename = filename.lower()
-        return (
-            any(x in filename for x in self.contains)
+
+        is_match = (
+            self.matcher.test(filename)
+            and any(x in filename for x in self.contains)
             and any(filename.startswith(x) for x in self.startswith)
             and any(filename.endswith(x) for x in self.endswith)
         )
+        return is_match
 
     def pipeline(self, args: Mapping) -> bool:
-        return self.matches(args["path"])
+        path = args["path"]
+        result = self.matches(path)
+        if result:
+            return {"filename": self.matcher.match(path.stem)}
+        return False
 
     @staticmethod
     def create_list(x: Union[int, str, List[Any]], case_sensitive: bool) -> List[str]:
