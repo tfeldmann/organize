@@ -10,6 +10,7 @@
   dependency. Install it with `pip install organize-tool[textract]`
 - This version needs python 3.6 minimum. Some dependencies that were simply backports
   (pathlib2, typing) are removed.
+- Add timezones in created and last_modified filters (Thank you, @win0err!)
 
 ## v1.9.1 (2020-11-10)
 - Add {env} variable
