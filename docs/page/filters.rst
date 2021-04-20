@@ -21,7 +21,7 @@ Extension
 .. autoclass:: Extension
 
 FileContent
----------
+-----------
 .. autoclass:: FileContent
 
 Filename
