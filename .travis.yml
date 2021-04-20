@@ -2,16 +2,17 @@ dist: xenial   # required for Python >= 3.7
 sudo: false
 language: python
 python:
-  - "3.5"
   - "3.6"
   - "3.7"
-  - "3.8-dev"
+  - "3.8"
+  - "3.9"
 install:
   - pip install -U pip
-  - pip install -U pytest
+  - pip install -U poetry
   - pip install .
-  - python main.py list
-  - python main.py config --path
-  - python main.py --version
+  - poetry install
+  - poetry run python main.py list
+  - poetry run python main.py config --path
+  - poetry run python main.py --version
 script:
-    py.test
+    poetry run pytest
