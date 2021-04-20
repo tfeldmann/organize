@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from organize.actions import Python
-from organize.compat import Path
+from pathlib import Path
 
 
 def test_print_substitution():

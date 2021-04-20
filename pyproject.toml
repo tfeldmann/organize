@@ -26,16 +26,11 @@ organize = "organize.cli:main"
 
 [tool.poetry.dependencies]
 python = "^3.6"
-appdirs = "^1.4"
+appdirs = "^1.4.4"
 docopt = "^0.6.2"
-PyYAML = "^5.1"
-Send2Trash = "^1.5"
-colorama = "^0.4.1"
-typing = { version = "^3.6", python = "<3.5" }
-pathlib2 = [
-    { version = "^2.3.3", python = "<3.5" },
-    { version = "2.3.0", python = "<3.4" },
-]
+PyYAML = "^5.4.1"
+Send2Trash = "^1.5.0"
+colorama = "^0.4.4"
 exifread = "^2.1"
 textract = { version = "^1.6.3", optional = true }
 pendulum = "^2.0.5"
@@ -52,6 +47,7 @@ ipdb = "^0.12.0"
 sphinx = "^3.1.0"
 sphinx-rtd-theme = "^0.5.2"
 mypy = "^0.812"
+flake8 = "^3.9.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -6,7 +6,7 @@ import appdirs  # type: ignore
 import colorama  # type: ignore
 import yaml
 
-from .compat import Path
+from pathlib import Path
 
 colorama.init(autoreset=True)
 

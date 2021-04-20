@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from organize.actions import Shell
-from organize.compat import Path
+from pathlib import Path
 
 
 def test_shell_basic():

@@ -7,7 +7,7 @@ import yaml
 
 from . import actions, filters
 from .actions.action import Action
-from .compat import Path
+from pathlib import Path
 from .filters.filter import Filter
 from .utils import first_key, flatten
 

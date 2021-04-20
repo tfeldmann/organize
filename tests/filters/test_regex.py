@@ -1,4 +1,4 @@
-from organize.compat import Path
+from pathlib import Path
 from organize.filters import Regex
 from organize.utils import DotDict
 

@@ -2,7 +2,7 @@ import sys
 from typing import Dict, Optional, SupportsFloat
 
 import pendulum  # type: ignore
-from organize.compat import Path
+from pathlib import Path
 from organize.utils import DotDict
 
 from .filter import Filter

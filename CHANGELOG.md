@@ -1,7 +1,15 @@
 # Changelog
 
 ## WIP
+- Add filter `mimetype`
 - Add action `macos_tags`
+- Support [`simplematch`](https://github.com/tfeldmann/simplematch) syntax in
+  `filename`-filter. 
+- Updated dependencies
+- Because installing `textract` is quite hard on some platforms it is now an optional
+  dependency. Install it with `pip install organize-tool[textract]`
+- This version needs python 3.6 minimum. Some dependencies that were simply backports
+  (pathlib2, typing) are removed.
 
 ## v1.9.1 (2020-11-10)
 - Add {env} variable

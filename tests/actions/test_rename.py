@@ -1,7 +1,7 @@
 import os
 
 from organize.actions import Rename
-from organize.compat import Path
+from pathlib import Path
 
 USER_DIR = os.path.expanduser("~")
 

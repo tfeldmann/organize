@@ -198,6 +198,7 @@ def test_empty_filters():
     ]
 
 
+@pytest.mark.skip
 def test_flatten_filters_and_actions():
     config = """
     folder_aliases:
@@ -341,4 +342,3 @@ def test_flatten_filters_and_actions():
             system_files=False,
         ),
     ]
-

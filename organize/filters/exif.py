@@ -3,7 +3,7 @@ from typing import Any, DefaultDict, Dict, Mapping, Optional, Union
 
 import exifread  # type: ignore
 
-from organize.compat import Path
+from pathlib import Path
 
 from .filter import Filter
 

@@ -4,7 +4,7 @@ from collections.abc import Mapping
 from copy import deepcopy
 from typing import Any, Sequence, Tuple, Union, List, Hashable
 
-from .compat import Path
+from pathlib import Path
 
 WILDCARD_REGEX = re.compile(r"(?<!\\)[\*\?\[]+")
 

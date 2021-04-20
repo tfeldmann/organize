@@ -1,6 +1,6 @@
 from typing import Dict, Optional, Union
 
-from organize.compat import Path
+from pathlib import Path
 from organize.utils import DotDict, flatten
 
 from .filter import Filter

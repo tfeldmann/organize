@@ -9,7 +9,7 @@ from typing import Generator, Iterable, List, NamedTuple, Optional, Sequence, Se
 from colorama import Fore, Style  # type: ignore
 
 from .actions.action import Action
-from .compat import Path
+from pathlib import Path
 from .config import Rule
 from .filters.filter import Filter
 from .utils import DotDict, splitglob

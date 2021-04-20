@@ -1,7 +1,7 @@
 import re
 from typing import Any, Dict, Mapping, Optional
 
-from organize.compat import Path
+from pathlib import Path
 
 from .filter import Filter
 

@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pendulum
 
-from organize.compat import Path
+from pathlib import Path
 from organize.filters import Created
 
 

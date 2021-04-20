@@ -2,7 +2,7 @@ from typing import Any, List, Union, Optional, Dict
 
 import simplematch  # type: ignore
 
-from organize.compat import Path
+from pathlib import Path
 
 from .filter import Filter
 
@@ -11,6 +11,10 @@ class Filename(Filter):
 
     """
     Match files by filename
+
+    :param str match:
+        A matching string in `simplematch`-syntax
+        (https://github.com/tfeldmann/simplematch)
 
     :param str startswith:
         The filename must begin with the given string

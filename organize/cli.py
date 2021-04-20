@@ -34,7 +34,7 @@ from docopt import docopt  # type: ignore
 
 from . import CONFIG_DIR, CONFIG_PATH, LOG_PATH
 from .__version__ import __version__
-from .compat import Path
+from pathlib import Path
 from .config import Config
 from .core import execute_rules
 from .utils import flatten, fullpath

@@ -3,7 +3,7 @@ import os
 import shutil
 from typing import Mapping
 
-from organize.compat import Path
+from pathlib import Path
 from organize.utils import DotDict, find_unused_filename, fullpath
 
 from .action import Action

@@ -1,7 +1,7 @@
 import logging
 from typing import Mapping
 
-from organize.compat import Path
+from pathlib import Path
 
 from .action import Action
 
