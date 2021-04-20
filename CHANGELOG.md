@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v1.10.0 (2021-04-20)
 - Add filter `mimetype`
 - Add action `macos_tags`
 - Support [`simplematch`](https://github.com/tfeldmann/simplematch) syntax in
