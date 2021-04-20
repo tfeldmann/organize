@@ -4,10 +4,10 @@
 
 <div align="center">
 
-[![PyPI Version][[pypi-image](https://img.shields.io/pypi/v/organize-tool)]][[pypi-url](https://pypi.org/project/organize-tool/)]
 [![tests](https://github.com/tfeldmann/organize/actions/workflows/tests.yml/badge.svg)](https://github.com/tfeldmann/organize/actions/workflows/tests.yml)
 [![Documentation Status](https://readthedocs.org/projects/organize/badge/?version=latest)](https://organize.readthedocs.io/en/latest/?badge=latest)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
+[![PyPI Version](https://img.shields.io/pypi/v/organize-tool)](https://pypi.org/project/organize-tool/)
 
 </div>
 
