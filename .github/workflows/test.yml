@@ -20,13 +20,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install poetry
-          poetry install
-          python -m pip install .
+          poetry install -E textract
       - name: General info
         run: |
-          organize list
-          organize config --path
-          organize --version
+          poetry run python main.py list
+          poetry run python main.py config --path
+          poetry run python main.py --version
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names

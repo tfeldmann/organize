@@ -7,10 +7,8 @@ python:
   - "3.8"
   - "3.9"
 install:
-  - pip install -U pip
-  - pip install -U poetry
-  - pip install .
-  - poetry install
+  - pip install -U pip poetry
+  - poetry install -E textract
   - poetry run python main.py list
   - poetry run python main.py config --path
   - poetry run python main.py --version
