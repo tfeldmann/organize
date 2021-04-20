@@ -1,7 +1,6 @@
 import re
 from typing import Any, Dict, Mapping, Optional
 
-import textract  # type: ignore
 from organize.compat import Path
 
 from .filter import Filter
@@ -63,8 +62,15 @@ class FileContent(Filter):
         if path.suffix.lower() not in SUPPORTED_EXTENSIONS:
             return
         try:
+            import textract  # type: ignore
+
             content = textract.process(str(path), errors="ignore")
             return self.expr.search(content.decode("utf-8", errors="ignore"))
+        except ImportError as e:
+            raise ImportError(
+                "textract is not installed. "
+                "Install with pip install organize-tool[textract]"
+            ) from e
         except textract.exceptions.CommandLineError:
             pass
 

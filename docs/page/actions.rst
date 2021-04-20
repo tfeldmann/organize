@@ -35,3 +35,7 @@ Shell
 Trash
 -----
 .. autoclass:: Trash
+
+macOS Tags
+----------
+.. autoclass:: MacOSTags

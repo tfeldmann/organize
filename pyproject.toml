@@ -25,7 +25,7 @@ classifiers = [
 organize = "organize.cli:main"
 
 [tool.poetry.dependencies]
-python = "^3.5"
+python = "^3.6"
 appdirs = "^1.4"
 docopt = "^0.6.2"
 PyYAML = "^5.1"
@@ -37,8 +37,13 @@ pathlib2 = [
     { version = "2.3.0", python = "<3.4" },
 ]
 exifread = "^2.1"
-textract = "^1.6.3"
+textract = { version = "^1.6.3", optional = true }
 pendulum = "^2.0.5"
+simplematch = "^1.3"
+macos-tags = { version = "^1.5.1", markers = "sys_platform == 'darwin'"}
+
+[tool.poetry.extras]
+textract = ["textract"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.6"
@@ -46,7 +51,8 @@ pylint = "^2.3"
 ipdb = "^0.12.0"
 sphinx = "^3.1.0"
 sphinx-rtd-theme = "^0.5.2"
+mypy = "^0.812"
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
