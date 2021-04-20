@@ -82,3 +82,21 @@ def test_filename_list_case_sensitive():
     assert not filename.matches(Path("~/-A5.dpf"))
     assert not filename.matches(Path("~/"))
     assert not filename.matches(Path("~/_a5"))
+
+
+def test_filename_match():
+    fn = Filename("Invoice_*_{year:int}_{month}_{day}")
+    p = "~/Documents/Invoice_RE1001_2021_01_31.pdf"
+    assert fn.matches(Path(p))
+    assert fn.run(path=Path(p)) == {
+        "filename": {"year": 2021, "month": "01", "day": "31"}
+    }
+
+
+def test_filename_match_case_insensitive():
+    case = Filename("upper_{m1}_{m2}", case_sensitive=True)
+    icase = Filename("upper_{m1}_{m2}", case_sensitive=False)
+    p = "~/Documents/UPPER_MiXed_lower.pdf"
+    assert icase.matches(Path(p))
+    assert icase.run(path=Path(p)) == {"filename": {"m1": "MiXed", "m2": "lower"}}
+    assert not case.matches(Path(p))

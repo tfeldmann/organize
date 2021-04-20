@@ -1,5 +1,8 @@
 # Changelog
 
+## WIP
+- Add action `macos_tags`
+
 ## v1.9.1 (2020-11-10)
 - Add {env} variable
 - Add {now} variable
