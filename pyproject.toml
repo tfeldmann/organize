@@ -15,9 +15,10 @@ classifiers = [
     # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
-    "Natural Language :: English",
     "Intended Audience :: End Users/Desktop",
+    "Natural Language :: English",
     "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
     "Topic :: Utilities",
 ]
 
