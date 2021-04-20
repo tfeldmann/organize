@@ -36,6 +36,10 @@ LastModified
 ------------
 .. autoclass:: LastModified
 
+MimeType
+------------
+.. autoclass:: MimeType
+
 Python
 ------
 .. autoclass:: filters.Python
