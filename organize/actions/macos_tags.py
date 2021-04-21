@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 from typing import Mapping
 
-import simplematch as sm
+import simplematch as sm # type: ignore
 
 from .action import Action
 
@@ -87,7 +87,7 @@ class MacOSTags(Action):
             self.print("The macos_tags action is only available on macOS")
             return
 
-        import macos_tags
+        import macos_tags  # type: ignore
 
         COLORS = [c.name.lower() for c in macos_tags.Color]
 
