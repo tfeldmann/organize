@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v1.10.1 (2021-04-21)
 - Action `macos_tags` now supports colors and placeholders.
 - Show full expanded path if folder is not found.
 
