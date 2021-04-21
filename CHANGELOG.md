@@ -1,5 +1,8 @@
 # Changelog
 
+## WIP
+- Action `macos_tags` now supports colors and template strings.
+
 ## v1.10.0 (2021-04-20)
 - Add filter `mimetype`
 - Add action `macos_tags`
