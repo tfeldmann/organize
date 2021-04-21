@@ -3,15 +3,15 @@ Quickstart
 
 Installation
 ------------
-Requirements: Python 3.3+
+Requirements: Python 3.6+
 
 `organize` is installed via pip:
 
-On macOS / Windows:
-``$ pip3 install organize-tool``
+``$ pip install organize-tool``
 
-On Linux:
-``$ sudo pip3 install organize-tool``
+If you want all the text extraction capabilities, install with `textract` like this:
+
+``$ sudo pip3 -U organize-tool[textract]``
 
 
 Creating your first config file

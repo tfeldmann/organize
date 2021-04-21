@@ -47,7 +47,7 @@ Installation is done via pip. Note that the package name is `organize-tool`:
 pip3 install -U organize-tool
 ```
 
-If you want the text extraction possibilites, install with e xtra `textract` like this:
+If you want the text extraction capabilities, install with `textract` like this:
 
 ```bash
 pip3 install -U organize-tool[textract]
