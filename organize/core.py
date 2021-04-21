@@ -130,7 +130,7 @@ def all_files_for_rule(rule: Rule) -> Generator[Tuple[str, Path, Path], None, No
             globstr = basedir.name
             basedir = basedir.parent
         else:
-            output_helper.print_path_not_found(basedir)
+            output_helper.print_path_not_found(str(basedir))
             continue
 
         # iterate files in basedir and add to / remove from result dict
