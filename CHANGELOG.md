@@ -1,7 +1,8 @@
 # Changelog
 
 ## WIP
-- Action `macos_tags` now supports colors and template strings.
+- Action `macos_tags` now supports colors and placeholders.
+- Show full expanded path if folder is not found.
 
 ## v1.10.0 (2021-04-20)
 - Add filter `mimetype`
