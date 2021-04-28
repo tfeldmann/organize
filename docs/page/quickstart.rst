@@ -11,7 +11,7 @@ Requirements: Python 3.6+
 
 If you want all the text extraction capabilities, install with `textract` like this:
 
-``$ sudo pip3 -U organize-tool[textract]``
+``$ pip3 -U "organize-tool[textract]"``
 
 
 Creating your first config file
