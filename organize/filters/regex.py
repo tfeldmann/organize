@@ -69,7 +69,7 @@ class Regex(Filter):
           1. creates a placeholder variable containing the year
           2. allows only years which start with 20 and are followed by 2 numbers
           3. months can only have as first digit 0 or 1 and must be followed by a number
-          4. days can only have 0, 1 or 3 and must followed by number
+          4. days can only have 0, 1,2 or 3 and must followed by number
           Note: Filter is not perfect but still.
 
           group ``the_number``.
@@ -80,7 +80,7 @@ class Regex(Filter):
             rules:
               - folders: ~/Desktop
                 filters:
-                  - regex: '(?P<year>20\d{2})-[01]\d-[013]\d.*'
+                  - regex: '(?P<year>20\d{2})-[01]\d-[0123]\d.*'
                 actions:
                   - echo: "Year: {regex.year}"
     """
