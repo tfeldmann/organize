@@ -13,7 +13,23 @@ class TemplateAttributeError(Error):
 
 
 class Action:
-    pre_print_hook = None # type: Optional[Callable]
+    pre_print_hook = None  # type: Optional[Callable]
+
+    @classmethod
+    def name(cls):
+        return cls.__name__
+
+    @classmethod
+    def schema(cls):
+        from schema import Schema, Optional, Or
+
+        return {
+            Optional(cls.name().lower()): Or(
+                str,
+                [str],
+                Schema({}, ignore_extra_keys=True),
+            ),
+        }
 
     def run(self, **kwargs) -> Optional[Mapping[str, Any]]:
         return self.pipeline(DotDict(kwargs))
@@ -22,7 +38,7 @@ class Action:
         raise NotImplementedError
 
     def print(self, msg) -> None:
-        """ print a message for the user """
+        """print a message for the user"""
         if callable(self.pre_print_hook):
             self.pre_print_hook()  # pylint: disable=not-callable
         print(indent("- [%s] %s" % (self.__class__.__name__, msg), " " * 4))

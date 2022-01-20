@@ -43,7 +43,7 @@ logger = logging.getLogger("organize")
 
 
 def main(argv=None):
-    """ entry point for the command line interface """
+    """entry point for the command line interface"""
     args = docopt(__doc__, argv=argv, version=__version__, help=True)
 
     # override default config file path
@@ -89,7 +89,7 @@ def main(argv=None):
 
 
 def config_edit(config_path: Path) -> None:
-    """ open the config file in $EDITOR or default text editor """
+    """open the config file in $EDITOR or default text editor"""
     # attention: the env variable might contain command line arguments.
     # https://github.com/tfeldmann/organize/issues/24
     editor = os.getenv("EDITOR")
@@ -100,15 +100,15 @@ def config_edit(config_path: Path) -> None:
 
 
 def open_in_filemanager(path: Path) -> None:
-    """ opens the given path in file manager, using the default application """
+    """opens the given path in file manager, using the default application"""
     import webbrowser  # pylint: disable=import-outside-toplevel
 
     webbrowser.open(path.as_uri())
 
 
 def config_debug(config_path: Path) -> None:
-    """ prints the config with resolved yaml aliases, checks rules syntax and checks
-        whether the given folders exist
+    """prints the config with resolved yaml aliases, checks rules syntax and checks
+    whether the given folders exist
     """
     print(str(config_path))
     haserr = False
@@ -138,7 +138,7 @@ def config_debug(config_path: Path) -> None:
 
 
 def list_actions_and_filters() -> None:
-    """ Prints a list of available actions and filters """
+    """Prints a list of available actions and filters"""
     import inspect  # pylint: disable=import-outside-toplevel
     from organize import filters, actions  # pylint: disable=import-outside-toplevel
 

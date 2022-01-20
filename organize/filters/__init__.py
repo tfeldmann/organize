@@ -9,3 +9,17 @@ from .last_modified import LastModified
 from .mimetype import MimeType
 from .python import Python
 from .regex import Regex
+
+ALL = {
+    "created": Created,
+    "duplicate": Duplicate,
+    "exif": Exif,
+    "extension": Extension,
+    "file_content": FileContent,
+    "filename": Filename,
+    "filesize": FileSize,
+    "last_modified": LastModified,
+    "mimetype": MimeType,
+    "python": Python,
+    "regex": Regex,
+}

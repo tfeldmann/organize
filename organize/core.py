@@ -1,204 +1,131 @@
-import logging
-import os
-import shutil
-from copy import deepcopy
-from datetime import datetime
-from textwrap import indent
-from typing import Generator, Iterable, List, NamedTuple, Optional, Sequence, Set, Tuple
+import fs
+from rich.console import Console
 
-from colorama import Fore, Style  # type: ignore
+console = Console()
 
-from .actions.action import Action
-from pathlib import Path
-from .config import Rule
-from .filters.filter import Filter
-from .utils import DotDict, splitglob
 
-logger = logging.getLogger(__name__)
-SYSTEM_FILES = ("thumbs.db", "desktop.ini", ".DS_Store")
+def walker_args_from_options(options):
+    excludes = options.get(
+        "system_exlude_files",
+        [
+            "thumbs.db",
+            "desktop.ini",
+            "~$*",
+            ".DS_Store",
+            ".localized",
+        ],
+    )
+    excludes.extend(options.get("exclude_files", []))
+    exclude_dirs = options.get(
+        "system_exclude_dirs",
+        [
+            "*.git",
+            "*.svn",
+            ".venv",
+            ".pio",
+        ],
+    )
+    exclude_dirs.extend(options.get("exclude_dirs", []))
 
-Job = NamedTuple(
-    "Job",
-    [
-        ("folderstr", str),
-        ("basedir", Path),
-        ("path", Path),
-        ("filters", Sequence[Filter]),
-        ("actions", Sequence[Action]),
+    return {
+        "ignore_errors": options.get("ignore_errors", False),
+        "on_error": options.get("on_error", None),
+        "search": options.get("search", "depth"),
+        "exclude": excludes,
+        "exclude_dirs": exclude_dirs,
+        "max_depth": options.get("max_depth", None),
+        "filter": None,
+        "filter_dirs": None,
+    }
+
+
+config = {
+    "version": 1,
+    "rules": [
+        {
+            "name": "Fixup old pdfs",
+            "targets": "files",
+            "locations": [
+                {
+                    "path": "~/Desktop",
+                    "max_depth": 3,
+                },
+            ],
+            "filters": [
+                {
+                    "extension": "pdf",
+                },
+            ],
+            "actions": [
+                {
+                    "copy": "~/Dir",
+                },
+            ],
+        },
+        {
+            "name": "Find some folders",
+            "targets": "dirs",
+            "locations": [
+                {
+                    "path": "~/Desktop",
+                    "max_depth": 10,
+                },
+                {
+                    "path": "~/Desktop/Inbox",
+                    "max_depth": None,
+                },
+            ],
+            "filters": [
+                {
+                    "extension": "pdf",
+                },
+            ],
+            "actions": [
+                {
+                    "copy": "~/Dir",
+                },
+            ],
+        },
     ],
-)
-Job.__doc__ = """
-    :param str folderstr: the original folder definition specified in the config
-    :param Path basedir:  the job's base folder
-    :param Path path:     the path of the file to handle
-    :param list filters:  the filters that apply to the path
-    :param list actions:  the actions which should be executed
-"""
+}
 
 
-class OutputHelper:
-    """
-    class to track the current folder / file and print only changes.
-    This is needed because we only want to output the current folder and file if the
-    filter or action prints something.
-    """
-
-    def __init__(self) -> None:
-        self.not_found = set()  # type: Set[str]
-        self.curr_folder = None  # type: Optional[Path]
-        self.curr_path = None  # type: Optional[Path]
-        self.prev_folder = None  # type: Optional[Path]
-        self.prev_path = None  # type: Optional[Path]
-
-    def set_location(self, folder: Path, path: Path) -> None:
-        self.curr_folder = folder
-        self.curr_path = path
-
-    def pre_print(self) -> None:
-        """
-        pre-print hook that is called everytime the moment before a filter or action is
-        about to print something to the cli
-        """
-        if self.curr_folder != self.prev_folder:
-            if self.prev_folder is not None:
-                print()  # ensure newline between folders
-            print("Folder %s%s:" % (Style.BRIGHT, self.curr_folder))
-            self.prev_folder = self.curr_folder
-
-        if self.curr_path != self.prev_path:
-            print(indent("File %s%s:" % (Style.BRIGHT, self.curr_path), " " * 2))
-            self.prev_path = self.curr_path
-
-    def print_path_not_found(self, folderstr: str) -> None:
-        if folderstr not in self.not_found:
-            self.not_found.add(folderstr)
-            msg = "Path not found: {}".format(folderstr)
-            print(Fore.YELLOW + Style.BRIGHT + msg)
-            logger.warning(msg)
+def instantiate_entry(d, classes):
+    key, value = list(d.items())[0]
+    if isinstance(key, str):
+        Class = classes[key.lower()]
+        if isinstance(value, dict):
+            return Class(**value)
+        return Class(value)
+    return {key: value}
 
 
-output_helper = OutputHelper()
+def instantiate_in_place(config):
+    for rule in config["rules"]:
+        rule["filters"] = [instantiate_entry(x, FILTERS) for x in rule["filters"]]
+        rule["actions"] = [instantiate_entry(x, ACTIONS) for x in rule["actions"]]
 
 
-def execute_rules(rules: Iterable[Rule], simulate: bool) -> None:
-    cols, _ = shutil.get_terminal_size(fallback=(79, 20))
-    simulation_msg = Fore.GREEN + Style.BRIGHT + " SIMULATION ".center(cols, "~")
-
-    jobs = create_jobs(rules=rules)
-
-    if simulate:
-        print(simulation_msg)
-
-    failed, succeded = run_jobs(jobs=jobs, simulate=simulate)
-    if succeded == failed == 0:
-        msg = "Nothing to do."
-        logger.info(msg)
-        print(msg)
-
-    if simulate:
-        print(simulation_msg)
-
-
-def create_jobs(rules: Iterable[Rule]) -> Generator[Job, None, None]:
-    """ creates `Job` data structures for every path handled in each rule """
-    for rule in rules:
-        for folderstr, basedir, path in all_files_for_rule(rule):
-            yield Job(
-                folderstr=folderstr,
-                basedir=basedir,
-                path=path,
-                filters=rule.filters,
-                actions=rule.actions,
-            )
+def run(config):
+    for rule in config["rules"]:
+        target = rule.get("targets", "files")
+        console.print(rule["name"], style="bold")
+        with console.status("[bold green]organizing...") as status:
+            for location in rule["locations"]:
+                path = location["path"]
+                folder_fs = fs.open_fs(path)
+                walker_args = walker_args_from_options(location)
+                if target == "files":
+                    for path in folder_fs.walk.files(**walker_args):
+                        if ".html" in path:
+                            console.print(folder_fs, path)
+                elif target == "dirs":
+                    for path in folder_fs.walk.dirs(**walker_args):
+                        if "PrintQueue" in path:
+                            console.print(folder_fs, path)
 
 
-def all_files_for_rule(rule: Rule) -> Generator[Tuple[str, Path, Path], None, None]:
-    files = dict()
-    for folderstr in rule.folders:
-        folderstr = folderstr.strip()
-
-        # check whether the file / folder is prefixed with `!` to be excluded
-        exclude_flag = folderstr.startswith("!")
-
-        # assemble glob expression
-        basedir, globstr = splitglob(folderstr.lstrip("!").strip())
-        if basedir.is_dir():
-            if not globstr:
-                globstr = "**/*" if rule.subfolders else "*"
-        elif basedir.is_file():
-            # this allows specifying single files
-            globstr = basedir.name
-            basedir = basedir.parent
-        else:
-            output_helper.print_path_not_found(str(basedir))
-            continue
-
-        # iterate files in basedir and add to / remove from result dict
-        for path in basedir.glob(globstr):
-            if path.is_file() and (rule.system_files or path.name not in SYSTEM_FILES):
-                if not exclude_flag:
-                    files[path] = (folderstr, basedir)
-                elif path in files:
-                    del files[path]
-
-    for path, (folderstr, basedir) in files.items():
-        yield (folderstr, basedir, path)
-
-
-def run_jobs(jobs: Iterable[Job], simulate: bool) -> List[int]:
-    """ :returns: The number of successfully handled files """
-    count = [0, 0]
-    Action.pre_print_hook = output_helper.pre_print
-    Filter.pre_print_hook = output_helper.pre_print
-
-    for job in sorted(jobs, key=lambda x: (x.folderstr, x.basedir, x.path)):
-        args = DotDict(
-            path=job.path,
-            basedir=job.basedir,
-            simulate=simulate,
-            relative_path=job.path.relative_to(job.basedir),
-            env=os.environ,
-            now=datetime.now(),
-        )
-
-        output_helper.set_location(job.basedir, args.relative_path)
-        match = filter_pipeline(filters=job.filters, args=args)
-        if match:
-            success = action_pipeline(actions=job.actions, args=args)
-            count[success] += 1
-    return count
-
-
-def filter_pipeline(filters: Iterable[Filter], args: DotDict) -> bool:
-    """
-    run the filter pipeline.
-    Returns True on a match, False otherwise and updates `args` in the process.
-    """
-    for filter_ in filters:
-        try:
-            result = filter_.pipeline(deepcopy(args))
-            if isinstance(result, dict):
-                args.update(result)
-            elif not result:
-                # filters might return a simple True / False.
-                # Exit early if a filter does not match.
-                return False
-        except Exception as e:  # pylint: disable=broad-except
-            logger.exception(e)
-            filter_.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
-            return False
-    return True
-
-
-def action_pipeline(actions: Iterable[Action], args: DotDict) -> bool:
-    for action in actions:
-        try:
-            updates = action.pipeline(deepcopy(args))
-            # jobs may return a dict with updates that should be merged into args
-            if updates is not None:
-                args.update(updates)
-        except Exception as e:  # pylint: disable=broad-except
-            logger.exception(e)
-            action.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
-            return False
-    return True
+if __name__ == "__main__":
+    instantiate_in_place(config)
+    print(config)
+    run(config)

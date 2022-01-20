@@ -1,5 +1,6 @@
+from schema import Schema, Optional, Or
 from textwrap import indent
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any, Dict, Union
 
 from organize.utils import DotDict
 
@@ -7,7 +8,24 @@ FilterResult = Union[Dict[str, Any], bool, None]
 
 
 class Filter:
-    pre_print_hook = None  # type: Optional[Callable]
+    pre_print_hook = None
+
+    @classmethod
+    def name(cls):
+        return cls.__name__.lower()
+
+    @classmethod
+    def schema(cls):
+        return Or(
+            cls.name(),
+            {
+                Optional(cls.name()): Or(
+                    str,
+                    [str],
+                    Schema({}, ignore_extra_keys=True),
+                ),
+            },
+        )
 
     def run(self, **kwargs: Dict) -> FilterResult:
         return self.pipeline(DotDict(kwargs))
@@ -16,14 +34,14 @@ class Filter:
         raise NotImplementedError
 
     def print(self, msg: str) -> None:
-        """ print a message for the user """
+        """print a message for the user"""
         if callable(self.pre_print_hook):
             self.pre_print_hook()  # pylint: disable=not-callable
         print(indent("- (%s) %s" % (self.__class__.__name__, msg), " " * 4))
 
     def __str__(self) -> str:
-        """ Return filter name and properties """
-        return self.__class__.__name__
+        """Return filter name and properties"""
+        return self.name()
 
     def __repr__(self) -> str:
         return "<%s>" % str(self)

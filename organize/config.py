@@ -1,26 +1,44 @@
-import inspect
-import logging
 import textwrap
-from typing import Generator, List, Mapping, NamedTuple, Sequence
 
 import yaml
+from rich.console import Console
+from schema import And, Optional, Or, Schema, SchemaError
 
-from . import actions, filters
-from .actions.action import Action
-from pathlib import Path
-from .filters.filter import Filter
-from .utils import first_key, flatten
+from organize.actions import ALL as ACTIONS
+from organize.filters import ALL as FILTERS
 
-logger = logging.getLogger(__name__)
-Rule = NamedTuple(
-    "Rule",
-    [
-        ("filters", Sequence[Filter]),
-        ("actions", Sequence[Action]),
-        ("folders", Sequence[str]),
-        ("subfolders", bool),
-        ("system_files", bool),
-    ],
+console = Console()
+
+CONFIG_SCHEMA = Schema(
+    {
+        Optional("version"): int,
+        "rules": [
+            {
+                "name": And(str, len),
+                "targets": Or("dirs", "files"),
+                "locations": [
+                    Or(
+                        str,
+                        {
+                            "path": And(str, len),
+                            Optional("filesystem"): str,
+                            Optional("max_depth"): Or(int, None),
+                            Optional("search"): Or("depth", "breadth"),
+                            Optional("exclude_files"): [str],
+                            Optional("exclude_dirs"): [str],
+                            Optional("system_exlude_files"): [str],
+                            Optional("system_exclude_dirs"): [str],
+                            Optional("ignore_errors"): bool,
+                            Optional("filter"): [str],
+                            Optional("filter_dirs"): [str],
+                        },
+                    ),
+                ],
+                Optional("filters"): [FILTER.schema() for FILTER in FILTERS.values()],
+                "actions": [ACTION.schema() for ACTION in ACTIONS.values()],
+            }
+        ],
+    }
 )
 
 # disable yaml constructors for strings starting with exclamation marks
@@ -32,174 +50,20 @@ def default_yaml_cnst(loader, tag_suffix, node):
 yaml.add_multi_constructor("", default_yaml_cnst, Loader=yaml.SafeLoader)
 
 
-class Config:
-    def __init__(self, config: dict) -> None:
-        self.config = config
-        self.filter_by_name = {
-            name.lower(): getattr(filters, name)
-            for name, _ in inspect.getmembers(filters, inspect.isclass)
-        }
-        self.action_by_name = {
-            name.lower(): getattr(actions, name)
-            for name, _ in inspect.getmembers(actions, inspect.isclass)
-        }
+def load_from_string(config):
+    dedented_config = textwrap.dedent(config)
+    return yaml.load(dedented_config, Loader=yaml.SafeLoader)
 
-    @classmethod
-    def from_string(cls, config: str) -> "Config":
-        dedented_config = textwrap.dedent(config)
-        try:
-            return cls(yaml.load(dedented_config, Loader=yaml.SafeLoader))
-        except yaml.YAMLError as e:
-            raise cls.ParsingError(e)
 
-    @classmethod
-    def from_file(cls, path: Path) -> "Config":
-        with path.open(encoding="utf-8") as f:
-            return cls.from_string(f.read())
+def load_from_file(path):
+    with open(path, "r", encoding="utf-8") as f:
+        return load_from_string(f.read())
 
-    def yaml(self) -> str:
-        if not (self.config and "rules" in self.config):
-            raise self.NoRulesFoundError()
-        data = {"rules": self.config["rules"]}
-        yaml.Dumper.ignore_aliases = lambda self, data: True  # type: ignore
-        return yaml.dump(
-            data, allow_unicode=True, default_flow_style=False, default_style="'"
-        )
 
-    @staticmethod
-    def parse_folders(rule_item) -> Generator[str, None, None]:
-        # the folder list is flattened so we can use encapsulated list
-        # definitions in the config file.
-        yield from flatten(rule_item["folders"])
-
-    @staticmethod
-    def sanitize_key(key):
-        return key.lower().replace("_", "")
-
-    def _get_filter_class_by_name(self, name):
-        try:
-            return self.filter_by_name[self.sanitize_key(name)]
-        except AttributeError as e:
-            raise self.Error("%s is no valid filter" % name) from e
-
-    def _get_action_class_by_name(self, name):
-        try:
-            return self.action_by_name[self.sanitize_key(name)]
-        except AttributeError as e:
-            raise self.Error("%s is no valid action" % name) from e
-
-    @staticmethod
-    def _class_instance_with_args(Cls, args):
-        if args is None:
-            return Cls()
-        elif isinstance(args, list):
-            return Cls(*args)
-        elif isinstance(args, dict):
-            return Cls(**args)
-        return Cls(args)
-
-    def instantiate_filters(self, rule_item: Mapping) -> Generator[Filter, None, None]:
-        # filter list can be empty
-        try:
-            filter_list = rule_item["filters"]
-        except KeyError:
-            return
-        if not filter_list:
-            return
-        if not isinstance(filter_list, list):
-            raise self.FiltersNoListError()
-
-        for filter_item in flatten(filter_list):
-            if filter_item is None:
-                # TODO: don't know what this should be
-                continue
-            # filter with arguments
-            elif isinstance(filter_item, dict):
-                name = first_key(filter_item)
-                args = filter_item[name]
-                filter_class = self._get_filter_class_by_name(name)
-                yield self._class_instance_with_args(filter_class, args)
-            # only given filter name without args
-            elif isinstance(filter_item, str):
-                name = filter_item
-                filter_class = self._get_filter_class_by_name(name)
-                yield filter_class()
-            else:
-                raise self.Error("Unknown filter: %s" % filter_item)
-
-    def instantiate_actions(self, rule_item: Mapping) -> Generator[Action, None, None]:
-        action_list = rule_item["actions"]
-        if not isinstance(action_list, list):
-            raise self.ActionsNoListError()
-
-        for action_item in flatten(action_list):
-            if isinstance(action_item, dict):
-                name = first_key(action_item)
-                args = action_item[name]
-                action_class = self._get_action_class_by_name(name)
-                yield self._class_instance_with_args(action_class, args)
-            elif isinstance(action_item, str):
-                name = action_item
-                action_class = self._get_action_class_by_name(name)
-                yield action_class()
-            else:
-                raise self.Error("Unknown action: %s" % action_item)
-
-    @property
-    def rules(self) -> List[Rule]:
-        """ :returns: A list of instantiated Rules """
-        if not (self.config and "rules" in self.config):
-            raise self.NoRulesFoundError()
-        result = []
-        for i, rule_item in enumerate(self.config["rules"]):
-            # skip disabled rules
-            if not rule_item.get("enabled", True):
-                continue
-
-            rule_folders = list(self.parse_folders(rule_item))
-            rule_filters = list(self.instantiate_filters(rule_item))
-            rule_actions = list(self.instantiate_actions(rule_item))
-
-            if not rule_folders:
-                logger.warning("No folders given for rule %s!", i + 1)
-            if not rule_filters:
-                logger.warning("No filters given for rule %s!", i + 1)
-            if not rule_actions:
-                logger.warning("No actions given for rule %s!", i + 1)
-
-            rule = Rule(
-                folders=rule_folders,
-                filters=rule_filters,
-                actions=rule_actions,
-                subfolders=rule_item.get("subfolders", False),
-                system_files=rule_item.get("system_files", False),
-            )
-            result.append(rule)
-        return result
-
-    class Error(Exception):
-        pass
-
-    class NoRulesFoundError(Error):
-        def __str__(self):
-            return "No rules found in configuration file"
-
-    class ParsingError(Error):
-        pass
-
-    class NoFoldersFoundError(Error):
-        pass
-
-    class NoFiltersFoundError(Error):
-        pass
-
-    class NoActionsFoundError(Error):
-        pass
-
-    class FiltersNoListError(Error):
-        def __str__(self):
-            return "Please specify your filters as a YAML list"
-
-    class ActionsNoListError(Error):
-        def __str__(self):
-            return "Please specify your actions as a YAML list"
+conf = load_from_file(
+    "/Users/thomasfeldmann/Library/Application Support/organize/config.yaml"
+)
+try:
+    CONFIG_SCHEMA.validate(conf)
+except SchemaError as e:
+    console.print(str(e.autos[-1]))
