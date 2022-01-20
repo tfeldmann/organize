@@ -10,6 +10,9 @@ from .trash import Trash
 logger = logging.getLogger(__name__)
 
 
+CONFLICT_OPTIONS = ("rename_new", "rename_old", "skip", "trash", "overwrite")
+
+
 class Copy(Action):
 
     """
@@ -81,9 +84,15 @@ class Copy(Action):
                       counter_separator: '_'
     """
 
-    def __init__(self, dest: str, overwrite=False, counter_separator=" ") -> None:
+    def __init__(
+        self, dest: str, on_conflict="rename_new", counter_separator=" "
+    ) -> None:
+        if on_conflict not in CONFLICT_OPTIONS:
+            raise ValueError(
+                "on_conflict must be one of %s" % ", ".join(CONFLICT_OPTIONS)
+            )
         self.dest = dest
-        self.overwrite = overwrite
+        self.on_conflict = on_conflict
         self.counter_separator = counter_separator
 
     def pipeline(self, args: Mapping) -> None:
@@ -117,4 +126,4 @@ class Copy(Action):
         return None
 
     def __str__(self) -> str:
-        return "Copy(dest=%s, overwrite=%s)" % (self.dest, self.overwrite)
+        return "Copy(dest=%s, on_conflict=%s)" % (self.dest, self.on_conflict)
