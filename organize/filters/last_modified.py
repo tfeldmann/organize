@@ -1,8 +1,7 @@
+from datetime import datetime, timedelta
+from optparse import Option
+from time import time
 from typing import Dict, Optional
-
-import pendulum  # type: ignore
-from pathlib import Path
-from organize.utils import DotDict
 
 from .filter import Filter
 
@@ -37,9 +36,6 @@ class LastModified(Filter):
         either 'older' or 'newer'. 'older' matches all files last modified
         before the given time, 'newer' matches all files last modified within
         the given time. (default = 'older')
-
-    :param str timezone:
-        specify timezone
 
     :returns:
         - ``{lastmodified.year}`` -- the year the file was last modified
@@ -87,23 +83,9 @@ class LastModified(Filter):
               - folders: '~/Documents'
                 filters:
                   - extension: pdf
-                  - LastModified
+                  - lastmodified
                 actions:
                   - move: '~/Documents/PDF/{lastmodified.year}/'
-
-        - Use specific timezone when processing files
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Documents'
-                filters:
-                  - extension: pdf
-                  - lastmodified:
-                      timezone: "Europe/Moscow"
-                actions:
-                  - move: '~/Documents/PDF/{lastmodified.day}/{lastmodified.hour}/'
     """
 
     name = "lastmodified"
@@ -118,41 +100,61 @@ class LastModified(Filter):
         minutes=0,
         seconds=0,
         mode="older",
-        timezone=pendulum.tz.local_timezone(),
     ) -> None:
         self._mode = mode.strip().lower()
         if self._mode not in ("older", "newer"):
             raise ValueError("Unknown option for 'mode': must be 'older' or 'newer'.")
-        self.is_older = self._mode == "older"
-        self.timezone = timezone
-        self.timedelta = pendulum.duration(
-            years=years,
-            months=months,
-            weeks=weeks,
+        self.should_be_older = self._mode == "older"
+        self.timedelta = timedelta(
+            weeks=years * 52 + months * 4 + weeks,  # quick and a bit dirty
             days=days,
             hours=hours,
             minutes=minutes,
             seconds=seconds,
         )
 
-    def pipeline(self, args: DotDict) -> Optional[Dict[str, pendulum.DateTime]]:
-        file_modified = self._last_modified(args.path)
-        # Pendulum bug: https://github.com/sdispater/pendulum/issues/387
-        # in_words() is a workaround: total_seconds() returns 0 if years are given
-        if self.timedelta.in_words():
-            is_past = (file_modified + self.timedelta).is_past()
-            match = self.is_older == is_past
+    def pipeline(self, args: dict) -> Optional[Dict[str, datetime]]:
+        fs = args["fs"]
+        fs_path = args["fs_path"]
+        file_modified: datetime
+        file_modified = fs.getinfo(fs_path, namespaces=["details"]).modified
+        if self.timedelta.total_seconds():
+            if not file_modified:
+                match = False
+            else:
+                file_modified = file_modified.astimezone()
+                is_past = (
+                    file_modified + self.timedelta
+                ).timestamp() < datetime.now().timestamp()
+                match = self.should_be_older == is_past
         else:
             match = True
         if match:
             return {"lastmodified": file_modified}
         return None
 
-    def _last_modified(self, path: Path) -> pendulum.DateTime:
-        return pendulum.from_timestamp(float(path.stat().st_mtime), tz=self.timezone)
-
     def __str__(self):
         return "[LastModified] All files last modified %s than %s" % (
             self._mode,
-            self.timedelta.in_words(),
+            self.timedelta,
+        )
+
+    @classmethod
+    def schema(cls):
+        from schema import Optional, Or
+
+        return Or(
+            cls.name,
+            {
+                Optional(cls.name): {
+                    Optional("mode"): Or("older", "newer"),
+                    Optional("years"): int,
+                    Optional("months"): int,
+                    Optional("weeks"): int,
+                    Optional("days"): int,
+                    Optional("hours"): int,
+                    Optional("minutes"): int,
+                    Optional("seconds"): int,
+                }
+            },
         )

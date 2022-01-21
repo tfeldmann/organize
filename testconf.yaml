@@ -2,20 +2,16 @@ rules:
   - name: "Test"
     targets: files
     locations:
-      # - path: ~/Desktop
-      #   max_depth: 3
+      - path: ~/Desktop
+        max_depth: 0
       - path: zip:///Users/thomasfeldmann/Downloads/30067_NL-AB-BBBC_SkywirePythonGPS.zip
         max_depth: null
     filters:
-      - extension: pdf
-      - filesize: "<1MB"
-      - mimetype
-      - filecontent: "(?P<all>.*)"
+      - extension: png
+      - lastmodified
     actions:
       - echo: "{fs} - {fs_path} - {path} - {relative_path}"
-      - echo: "{filesize}"
-      - echo: "{mimetype}"
-      - echo: "{filecontent}"
+      - echo: "{lastmodified}"
 
   # - name: Find some folders
   #   targets: dirs
