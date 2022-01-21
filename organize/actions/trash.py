@@ -32,9 +32,8 @@ class Trash(Action):
                   - trash
     """
 
-    def pipeline(self, args: Mapping):
+    def pipeline(self, args: Mapping, simulate: bool):
         path = args["path"]  # type: Path
-        simulate = args["simulate"]  # type: bool
         from send2trash import send2trash  # type: ignore
 
         self.print('Trash "%s"' % path)

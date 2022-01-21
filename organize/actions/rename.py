@@ -65,9 +65,8 @@ class Rename(Action):
         self.overwrite = overwrite
         self.counter_separator = counter_separator
 
-    def pipeline(self, args: Mapping) -> Mapping[str, Path]:
+    def pipeline(self, args: Mapping, simulate: bool) -> Mapping[str, Path]:
         path = args["path"]  # type: Path
-        simulate = args["simulate"]
         expanded_name = self.fill_template_tags(self.name, args)
         new_path = path.parent / expanded_name
 

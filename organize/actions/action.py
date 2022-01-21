@@ -17,7 +17,7 @@ class Action:
 
     @classmethod
     def name(cls):
-        return cls.__name__
+        return cls.__name__.lower()
 
     @classmethod
     def schema(cls):
@@ -40,8 +40,7 @@ class Action:
     def print(self, msg) -> None:
         """print a message for the user"""
         if callable(self.pre_print_hook):
-            self.pre_print_hook()  # pylint: disable=not-callable
-        print(indent("- [%s] %s" % (self.__class__.__name__, msg), " " * 4))
+            self.pre_print_hook(name=self.name(), msg=msg)
 
     @staticmethod
     def fill_template_tags(msg: str, args) -> str:

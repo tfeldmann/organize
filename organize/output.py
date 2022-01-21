@@ -24,7 +24,7 @@ class Output:
         self.curr_folder = folder
         self.curr_path = path
 
-    def pre_print(self) -> None:
+    def pipeline_message(self, name, msg) -> None:
         """
         pre-print hook that is called everytime the moment before a filter or action is
         about to print something to the cli
@@ -38,6 +38,8 @@ class Output:
         if self.curr_path != self.prev_path:
             self.print_path(self.curr_path)
             self.prev_path = self.curr_path
+
+        self.print_pipeline_message(name, msg)
 
     def path_not_found(self, folderstr: str) -> None:
         if folderstr not in self.not_found:
@@ -57,13 +59,19 @@ class Output:
     def print_not_found(self, path):
         raise NotImplementedError
 
+    def print_pipeline_message(self, name, msg):
+        raise NotImplementedError
+
 
 class RichOutput(Output):
-    def print_folder_spacer(self):
-        console.print()
+    def print_rule(self, rule):
+        console.print(rule, style="bold")
 
     def print_folder(self, folder):
         console.print(str(folder), style="bold")
+
+    def print_folder_spacer(self):
+        console.print()
 
     def print_path(self, path):
         console.print(indent(str(path), " " * 2), style="purple bold")
@@ -71,3 +79,6 @@ class RichOutput(Output):
     def print_not_found(self, path):
         msg = "Path not found: {}".format(path)
         console.print(msg, style="bold yellow")
+
+    def print_pipeline_message(self, name, msg):
+        console.print(indent("- (%s) %s" % (name, msg), " " * 4))

@@ -134,7 +134,7 @@ class Created(Filter):
         )
         print(bool(self.timedelta))
 
-    def pipeline(self, args: DotDict) -> Optional[Dict[str, pendulum.DateTime]]:
+    def pipeline(self, args: dict) -> Optional[Dict[str, pendulum.DateTime]]:
         created_date = self._created(args.path)
         # Pendulum bug: https://github.com/sdispater/pendulum/issues/387
         # in_words() is a workaround: total_seconds() returns 0 if years are given

@@ -95,9 +95,8 @@ class Copy(Action):
         self.on_conflict = on_conflict
         self.counter_separator = counter_separator
 
-    def pipeline(self, args: Mapping) -> None:
+    def pipeline(self, args: Mapping, simulate: bool) -> None:
         path = args["path"]
-        simulate = args["simulate"]
 
         expanded_dest = self.fill_template_tags(self.dest, args)
         # if only a folder path is given we append the filename to have the full

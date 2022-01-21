@@ -41,9 +41,10 @@ CONFIG_SCHEMA = Schema(
     }
 )
 
-# disable yaml constructors for strings starting with exclamation marks
-# https://stackoverflow.com/a/13281292/300783
+
 def default_yaml_cnst(loader, tag_suffix, node):
+    # disable yaml constructors for strings starting with exclamation marks
+    # https://stackoverflow.com/a/13281292/300783
     return str(node.tag)
 
 
@@ -58,10 +59,3 @@ def load_from_string(config):
 def load_from_file(path):
     with open(path, "r", encoding="utf-8") as f:
         return load_from_string(f.read())
-
-
-conf = load_from_file("organize/testconf.yaml")
-try:
-    CONFIG_SCHEMA.validate(conf)
-except SchemaError as e:
-    console.print(str(e.autos[-1]))

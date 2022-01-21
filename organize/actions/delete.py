@@ -35,9 +35,8 @@ class Delete(Action):
                   - delete
     """
 
-    def pipeline(self, args: Mapping):
+    def pipeline(self, args: Mapping, simulate: bool):
         path = args["path"]  # type: Path
-        simulate = args["simulate"]  # type: bool
         self.print('Delete "%s"' % path)
         if not simulate:
             logger.info("Deleting file %s.", path)

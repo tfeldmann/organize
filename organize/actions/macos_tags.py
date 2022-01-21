@@ -79,9 +79,8 @@ class MacOSTags(Action):
     def __init__(self, *tags):
         self.tags = tags
 
-    def pipeline(self, args: Mapping):
+    def pipeline(self, args: Mapping, simulate: bool):
         path = args["path"]  # type: Path
-        simulate = args["simulate"]  # type: bool
 
         if sys.platform != "darwin":
             self.print("The macos_tags action is only available on macOS")

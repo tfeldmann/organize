@@ -36,8 +36,7 @@ class Filter:
     def print(self, msg: str) -> None:
         """print a message for the user"""
         if callable(self.pre_print_hook):
-            self.pre_print_hook()  # pylint: disable=not-callable
-        print(indent("- (%s) %s" % (self.__class__.__name__, msg), " " * 4))
+            self.pre_print_hook(name=self.name(), msg=msg)
 
     def __str__(self) -> str:
         """Return filter name and properties"""

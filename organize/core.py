@@ -1,5 +1,7 @@
 import logging
+import os
 from collections import namedtuple
+from datetime import datetime
 from typing import Iterable
 
 import fs
@@ -90,14 +92,14 @@ def replace_with_instances(config):
         rule["actions"] = [instantiate_by_name(x, ACTIONS) for x in rule["actions"]]
 
 
-def filter_pipeline(filters: Iterable[Filter], args: DotDict, simulate: bool) -> bool:
+def filter_pipeline(filters: Iterable[Filter], args: dict) -> bool:
     """
     run the filter pipeline.
     Returns True on a match, False otherwise and updates `args` in the process.
     """
     for filter_ in filters:
         try:
-            result = filter_.pipeline(args, simulate=simulate)
+            result = filter_.pipeline(args)
             if isinstance(result, dict):
                 args.update(result)
             elif not result:
@@ -129,12 +131,12 @@ def action_pipeline(actions: Iterable[Action], args: DotDict, simulate: bool) ->
 
 def run(config, simulate: bool = True):
     count = [0, 0]
-    Action.pre_print_hook = output_helper.pre_print
-    Filter.pre_print_hook = output_helper.pre_print
+    Action.pre_print_hook = output_helper.pipeline_message
+    Filter.pre_print_hook = output_helper.pipeline_message
 
     for rule in config["rules"]:
         target = rule.get("targets", "files")
-        console.print(rule["name"], style="bold")
+        output_helper.print_rule(rule["name"])
 
         status_verb = "simulating" if simulate else "organizing"
         with console.status("[bold green]%s..." % status_verb) as status:
@@ -142,15 +144,17 @@ def run(config, simulate: bool = True):
                 walk = walker.files if target == "files" else walker.dirs
                 for path in walk(fs=base_fs, path=base_path):
                     args = {
-                        "simulate": simulate,
                         "base_fs": base_fs,
                         "path": path,
+                        "relative_path": None,
+                        "env": os.environ,
+                        "now": datetime.now(),
+                        "utcnow": datetime.utcnow(),
                     }
                     output_helper.set_location(base_fs, path)
                     match = filter_pipeline(
                         filters=rule["filters"],
                         args=args,
-                        simulate=simulate,
                     )
                     if match:
                         success = action_pipeline(
@@ -164,7 +168,7 @@ def run(config, simulate: bool = True):
 if __name__ == "__main__":
     from .config import load_from_file
 
-    conf = load_from_file("organize/testconf.yaml")
+    conf = load_from_file("testconf.yaml")
     replace_with_instances(conf)
     console.print(conf)
     run(conf)

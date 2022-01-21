@@ -117,7 +117,7 @@ class Extension(Filter):
             return False
         return self.normalize_extension(path.suffix) in self.extensions
 
-    def pipeline(self, args: dict, simulate: bool):
+    def pipeline(self, args: dict):
         path = Path(args["path"])
         if self.matches(path):
             result = ExtensionResult(path.suffix)

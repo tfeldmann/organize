@@ -92,9 +92,8 @@ class Move(Action):
         self.overwrite = overwrite
         self.counter_separator = counter_separator
 
-    def pipeline(self, args: DotDict) -> Mapping[str, Path]:
+    def pipeline(self, args: DotDict, simulate: bool) -> Mapping[str, Path]:
         path = args["path"]
-        simulate = args["simulate"]
 
         expanded_dest = self.fill_template_tags(self.dest, args)
         # if only a folder path is given we append the filename to have the full

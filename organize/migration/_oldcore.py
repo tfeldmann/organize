@@ -148,8 +148,8 @@ def all_files_for_rule(rule: Rule) -> Generator[Tuple[str, Path, Path], None, No
 def run_jobs(jobs: Iterable[Job], simulate: bool) -> List[int]:
     """ :returns: The number of successfully handled files """
     count = [0, 0]
-    Action.pre_print_hook = output_helper.pre_print
-    Filter.pre_print_hook = output_helper.pre_print
+    Action.pre_print_hook = output_helper.pipeline_message
+    Filter.pre_print_hook = output_helper.pipeline_message
 
     for job in sorted(jobs, key=lambda x: (x.folderstr, x.basedir, x.path)):
         args = DotDict(

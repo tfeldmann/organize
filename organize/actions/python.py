@@ -80,8 +80,7 @@ class Python(Action):
         )
         exec(funccode, globals_, locals_)  # pylint: disable=exec-used
 
-    def pipeline(self, args: DotDict) -> Optional[Mapping[str, Any]]:
-        simulate = args.simulate
+    def pipeline(self, args: DotDict, simulate: bool) -> Optional[Mapping[str, Any]]:
         if simulate:
             self.print("Code not run in simulation. (Args: %s)" % args)
             return None
