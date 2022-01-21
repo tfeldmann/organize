@@ -118,7 +118,7 @@ def filter_pipeline(filters: Iterable[Filter], args: dict) -> bool:
                 return False
         except Exception as e:  # pylint: disable=broad-except
             logger.exception(e)
-            #console.print_exception()
+            # console.print_exception()
             filter_.print_error(e)
             return False
     return True

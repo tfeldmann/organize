@@ -86,7 +86,7 @@ class FileContent(Filter):
             syspath = fs.getsyspath(fs_path)
         except NoSysPath as e:
             raise EnvironmentError(
-                "file_content only supports local filesystems"
+                "filecontent only supports the local filesystem"
             ) from e
         match = self.matches(path=syspath, extension=extension)
         if match:

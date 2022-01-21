@@ -1,9 +1,33 @@
 # Changelog
 
-## In Progress
+## v2 - In Progress
 
-- config file validation
-- 
+This is a huge update with a large refactoring.
+Please backup all your important stuff before running.
+
+### what's new
+
+- completely rewritten core!
+- respects your rule order - less magic, less surprises!
+  (v1 tried to be clever. v2 now works your config file from top to bottom)
+- Starts instantly (does not need to gather all the folders before starting)
+- Now you can organize (S)FTP, S3 Buckets, Zip archives and many more!
+  (https://www.pyfilesystem.org/page/index-of-filesystems/)
+- Most of the actions like `move` and `copy` even work across file systems!
+- You can now target folders with your rules! Like copying a whole folder, renaming etc.
+- `max_depth` setting when recursing into subfolders
+- nice terminal output and rule names
+- cleaner config file validation and stricter format
+
+### changed
+
+- The config file format got a long due overhaul. Please see the migration documentation
+  for what is new.
+
+### removed
+
+- Glob syntax is gone from folders (no longer needed)
+- "!"-exclude syntax is gone (no longer needed)
 
 ## v1.10.1 (2021-04-21)
 
