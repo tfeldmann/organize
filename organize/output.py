@@ -1,6 +1,9 @@
-from rich.console import Console
-from textwrap import indent
 import logging
+from textwrap import indent
+
+from rich.rule import Rule
+from rich.console import Console
+from rich.panel import Panel
 
 logger = logging.getLogger(__name__)
 console = Console()
@@ -73,8 +76,11 @@ class Output:
 
 
 class RichOutput(Output):
+    def print_simulation_banner(self):
+        console.print(Panel("[bold green]SIMULATION", style="green"))
+
     def print_rule(self, rule):
-        console.print(rule, style="bold")
+        console.print(Rule(rule, align="left", style="gray"), style="bold")
 
     def print_folder(self, folder):
         console.print(str(folder), style="bold")

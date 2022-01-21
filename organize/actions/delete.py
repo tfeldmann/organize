@@ -35,6 +35,8 @@ class Delete(Action):
                   - delete
     """
 
+    name = "delete"
+
     def pipeline(self, args: Mapping, simulate: bool):
         path = args["path"]  # type: Path
         self.print('Delete "%s"' % path)

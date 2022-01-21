@@ -1,8 +1,7 @@
 import logging
 import os
-from typing import NamedTuple
 from datetime import datetime
-from typing import Iterable
+from typing import Iterable, NamedTuple
 
 import fs
 from fs.base import FS
@@ -145,41 +144,52 @@ def run(config, simulate: bool = True):
     Filter.print_hook = output_helper.pipeline_message
     Filter.print_error_hook = output_helper.pipeline_error
 
+    if simulate:
+        output_helper.print_simulation_banner()
+
     for rule in config["rules"]:
         target = rule.get("targets", "files")
         output_helper.print_rule(rule["name"])
 
-        status_verb = "simulating" if simulate else "organizing"
-        with console.status("[bold green]%s..." % status_verb) as status:
-            for walker, base_fs, base_path in rule["locations"]:
-                walk = walker.files if target == "files" else walker.dirs
-                for path in walk(fs=base_fs, path=base_path):
-                    args = {
-                        "fs": base_fs,
-                        "fs_path": path,
-                        "path": path,  # str(base_fs.getsyspath(path)),
-                        "relative_path": fs.path.relativefrom(base_path, path),
-                        "env": os.environ,
-                        "now": datetime.now(),
-                        "utcnow": datetime.utcnow(),
-                    }
-                    output_helper.set_location(base_fs, path)
-                    match = filter_pipeline(
-                        filters=rule["filters"],
+        # status_verb = "simulating" if simulate else "organizing"
+        # with console.status("[bold green]%s..." % status_verb) as status:
+        for walker, base_fs, base_path in rule["locations"]:
+            walk = walker.files if target == "files" else walker.dirs
+            for path in walk(fs=base_fs, path=base_path):
+                args = {
+                    "fs": base_fs,
+                    "fs_path": path,
+                    "path": path,  # str(base_fs.getsyspath(path)),
+                    "relative_path": fs.path.relativefrom(base_path, path),
+                    "env": os.environ,
+                    "now": datetime.now(),
+                    "utcnow": datetime.utcnow(),
+                }
+                output_helper.set_location(base_fs, path)
+                match = filter_pipeline(
+                    filters=rule["filters"],
+                    args=args,
+                )
+                if match:
+                    success = action_pipeline(
+                        actions=rule["actions"],
                         args=args,
+                        simulate=simulate,
                     )
-                    if match:
-                        success = action_pipeline(
-                            actions=rule["actions"],
-                            args=args,
-                            simulate=simulate,
-                        )
-                        count[success] += 1
+                    count[success] += 1
+
+    if simulate:
+        output_helper.print_simulation_banner()
 
 
 if __name__ == "__main__":
-    from .config import load_from_file
+    from .config import load_from_file, CONFIG_SCHEMA
 
     conf = load_from_file("testconf.yaml")
-    replace_with_instances(conf)
-    run(conf)
+    try:
+        CONFIG_SCHEMA.validate(conf)
+        replace_with_instances(conf)
+        run(conf)
+    except Exception as e:
+        console.print(e.autos[-1])
+        console.print(e.code)

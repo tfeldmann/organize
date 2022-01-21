@@ -12,6 +12,8 @@ logger = logging.getLogger(__name__)
 
 class MacOSTags(Action):
 
+    name = "macos_tags"
+
     """
     Add macOS tags.
 

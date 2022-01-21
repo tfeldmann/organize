@@ -100,3 +100,5 @@ class Rename(Action):
             self.overwrite,
             self.counter_separator,
         )
+
+    name = "rename"

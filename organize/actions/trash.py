@@ -40,3 +40,5 @@ class Trash(Action):
         if not simulate:
             logger.info("Moving file %s into trash.", path)
             send2trash(str(path))
+
+    name = "trash"

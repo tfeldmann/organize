@@ -127,3 +127,5 @@ class Move(Action):
 
     def __str__(self) -> str:
         return "Move(dest=%s, overwrite=%s)" % (self.dest, self.overwrite)
+
+    name = "move"

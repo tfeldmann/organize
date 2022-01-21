@@ -18,6 +18,7 @@ Please backup all your important stuff before running.
 - `max_depth` setting when recursing into subfolders
 - nice terminal output and rule names
 - cleaner config file validation and stricter format
+- "confirm" and "prompt" action
 
 ### changed
 

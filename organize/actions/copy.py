@@ -14,6 +14,7 @@ CONFLICT_OPTIONS = ("rename_new", "rename_old", "skip", "trash", "overwrite")
 
 
 class Copy(Action):
+    name = "copy"
 
     """
     Copy a file to a new location.

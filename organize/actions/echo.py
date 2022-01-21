@@ -81,3 +81,5 @@ class Echo(Action):
 
     def __str__(self) -> str:
         return 'Echo(msg="%s")' % self.msg
+
+    name = "echo"

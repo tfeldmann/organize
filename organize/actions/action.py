@@ -17,15 +17,11 @@ class Action:
     print_error_hook = None  # type: Optional[Callable]
 
     @classmethod
-    def name(cls):
-        return cls.__name__.lower()
-
-    @classmethod
     def schema(cls):
         from schema import Schema, Optional, Or
 
         return {
-            Optional(cls.name().lower()): Or(
+            Optional(cls.name.lower()): Or(
                 str,
                 [str],
                 Schema({}, ignore_extra_keys=True),
@@ -41,11 +37,11 @@ class Action:
     def print(self, msg) -> None:
         """print a message for the user"""
         if callable(self.print_hook):
-            self.print_hook(name=self.name(), msg=msg)
+            self.print_hook(name=self.name, msg=msg)
 
     def print_error(self, msg: str):
         if callable(self.print_error_hook):
-            self.print_error_hook(name=self.name(), msg=msg)
+            self.print_error_hook(name=self.name, msg=msg)
 
     @staticmethod
     def fill_template_tags(msg: str, args) -> str:

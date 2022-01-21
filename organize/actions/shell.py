@@ -41,3 +41,5 @@ class Shell(Action):
 
     def __str__(self) -> str:
         return 'Shell(cmd="%s")' % self.cmd
+
+    name = "shell"

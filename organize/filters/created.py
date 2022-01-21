@@ -1,9 +1,8 @@
 import sys
+from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Dict, Optional, SupportsFloat
 
-import pendulum  # type: ignore
-from pathlib import Path
-from organize.utils import DotDict
 
 from .filter import Filter
 
@@ -39,9 +38,6 @@ class Created(Filter):
         either 'older' or 'newer'. 'older' matches all files created before the given
         time, 'newer' matches all files created within the given time.
         (default = 'older')
-
-    :param str timezone:
-        specify timezone
 
     :returns:
         - ``{created.year}`` -- the year the file was created
@@ -91,20 +87,6 @@ class Created(Filter):
                   - created
                 actions:
                   - move: '~/Documents/PDF/{created.year}/'
-
-        - Use specific timezone when processing files
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Documents'
-                filters:
-                  - extension: pdf
-                  - created:
-                      timezone: "Europe/Moscow"
-                actions:
-                  - move: '~/Documents/PDF/{created.day}/{created.hour}/'
     """
 
     def __init__(
@@ -117,54 +99,43 @@ class Created(Filter):
         minutes=0,
         seconds=0,
         mode="older",
-        timezone=pendulum.tz.local_timezone(),
     ) -> None:
         self._mode = mode.strip().lower()
         if self._mode not in ("older", "newer"):
             raise ValueError("Unknown option for 'mode': must be 'older' or 'newer'.")
-        self.is_older = self._mode == "older"
-        self.timezone = timezone
-        self.timedelta = pendulum.duration(
-            years=years,
-            months=months,
-            weeks=weeks,
+        self.should_be_older = self._mode == "older"
+        self.timedelta = timedelta(
+            weeks=years * 52 + months * 4 + weeks,  # quick and a bit dirty
             days=days,
             hours=hours,
             minutes=minutes,
             seconds=seconds,
         )
-        print(bool(self.timedelta))
 
-    def pipeline(self, args: dict) -> Optional[Dict[str, pendulum.DateTime]]:
-        created_date = self._created(args.path)
-        # Pendulum bug: https://github.com/sdispater/pendulum/issues/387
-        # in_words() is a workaround: total_seconds() returns 0 if years are given
-        if self.timedelta.in_words():
-            is_past = (created_date + self.timedelta).is_past()
-            match = self.is_older == is_past
+    def pipeline(self, args: dict) -> Optional[Dict[str, datetime]]:
+        fs = args["fs"]
+        fs_path = args["fs_path"]
+        file_created: datetime
+        file_created = fs.getinfo(fs_path, namespaces=["details"]).created
+        if file_created:
+            file_created = file_created.astimezone()
+
+        if self.timedelta.total_seconds():
+            if not file_created:
+                match = False
+            else:
+                is_past = (
+                    file_created + self.timedelta
+                ).timestamp() < datetime.now().timestamp()
+                match = self.should_be_older == is_past
         else:
             match = True
         if match:
-            return {"created": created_date}
+            return {"created": file_created}
         return None
-
-    def _created(self, path: Path) -> pendulum.DateTime:
-        # see https://stackoverflow.com/a/39501288/300783
-        stat = path.stat()
-        time = 0  # type: SupportsFloat
-        if sys.platform.startswith("win"):
-            time = stat.st_ctime
-        else:
-            try:
-                time = stat.st_birthtime
-            except AttributeError:
-                # We're probably on Linux. No easy way to get creation dates here,
-                # so we'll settle for when its content was last modified.
-                time = stat.st_mtime
-        return pendulum.from_timestamp(float(time), tz=self.timezone)
 
     def __str__(self):
         return "[Created] All files %s than %s" % (
             self._mode,
-            self.timedelta.in_words(),
+            self.timedelta,
         )

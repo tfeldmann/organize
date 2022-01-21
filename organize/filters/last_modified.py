@@ -118,11 +118,12 @@ class LastModified(Filter):
         fs_path = args["fs_path"]
         file_modified: datetime
         file_modified = fs.getinfo(fs_path, namespaces=["details"]).modified
+        if file_modified:
+            file_modified = file_modified.astimezone()
         if self.timedelta.total_seconds():
             if not file_modified:
                 match = False
             else:
-                file_modified = file_modified.astimezone()
                 is_past = (
                     file_modified + self.timedelta
                 ).timestamp() < datetime.now().timestamp()

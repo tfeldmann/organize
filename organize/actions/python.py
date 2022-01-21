@@ -91,3 +91,5 @@ class Python(Action):
 
         result = self.usercode(**args)  # pylint: disable=assignment-from-no-return
         return result
+
+    name = "python"

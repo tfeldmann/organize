@@ -1,5 +1,5 @@
 rules:
-  - name: "Test"
+  - name: "Find the last modification date of some png files"
     targets: files
     locations:
       - path: ~/Desktop

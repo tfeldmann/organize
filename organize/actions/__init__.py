@@ -1,3 +1,4 @@
+from .confirm import Confirm
 from .copy import Copy
 from .delete import Delete
 from .echo import Echo
@@ -9,6 +10,7 @@ from .shell import Shell
 from .trash import Trash
 
 ALL = {
+    Confirm.name: Confirm,
     "copy": Copy,
     "delete": Delete,
     "echo": Echo,
