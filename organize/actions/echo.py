@@ -72,7 +72,7 @@ class Echo(Action):
         self.msg = msg
         self.log = logging.getLogger(__name__)
 
-    def pipeline(self, args) -> None:
+    def pipeline(self, args: dict, simulate: bool) -> None:
         path = args["path"]
         logger.debug('Echo msg "%s", path: "%s", args: "%s"', self.msg, path, args)
         full_msg = self.fill_template_tags(self.msg, args)

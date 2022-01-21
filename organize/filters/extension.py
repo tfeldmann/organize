@@ -70,7 +70,7 @@ class Extension(Filter):
             rules:
               - folders: '~/Desktop'
                 filters:
-                  - Extension
+                  - extension
                 actions:
                   - rename: '{path.stem}.{extension.lower}'
 
@@ -104,7 +104,7 @@ class Extension(Filter):
 
     @staticmethod
     def normalize_extension(ext: str) -> str:
-        """ strip colon and convert to lowercase """
+        """strip colon and convert to lowercase"""
         if ext.startswith("."):
             return ext[1:].lower()
         else:
@@ -117,9 +117,10 @@ class Extension(Filter):
             return False
         return self.normalize_extension(path.suffix) in self.extensions
 
-    def pipeline(self, args: DotDict) -> Optional[Dict[str, ExtensionResult]]:
-        if self.matches(args.path):
-            result = ExtensionResult(args.path.suffix)
+    def pipeline(self, args: dict, simulate: bool):
+        path = Path(args["path"])
+        if self.matches(path):
+            result = ExtensionResult(path.suffix)
             return {"extension": result}
         return None
 

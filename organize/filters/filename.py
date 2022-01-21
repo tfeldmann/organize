@@ -103,7 +103,7 @@ class Filename(Filter):
         )
         return is_match
 
-    def pipeline(self, args: Dict) -> Optional[Dict[str, Any]]:
+    def pipeline(self, simulate: bool, args: Dict) -> Optional[Dict[str, Any]]:
         path = args["path"]
         result = self.matches(path)
         if result:

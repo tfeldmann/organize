@@ -1,0 +1,49 @@
+{
+  "version": 1,
+	"rules": [
+    {
+        "name": "Fixup old pdfs",
+        "targets": "files",
+        "locations": [
+            {
+                "path": "~/Desktop",
+                "max_depth": 3
+            }
+        ],
+        "filters": [
+            {
+                "extension": "pdf"
+            }
+        ],
+        "actions": [
+            {
+                "copy": "~/Dir"
+            }
+        ]
+    },
+    {
+        "name": "Find some folders",
+        "targets": "dirs",
+        "locations": [
+            {
+                "path": "~/Desktop",
+                "max_depth": 10
+            },
+            {
+                "path": "~/Desktop/Inbox",
+                "max_depth": null
+            }
+        ],
+        "filters": [
+            {
+                "extension": "pdf"
+            }
+        ],
+        "actions": [
+            {
+                "copy": "~/Dir"
+            }
+        ]
+    }
+  ]
+}

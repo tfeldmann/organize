@@ -2,7 +2,7 @@ import textwrap
 
 import yaml
 from rich.console import Console
-from schema import And, Optional, Or, Schema, SchemaError
+from schema import And, Optional, Or, Schema, SchemaError, Literal
 
 from organize.actions import ALL as ACTIONS
 from organize.filters import ALL as FILTERS
@@ -14,8 +14,8 @@ CONFIG_SCHEMA = Schema(
         Optional("version"): int,
         "rules": [
             {
-                "name": And(str, len),
-                "targets": Or("dirs", "files"),
+                Optional("name", description="The name of the rule"): And(str, len),
+                Optional("targets"): Or("dirs", "files"),
                 "locations": [
                     Or(
                         str,
@@ -60,9 +60,7 @@ def load_from_file(path):
         return load_from_string(f.read())
 
 
-conf = load_from_file(
-    "/Users/thomasfeldmann/Library/Application Support/organize/config.yaml"
-)
+conf = load_from_file("organize/testconf.yaml")
 try:
     CONFIG_SCHEMA.validate(conf)
 except SchemaError as e:

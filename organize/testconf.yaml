@@ -1,0 +1,21 @@
+rules:
+  - name: "Test"
+    targets: files
+    locations:
+      - path: ~/Desktop
+        max_depth: 3
+    filters:
+      - extension: pdf
+    actions:
+      - echo: "hallo"
+
+  # - name: Find some folders
+  #   targets: dirs
+  #   locations:
+  #     - ~/Desktop
+  #     - path: ~/Desktop/Inbox
+  #       max_depth: null
+  #   filters:
+  #     - extension: pdf
+  #   actions:
+  #     - copy: ~/Dir
