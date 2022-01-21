@@ -11,15 +11,15 @@ from .python import Python
 from .regex import Regex
 
 ALL = {
-    "created": Created,
-    "duplicate": Duplicate,
-    "exif": Exif,
-    "extension": Extension,
-    "file_content": FileContent,
-    "filename": Filename,
-    "filesize": FileSize,
-    "last_modified": LastModified,
-    "mimetype": MimeType,
-    "python": Python,
-    "regex": Regex,
+    Created.name: Created,
+    Duplicate.name: Duplicate,
+    Exif.name: Exif,
+    Extension.name: Extension,
+    FileContent.name: FileContent,
+    Filename.name: Filename,
+    FileSize.name: FileSize,
+    LastModified.name: LastModified,
+    MimeType.name: MimeType,
+    Python.name: Python,
+    Regex.name: Regex,
 }

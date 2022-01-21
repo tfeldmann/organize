@@ -87,6 +87,8 @@ class Python(Filter):
 
     """
 
+    name = "python"
+
     def __init__(self, code) -> None:
         self.code = textwrap.dedent(code)
         if "return" not in self.code:

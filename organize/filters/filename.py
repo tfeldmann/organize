@@ -8,6 +8,7 @@ from .filter import Filter
 
 
 class Filename(Filter):
+    name = "filename"
 
     """
     Match files by filename
@@ -90,8 +91,7 @@ class Filename(Filter):
         self.endswith = self.create_list(endswith, case_sensitive)
         self.case_sensitive = case_sensitive
 
-    def matches(self, path: Path) -> bool:
-        filename = path.stem
+    def matches(self, filename: str) -> bool:
         if not self.case_sensitive:
             filename = filename.lower()
 
@@ -104,10 +104,12 @@ class Filename(Filter):
         return is_match
 
     def pipeline(self, args: Dict) -> Optional[Dict[str, Any]]:
-        path = args["path"]
-        result = self.matches(path)
+        fs = args["fs"]
+        fs_path = args["fs_path"]
+        filename = fs.getinfo(fs_path).stem
+        result = self.matches(filename)
         if result:
-            return {"filename": self.matcher.match(path.stem)}
+            return {"filename": self.matcher.match(filename)}
         return None
 
     @staticmethod

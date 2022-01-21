@@ -1,7 +1,6 @@
 import mimetypes
 
-from pathlib import Path
-from organize.utils import DotDict, flatten
+from organize.utils import flatten
 
 from .filter import Filter
 
@@ -74,6 +73,8 @@ class MimeType(Filter):
                   - echo: 'Found Midi or PDF.'
     """
 
+    name = "mimetype"
+
     def __init__(self, *mimetypes):
         self.mimetypes = list(map(str.lower, flatten(list(mimetypes))))
 
@@ -82,18 +83,19 @@ class MimeType(Filter):
         type_, _ = mimetypes.guess_type(path, strict=False)
         return type_
 
-    def matches(self, path: Path):
-        mimetype = self.mimetype(path)
+    def matches(self, mimetype):
         if mimetype is None:
             return False
         if not self.mimetypes:
             return True
         return any(mimetype.startswith(x) for x in self.mimetypes)
 
-    def pipeline(self, args: DotDict):
-        if self.matches(args.path):
-            result = self.mimetype(args.path)
-            return {"mimetype": result}
+    def pipeline(self, args: dict):
+        fs_path = args["fs_path"]
+        mimetype = self.mimetype(fs_path)
+
+        if self.matches(mimetype):
+            return {"mimetype": mimetype}
         return None
 
     def __str__(self):

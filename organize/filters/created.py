@@ -9,6 +9,7 @@ from .filter import Filter
 
 
 class Created(Filter):
+    name = "created"
 
     """
     Matches files by created date

@@ -23,6 +23,7 @@ class ExtensionResult:
 
 
 class Extension(Filter):
+    name = "extension"
 
     """
     Filter by file extension
@@ -110,17 +111,19 @@ class Extension(Filter):
         else:
             return ext.lower()
 
-    def matches(self, path: Path) -> Union[bool, str]:
+    def matches(self, suffix: str) -> Union[bool, str]:
         if not self.extensions:
             return True
-        if not path.suffix:
+        if not suffix:
             return False
-        return self.normalize_extension(path.suffix) in self.extensions
+        return self.normalize_extension(suffix) in self.extensions
 
     def pipeline(self, args: dict):
-        path = Path(args["path"])
-        if self.matches(path):
-            result = ExtensionResult(path.suffix)
+        fs = args["fs"]
+        fs_path = args["fs_path"]
+        suffix = fs.getinfo(fs_path).suffix
+        if self.matches(suffix):
+            result = ExtensionResult(suffix)
             return {"extension": result}
         return None
 

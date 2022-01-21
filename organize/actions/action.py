@@ -13,7 +13,8 @@ class TemplateAttributeError(Error):
 
 
 class Action:
-    pre_print_hook = None  # type: Optional[Callable]
+    print_hook = None  # type: Optional[Callable]
+    print_error_hook = None  # type: Optional[Callable]
 
     @classmethod
     def name(cls):
@@ -39,8 +40,12 @@ class Action:
 
     def print(self, msg) -> None:
         """print a message for the user"""
-        if callable(self.pre_print_hook):
-            self.pre_print_hook(name=self.name(), msg=msg)
+        if callable(self.print_hook):
+            self.print_hook(name=self.name(), msg=msg)
+
+    def print_error(self, msg: str):
+        if callable(self.print_error_hook):
+            self.print_error_hook(name=self.name(), msg=msg)
 
     @staticmethod
     def fill_template_tags(msg: str, args) -> str:

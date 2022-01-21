@@ -49,6 +49,8 @@ class Regex(Filter):
                   - move: ~/Documents/Invoices/1und1/{regex.the_number}.pdf
     """
 
+    name = "python"
+
     def __init__(self, expr) -> None:
         self.expr = re.compile(expr, flags=re.UNICODE)
 

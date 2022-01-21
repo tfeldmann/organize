@@ -106,6 +106,8 @@ class LastModified(Filter):
                   - move: '~/Documents/PDF/{lastmodified.day}/{lastmodified.hour}/'
     """
 
+    name = "lastmodified"
+
     def __init__(
         self,
         years=0,

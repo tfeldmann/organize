@@ -42,6 +42,7 @@ def get_hash(filename, first_chunk_only=False, hash_algo=hashlib.sha1):
 
 
 class Duplicate(Filter):
+    name = "duplicate"
 
     """
     Finds duplicate files.

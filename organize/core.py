@@ -1,10 +1,11 @@
 import logging
 import os
-from collections import namedtuple
+from typing import NamedTuple
 from datetime import datetime
 from typing import Iterable
 
 import fs
+from fs.base import FS
 from fs.walk import Walker
 
 from .actions import ALL as ACTIONS
@@ -15,7 +16,14 @@ from .output import RichOutput, console
 from .utils import DotDict
 
 logger = logging.getLogger(__name__)
-Location = namedtuple("Location", "walker base_fs path")
+
+
+class Location(NamedTuple):
+    walker: Walker
+    base_fs: FS
+    path: str
+
+
 output_helper = RichOutput()
 
 DEFAULT_SYSTEM_EXCLUDE_FILES = [
@@ -76,6 +84,8 @@ def instantiate_location(loc):
 
 
 def instantiate_by_name(d, classes):
+    if isinstance(d, str):
+        return classes[d]()
     key, value = list(d.items())[0]
     if isinstance(key, str):
         Class = classes[key]
@@ -108,8 +118,8 @@ def filter_pipeline(filters: Iterable[Filter], args: dict) -> bool:
                 return False
         except Exception as e:  # pylint: disable=broad-except
             logger.exception(e)
-            console.print_exception()
-            # filter_.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
+            #console.print_exception()
+            filter_.print_error(e)
             return False
     return True
 
@@ -123,16 +133,17 @@ def action_pipeline(actions: Iterable[Action], args: DotDict, simulate: bool) ->
                 args.update(updates)
         except Exception as e:  # pylint: disable=broad-except
             logger.exception(e)
-            console.print_exception()
-            # action.print(Fore.RED + Style.BRIGHT + "ERROR! %s" % e)
+            action.print_error(e)
             return False
     return True
 
 
 def run(config, simulate: bool = True):
     count = [0, 0]
-    Action.pre_print_hook = output_helper.pipeline_message
-    Filter.pre_print_hook = output_helper.pipeline_message
+    Action.print_hook = output_helper.pipeline_message
+    Action.print_error_hook = output_helper.pipeline_error
+    Filter.print_hook = output_helper.pipeline_message
+    Filter.print_error_hook = output_helper.pipeline_error
 
     for rule in config["rules"]:
         target = rule.get("targets", "files")
@@ -144,9 +155,10 @@ def run(config, simulate: bool = True):
                 walk = walker.files if target == "files" else walker.dirs
                 for path in walk(fs=base_fs, path=base_path):
                     args = {
-                        "base_fs": base_fs,
-                        "path": path,
-                        "relative_path": None,
+                        "fs": base_fs,
+                        "fs_path": path,
+                        "path": path,  # str(base_fs.getsyspath(path)),
+                        "relative_path": fs.path.relativefrom(base_path, path),
                         "env": os.environ,
                         "now": datetime.now(),
                         "utcnow": datetime.utcnow(),
@@ -170,5 +182,4 @@ if __name__ == "__main__":
 
     conf = load_from_file("testconf.yaml")
     replace_with_instances(conf)
-    console.print(conf)
     run(conf)

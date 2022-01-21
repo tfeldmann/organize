@@ -11,6 +11,7 @@ ExifDict = Mapping[str, Union[str, Mapping[str, str]]]
 
 
 class Exif(Filter):
+    name = "exif"
 
     """
     Filter by image EXIF data

@@ -104,6 +104,8 @@ class FileSize(Filter):
 
     """
 
+    name = "filesize"
+
     def __init__(self, *conditions: Sequence[str]) -> None:
         self.conditions = ", ".join(flattened_string_list(list(conditions)))
         self.constrains = create_constrains(self.conditions)
@@ -114,7 +116,10 @@ class FileSize(Filter):
         return all(op(filesize, c_size) for op, c_size in self.constrains)
 
     def pipeline(self, args: DotDict) -> Optional[Dict[str, Dict[str, int]]]:
-        file_size = fullpath(args.path).stat().st_size
+        fs = args["fs"]
+        fs_path = args["fs_path"]
+
+        file_size = fs.getinfo(fs_path, namespaces=["details"]).size
         if self.matches(file_size):
             return {"filesize": {"bytes": file_size}}
         return None

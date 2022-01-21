@@ -1,18 +1,18 @@
 import re
 from typing import Any, Dict, Mapping, Optional
 
-from pathlib import Path
+from fs.errors import NoSysPath
 
 from .filter import Filter
 
-
-# not supported: .gif, .jpg, .mp3, .ogg, .png, .tiff, .wav
 SUPPORTED_EXTENSIONS = (
+    # not supported: .gif, .jpg, .mp3, .ogg, .png, .tiff, .wav
     ".csv .doc .docx .eml .epub .json .html .msg .odt .pdf .pptx .ps .rtf .txt .xlsx .xls"
 ).split()
 
 
 class FileContent(Filter):
+    name = "filecontent"
 
     r"""
     Matches file content with the given regular expression
@@ -58,13 +58,17 @@ class FileContent(Filter):
     def __init__(self, expr) -> None:
         self.expr = re.compile(expr, re.MULTILINE | re.DOTALL)
 
-    def matches(self, path: Path) -> Any:
-        if path.suffix.lower() not in SUPPORTED_EXTENSIONS:
+    def matches(self, path: str, extension: str) -> Any:
+        if extension not in SUPPORTED_EXTENSIONS:
             return
         try:
             import textract  # type: ignore
 
-            content = textract.process(str(path), errors="ignore")
+            content = textract.process(
+                str(path),
+                extension=extension,
+                errors="ignore",
+            )
             return self.expr.search(content.decode("utf-8", errors="ignore"))
         except ImportError as e:
             raise ImportError(
@@ -75,7 +79,16 @@ class FileContent(Filter):
             pass
 
     def pipeline(self, args: Mapping) -> Optional[Dict[str, Dict]]:
-        match = self.matches(args["path"])
+        fs = args["fs"]
+        fs_path = args["fs_path"]
+        extension = fs.getinfo(fs_path).suffix
+        try:
+            syspath = fs.getsyspath(fs_path)
+        except NoSysPath as e:
+            raise EnvironmentError(
+                "file_content only supports local filesystems"
+            ) from e
+        match = self.matches(path=syspath, extension=extension)
         if match:
             result = match.groupdict()
             return {"filecontent": result}
