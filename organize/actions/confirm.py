@@ -1,7 +1,7 @@
 import logging
 
 from rich.prompt import Prompt
-from ..output import console
+from ..tui import console
 from .action import Action
 
 logger = logging.getLogger(__name__)

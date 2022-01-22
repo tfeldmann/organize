@@ -55,6 +55,8 @@ class Rename(Action):
                   - rename: "{path.stem}.{extension.lower}"
     """
 
+    name = "rename"
+
     def __init__(self, name: str, overwrite=False, counter_separator=" ") -> None:
         if os.path.sep in name:
             ValueError(
@@ -100,5 +102,3 @@ class Rename(Action):
             self.overwrite,
             self.counter_separator,
         )
-
-    name = "rename"

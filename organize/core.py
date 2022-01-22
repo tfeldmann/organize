@@ -2,7 +2,7 @@ import logging
 import os
 from datetime import datetime
 from typing import Iterable, NamedTuple
-
+from schema import SchemaError
 import fs
 from fs.base import FS
 from fs.walk import Walker
@@ -11,7 +11,7 @@ from .actions import ALL as ACTIONS
 from .actions.action import Action
 from .filters import ALL as FILTERS
 from .filters.filter import Filter
-from .output import RichOutput, console
+from .tui import RichOutput, console
 from .utils import DotDict
 
 logger = logging.getLogger(__name__)
@@ -97,7 +97,10 @@ def instantiate_by_name(d, classes):
 def replace_with_instances(config):
     for rule in config["rules"]:
         rule["locations"] = [instantiate_location(loc) for loc in rule["locations"]]
-        rule["filters"] = [instantiate_by_name(x, FILTERS) for x in rule["filters"]]
+        # filters are optional
+        rule["filters"] = [
+            instantiate_by_name(x, FILTERS) for x in rule.get("filters", [])
+        ]
         rule["actions"] = [instantiate_by_name(x, ACTIONS) for x in rule["actions"]]
 
 
@@ -189,7 +192,9 @@ if __name__ == "__main__":
     try:
         CONFIG_SCHEMA.validate(conf)
         replace_with_instances(conf)
-        run(conf)
-    except Exception as e:
+        run(conf, simulate=False)
+    except SchemaError as e:
         console.print(e.autos[-1])
         console.print(e.code)
+    except Exception as e:
+        console.print_exception()

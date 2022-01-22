@@ -1,7 +1,4 @@
 import logging
-from typing import Mapping
-
-from pathlib import Path
 
 from .action import Action
 
@@ -32,13 +29,15 @@ class Trash(Action):
                   - trash
     """
 
-    def pipeline(self, args: Mapping, simulate: bool):
-        path = args["path"]  # type: Path
+    name = "trash"
+
+    def pipeline(self, args: dict, simulate: bool):
         from send2trash import send2trash  # type: ignore
 
+        fs = args["fs"]
+        fs_path = args["fs_path"]
+        path = fs.getsyspath(fs_path)
         self.print('Trash "%s"' % path)
         if not simulate:
             logger.info("Moving file %s into trash.", path)
-            send2trash(str(path))
-
-    name = "trash"
+            send2trash(path)

@@ -20,13 +20,16 @@ class Action:
     def schema(cls):
         from schema import Schema, Optional, Or
 
-        return {
-            Optional(cls.name.lower()): Or(
-                str,
-                [str],
-                Schema({}, ignore_extra_keys=True),
-            ),
-        }
+        return Or(
+            str,
+            {
+                Optional(cls.name.lower()): Or(
+                    str,
+                    [str],
+                    Schema({}, ignore_extra_keys=True),
+                ),
+            },
+        )
 
     def run(self, **kwargs) -> Optional[Mapping[str, Any]]:
         return self.pipeline(DotDict(kwargs))

@@ -2,9 +2,9 @@
 organize -- The file management automation tool.
 
 Usage:
-    organize sim [--config-file=<path>]
-    organize run [--config-file=<path>]
-    organize config [--open-folder | --path | --debug] [--config-file=<path>]
+    organize sim [<config_file>]
+    organize run [<config_file>]
+    organize config [--open-folder | --path | --debug] [<config_file>]
     organize list
     organize --help
     organize --version
@@ -27,14 +27,15 @@ Full documentation: https://organize.readthedocs.io
 import logging
 import os
 import sys
+from pathlib import Path
 from typing import Union
 
 from colorama import Fore, Style  # type: ignore
 from docopt import docopt  # type: ignore
+from rich import print
 
 from . import CONFIG_DIR, CONFIG_PATH, LOG_PATH
 from .__version__ import __version__
-from pathlib import Path
 from .config import Config
 from .core import execute_rules
 from .utils import flatten, fullpath
@@ -140,7 +141,8 @@ def config_debug(config_path: Path) -> None:
 def list_actions_and_filters() -> None:
     """Prints a list of available actions and filters"""
     import inspect  # pylint: disable=import-outside-toplevel
-    from organize import filters, actions  # pylint: disable=import-outside-toplevel
+
+    from organize import actions, filters  # pylint: disable=import-outside-toplevel
 
     print(Style.BRIGHT + "Filters:")
     for name, _ in inspect.getmembers(filters, inspect.isclass):

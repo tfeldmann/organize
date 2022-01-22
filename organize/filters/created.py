@@ -1,8 +1,5 @@
-import sys
 from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Dict, Optional, SupportsFloat
-
+from typing import Dict, Optional
 
 from .filter import Filter
 
@@ -105,7 +102,7 @@ class Created(Filter):
             raise ValueError("Unknown option for 'mode': must be 'older' or 'newer'.")
         self.should_be_older = self._mode == "older"
         self.timedelta = timedelta(
-            weeks=years * 52 + months * 4 + weeks,  # quick and a bit dirty
+            weeks=52 * years + 4 * months + weeks,  # quick and a bit dirty
             days=days,
             hours=hours,
             minutes=minutes,

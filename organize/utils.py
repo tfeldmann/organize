@@ -10,7 +10,7 @@ WILDCARD_REGEX = re.compile(r"(?<!\\)[\*\?\[]+")
 
 
 def splitglob(globstr: str) -> Tuple[Path, str]:
-    """ split a string with wildcards into a base folder and globstring """
+    """split a string with wildcards into a base folder and globstring"""
     path = fullpath(globstr.strip())
     parts = path.parts
     for i, part in enumerate(parts):
@@ -20,7 +20,7 @@ def splitglob(globstr: str) -> Tuple[Path, str]:
 
 
 def fullpath(path: Union[str, Path]) -> Path:
-    """ Expand '~' and resolve the given path. Path can be a string or a Path obj. """
+    """Expand '~' and resolve the given path. Path can be a string or a Path obj."""
     return Path(os.path.expandvars(str(path))).expanduser().resolve(strict=False)
 
 
@@ -85,7 +85,7 @@ class DotDict(dict):
         self[self.normkey(key)] = value
 
     def update(self, other):
-        """ recursively update the dotdict instance with another dicts items """
+        """recursively update the dotdict instance with another dicts items"""
         for key, val in other.items():
             normkey = self.normkey(key)
             if isinstance(val, Mapping):
@@ -97,7 +97,7 @@ class DotDict(dict):
                 self[normkey] = val
 
     def merge(self, other) -> Mapping:
-        """ recursively merge values from another dict and return a new instance """
+        """recursively merge values from another dict and return a new instance"""
         new_dct = deepcopy(self)
         new_dct.update(other)
         return new_dct
@@ -137,7 +137,7 @@ def find_unused_filename(path: Path, separator=" ") -> Path:
 
 
 def dict_merge(dct, merge_dct, add_keys=True):
-    """ Recursive dict merge.
+    """Recursive dict merge.
 
     Inspired by :meth:``dict.update()``, instead of
     updating only top-level keys, dict_merge recurses down into dicts nested

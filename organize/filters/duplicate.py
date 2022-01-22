@@ -22,7 +22,7 @@ from .filter import Filter
 
 
 def chunk_reader(fobj, chunk_size=1024):
-    """ Generator that reads a file in chunks of bytes """
+    """Generator that reads a file in chunks of bytes"""
     while True:
         chunk = fobj.read(chunk_size)
         if not chunk:
@@ -140,7 +140,10 @@ class Duplicate(Filter):
         return False
 
     def pipeline(self, args):
-        return self.matches(str(fullpath(args["path"])))
+        fs = args["fs"]
+        fs_path = args["fs_path"]
+        fs.getsyspath(fs_path)
+        return self.matches(fs.getsyspath(fs_path))
 
     def __str__(self) -> str:
         return "Duplicate()"

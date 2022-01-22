@@ -11,13 +11,13 @@ from .trash import Trash
 
 ALL = {
     Confirm.name: Confirm,
-    "copy": Copy,
-    "delete": Delete,
-    "echo": Echo,
-    "macos_tags": MacOSTags,
-    "move": Move,
-    "python": Python,
-    "rename": Rename,
-    "shell": Shell,
-    "trash": Trash,
+    Copy.name: Copy,
+    Delete.name: Delete,
+    Echo.name: Echo,
+    MacOSTags.name: MacOSTags,
+    Move.name: Move,
+    Python.name: Python,
+    Rename.name: Rename,
+    Shell.name: Shell,
+    Trash.name: Trash,
 }

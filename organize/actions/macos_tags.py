@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 from typing import Mapping
 
-import simplematch as sm # type: ignore
+import simplematch as sm  # type: ignore
 
 from .action import Action
 
@@ -81,8 +81,10 @@ class MacOSTags(Action):
     def __init__(self, *tags):
         self.tags = tags
 
-    def pipeline(self, args: Mapping, simulate: bool):
-        path = args["path"]  # type: Path
+    def pipeline(self, args: dict, simulate: bool):
+        fs = args["fs"]
+        fs_path = args["fs_path"]
+        path = fs.getsyspath(fs_path)
 
         if sys.platform != "darwin":
             self.print("The macos_tags action is only available on macOS")
@@ -110,7 +112,7 @@ class MacOSTags(Action):
                 macos_tags.add(_tag, file=str(path))
 
     def _parse_tag(self, s):
-        """ parse a tag definition and return a tuple (name, color) """
+        """parse a tag definition and return a tuple (name, color)"""
         result = sm.match("{name} ({color})", s)
         if not result:
             return s, "none"

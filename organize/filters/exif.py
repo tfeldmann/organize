@@ -103,14 +103,11 @@ class Exif(Filter):
                 result[key] = value  # type: ignore
         return result
 
-    def matches(self, path: Path) -> Union[bool, ExifDict]:
+    def matches(self, exiftags: dict) -> Union[bool, ExifDict]:
         # NOTE: This should return Union[Literal[False], ExifDict] but Literal is only
         # available in Python>=3.8.
-        with path.open("rb") as f:
-            exiftags = exifread.process_file(f, details=False)  # type: Dict
         if not exiftags:
             return False
-
         tags = {k.lower(): v.printable for k, v in exiftags.items()}
 
         # no match if expected tag is not found
@@ -126,7 +123,12 @@ class Exif(Filter):
         return self.category_dict(tags)
 
     def pipeline(self, args: Mapping[str, Any]) -> Optional[Dict[str, ExifDict]]:
-        tags = self.matches(args["path"])
+        fs = args["fs"]
+        fs_path = args["fs_path"]
+        with fs.openbin(fs_path) as f:
+            exiftags = exifread.process_file(f, details=False)
+
+        tags = self.matches(exiftags)
         if isinstance(tags, dict):
             return {"exif": tags}
         return None

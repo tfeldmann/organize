@@ -38,8 +38,10 @@ class Delete(Action):
     name = "delete"
 
     def pipeline(self, args: Mapping, simulate: bool):
-        path = args["path"]  # type: Path
-        self.print('Delete "%s"' % path)
+        fs = args["fs"]
+        fs_path = args["fs_path"]
+        relative_path = args["relative_path"]
+        self.print('Deleting "%s"' % relative_path)
         if not simulate:
-            logger.info("Deleting file %s.", path)
-            os.remove(str(path))
+            logger.info("Deleting file %s.", relative_path)
+            fs.remove(fs_path)

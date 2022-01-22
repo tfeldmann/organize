@@ -2,16 +2,9 @@ rules:
   - name: "Find the last modification date of some png files"
     targets: files
     locations:
-      - path: ~/Desktop
-        max_depth: 0
-      - path: zip:///Users/thomasfeldmann/Downloads/30067_NL-AB-BBBC_SkywirePythonGPS.zip
-        max_depth: null
-    filters:
-      - extension: png
-      - lastmodified
+      - path: ~/Desktop/testfolder
     actions:
-      - echo: "{fs} - {fs_path} - {path} - {relative_path}"
-      - echo: "{lastmodified}"
+      - macos_tags: "Test"
 
   # - name: Find some folders
   #   targets: dirs
