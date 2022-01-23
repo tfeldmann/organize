@@ -61,8 +61,9 @@ class Python(Action):
                     webbrowser.open('https://www.google.com/search?q=%s' % path.stem)
     """
 
-    def __init__(self, code) -> None:
+    def __init__(self, code, run_in_simulation=False) -> None:
         self.code = textwrap.dedent(code)
+        self.run_in_simulation = run_in_simulation
 
     def usercode(self, *args, **kwargs) -> Optional[Any]:
         pass  # will be overwritten by `create_method`
@@ -79,8 +80,8 @@ class Python(Action):
         exec(funccode, globals_, locals_)  # pylint: disable=exec-used
 
     def pipeline(self, args: dict, simulate: bool) -> Optional[Mapping[str, Any]]:
-        if simulate:
-            self.print("Code not run in simulation. (Args: %s)" % args)
+        if simulate and not self.run_in_simulation:
+            self.print("Code not run in simulation.", style="yellow")
             return None
 
         logger.info('Executing python:\n"""\n%s\n""", args=%s', self.code, args)
