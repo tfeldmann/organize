@@ -20,6 +20,7 @@ Please backup all your important stuff before running.
 - cleaner config file validation and stricter format
 - "confirm" and "prompt" action
 - `rename_template` option in `move` and `copy`
+- option to run `python` actions in simulation
 
 ### changed
 

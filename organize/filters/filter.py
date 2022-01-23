@@ -9,8 +9,19 @@ class Filter:
     print_hook = None
     print_error_hook = None
 
+    name = None
+    schema = None
+
     @classmethod
-    def schema(cls):
+    def get_name(cls):
+        if cls.name:
+            return cls.name
+        return cls.__name__.lower()
+
+    @classmethod
+    def get_schema(cls):
+        if cls.schema:
+            return cls.schema
         return Or(
             cls.name,
             {

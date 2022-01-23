@@ -34,8 +34,10 @@ CONFIG_SCHEMA = Schema(
                         },
                     ),
                 ],
-                Optional("filters"): [FILTER.schema() for FILTER in FILTERS.values()],
-                "actions": [ACTION.schema() for ACTION in ACTIONS.values()],
+                Optional("filters"): [
+                    FILTER.get_schema() for FILTER in FILTERS.values()
+                ],
+                "actions": [ACTION.get_schema() for ACTION in ACTIONS.values()],
             }
         ],
     }

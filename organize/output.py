@@ -38,13 +38,13 @@ class Output:
             self.print_path(self.curr_path)
             self.prev_path = self.curr_path
 
-    def pipeline_message(self, name, msg) -> None:
+    def pipeline_message(self, name, msg, *args, **kwargs) -> None:
         """
         pre-print hook that is called everytime the moment before a filter or action is
         about to print something to the cli
         """
         self.print_location_update()
-        self.print_pipeline_message(name, msg)
+        self.print_pipeline_message(name, msg, *args, **kwargs)
 
     def pipeline_error(self, name, msg):
         self.print_location_update()
@@ -95,7 +95,7 @@ class RichOutput(Output):
         msg = "Path not found: {}".format(path)
         console.print(msg, style="bold yellow")
 
-    def print_pipeline_message(self, name, msg):
+    def print_pipeline_message(self, name, msg, *args, **kwargs):
         console.print(indent("- (%s) %s" % (name, msg), " " * 4))
 
     def print_pipeline_error(self, name, msg):

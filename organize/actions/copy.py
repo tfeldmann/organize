@@ -5,10 +5,11 @@ from fs.base import FS
 from fs.copy import copy_file
 from fs.move import move_file
 from fs.path import basename, dirname, join, splitext
+from schema import Optional, Or
 
+from ..utils import Template, file_desc, next_free_filename
 from .action import Action
 from .trash import Trash
-from ..utils import Template, file_desc
 
 logger = logging.getLogger(__name__)
 
@@ -24,24 +25,7 @@ CONFLICT_OPTIONS = (
 )
 
 
-def next_free_filename(fs, template, name, extension):
-    counter = 1
-    prev_candidate = ""
-    while True:
-        candidate = template.render(name=name, extension=extension, counter=counter)
-        if not fs.exists(candidate):
-            return candidate
-        if prev_candidate == candidate:
-            raise ValueError(
-                "Could not find a free filename for the given template. "
-                'Maybe you forgot the "{counter}" placeholder?'
-            )
-        prev_candidate = candidate
-        counter += 1
-
-
 class Copy(Action):
-    name = "copy"
 
     """
     Copy a file to a new location.
@@ -111,6 +95,21 @@ class Copy(Action):
                       overwrite: false
                       counter_separator: '_'
     """
+
+    name = "copy"
+
+    @classmethod
+    def get_schema(cls):
+        return Or(
+            cls.name,
+            {
+                cls.name: {
+                    "dest": str,
+                    Optional("conflict_mode"): Or(*CONFLICT_OPTIONS),
+                    Optional("rename_template"): str,
+                }
+            },
+        )
 
     def __init__(
         self,
@@ -190,8 +189,11 @@ class Copy(Action):
                 copy_file(src_fs, src_path, dst_fs, dst_path)
             self.print("Copied to %s" % file_desc(dst_fs, dst_path))
 
-        # the next action should handle the original file
-        return None
+        # the next action should work with the newly created copy
+        return {
+            "fs": dst_fs,
+            "fs_path": dst_path,
+        }
 
     def __str__(self) -> str:
         return "Copy(dest=%s, conflict_mode=%s)" % (self.dest, self.conflict_mode)

@@ -9,10 +9,14 @@ rules:
     actions:
       - echo: "{lastmodified}"
       - copy:
-          dest: ~/Desktop/test/more/folders/asd.png
-          conflict_mode: "trash"
+          dest: ~/Desktop/test/more/folders/
+          conflict_mode: "rename_existing"
           rename_template: "{name}_old_{counter}{extension}"
       - macos_tags: "Test"
+      - python:
+          code: |
+            print(fs)
+          run_in_simulation: false
 
   # - name: Find some folders
   #   targets: dirs

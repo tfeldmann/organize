@@ -12,8 +12,8 @@ from .actions import ALL as ACTIONS
 from .actions.action import Action
 from .filters import ALL as FILTERS
 from .filters.filter import Filter
-from .tui import RichOutput, console
-from .utils import deep_merge, deep_merge_inplace
+from .output import RichOutput, console
+from .utils import deep_merge_inplace
 
 logger = logging.getLogger(__name__)
 
@@ -191,9 +191,10 @@ if __name__ == "__main__":
 
     conf = load_from_file("testconf.yaml")
     try:
+        console.print(CONFIG_SCHEMA)
         CONFIG_SCHEMA.validate(conf)
         replace_with_instances(conf)
-        run(conf, simulate=False)
+        run(conf, simulate=True)
     except SchemaError as e:
         console.print(e.autos[-1])
         console.print(e.code)

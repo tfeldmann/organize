@@ -1,4 +1,3 @@
-from fs.errors import NoSysPath
 import os
 import re
 from collections.abc import Mapping
@@ -7,6 +6,8 @@ from functools import partial
 from pathlib import Path
 from typing import Any, Hashable, List, Sequence, Tuple, Union
 
+from fs.base import FS
+from fs.errors import NoSysPath
 from jinja2 import Template as JinjaTemplate
 
 Template = partial(
@@ -91,3 +92,21 @@ def file_desc(fs, path):
         return fs.getsyspath(path)
     except NoSysPath:
         return "{} on {}".format(path, fs)
+
+
+def next_free_filename(
+    fs: FS, template: JinjaTemplate, name: str, extension: str
+) -> str:
+    counter = 1
+    prev_candidate = ""
+    while True:
+        candidate = template.render(name=name, extension=extension, counter=counter)
+        if not fs.exists(candidate):
+            return candidate
+        if prev_candidate == candidate:
+            raise ValueError(
+                "Could not find a free filename for the given template. "
+                'Maybe you forgot the "{counter}" placeholder?'
+            )
+        prev_candidate = candidate
+        counter += 1

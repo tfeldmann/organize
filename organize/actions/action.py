@@ -1,4 +1,5 @@
-from typing import Any, Mapping, Optional, Callable
+from schema import Or, Schema, Optional
+from typing import Any, Dict, Optional as tyOptional, Callable
 
 
 class Error(Exception):
@@ -13,31 +14,43 @@ class Action:
     print_hook = None  # type: Optional[Callable]
     print_error_hook = None  # type: Optional[Callable]
 
+    name = None
+    arg_schema = None
+    schema_support_instance_without_args = False
+
     @classmethod
-    def schema(cls):
-        from schema import Schema, Optional, Or
+    def get_name(cls):
+        if cls.name:
+            return cls.name
+        return cls.__name__.lower()
 
-        return Or(
-            str,
-            {
-                Optional(cls.name.lower()): Or(
-                    str,
-                    [str],
-                    Schema({}, ignore_extra_keys=True),
-                ),
-            },
-        )
+    @classmethod
+    def get_schema(cls):
+        if cls.arg_schema:
+            arg_schema = cls.arg_schema
+        else:
+            arg_schema = Or(
+                str,
+                [str],
+                Schema({}, ignore_extra_keys=True),
+            )
+        if cls.is_callable_without_args:
+            return Or(
+                str,
+                {Optional(cls.get_name()): arg_schema},
+            )
+        return {Optional(cls.get_name()): arg_schema}
 
-    def run(self, **kwargs) -> Optional[Mapping[str, Any]]:
+    def run(self, **kwargs) -> tyOptional[Dict[str, Any]]:
         return self.pipeline(kwargs)
 
-    def pipeline(self, args: dict) -> Optional[Mapping[str, Any]]:
+    def pipeline(self, args: dict) -> tyOptional[Dict[str, Any]]:
         raise NotImplementedError
 
-    def print(self, msg) -> None:
+    def print(self, msg, *args, **kwargs) -> None:
         """print a message for the user"""
         if callable(self.print_hook):
-            self.print_hook(name=self.name, msg=msg)
+            self.print_hook(name=self.name, msg=msg, *args, **kwargs)
 
     def print_error(self, msg: str):
         if callable(self.print_error_hook):
