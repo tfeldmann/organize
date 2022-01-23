@@ -97,19 +97,14 @@ class Copy(Action):
     """
 
     name = "copy"
-
-    @classmethod
-    def get_schema(cls):
-        return Or(
-            cls.name,
-            {
-                cls.name: {
-                    "dest": str,
-                    Optional("conflict_mode"): Or(*CONFLICT_OPTIONS),
-                    Optional("rename_template"): str,
-                }
-            },
-        )
+    arg_schema = Or(
+        str,
+        {
+            "dest": str,
+            Optional("conflict_mode"): Or(*CONFLICT_OPTIONS),
+            Optional("rename_template"): str,
+        },
+    )
 
     def __init__(
         self,

@@ -34,12 +34,16 @@ class Action:
                 [str],
                 Schema({}, ignore_extra_keys=True),
             )
-        if cls.is_callable_without_args:
+        if cls.schema_support_instance_without_args:
             return Or(
-                str,
-                {Optional(cls.get_name()): arg_schema},
+                cls.get_name(),
+                {
+                    cls.get_name(): arg_schema,
+                },
             )
-        return {Optional(cls.get_name()): arg_schema}
+        return {
+            cls.get_name(): arg_schema,
+        }
 
     def run(self, **kwargs) -> tyOptional[Dict[str, Any]]:
         return self.pipeline(kwargs)

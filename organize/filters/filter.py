@@ -10,7 +10,8 @@ class Filter:
     print_error_hook = None
 
     name = None
-    schema = None
+    arg_schema = None
+    schema_support_instance_without_args = False
 
     @classmethod
     def get_name(cls):
@@ -20,18 +21,24 @@ class Filter:
 
     @classmethod
     def get_schema(cls):
-        if cls.schema:
-            return cls.schema
-        return Or(
-            cls.name,
-            {
-                Optional(cls.name): Or(
-                    str,
-                    [str],
-                    Schema({}, ignore_extra_keys=True),
-                ),
-            },
-        )
+        if cls.arg_schema:
+            arg_schema = cls.arg_schema
+        else:
+            arg_schema = Or(
+                str,
+                [str],
+                Schema({}, ignore_extra_keys=True),
+            )
+        if cls.schema_support_instance_without_args:
+            return Or(
+                cls.get_name(),
+                {
+                    cls.get_name(): arg_schema,
+                },
+            )
+        return {
+            cls.get_name(): arg_schema,
+        }
 
     def run(self, **kwargs: Dict) -> FilterResult:
         return self.pipeline(dict(kwargs))

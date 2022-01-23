@@ -1,7 +1,6 @@
+from schema import Or, Optional
 from datetime import datetime, timedelta
-from optparse import Option
-from time import time
-from typing import Dict, Optional
+from typing import Dict, Optional as tyOptional
 
 from .filter import Filter
 
@@ -89,6 +88,17 @@ class LastModified(Filter):
     """
 
     name = "lastmodified"
+    schema_support_instance_without_args = True
+    arg_schema = {
+        Optional("mode"): Or("older", "newer"),
+        Optional("years"): int,
+        Optional("months"): int,
+        Optional("weeks"): int,
+        Optional("days"): int,
+        Optional("hours"): int,
+        Optional("minutes"): int,
+        Optional("seconds"): int,
+    }
 
     def __init__(
         self,
@@ -113,7 +123,7 @@ class LastModified(Filter):
             seconds=seconds,
         )
 
-    def pipeline(self, args: dict) -> Optional[Dict[str, datetime]]:
+    def pipeline(self, args: dict) -> tyOptional[Dict[str, datetime]]:
         fs = args["fs"]
         fs_path = args["fs_path"]
         file_modified: datetime
@@ -138,24 +148,4 @@ class LastModified(Filter):
         return "[LastModified] All files last modified %s than %s" % (
             self._mode,
             self.timedelta,
-        )
-
-    @classmethod
-    def schema(cls):
-        from schema import Optional, Or
-
-        return Or(
-            cls.name,
-            {
-                Optional(cls.name): {
-                    Optional("mode"): Or("older", "newer"),
-                    Optional("years"): int,
-                    Optional("months"): int,
-                    Optional("weeks"): int,
-                    Optional("days"): int,
-                    Optional("hours"): int,
-                    Optional("minutes"): int,
-                    Optional("seconds"): int,
-                }
-            },
         )
