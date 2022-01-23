@@ -1,16 +1,43 @@
 import logging
-import os
-import shutil
 
-from organize.utils import Mapping, find_unused_filename, fullpath
+from fs import open_fs
+from fs.base import FS
+from fs.copy import copy_file
+from fs.move import move_file
+from fs.path import basename, dirname, join, splitext
 
 from .action import Action
 from .trash import Trash
+from ..utils import Template, file_desc
 
 logger = logging.getLogger(__name__)
 
 
-CONFLICT_OPTIONS = ("rename_new", "rename_old", "skip", "trash", "overwrite")
+CONFLICT_OPTIONS = (
+    "skip",
+    "overwrite",
+    "trash",
+    "rename_new",
+    "rename_existing",
+    # "keep_newer",
+    # "keep_older",
+)
+
+
+def next_free_filename(fs, template, name, extension):
+    counter = 1
+    prev_candidate = ""
+    while True:
+        candidate = template.render(name=name, extension=extension, counter=counter)
+        if not fs.exists(candidate):
+            return candidate
+        if prev_candidate == candidate:
+            raise ValueError(
+                "Could not find a free filename for the given template. "
+                'Maybe you forgot the "{counter}" placeholder?'
+            )
+        prev_candidate = candidate
+        counter += 1
 
 
 class Copy(Action):
@@ -86,44 +113,85 @@ class Copy(Action):
     """
 
     def __init__(
-        self, dest: str, on_conflict="rename_new", counter_separator=" "
+        self,
+        dest: str,
+        conflict_mode="rename_new",
+        rename_template="{name} {counter}{extension}",
     ) -> None:
-        if on_conflict not in CONFLICT_OPTIONS:
+        if conflict_mode not in CONFLICT_OPTIONS:
             raise ValueError(
-                "on_conflict must be one of %s" % ", ".join(CONFLICT_OPTIONS)
+                "conflict_mode must be one of %s" % ", ".join(CONFLICT_OPTIONS)
             )
+
         self.dest = dest
-        self.on_conflict = on_conflict
-        self.counter_separator = counter_separator
+        self.conflict_mode = conflict_mode
+        self.rename_template = Template(rename_template)
 
-    def pipeline(self, args: Mapping, simulate: bool) -> None:
-        path = args["path"]
+    def pipeline(self, args: dict, simulate: bool):
+        src_fs = args["fs"]  # type: FS
+        src_path = args["fs_path"]
 
-        expanded_dest = self.fill_template_tags(self.dest, args)
-        # if only a folder path is given we append the filename to have the full
-        # path. We use os.path for that because pathlib removes trailing slashes
-        if expanded_dest.endswith(("\\", "/")):
-            expanded_dest = os.path.join(expanded_dest, path.name)
+        dst_path = self.fill_template_tags(self.dest, args)
+        # if the destination ends with a slash we assume the name should not change
+        if dst_path.endswith(("\\", "/")):
+            dst_path = join(dst_path, basename(src_path))
 
-        new_path = fullpath(expanded_dest)
-        if new_path.exists() and not new_path.samefile(path):
-            if self.overwrite:
-                self.print("File already exists")
-                Trash().run(path=new_path, simulate=simulate)
-            else:
-                new_path = find_unused_filename(
-                    path=new_path, separator=self.counter_separator
+        dst_fs = open_fs(dirname(dst_path), writeable=True, create=True)
+        dst_path = basename(dst_path)
+
+        if dst_fs.exists(dst_path):
+            self.print(
+                'File %s already exists (conflict mode is "%s").'
+                % (file_desc(dst_fs, dst_path), self.conflict_mode)
+            )
+
+            if self.conflict_mode == "trash":
+                Trash().pipeline({"fs": dst_fs, "fs_path": dst_path}, simulate=simulate)
+                if not simulate:
+                    copy_file(src_fs, src_path, dst_fs, dst_path)
+                self.print("Copied to %s." % file_desc(dst_fs, dst_path))
+
+            elif self.conflict_mode == "skip":
+                self.print("Skipped.")
+                return
+
+            elif self.conflict_mode == "overwrite":
+                if not simulate:
+                    copy_file(src_fs, src_path, dst_fs, dst_path)
+                self.print("Copied to %s (overwritten)." % file_desc(dst_fs, dst_path))
+
+            elif self.conflict_mode == "rename_new":
+                stem, ext = splitext(dst_path)
+                name = next_free_filename(
+                    fs=dst_fs,
+                    name=stem,
+                    extension=ext,
+                    template=self.rename_template,
                 )
+                if not simulate:
+                    copy_file(src_fs, src_path, dst_fs, name)
+                self.print("Copied to %s" % file_desc(dst_fs, name))
 
-        self.print('Copy to "%s"' % new_path)
-        if not simulate:
-            logger.info("Creating folder if not exists: %s", new_path.parent)
-            new_path.parent.mkdir(parents=True, exist_ok=True)
-            logger.info('Copying "%s" to "%s"', path, new_path)
-            shutil.copy2(src=str(path), dst=str(new_path))
+            elif self.conflict_mode == "rename_existing":
+                stem, ext = splitext(dst_path)
+                name = next_free_filename(
+                    fs=dst_fs,
+                    name=stem,
+                    extension=ext,
+                    template=self.rename_template,
+                )
+                self.print("Renaming existing file to: %s" % name)
+                if not simulate:
+                    move_file(dst_fs, dst_path, dst_fs, name)
+                    copy_file(src_fs, src_path, dst_fs, dst_path)
+                self.print("Copied to %s" % file_desc(dst_fs, dst_path))
+        else:
+            if not simulate:
+                copy_file(src_fs, src_path, dst_fs, dst_path)
+            self.print("Copied to %s" % file_desc(dst_fs, dst_path))
 
-        # the next actions should handle the original file
+        # the next action should handle the original file
         return None
 
     def __str__(self) -> str:
-        return "Copy(dest=%s, on_conflict=%s)" % (self.dest, self.on_conflict)
+        return "Copy(dest=%s, conflict_mode=%s)" % (self.dest, self.conflict_mode)

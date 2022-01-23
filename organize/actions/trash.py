@@ -31,13 +31,16 @@ class Trash(Action):
 
     name = "trash"
 
-    def pipeline(self, args: dict, simulate: bool):
+    def trash(self, path: str, simulate: bool):
         from send2trash import send2trash  # type: ignore
 
-        fs = args["fs"]
-        fs_path = args["fs_path"]
-        path = fs.getsyspath(fs_path)
         self.print('Trash "%s"' % path)
         if not simulate:
             logger.info("Moving file %s into trash.", path)
             send2trash(path)
+
+    def pipeline(self, args: dict, simulate: bool):
+        fs = args["fs"]
+        fs_path = args["fs_path"]
+        path = fs.getsyspath(fs_path)
+        self.trash(path=path, simulate=simulate)

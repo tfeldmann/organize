@@ -117,7 +117,7 @@ class LastModified(Filter):
         fs = args["fs"]
         fs_path = args["fs_path"]
         file_modified: datetime
-        file_modified = fs.getinfo(fs_path, namespaces=["details"]).modified
+        file_modified = fs.getmodified(fs_path)
         if file_modified:
             file_modified = file_modified.astimezone()
         if self.timedelta.total_seconds():

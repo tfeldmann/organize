@@ -2,8 +2,6 @@ import logging
 import textwrap
 from typing import Any, Mapping, Optional, Iterable
 
-from organize.utils import DotDict
-
 from .action import Action
 
 logger = logging.getLogger(__name__)
@@ -80,7 +78,7 @@ class Python(Action):
         )
         exec(funccode, globals_, locals_)  # pylint: disable=exec-used
 
-    def pipeline(self, args: DotDict, simulate: bool) -> Optional[Mapping[str, Any]]:
+    def pipeline(self, args: dict, simulate: bool) -> Optional[Mapping[str, Any]]:
         if simulate:
             self.print("Code not run in simulation. (Args: %s)" % args)
             return None

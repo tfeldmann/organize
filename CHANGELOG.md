@@ -19,6 +19,7 @@ Please backup all your important stuff before running.
 - nice terminal output and rule names
 - cleaner config file validation and stricter format
 - "confirm" and "prompt" action
+- `rename_template` option in `move` and `copy`
 
 ### changed
 

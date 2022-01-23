@@ -1,10 +1,19 @@
+from fs.errors import NoSysPath
 import os
 import re
 from collections.abc import Mapping
 from copy import deepcopy
-from typing import Any, Sequence, Tuple, Union, List, Hashable
-
+from functools import partial
 from pathlib import Path
+from typing import Any, Hashable, List, Sequence, Tuple, Union
+
+from jinja2 import Template as JinjaTemplate
+
+Template = partial(
+    JinjaTemplate,
+    variable_start_string="{",
+    variable_end_string="}",
+)
 
 WILDCARD_REGEX = re.compile(r"(?<!\\)[\*\?\[]+")
 
@@ -43,85 +52,6 @@ def first_key(dic: Mapping) -> Hashable:
     return list(dic.keys())[0]
 
 
-class DotDict(dict):
-    """
-    Quick and dirty implementation of a dot-able dict, which allows access and
-    assignment via object properties rather than dict indexing.
-    Keys are case insensitive.
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__()
-        # we could just call super(DotDict, self).__init__(*args, **kwargs)
-        # but that won't get us nested dotdict objects
-        od = dict(*args, **kwargs)
-        for key, val in od.items():
-            if isinstance(val, Mapping):
-                value = DotDict(val)
-            else:
-                value = val
-            self[self.normkey(key)] = value
-
-    @staticmethod
-    def normkey(key):
-        if isinstance(key, str):
-            return key.lower()
-        else:
-            return key
-
-    def __delattr__(self, key):
-        try:
-            del self[self.normkey(key)]
-        except KeyError as ex:
-            raise AttributeError("No attribute called: %s" % key) from ex
-
-    def __getattr__(self, key):
-        try:
-            return self[self.normkey(key)]
-        except KeyError as ex:
-            raise AttributeError("No attribute called: %s" % key) from ex
-
-    def __setattr__(self, key, value) -> None:
-        self[self.normkey(key)] = value
-
-    def update(self, other):
-        """recursively update the dotdict instance with another dicts items"""
-        for key, val in other.items():
-            normkey = self.normkey(key)
-            if isinstance(val, Mapping):
-                if isinstance(self.get(normkey), dict):
-                    self[normkey].update(val)
-                else:
-                    self[normkey] = __class__(val)
-            else:
-                self[normkey] = val
-
-    def merge(self, other) -> Mapping:
-        """recursively merge values from another dict and return a new instance"""
-        new_dct = deepcopy(self)
-        new_dct.update(other)
-        return new_dct
-
-
-def increment_filename_version(path: Path, separator=" ") -> Path:
-    stem = path.stem
-    try:
-        # try to find any existing counter
-        splitstem = stem.split(separator)  # raises ValueError on missing sep
-        if len(splitstem) < 2:
-            raise ValueError()
-        counter = int(splitstem[-1])
-        stem = separator.join(splitstem[:-1])
-    except (ValueError, IndexError):
-        # not found, we start with 1
-        counter = 1
-    return path.with_name(
-        "{stem}{sep}{cnt}{suffix}".format(
-            stem=stem, sep=separator, cnt=(counter + 1), suffix=path.suffix
-        )
-    )
-
-
 def find_unused_filename(path: Path, separator=" ") -> Path:
     """
     We assume the given path already exists. This function adds a counter to the
@@ -136,39 +66,28 @@ def find_unused_filename(path: Path, separator=" ") -> Path:
             return tmp
 
 
-def dict_merge(dct, merge_dct, add_keys=True):
-    """Recursive dict merge.
-
-    Inspired by :meth:``dict.update()``, instead of
-    updating only top-level keys, dict_merge recurses down into dicts nested
-    to an arbitrary depth, updating keys. The ``merge_dct`` is merged into
-    ``dct``.
-
-    This version will return a copy of the dictionary and leave the original
-    arguments untouched.
-
-    The optional argument ``add_keys``, determines whether keys which are
-    present in ``merge_dict`` but not ``dct`` should be included in the
-    new dict.
-
-    Args:
-        dct (dict) onto which the merge is executed
-        merge_dct (dict): dct merged into dct
-        add_keys (bool): whether to add new keys
-
-    Returns:
-        dict: updated dict
-
-    Taken from comment thread: https://gist.github.com/angstwad/bf22d1822c38a92ec0a9
-    """
-    dct = deepcopy(dct)
-    if not add_keys:
-        merge_dct = {k: merge_dct[k] for k in set(dct).intersection(set(merge_dct))}
-
-    for k, v in merge_dct.items():
-        if isinstance(dct.get(k), dict) and isinstance(v, Mapping):
-            dct[k] = dict_merge(dct[k], v, add_keys=add_keys)
+def deep_merge(a: dict, b: dict) -> dict:
+    result = deepcopy(a)
+    for bk, bv in b.items():
+        av = result.get("k")
+        if isinstance(av, dict) and isinstance(bv, dict):
+            result[bk] = deep_merge(av, bv)
         else:
-            dct[k] = v
+            result[bk] = deepcopy(bv)
+    return result
 
-    return dct
+
+def deep_merge_inplace(base: dict, updates: dict) -> None:
+    for bk, bv in updates.items():
+        av = base.get("k")
+        if isinstance(av, dict) and isinstance(bv, dict):
+            deep_merge_inplace(av, bv)
+        else:
+            base[bk] = bv
+
+
+def file_desc(fs, path):
+    try:
+        return fs.getsyspath(path)
+    except NoSysPath:
+        return "{} on {}".format(path, fs)

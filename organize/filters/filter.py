@@ -2,8 +2,6 @@ from schema import Schema, Optional, Or
 from textwrap import indent
 from typing import Any, Dict, Union
 
-from organize.utils import DotDict
-
 FilterResult = Union[Dict[str, Any], bool, None]
 
 
@@ -25,9 +23,9 @@ class Filter:
         )
 
     def run(self, **kwargs: Dict) -> FilterResult:
-        return self.pipeline(DotDict(kwargs))
+        return self.pipeline(dict(kwargs))
 
-    def pipeline(self, args: DotDict) -> FilterResult:
+    def pipeline(self, args: dict) -> FilterResult:
         raise NotImplementedError
 
     def print(self, msg: str) -> None:

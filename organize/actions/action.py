@@ -1,7 +1,4 @@
-from textwrap import indent
 from typing import Any, Mapping, Optional, Callable
-
-from organize.utils import DotDict
 
 
 class Error(Exception):
@@ -32,9 +29,9 @@ class Action:
         )
 
     def run(self, **kwargs) -> Optional[Mapping[str, Any]]:
-        return self.pipeline(DotDict(kwargs))
+        return self.pipeline(kwargs)
 
-    def pipeline(self, args: DotDict) -> Optional[Mapping[str, Any]]:
+    def pipeline(self, args: dict) -> Optional[Mapping[str, Any]]:
         raise NotImplementedError
 
     def print(self, msg) -> None:

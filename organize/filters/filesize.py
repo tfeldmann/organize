@@ -2,7 +2,7 @@ import operator
 import re
 from typing import Callable, Dict, Optional, Sequence, Set, Tuple
 
-from organize.utils import DotDict, flattened_string_list, fullpath
+from organize.utils import flattened_string_list, fullpath
 
 from .filter import Filter
 
@@ -115,7 +115,7 @@ class FileSize(Filter):
     def matches(self, filesize: int) -> bool:
         return all(op(filesize, c_size) for op, c_size in self.constrains)
 
-    def pipeline(self, args: DotDict) -> Optional[Dict[str, Dict[str, int]]]:
+    def pipeline(self, args: dict) -> Optional[Dict[str, Dict[str, int]]]:
         fs = args["fs"]
         fs_path = args["fs_path"]
 

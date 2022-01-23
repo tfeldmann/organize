@@ -2,17 +2,18 @@ import logging
 import os
 from datetime import datetime
 from typing import Iterable, NamedTuple
-from schema import SchemaError
+
 import fs
 from fs.base import FS
 from fs.walk import Walker
+from schema import SchemaError
 
 from .actions import ALL as ACTIONS
 from .actions.action import Action
 from .filters import ALL as FILTERS
 from .filters.filter import Filter
 from .tui import RichOutput, console
-from .utils import DotDict
+from .utils import deep_merge, deep_merge_inplace
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +114,7 @@ def filter_pipeline(filters: Iterable[Filter], args: dict) -> bool:
         try:
             result = filter_.pipeline(args)
             if isinstance(result, dict):
-                args.update(result)
+                deep_merge_inplace(args, result)
             elif not result:
                 # filters might return a simple True / False.
                 # Exit early if a filter does not match.
@@ -126,13 +127,13 @@ def filter_pipeline(filters: Iterable[Filter], args: dict) -> bool:
     return True
 
 
-def action_pipeline(actions: Iterable[Action], args: DotDict, simulate: bool) -> bool:
+def action_pipeline(actions: Iterable[Action], args: dict, simulate: bool) -> bool:
     for action in actions:
         try:
             updates = action.pipeline(args, simulate=simulate)
             # jobs may return a dict with updates that should be merged into args
             if updates is not None:
-                args.update(updates)
+                deep_merge_inplace(args, updates)
         except Exception as e:  # pylint: disable=broad-except
             logger.exception(e)
             action.print_error(e)
@@ -162,7 +163,7 @@ def run(config, simulate: bool = True):
                 args = {
                     "fs": base_fs,
                     "fs_path": path,
-                    "path": path,  # str(base_fs.getsyspath(path)),
+                    "path": "NOT IMPLEMENTED",  # str(base_fs.getsyspath(path)),
                     "relative_path": fs.path.relativefrom(base_path, path),
                     "env": os.environ,
                     "now": datetime.now(),
@@ -186,7 +187,7 @@ def run(config, simulate: bool = True):
 
 
 if __name__ == "__main__":
-    from .config import load_from_file, CONFIG_SCHEMA
+    from .config import CONFIG_SCHEMA, load_from_file
 
     conf = load_from_file("testconf.yaml")
     try:

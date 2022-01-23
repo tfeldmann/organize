@@ -57,8 +57,8 @@ class Regex(Filter):
     def matches(self, path: Path) -> Any:
         return self.expr.search(path.name)
 
-    def pipeline(self, args: Mapping) -> Optional[Dict[str, Dict]]:
-        match = self.matches(args["path"])
+    def pipeline(self, args: dict) -> Optional[Dict[str, Dict]]:
+        match = self.matches(args["fs_path"])
         if match:
             result = match.groupdict()
             return {"regex": result}
