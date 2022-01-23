@@ -1,9 +1,8 @@
 import logging
 import sys
-from pathlib import Path
-from typing import Mapping
 
 import simplematch as sm  # type: ignore
+from schema import Or
 
 from .action import Action
 
@@ -77,6 +76,10 @@ class MacOSTags(Action):
                   - macos_tags:
                     - Year-{created.year} (red)
     """
+
+    @classmethod
+    def get_schema(cls):
+        return {cls.name: Or(str, [str])}
 
     def __init__(self, *tags):
         self.tags = tags

@@ -68,6 +68,12 @@ class Echo(Action):
                   - echo: 'Path:    {path}'
     """
 
+    name = "echo"
+
+    @classmethod
+    def get_schema(cls):
+        return {cls.name: str}
+
     def __init__(self, msg) -> None:
         self.msg = msg
         self.log = logging.getLogger(__name__)
@@ -81,5 +87,3 @@ class Echo(Action):
 
     def __str__(self) -> str:
         return 'Echo(msg="%s")' % self.msg
-
-    name = "echo"

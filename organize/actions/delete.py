@@ -1,8 +1,7 @@
-import os
 import logging
 from typing import Mapping
 
-from pathlib import Path
+from schema import Optional, Or
 
 from .action import Action
 
@@ -36,6 +35,10 @@ class Delete(Action):
     """
 
     name = "delete"
+
+    @classmethod
+    def get_schema(cls):
+        return cls.name
 
     def pipeline(self, args: Mapping, simulate: bool):
         fs = args["fs"]

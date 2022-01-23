@@ -191,7 +191,7 @@ if __name__ == "__main__":
 
     conf = load_from_file("testconf.yaml")
     try:
-        # console.print(CONFIG_SCHEMA.json_schema("asd"))
+        console.print(CONFIG_SCHEMA.json_schema("asd"))
         CONFIG_SCHEMA.validate(conf)
         replace_with_instances(conf)
         run(conf, simulate=True)
