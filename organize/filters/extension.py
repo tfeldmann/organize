@@ -100,6 +100,9 @@ class Extension(Filter):
                   - echo: 'Found media file: {path}'
     """
 
+    name = "extension"
+    schema_support_instance_without_args = True
+
     def __init__(self, *extensions) -> None:
         self.extensions = list(map(self.normalize_extension, flatten(list(extensions))))
 

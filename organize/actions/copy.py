@@ -123,7 +123,11 @@ class Copy(Action):
             dst_path = join(dst_path, basename(src_path))
 
         if self.dest_filesystem:
-            dst_fs = open_fs(self.dest_filesystem, writeable=True, create=True)
+            dst_fs_ = self.dest_filesystem
+            # render if we have a template
+            if isinstance(dst_fs_, str):
+                dst_fs_ = JinjaEnv.from_string(dst_fs_).render(**args)
+            dst_fs = open_fs(dst_fs_, writeable=True, create=True)
             dst_path = dst_path
         else:
             dst_fs = open_fs(dirname(dst_path), writeable=True, create=True)

@@ -1,18 +1,14 @@
 rules:
   - name: "Find the last modification date of some png files"
-    targets: dirs
+    targets: files
     locations:
       - path: ~/Desktop/test
-        max_depth: 0
+        max_depth: 3
     filters:
-      - name: "more"
+      - name: "Bildschirmfoto {date} um {time}"
+      - extension: png
     actions:
-      - echo: "{name}"
-      - copy:
-          dest: /ahoi/test/
-          dest_filesystem: "zip:///Users/thomasfeldmann/Desktop/test.zip"
-          on_conflict: "skip"
-          rename_template: "{name} -- {counter}"
+      - echo: "{name.date}"
 
   # - name: Find some folders
   #   targets: dirs

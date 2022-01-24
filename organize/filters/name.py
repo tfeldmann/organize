@@ -1,8 +1,7 @@
 from typing import Any, List, Union, Optional, Dict
 
 import simplematch  # type: ignore
-from fs.path import basename
-from pathlib import Path
+from fs import path
 
 from .filter import Filter
 
@@ -111,7 +110,12 @@ class Name(Filter):
         return is_match
 
     def pipeline(self, args: Dict) -> Optional[Dict[str, Any]]:
-        name = basename(args["fs_path"])
+        fs = args["fs"]
+        fs_path = args["fs_path"]
+        if fs.isdir(fs_path):
+            name = path.basename(fs_path)
+        else:
+            name, _ = path.splitext(path.basename(fs_path))
         result = self.matches(name)
 
         if result:

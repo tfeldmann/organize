@@ -200,7 +200,7 @@ if __name__ == "__main__":
         # console.print(CONFIG_SCHEMA.json_schema(None))
         CONFIG_SCHEMA.validate(conf)
         replace_with_instances(conf)
-        run(conf, simulate=False)
+        run(conf, simulate=True)
     except SchemaError as e:
         console.print("Invalid config file")
         console.print(e.autos[-1])
