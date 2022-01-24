@@ -1,15 +1,12 @@
 import os
-import re
 from collections.abc import Mapping
 from copy import deepcopy
-from functools import partial
 from pathlib import Path
-from typing import Any, Hashable, List, Sequence, Tuple, Union
+from typing import Any, Hashable, List, Sequence, Union
 
 from fs.base import FS
 from fs.errors import NoSysPath
 from jinja2 import Environment, Template
-
 
 JinjaEnv = Environment(
     variable_start_string="{",
@@ -17,7 +14,6 @@ JinjaEnv = Environment(
     finalize=lambda x: x() if callable(x) else x,
     autoescape=False,
 )
-JinjaEnv.globals.update({"path": lambda: vars()})
 
 
 def fullpath(path: Union[str, Path]) -> Path:
