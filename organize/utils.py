@@ -16,18 +16,6 @@ Template = partial(
     variable_end_string="}",
 )
 
-WILDCARD_REGEX = re.compile(r"(?<!\\)[\*\?\[]+")
-
-
-def splitglob(globstr: str) -> Tuple[Path, str]:
-    """split a string with wildcards into a base folder and globstring"""
-    path = fullpath(globstr.strip())
-    parts = path.parts
-    for i, part in enumerate(parts):
-        if WILDCARD_REGEX.search(part):
-            return (Path(*parts[:i]), str(Path(*parts[i:])))
-    return (path, "")
-
 
 def fullpath(path: Union[str, Path]) -> Path:
     """Expand '~' and resolve the given path. Path can be a string or a Path obj."""
@@ -51,20 +39,6 @@ def flattened_string_list(x, case_sensitive=True) -> Sequence[str]:
 
 def first_key(dic: Mapping) -> Hashable:
     return list(dic.keys())[0]
-
-
-def find_unused_filename(path: Path, separator=" ") -> Path:
-    """
-    We assume the given path already exists. This function adds a counter to the
-    filename until we find a unused filename.
-    """
-    # TODO: Check whether the assumption can be eliminated for cleaner code.
-    # TODO: Optimization: The counter only needs to be parsed once.
-    tmp = path
-    while True:
-        tmp = increment_filename_version(tmp, separator=separator)
-        if not tmp.exists():
-            return tmp
 
 
 def deep_merge(a: dict, b: dict) -> dict:
