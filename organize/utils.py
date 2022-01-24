@@ -85,3 +85,9 @@ def next_free_filename(fs: FS, template: Template, name: str, extension: str) ->
             )
         prev_candidate = candidate
         counter += 1
+
+
+def ensure_list(inp):
+    if not isinstance(inp, list):
+        return [inp]
+    return inp

@@ -13,7 +13,7 @@ from .actions.action import Action
 from .filters import ALL as FILTERS
 from .filters.filter import Filter
 from .output import RichOutput, console
-from .utils import deep_merge_inplace, JinjaEnv
+from .utils import deep_merge_inplace, JinjaEnv, ensure_list
 
 logger = logging.getLogger(__name__)
 
@@ -97,15 +97,17 @@ def instantiate_by_name(d, classes):
 
 def replace_with_instances(config):
     for rule in config["rules"]:
-        # wrap locations given as a single string in a list
-        if isinstance(rule["locations"], str):
-            rule["locations"] = [rule["locations"]]
-        rule["locations"] = [instantiate_location(loc) for loc in rule["locations"]]
+        rule["locations"] = [
+            instantiate_location(loc) for loc in ensure_list(rule["locations"])
+        ]
         # filters are optional
         rule["filters"] = [
-            instantiate_by_name(x, FILTERS) for x in rule.get("filters", [])
+            instantiate_by_name(x, FILTERS)
+            for x in ensure_list(rule.get("filters", []))
         ]
-        rule["actions"] = [instantiate_by_name(x, ACTIONS) for x in rule["actions"]]
+        rule["actions"] = [
+            instantiate_by_name(x, ACTIONS) for x in ensure_list(rule["actions"])
+        ]
 
 
 def filter_pipeline(filters: Iterable[Filter], args: dict) -> bool:
