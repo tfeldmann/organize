@@ -24,13 +24,13 @@ FileContent
 -----------
 .. autoclass:: FileContent
 
-Filename
+Name
 --------
-.. autoclass:: Filename
+.. autoclass:: Name
 
-FileSize
+Size
 --------
-.. autoclass:: FileSize
+.. autoclass:: Size
 
 LastModified
 ------------
