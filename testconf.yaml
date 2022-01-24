@@ -9,6 +9,7 @@ rules:
           startswith: "Inbo"
       - created
       - size
+      - regex: ^.*
     actions:
       - echo: "{created}"
       - echo: "{size}"

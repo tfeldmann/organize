@@ -1,8 +1,6 @@
 import re
 from typing import Any, Dict, Mapping, Optional
 
-from pathlib import Path
-
 from .filter import Filter
 
 
@@ -49,16 +47,16 @@ class Regex(Filter):
                   - move: ~/Documents/Invoices/1und1/{regex.the_number}.pdf
     """
 
-    name = "python"
+    name = "regex"
 
     def __init__(self, expr) -> None:
         self.expr = re.compile(expr, flags=re.UNICODE)
 
-    def matches(self, path: Path) -> Any:
-        return self.expr.search(path.name)
+    def matches(self, path: str) -> Any:
+        return self.expr.search(path)
 
     def pipeline(self, args: dict) -> Optional[Dict[str, Dict]]:
-        match = self.matches(args["fs_path"])
+        match = self.matches(args["relative_path"])
         if match:
             result = match.groupdict()
             return {"regex": result}
