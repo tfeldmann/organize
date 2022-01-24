@@ -3,7 +3,6 @@ import os
 from typing import Mapping
 
 from pathlib import Path
-from organize.utils import find_unused_filename
 
 from .action import Action
 from .trash import Trash

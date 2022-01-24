@@ -4,6 +4,8 @@ from .action import Action
 
 logger = logging.getLogger(__name__)
 
+from ..utils import JinjaEnv
+
 
 class Echo(Action):
 
@@ -75,14 +77,11 @@ class Echo(Action):
         return {cls.name: str}
 
     def __init__(self, msg) -> None:
-        self.msg = msg
+        self.msg = JinjaEnv.from_string(msg)
         self.log = logging.getLogger(__name__)
 
     def pipeline(self, args: dict, simulate: bool) -> None:
-        path = args["path"]
-        logger.debug('Echo msg "%s", path: "%s", args: "%s"', self.msg, path, args)
-        full_msg = self.fill_template_tags(self.msg, args)
-        logger.info("Console output: %s", full_msg)
+        full_msg = self.msg.render(**args)
         self.print("%s" % full_msg)
 
     def __str__(self) -> str:

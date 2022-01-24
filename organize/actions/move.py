@@ -4,7 +4,7 @@ import shutil
 from typing import Mapping
 
 from pathlib import Path
-from organize.utils import find_unused_filename, fullpath
+from organize.utils import fullpath
 
 from .action import Action
 from .trash import Trash

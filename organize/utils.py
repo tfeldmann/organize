@@ -8,13 +8,16 @@ from typing import Any, Hashable, List, Sequence, Tuple, Union
 
 from fs.base import FS
 from fs.errors import NoSysPath
-from jinja2 import Template as JinjaTemplate
+from jinja2 import Environment, Template
 
-Template = partial(
-    JinjaTemplate,
+
+JinjaEnv = Environment(
     variable_start_string="{",
     variable_end_string="}",
+    finalize=lambda x: x() if callable(x) else x,
+    autoescape=False,
 )
+JinjaEnv.globals.update({"path": lambda: vars()})
 
 
 def fullpath(path: Union[str, Path]) -> Path:
@@ -68,9 +71,7 @@ def file_desc(fs, path):
         return "{} on {}".format(path, fs)
 
 
-def next_free_filename(
-    fs: FS, template: JinjaTemplate, name: str, extension: str
-) -> str:
+def next_free_filename(fs: FS, template: Template, name: str, extension: str) -> str:
     counter = 1
     prev_candidate = ""
     while True:

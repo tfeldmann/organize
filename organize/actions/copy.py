@@ -7,7 +7,7 @@ from fs.move import move_file
 from fs.path import basename, dirname, join, splitext
 from schema import Optional, Or
 
-from ..utils import Template, file_desc, next_free_filename
+from ..utils import JinjaEnv, file_desc, next_free_filename
 from .action import Action
 from .trash import Trash
 
@@ -117,15 +117,15 @@ class Copy(Action):
                 "conflict_mode must be one of %s" % ", ".join(CONFLICT_OPTIONS)
             )
 
-        self.dest = dest
+        self.dest = JinjaEnv.from_string(dest)
         self.conflict_mode = conflict_mode
-        self.rename_template = Template(rename_template)
+        self.rename_template = JinjaEnv.from_string(rename_template)
 
     def pipeline(self, args: dict, simulate: bool):
         src_fs = args["fs"]  # type: FS
         src_path = args["fs_path"]
 
-        dst_path = self.fill_template_tags(self.dest, args)
+        dst_path = self.dst.render(**args)
         # if the destination ends with a slash we assume the name should not change
         if dst_path.endswith(("\\", "/")):
             dst_path = join(dst_path, basename(src_path))

@@ -59,7 +59,7 @@ def satisfies_constraints(size, constraints):
 
 class Size(Filter):
     """
-    Matches files by file size
+    Matches files and folders by size
 
     :param str conditions:
 
@@ -75,7 +75,7 @@ class Size(Filter):
     - If binary prefix is given (KiB, GiB) the size is calculated using base 1024.
 
     :returns:
-        - ``{filesize.bytes}`` -- File size in bytes
+        - ``{size.bytes}`` -- Size in bytes
 
     Examples:
         - Trash big downloads:
@@ -84,7 +84,8 @@ class Size(Filter):
             :caption: config.yaml
 
             rules:
-              - folders: '~/Downloads'
+              - locations: '~/Downloads'
+                targets: files
                 filters:
                   - filesize: '> 0.5 GB'
                 actions:
