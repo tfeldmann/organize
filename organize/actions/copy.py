@@ -92,6 +92,7 @@ class Copy(Action):
             "dest": str,
             Optional("on_conflict"): Or(*CONFLICT_OPTIONS),
             Optional("rename_template"): str,
+            Optional("dest_filesystem"): str,
         },
     )
 
@@ -100,15 +101,17 @@ class Copy(Action):
         dest: str,
         on_conflict="rename_new",
         rename_template="{name} {counter}{extension}",
+        dest_filesystem=None,
     ) -> None:
         if on_conflict not in CONFLICT_OPTIONS:
             raise ValueError(
-                "conflict_mode must be one of %s" % ", ".join(CONFLICT_OPTIONS)
+                "on_conflict must be one of %s" % ", ".join(CONFLICT_OPTIONS)
             )
 
         self.dest = JinjaEnv.from_string(dest)
         self.conflict_mode = on_conflict
         self.rename_template = JinjaEnv.from_string(rename_template)
+        self.dest_filesystem = dest_filesystem
 
     def pipeline(self, args: dict, simulate: bool):
         src_fs = args["fs"]  # type: FS
@@ -119,8 +122,12 @@ class Copy(Action):
         if dst_path.endswith(("\\", "/")):
             dst_path = join(dst_path, basename(src_path))
 
-        dst_fs = open_fs(dirname(dst_path), writeable=True, create=True)
-        dst_path = basename(dst_path)
+        if self.dest_filesystem:
+            dst_fs = open_fs(self.dest_filesystem, writeable=True, create=True)
+            dst_path = dst_path
+        else:
+            dst_fs = open_fs(dirname(dst_path), writeable=True, create=True)
+            dst_path = basename(dst_path)
 
         if src_fs.isdir(src_path):
             copy_action = copy_dir

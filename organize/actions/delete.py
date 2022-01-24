@@ -1,8 +1,5 @@
 import logging
-from typing import Mapping
-
-from schema import Optional, Or
-
+from fs.base import FS
 from .action import Action
 
 logger = logging.getLogger(__name__)
@@ -40,11 +37,14 @@ class Delete(Action):
     def get_schema(cls):
         return cls.name
 
-    def pipeline(self, args: Mapping, simulate: bool):
-        fs = args["fs"]
-        fs_path = args["fs_path"]
+    def pipeline(self, args: dict, simulate: bool):
+        fs = args["fs"]  # type: FS
+        fs_path = args["fs_path"]  # type: str
         relative_path = args["relative_path"]
         self.print('Deleting "%s"' % relative_path)
         if not simulate:
-            logger.info("Deleting file %s.", relative_path)
-            fs.remove(fs_path)
+            logger.info("Deleting %s.", relative_path)
+            if fs.isdir(fs_path):
+                fs.removetree(fs_path)
+            elif fs.isfile(fs_path):
+                fs.remove(fs_path)

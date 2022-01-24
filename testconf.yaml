@@ -9,7 +9,8 @@ rules:
     actions:
       - echo: "{name}"
       - copy:
-          dest: ~/Desktop/test/ahoi/
+          dest: /ahoi/test/
+          dest_filesystem: "zip:///Users/thomasfeldmann/Desktop/test.zip"
           on_conflict: "skip"
           rename_template: "{name} -- {counter}"
 

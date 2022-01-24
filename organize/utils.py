@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Hashable, List, Sequence, Union
 
 from fs.base import FS
+from fs.osfs import OSFS
 from fs.errors import NoSysPath
 from jinja2 import Environment, Template
 
@@ -61,10 +62,9 @@ def deep_merge_inplace(base: dict, updates: dict) -> None:
 
 
 def file_desc(fs, path):
-    try:
+    if isinstance(fs, OSFS):
         return fs.getsyspath(path)
-    except NoSysPath:
-        return "{} on {}".format(path, fs)
+    return "{} on {}".format(path, fs)
 
 
 def next_free_name(fs: FS, template: Template, name: str, extension: str) -> str:
