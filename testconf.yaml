@@ -5,10 +5,10 @@ rules:
       - path: ~/Desktop/test
         max_depth: 3
     filters:
-      - name: "Bildschirmfoto {date} um {time}"
+      - name: "Bildschirmfoto {date} um {time}_*"
       - extension: png
     actions:
-      - echo: "{name.date}"
+      - move: "~/Desktop/Fotos/{name}.png"
 
   # - name: Find some folders
   #   targets: dirs

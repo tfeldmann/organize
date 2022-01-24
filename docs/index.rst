@@ -14,6 +14,7 @@ Contents:
     page/config
     page/filters
     page/actions
+    page/migration
 
 If you find any bugs or have an idea for a new feature please don't hesitate to `open an issue <https://github.com/tfeldmann/organize/issues?state=open>`_ on GitHub.
 
