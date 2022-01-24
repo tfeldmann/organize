@@ -85,7 +85,7 @@ class Name(Filter):
 
     def __init__(
         self,
-        match="{__fullname__}",
+        match="*",
         *,
         startswith="",
         contains="",
@@ -116,8 +116,8 @@ class Name(Filter):
 
         if result:
             m = self.matcher.match(name)
-            if "__fullname__" in m:
-                m = m["__fullname__"]
+            if m == {}:
+                m = name
             return {self.get_name(): m}
         return None
 

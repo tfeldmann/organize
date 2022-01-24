@@ -142,7 +142,6 @@ class Duplicate(Filter):
     def pipeline(self, args):
         fs = args["fs"]
         fs_path = args["fs_path"]
-        fs.getsyspath(fs_path)
         return self.matches(fs.getsyspath(fs_path))
 
     def __str__(self) -> str:

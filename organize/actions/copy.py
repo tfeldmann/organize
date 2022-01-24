@@ -2,27 +2,16 @@ import logging
 
 from fs import open_fs
 from fs.base import FS
-from fs.copy import copy_file
-from fs.move import move_file
-from fs.path import basename, dirname, join, splitext
+from fs.copy import copy_dir, copy_file
+from fs.path import basename, dirname, join
 from schema import Optional, Or
 
-from ..utils import JinjaEnv, file_desc, next_free_filename
+from organize.utils import JinjaEnv, file_desc
+
 from .action import Action
-from .trash import Trash
+from .utils import CONFLICT_OPTIONS, resolve_overwrite_conflict
 
 logger = logging.getLogger(__name__)
-
-
-CONFLICT_OPTIONS = (
-    "skip",
-    "overwrite",
-    "trash",
-    "rename_new",
-    "rename_existing",
-    # "keep_newer",
-    # "keep_older",
-)
 
 
 class Copy(Action):
@@ -101,7 +90,7 @@ class Copy(Action):
         str,
         {
             "dest": str,
-            Optional("conflict_mode"): Or(*CONFLICT_OPTIONS),
+            Optional("on_conflict"): Or(*CONFLICT_OPTIONS),
             Optional("rename_template"): str,
         },
     )
@@ -109,23 +98,23 @@ class Copy(Action):
     def __init__(
         self,
         dest: str,
-        conflict_mode="rename_new",
+        on_conflict="rename_new",
         rename_template="{name} {counter}{extension}",
     ) -> None:
-        if conflict_mode not in CONFLICT_OPTIONS:
+        if on_conflict not in CONFLICT_OPTIONS:
             raise ValueError(
                 "conflict_mode must be one of %s" % ", ".join(CONFLICT_OPTIONS)
             )
 
         self.dest = JinjaEnv.from_string(dest)
-        self.conflict_mode = conflict_mode
+        self.conflict_mode = on_conflict
         self.rename_template = JinjaEnv.from_string(rename_template)
 
     def pipeline(self, args: dict, simulate: bool):
         src_fs = args["fs"]  # type: FS
         src_path = args["fs_path"]
 
-        dst_path = self.dst.render(**args)
+        dst_path = self.dest.render(**args)
         # if the destination ends with a slash we assume the name should not change
         if dst_path.endswith(("\\", "/")):
             dst_path = join(dst_path, basename(src_path))
@@ -133,55 +122,28 @@ class Copy(Action):
         dst_fs = open_fs(dirname(dst_path), writeable=True, create=True)
         dst_path = basename(dst_path)
 
+        if src_fs.isdir(src_path):
+            copy_action = copy_dir
+        elif src_fs.isfile(src_path):
+            copy_action = copy_file
+
+        skip = False
         if dst_fs.exists(dst_path):
             self.print(
-                'File %s already exists (conflict mode is "%s").'
+                '%s already exists (conflict mode is "%s").'
                 % (file_desc(dst_fs, dst_path), self.conflict_mode)
             )
-
-            if self.conflict_mode == "trash":
-                Trash().pipeline({"fs": dst_fs, "fs_path": dst_path}, simulate=simulate)
-                if not simulate:
-                    copy_file(src_fs, src_path, dst_fs, dst_path)
-                self.print("Copied to %s." % file_desc(dst_fs, dst_path))
-
-            elif self.conflict_mode == "skip":
-                self.print("Skipped.")
-                return
-
-            elif self.conflict_mode == "overwrite":
-                if not simulate:
-                    copy_file(src_fs, src_path, dst_fs, dst_path)
-                self.print("Copied to %s (overwritten)." % file_desc(dst_fs, dst_path))
-
-            elif self.conflict_mode == "rename_new":
-                stem, ext = splitext(dst_path)
-                name = next_free_filename(
-                    fs=dst_fs,
-                    name=stem,
-                    extension=ext,
-                    template=self.rename_template,
-                )
-                if not simulate:
-                    copy_file(src_fs, src_path, dst_fs, name)
-                self.print("Copied to %s" % file_desc(dst_fs, name))
-
-            elif self.conflict_mode == "rename_existing":
-                stem, ext = splitext(dst_path)
-                name = next_free_filename(
-                    fs=dst_fs,
-                    name=stem,
-                    extension=ext,
-                    template=self.rename_template,
-                )
-                self.print("Renaming existing file to: %s" % name)
-                if not simulate:
-                    move_file(dst_fs, dst_path, dst_fs, name)
-                    copy_file(src_fs, src_path, dst_fs, dst_path)
-                self.print("Copied to %s" % file_desc(dst_fs, dst_path))
-        else:
+            dst_fs, dst_path, skip = resolve_overwrite_conflict(
+                dst_fs=dst_fs,
+                dst_path=dst_path,
+                conflict_mode=self.conflict_mode,
+                rename_template=self.rename_template,
+                simulate=simulate,
+                print=self.print,
+            )
+        if not skip:
             if not simulate:
-                copy_file(src_fs, src_path, dst_fs, dst_path)
+                copy_action(src_fs, src_path, dst_fs, dst_path)
             self.print("Copied to %s" % file_desc(dst_fs, dst_path))
 
         # the next action should work with the newly created copy

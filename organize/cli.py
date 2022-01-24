@@ -4,9 +4,8 @@ organize -- The file management automation tool.
 Usage:
     organize sim [<config_file>]
     organize run [<config_file>]
-    organize config [--open-folder | --path | --debug] [<config_file>]
+    organize config [--open-folder | --path | --debug | --schema]
     organize list
-    organize schema
     organize --help
     organize --version
 

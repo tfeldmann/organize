@@ -44,5 +44,6 @@ class Trash(Action):
             send2trash(path)
 
     def pipeline(self, args: dict, simulate: bool):
-        path = args["path"]()
-        self.trash(path=path, simulate=simulate)
+        fs = args["fs"]
+        fs_path = args["fs_path"]
+        self.trash(path=fs.getsyspath(fs_path), simulate=simulate)

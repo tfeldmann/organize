@@ -1,6 +1,6 @@
 import logging
 from textwrap import indent
-
+from fs.osfs import OSFS
 from rich.rule import Rule
 from rich.console import Console
 from rich.panel import Panel
@@ -30,8 +30,8 @@ class Output:
     def print_location_update(self):
         if self.curr_folder != self.prev_folder:
             if self.prev_folder is not None:
-                self.print_folder_spacer()
-            self.print_folder(self.curr_folder)
+                self.print_location_spacer()
+            self.print_location(self.curr_folder)
             self.prev_folder = self.curr_folder
 
         if self.curr_path != self.prev_path:
@@ -56,10 +56,10 @@ class Output:
             self.print_not_found(folderstr)
             logger.warning("Path not found: %s", folderstr)
 
-    def print_folder_spacer(self):
+    def print_location_spacer(self):
         raise NotImplementedError
 
-    def print_folder(self, folder):
+    def print_location(self, folder):
         raise NotImplementedError
 
     def print_path(self, path):
@@ -82,10 +82,13 @@ class RichOutput(Output):
     def print_rule(self, rule):
         console.print(Rule(rule, align="left", style="gray"), style="bold")
 
-    def print_folder(self, folder):
-        console.print(str(folder), style="bold")
+    def print_location(self, folder):
+        if isinstance(folder, OSFS):
+            console.print(folder.root_path)
+        else:
+            console.print(str(folder), style="bold")
 
-    def print_folder_spacer(self):
+    def print_location_spacer(self):
         console.print()
 
     def print_path(self, path):

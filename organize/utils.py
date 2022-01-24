@@ -67,7 +67,7 @@ def file_desc(fs, path):
         return "{} on {}".format(path, fs)
 
 
-def next_free_filename(fs: FS, template: Template, name: str, extension: str) -> str:
+def next_free_name(fs: FS, template: Template, name: str, extension: str) -> str:
     counter = 1
     prev_candidate = ""
     while True:

@@ -2,14 +2,16 @@ rules:
   - name: "Find the last modification date of some png files"
     targets: dirs
     locations:
-      - path: ~/Desktop/
-        max_depth: 2
+      - path: ~/Desktop/test
+        max_depth: 0
     filters:
-      - created
-      - regex: ^.*
-      - name: "{test} {test2}"
+      - name: "more"
     actions:
       - echo: "{name}"
+      - copy:
+          dest: ~/Desktop/test/ahoi/
+          on_conflict: "skip"
+          rename_template: "{name} -- {counter}"
 
   # - name: Find some folders
   #   targets: dirs
