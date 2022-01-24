@@ -1,12 +1,11 @@
+from schema import Optional, Or
 from datetime import datetime, timedelta
-from typing import Dict, Optional
+from typing import Dict, Optional as tyOptional
 
 from .filter import Filter
 
 
 class Created(Filter):
-    name = "created"
-
     """
     Matches files by created date
 
@@ -86,6 +85,19 @@ class Created(Filter):
                   - move: '~/Documents/PDF/{created.year}/'
     """
 
+    name = "created"
+    schema_support_instance_without_args = True
+    arg_schema = {
+        Optional("years"): int,
+        Optional("months"): int,
+        Optional("weeks"): int,
+        Optional("days"): int,
+        Optional("hours"): int,
+        Optional("minutes"): int,
+        Optional("seconds"): int,
+        Optional("mode"): Or("older", "newer"),
+    }
+
     def __init__(
         self,
         years=0,
@@ -109,9 +121,10 @@ class Created(Filter):
             seconds=seconds,
         )
 
-    def pipeline(self, args: dict) -> Optional[Dict[str, datetime]]:
+    def pipeline(self, args: dict) -> tyOptional[Dict[str, datetime]]:
         fs = args["fs"]
         fs_path = args["fs_path"]
+
         file_created: datetime
         file_created = fs.getinfo(fs_path, namespaces=["details"]).created
         if file_created:

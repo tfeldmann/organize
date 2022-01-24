@@ -81,6 +81,8 @@ class FileContent(Filter):
     def pipeline(self, args: Mapping) -> Optional[Dict[str, Dict]]:
         fs = args["fs"]
         fs_path = args["fs_path"]
+        if fs.isdir(fs_path):
+            raise ValueError("Dirs not supported")
         extension = fs.getinfo(fs_path).suffix
         try:
             syspath = fs.getsyspath(fs_path)

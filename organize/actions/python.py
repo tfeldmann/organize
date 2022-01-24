@@ -1,6 +1,9 @@
 import logging
 import textwrap
-from typing import Any, Mapping, Optional, Iterable
+from typing import Any, Dict, Iterable
+from typing import Optional as tyOptional
+
+from schema import Optional, Or
 
 from .action import Action
 
@@ -61,11 +64,19 @@ class Python(Action):
                     webbrowser.open('https://www.google.com/search?q=%s' % path.stem)
     """
 
+    arg_schema = Or(
+        str,
+        {
+            "code": str,
+            Optional("run_in_simulation"): bool,
+        },
+    )
+
     def __init__(self, code, run_in_simulation=False) -> None:
         self.code = textwrap.dedent(code)
         self.run_in_simulation = run_in_simulation
 
-    def usercode(self, *args, **kwargs) -> Optional[Any]:
+    def usercode(self, *args, **kwargs):
         pass  # will be overwritten by `create_method`
 
     def create_method(self, name: str, argnames: Iterable[str], code: str) -> None:
@@ -79,7 +90,7 @@ class Python(Action):
         )
         exec(funccode, globals_, locals_)  # pylint: disable=exec-used
 
-    def pipeline(self, args: dict, simulate: bool) -> Optional[Mapping[str, Any]]:
+    def pipeline(self, args: dict, simulate: bool) -> tyOptional[Dict[str, Any]]:
         if simulate and not self.run_in_simulation:
             self.print("Code not run in simulation.", style="yellow")
             return None

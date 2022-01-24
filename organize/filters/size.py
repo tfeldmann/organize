@@ -1,6 +1,11 @@
 import operator
 import re
-from typing import Callable, Dict, Optional, Sequence, Set, Tuple
+from typing import Callable, Dict
+from typing import Optional as Opt
+from typing import Sequence, Set, Tuple
+
+from fs.filesize import binary, decimal, traditional
+from schema import Optional, Or
 
 from organize.utils import flattened_string_list, fullpath
 
@@ -20,7 +25,7 @@ SIZE_REGEX = re.compile(
 )
 
 
-def create_constrains(inp: str) -> Set[Tuple[Callable[[int, int], bool], int]]:
+def create_constraints(inp: str) -> Set[Tuple[Callable[[int, int], bool], int]]:
     """
     Given an input string it returns a list of tuples (comparison operator,
     number of bytes).
@@ -30,7 +35,7 @@ def create_constrains(inp: str) -> Set[Tuple[Callable[[int, int], bool], int]]:
     we calculate base 1024.
     """
     result = set()  # type: Set[Tuple[Callable[[int, int], bool], int]]
-    parts = inp.replace(" ", "").lower().split(",")
+    parts = str(inp).replace(" ", "").lower().split(",")
     for part in parts:
         try:
             reg_match = SIZE_REGEX.match(part)
@@ -48,11 +53,11 @@ def create_constrains(inp: str) -> Set[Tuple[Callable[[int, int], bool], int]]:
     return result
 
 
-def satisfies_constrains(size, constrains):
-    return all(op(size, p_size) for op, p_size in constrains)
+def satisfies_constraints(size, constraints):
+    return all(op(size, p_size) for op, p_size in constraints)
 
 
-class FileSize(Filter):
+class Size(Filter):
     """
     Matches files by file size
 
@@ -85,7 +90,7 @@ class FileSize(Filter):
                 actions:
                   - trash
 
-        - Move all JPEGS bigger > 1MB and <10 MB. Search all subfolders and keep the´
+        - Move all JPEGS bigger > 1MB and <10 MB. Search all subfolders and keep the
           original relative path.
 
           .. code-block:: yaml
@@ -104,24 +109,39 @@ class FileSize(Filter):
 
     """
 
-    name = "filesize"
+    name = "size"
+    arg_schema = Optional(Or(str, [str], int, [int]))
+    schema_support_instance_without_args = True
 
     def __init__(self, *conditions: Sequence[str]) -> None:
         self.conditions = ", ".join(flattened_string_list(list(conditions)))
-        self.constrains = create_constrains(self.conditions)
-        if not self.constrains:
-            raise ValueError("No size(s) given!")
+        self.constraints = create_constraints(self.conditions)
 
     def matches(self, filesize: int) -> bool:
-        return all(op(filesize, c_size) for op, c_size in self.constrains)
+        if not self.constraints:
+            return True
+        return all(op(filesize, c_size) for op, c_size in self.constraints)
 
-    def pipeline(self, args: dict) -> Optional[Dict[str, Dict[str, int]]]:
+    def pipeline(self, args: dict) -> Opt[Dict[str, Dict[str, int]]]:
         fs = args["fs"]
         fs_path = args["fs_path"]
 
-        file_size = fs.getinfo(fs_path, namespaces=["details"]).size
-        if self.matches(file_size):
-            return {"filesize": {"bytes": file_size}}
+        if fs.isdir(fs_path):
+            size = sum(
+                info.size
+                for _, info in fs.walk.info(path=fs_path, namespaces=["details"])
+            )
+        else:
+            size = fs.getinfo(fs_path, namespaces=["details"]).size
+        if self.matches(size):
+            return {
+                self.name: {
+                    "bytes": size,
+                    "traditional": traditional(size),
+                    "binary": binary(size),
+                    "decimal": decimal(size),
+                },
+            }
         return None
 
     def __str__(self) -> str:

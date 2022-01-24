@@ -7,9 +7,7 @@ from pathlib import Path
 from .filter import Filter
 
 
-class Filename(Filter):
-    name = "filename"
-
+class Name(Filter):
     """
     Match files by filename
 
@@ -81,6 +79,8 @@ class Filename(Filter):
                 actions:
                   - echo: 'Found a match.'
     """
+
+    name = "name"
 
     def __init__(
         self, match="*", *, startswith="", contains="", endswith="", case_sensitive=True

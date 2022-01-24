@@ -91,7 +91,10 @@ class MimeType(Filter):
         return any(mimetype.startswith(x) for x in self.mimetypes)
 
     def pipeline(self, args: dict):
+        fs = args["fs"]
         fs_path = args["fs_path"]
+        if fs.isdir(fs_path):
+            raise ValueError("Dirs not supported.")
         mimetype = self.mimetype(fs_path)
 
         if self.matches(mimetype):

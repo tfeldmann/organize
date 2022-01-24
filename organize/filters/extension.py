@@ -121,6 +121,8 @@ class Extension(Filter):
     def pipeline(self, args: dict):
         fs = args["fs"]
         fs_path = args["fs_path"]
+        if fs.isdir(fs_path):
+            raise ValueError("Dirs not supported")
         suffix = fs.getinfo(fs_path).suffix
         if self.matches(suffix):
             result = ExtensionResult(suffix)

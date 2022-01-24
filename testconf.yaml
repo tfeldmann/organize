@@ -1,22 +1,17 @@
 rules:
   - name: "Find the last modification date of some png files"
-    targets: files
+    targets: dirs
     locations:
-      - path: ~/Desktop/testfolder
+      - path: ~/Desktop/
+        max_depth: 2
     filters:
-      - lastmodified
-      - extension: png
+      - name:
+          startswith: "Inbo"
+      - created
+      - size
     actions:
-      - echo: "{lastmodified}"
-      - copy:
-          dest: ~/Desktop/test/more/folders/
-          conflict_mode: "rename_existing"
-          rename_template: "{name}_old_{counter}{extension}"
-      - macos_tags: "Test"
-      - python:
-          code: |
-            print(fs)
-          run_in_simulation: false
+      - echo: "{created}"
+      - echo: "{size}"
 
   # - name: Find some folders
   #   targets: dirs

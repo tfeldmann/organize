@@ -11,8 +11,6 @@ ExifDict = Mapping[str, Union[str, Mapping[str, str]]]
 
 
 class Exif(Filter):
-    name = "exif"
-
     """
     Filter by image EXIF data
 
@@ -88,6 +86,10 @@ class Exif(Filter):
                 actions:
                   - move: '~/Pictures/{exif.image.model}/'
     """
+
+    name = "exif"
+    arg_schema = None
+    schema_support_instance_without_args = True
 
     def __init__(self, *required_tags: str, **tag_filters: str) -> None:
         self.args = required_tags  # expected exif keys
