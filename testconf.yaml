@@ -2,22 +2,14 @@ rules:
   - name: "Find the last modification date of some png files"
     targets: dirs
     locations:
-      - path: ~/Desktop
+      - path: ~/Desktop/
         max_depth: 2
     filters:
       - created
-      - size
       - regex: ^.*
+      - name: "{test} {test2}"
     actions:
-      - echo: "{path}"
-      - echo: "{created}"
-      - echo: "{size}"
-      - shell:
-          cmd: "ls"
-          run_in_simulation: true
-          ignore_errors: no
-      - echo: "{shell}"
-
+      - echo: "{name}"
 
   # - name: Find some folders
   #   targets: dirs

@@ -1,7 +1,7 @@
 from typing import Any, List, Union, Optional, Dict
 
 import simplematch  # type: ignore
-
+from fs.path import basename
 from pathlib import Path
 
 from .filter import Filter
@@ -81,9 +81,16 @@ class Name(Filter):
     """
 
     name = "name"
+    schema_support_instance_without_args = True
 
     def __init__(
-        self, match="*", *, startswith="", contains="", endswith="", case_sensitive=True
+        self,
+        match="{__fullname__}",
+        *,
+        startswith="",
+        contains="",
+        endswith="",
+        case_sensitive=True,
     ) -> None:
         self.matcher = simplematch.Matcher(match, case_sensitive=case_sensitive)
         self.startswith = self.create_list(startswith, case_sensitive)
@@ -91,25 +98,27 @@ class Name(Filter):
         self.endswith = self.create_list(endswith, case_sensitive)
         self.case_sensitive = case_sensitive
 
-    def matches(self, filename: str) -> bool:
+    def matches(self, name: str) -> bool:
         if not self.case_sensitive:
-            filename = filename.lower()
+            name = name.lower()
 
         is_match = (
-            self.matcher.test(filename)
-            and any(x in filename for x in self.contains)
-            and any(filename.startswith(x) for x in self.startswith)
-            and any(filename.endswith(x) for x in self.endswith)
+            self.matcher.test(name)
+            and any(x in name for x in self.contains)
+            and any(name.startswith(x) for x in self.startswith)
+            and any(name.endswith(x) for x in self.endswith)
         )
         return is_match
 
     def pipeline(self, args: Dict) -> Optional[Dict[str, Any]]:
-        fs = args["fs"]
-        fs_path = args["fs_path"]
-        filename = fs.getinfo(fs_path).stem
-        result = self.matches(filename)
+        name = basename(args["fs_path"])
+        result = self.matches(name)
+
         if result:
-            return {"filename": self.matcher.match(filename)}
+            m = self.matcher.match(name)
+            if "__fullname__" in m:
+                m = m["__fullname__"]
+            return {self.get_name(): m}
         return None
 
     @staticmethod

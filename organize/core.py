@@ -13,7 +13,7 @@ from .actions.action import Action
 from .filters import ALL as FILTERS
 from .filters.filter import Filter
 from .output import RichOutput, console
-from .utils import deep_merge_inplace
+from .utils import deep_merge_inplace, JinjaEnv
 
 logger = logging.getLogger(__name__)
 
@@ -70,16 +70,16 @@ def instantiate_location(loc):
         walker = loc["walker"]
 
     if "fs" in loc:
-        base_fs = fs.open_fs(loc["fs"])
+        base_fs = loc["fs"]
         path = loc.get("path", "/")
     else:
-        base_fs = fs.open_fs(loc["path"])
+        base_fs = loc["path"]
         path = "/"
 
     return Location(
         walker=walker,
-        base_fs=base_fs,
-        path=path,
+        base_fs=fs.open_fs(JinjaEnv.from_string(base_fs).render(env=os.environ)),
+        path=JinjaEnv.from_string(path).render(env=os.environ),
     )
 
 
@@ -195,12 +195,12 @@ if __name__ == "__main__":
 
     conf = load_from_file("testconf.yaml")
     try:
-        console.print(CONFIG_SCHEMA.json_schema(None))
+        # console.print(CONFIG_SCHEMA.json_schema(None))
         CONFIG_SCHEMA.validate(conf)
         replace_with_instances(conf)
         run(conf, simulate=True)
     except SchemaError as e:
+        console.print("Invalid config file")
         console.print(e.autos[-1])
-        console.print(e.code)
     except Exception as e:
         console.print_exception()

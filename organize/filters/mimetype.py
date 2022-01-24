@@ -74,6 +74,7 @@ class MimeType(Filter):
     """
 
     name = "mimetype"
+    schema_support_instance_without_args = True
 
     def __init__(self, *mimetypes):
         self.mimetypes = list(map(str.lower, flatten(list(mimetypes))))

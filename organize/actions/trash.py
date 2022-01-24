@@ -31,6 +31,10 @@ class Trash(Action):
 
     name = "trash"
 
+    @classmethod
+    def get_schema(cls):
+        return cls.name
+
     def trash(self, path: str, simulate: bool):
         from send2trash import send2trash  # type: ignore
 
@@ -40,7 +44,5 @@ class Trash(Action):
             send2trash(path)
 
     def pipeline(self, args: dict, simulate: bool):
-        fs = args["fs"]
-        fs_path = args["fs_path"]
-        path = fs.getsyspath(fs_path)
+        path = args["path"]()
         self.trash(path=path, simulate=simulate)

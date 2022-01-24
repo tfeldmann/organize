@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 
 
 class Shell(Action):
-
     """
     Executes a shell command
 
