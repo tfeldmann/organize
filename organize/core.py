@@ -97,6 +97,9 @@ def instantiate_by_name(d, classes):
 
 def replace_with_instances(config):
     for rule in config["rules"]:
+        # wrap locations given as a single string in a list
+        if isinstance(rule["locations"], str):
+            rule["locations"] = [rule["locations"]]
         rule["locations"] = [instantiate_location(loc) for loc in rule["locations"]]
         # filters are optional
         rule["filters"] = [
@@ -155,32 +158,33 @@ def run(config, simulate: bool = True):
         target = rule.get("targets", "files")
         output_helper.print_rule(rule["name"])
 
-        # status_verb = "simulating" if simulate else "organizing"
-        # with console.status("[bold green]%s..." % status_verb) as status:
-        for walker, base_fs, base_path in rule["locations"]:
-            walk = walker.files if target == "files" else walker.dirs
-            for path in walk(fs=base_fs, path=base_path):
-                args = {
-                    "fs": base_fs,
-                    "fs_path": path,
-                    "path": "NOT IMPLEMENTED",  # str(base_fs.getsyspath(path)),
-                    "relative_path": fs.path.relativefrom(base_path, path),
-                    "env": os.environ,
-                    "now": datetime.now(),
-                    "utcnow": datetime.utcnow(),
-                }
-                output_helper.set_location(base_fs, path)
-                match = filter_pipeline(
-                    filters=rule["filters"],
-                    args=args,
-                )
-                if match:
-                    success = action_pipeline(
-                        actions=rule["actions"],
+        status_verb = "simulating" if simulate else "organizing"
+        with console.status("[bold green]%s..." % status_verb) as status:
+            for walker, base_fs, base_path in rule["locations"]:
+                walk = walker.files if target == "files" else walker.dirs
+                for path in walk(fs=base_fs, path=base_path):
+                    relative_path = fs.path.relativefrom(base_path, path)
+                    output_helper.set_location(base_fs, relative_path)
+                    args = {
+                        "fs": base_fs,
+                        "fs_path": path,
+                        "relative_path": relative_path,
+                        "env": os.environ,
+                        "now": datetime.now(),
+                        "utcnow": datetime.utcnow(),
+                        "path": lambda: base_fs.getsyspath(path),
+                    }
+                    match = filter_pipeline(
+                        filters=rule["filters"],
                         args=args,
-                        simulate=simulate,
                     )
-                    count[success] += 1
+                    if match:
+                        success = action_pipeline(
+                            actions=rule["actions"],
+                            args=args,
+                            simulate=simulate,
+                        )
+                        count[success] += 1
 
     if simulate:
         output_helper.print_simulation_banner()

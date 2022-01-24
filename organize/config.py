@@ -16,24 +16,27 @@ CONFIG_SCHEMA = Schema(
             {
                 Optional("name", description="The name of the rule"): And(str, len),
                 Optional("targets"): Or("dirs", "files"),
-                "locations": [
-                    Or(
-                        str,
-                        {
-                            "path": And(str, len),
-                            Optional("filesystem"): str,
-                            Optional("max_depth"): Or(int, None),
-                            Optional("search"): Or("depth", "breadth"),
-                            Optional("exclude_files"): [str],
-                            Optional("exclude_dirs"): [str],
-                            Optional("system_exlude_files"): [str],
-                            Optional("system_exclude_dirs"): [str],
-                            Optional("ignore_errors"): bool,
-                            Optional("filter"): [str],
-                            Optional("filter_dirs"): [str],
-                        },
-                    ),
-                ],
+                "locations": Or(
+                    str,
+                    [
+                        Or(
+                            str,
+                            {
+                                "path": And(str, len),
+                                Optional("filesystem"): str,
+                                Optional("max_depth"): Or(int, None),
+                                Optional("search"): Or("depth", "breadth"),
+                                Optional("exclude_files"): [str],
+                                Optional("exclude_dirs"): [str],
+                                Optional("system_exlude_files"): [str],
+                                Optional("system_exclude_dirs"): [str],
+                                Optional("ignore_errors"): bool,
+                                Optional("filter"): [str],
+                                Optional("filter_dirs"): [str],
+                            },
+                        ),
+                    ],
+                ),
                 Optional("filters"): [
                     Optional(FILTER.get_schema()) for FILTER in FILTERS.values()
                 ],
