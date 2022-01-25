@@ -9,7 +9,7 @@ from schema import Optional, Or
 
 from organize.utils import flattened_string_list, fullpath
 
-from . import Filter
+from .filter import Filter
 
 OPERATORS = {
     "<": operator.lt,
@@ -133,7 +133,7 @@ class Size(Filter):
                 for _, info in fs.walk.info(path=fs_path, namespaces=["details"])
             )
         else:
-            size = fs.getinfo(fs_path, namespaces=["details"]).size
+            size = fs.getsize(fs_path)
         if self.matches(size):
             return {
                 self.name: {

@@ -4,7 +4,7 @@ from rich.prompt import Prompt
 
 from organize.output import console
 
-from . import Action
+from .action import Action
 
 logger = logging.getLogger(__name__)
 

@@ -4,11 +4,8 @@ Duplicate detection filter.
 Based on this stackoverflow answer:
     https://stackoverflow.com/a/36113168/300783
 
-Which was updated for python3 in:
+Which I updated for python3 in:
     https://gist.github.com/tfeldmann/fc875e6630d11f2256e746f67a09c1ae
-
-The script on stackoverflow has a bug which could lead to false positives. This is fixed
-here by using a tuple (file_size, hash) as key in the comparison dictionaries.
 """
 import hashlib
 import os
@@ -18,7 +15,7 @@ from typing import Dict, List, Set, Tuple, Union
 
 from organize.utils import fullpath
 
-from . import Filter
+from .filter import Filter
 
 
 def chunk_reader(fobj, chunk_size=1024):

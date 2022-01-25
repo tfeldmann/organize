@@ -1,14 +1,14 @@
 rules:
   - name: "Find the last modification date of some png files"
-    targets: files
+    targets: dirs
     locations:
       - path: ~/Desktop/test
-        max_depth: 3
+        max_depth: null
     filters:
-      - hash:
-          algorithm: md5
+      - empty
     actions:
-      - echo: "{hash}"
+      - echo: "{path}"
+      - delete
 
   # - name: Find some folders
   #   targets: dirs

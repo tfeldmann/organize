@@ -1,4 +1,4 @@
-from . import Action
+from .action import Action
 from .confirm import Confirm
 from .copy import Copy
 from .delete import Delete

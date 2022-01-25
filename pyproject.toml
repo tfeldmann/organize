@@ -43,20 +43,18 @@ textract = { version = "^1.6.4", optional = true }
 simplematch = "^1.3"
 macos-tags = { version = "^1.5.1", markers = "sys_platform == 'darwin'" }
 schema = "^0.7.5"
+Jinja2 = "^3.0.3"
 
 [tool.poetry.extras]
 textract = ["textract"]
 
 [tool.poetry.dev-dependencies]
-pip = "^21.3.1"
-pytest = "^4.6"
-pylint = "^2.3"
-ipdb = "^0.12.0"
-sphinx = "^3.1.0"
-sphinx-rtd-theme = "^0.5.2"
+pytest = "^6.2.5"
 mypy = "^0.812"
-flake8 = "^3.9.1"
-myst-parser = "^0.16.1"
+mkdocs = "^1.2.3"
+mkdocstrings = "^0.17.0"
+mkdocs-include-markdown-plugin = "^3.2.3"
+mkdocs-autorefs = "^0.3.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

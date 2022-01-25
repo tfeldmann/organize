@@ -3,7 +3,7 @@ from typing import Dict, Optional, Union
 from pathlib import Path
 from organize.utils import flatten
 
-from . import Filter
+from .filter import Filter
 
 
 class ExtensionResult:

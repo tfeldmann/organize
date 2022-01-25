@@ -1,7 +1,7 @@
 import textwrap
 from typing import Any, Dict, Optional, Sequence
 
-from . import Filter
+from .filter import Filter
 
 
 class Python(Filter):

@@ -1,33 +1,13 @@
 import logging
 
-from . import Action
+from .action import Action
 
 logger = logging.getLogger(__name__)
 
 
 class Trash(Action):
 
-    """
-    Move a file into the trash.
-
-    Example:
-        - Move all JPGs and PNGs on the desktop which are older than one year
-          into the trash:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Desktop'
-              - filters:
-                  - lastmodified:
-                      - days: 365
-                  - extension:
-                      - png
-                      - jpg
-              - actions:
-                  - trash
-    """
+    """Move a file or dir into the trash."""
 
     name = "trash"
 

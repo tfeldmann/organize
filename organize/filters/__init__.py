@@ -1,9 +1,10 @@
 from .created import Created
 from .duplicate import Duplicate
+from .empty import Empty
 from .exif import Exif
 from .extension import Extension
 from .filecontent import FileContent
-from . import Filter
+from .filter import Filter
 from .hash import Hash
 from .lastmodified import LastModified
 from .mimetype import MimeType
@@ -15,6 +16,7 @@ from .size import Size
 FILTERS = {
     Created.name: Created,
     Duplicate.name: Duplicate,
+    Empty.name: Empty,
     Exif.name: Exif,
     Extension.name: Extension,
     FileContent.name: FileContent,

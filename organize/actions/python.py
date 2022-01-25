@@ -5,7 +5,7 @@ from typing import Optional as tyOptional
 
 from schema import Optional, Or
 
-from . import Action
+from .action import Action
 
 logger = logging.getLogger(__name__)
 

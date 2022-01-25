@@ -2,7 +2,7 @@ import mimetypes
 
 from organize.utils import flatten
 
-from . import Filter
+from .filter import Filter
 
 
 class MimeType(Filter):

@@ -4,78 +4,29 @@ import sys
 import simplematch as sm  # type: ignore
 from schema import Or
 
-from . import Action
+from .action import Action
 
 logger = logging.getLogger(__name__)
 
 
 class MacOSTags(Action):
 
+    """Add macOS tags.
+
+    Args:
+        *tags (str): A list of tags or a single tag.
+
+    The color can be specified in brackets after the tag name, for example:
+
+    ```yaml
+    macos_tags: "Invoices (red)"
+    ```
+
+    Available colors are `none`, `gray`, `green`, `purple`, `blue`, `yellow`, `red` and
+    `orange`.
+    """
+
     name = "macos_tags"
-
-    """
-    Add macOS tags.
-
-    Example:
-        - Add a single tag:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Documents/Invoices'
-              - filters:
-                  - filename:
-                      startswith: "Invoice"
-                  - extension: pdf
-              - actions:
-                  - macos_tags: Invoice
-
-        - Adding multiple tags ("Invoice" and "Important"):
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Documents/Invoices'
-              - filters:
-                  - filename:
-                      startswith: "Invoice"
-                  - extension: pdf
-              - actions:
-                  - macos_tags:
-                    - Important
-                    - Invoice
-
-        - Specify tag colors. Available colors are `none`, `gray`, `green`, `purple`, `blue`, `yellow`, `red`, `orange`.
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Documents/Invoices'
-              - filters:
-                  - filename:
-                      startswith: "Invoice"
-                  - extension: pdf
-              - actions:
-                  - macos_tags:
-                    - Important (green)
-                    - Invoice (purple)
-
-        - Add a templated tag with color:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Documents/Invoices'
-              - filters:
-                  - created
-              - actions:
-                  - macos_tags:
-                    - Year-{created.year} (red)
-    """
 
     @classmethod
     def get_schema(cls):

@@ -1,7 +1,4 @@
-*************
-Configuration
-*************
-
+# Configuration
 
 Editing the configuration
 =========================

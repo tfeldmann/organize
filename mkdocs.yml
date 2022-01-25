@@ -1,0 +1,32 @@
+site_name: organize
+nav:
+  - Home: index.md
+  - Configuration: config.md
+  - Locations: locations.md
+  - Filters: filters.md
+  - Actions: actions.md
+  - Changelog: changelog.md
+plugins:
+  - search
+  - include-markdown
+  - autorefs
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          selection:
+            members: false
+          rendering:
+            show_bases: false
+            show_root_toc_entry: false
+            show_root_heading: false
+            show_source: false
+      watch:
+        - organize
+
+markdown_extensions:
+  - toc:
+      permalink: "#"
+
+theme:
+  name: readthedocs
