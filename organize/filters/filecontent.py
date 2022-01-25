@@ -3,7 +3,7 @@ from typing import Any, Dict, Mapping, Optional
 
 from fs.errors import NoSysPath
 
-from .filter import Filter
+from . import Filter
 
 SUPPORTED_EXTENSIONS = (
     # not supported: .gif, .jpg, .mp3, .ogg, .png, .tiff, .wav

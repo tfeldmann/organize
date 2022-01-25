@@ -9,7 +9,7 @@ from schema import Optional, Or
 
 from organize.utils import flattened_string_list, fullpath
 
-from .filter import Filter
+from . import Filter
 
 OPERATORS = {
     "<": operator.lt,

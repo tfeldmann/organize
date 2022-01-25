@@ -18,7 +18,7 @@ from typing import Dict, List, Set, Tuple, Union
 
 from organize.utils import fullpath
 
-from .filter import Filter
+from . import Filter
 
 
 def chunk_reader(fobj, chunk_size=1024):

@@ -5,7 +5,7 @@ import exifread  # type: ignore
 
 from pathlib import Path
 
-from .filter import Filter
+from . import Filter
 
 ExifDict = Mapping[str, Union[str, Mapping[str, str]]]
 

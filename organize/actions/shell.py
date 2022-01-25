@@ -5,7 +5,7 @@ import subprocess
 from subprocess import PIPE
 
 from ..utils import JinjaEnv
-from .action import Action
+from . import Action
 
 logger = logging.getLogger(__name__)
 

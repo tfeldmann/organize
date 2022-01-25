@@ -1,8 +1,10 @@
 import logging
 
 from rich.prompt import Prompt
-from ..output import console
-from .action import Action
+
+from organize.output import console
+
+from . import Action
 
 logger = logging.getLogger(__name__)
 

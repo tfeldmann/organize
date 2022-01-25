@@ -1,6 +1,6 @@
 import logging
 from fs.base import FS
-from .action import Action
+from . import Action
 
 logger = logging.getLogger(__name__)
 

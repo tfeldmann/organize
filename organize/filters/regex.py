@@ -1,7 +1,7 @@
 import re
 from typing import Any, Dict, Mapping, Optional
 
-from .filter import Filter
+from . import Filter
 
 
 class Regex(Filter):

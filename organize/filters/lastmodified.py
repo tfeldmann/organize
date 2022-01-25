@@ -2,7 +2,7 @@ from schema import Or, Optional
 from datetime import datetime, timedelta
 from typing import Dict, Optional as tyOptional
 
-from .filter import Filter
+from . import Filter
 
 
 class LastModified(Filter):

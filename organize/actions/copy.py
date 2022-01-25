@@ -8,7 +8,7 @@ from schema import Optional, Or
 
 from organize.utils import JinjaEnv, file_desc
 
-from .action import Action
+from . import Action
 from .utils import CONFLICT_OPTIONS, resolve_overwrite_conflict
 
 logger = logging.getLogger(__name__)

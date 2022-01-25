@@ -23,7 +23,6 @@ CONFIG_SCHEMA = Schema(
                             str,
                             {
                                 "path": And(str, len),
-                                Optional("filesystem"): str,
                                 Optional("max_depth"): Or(int, None),
                                 Optional("search"): Or("depth", "breadth"),
                                 Optional("exclude_files"): [str],
@@ -33,6 +32,7 @@ CONFIG_SCHEMA = Schema(
                                 Optional("ignore_errors"): bool,
                                 Optional("filter"): [str],
                                 Optional("filter_dirs"): [str],
+                                Optional("filesystem"): str,
                             },
                         ),
                     ],

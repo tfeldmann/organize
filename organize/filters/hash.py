@@ -4,7 +4,7 @@ from fs.base import FS
 
 from organize.utils import JinjaEnv
 
-from .filter import Filter
+from . import Filter
 
 logger = logging.getLogger(__name__)
 
@@ -12,6 +12,8 @@ logger = logging.getLogger(__name__)
 class Hash(Filter):
 
     """
+    Calculates the hash of a file.
+
     Args:
         algorithm (str)
         Any hashing algorithm available to python's `hashlib`.

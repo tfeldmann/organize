@@ -3,7 +3,7 @@ from typing import Any, List, Union, Optional, Dict
 import simplematch  # type: ignore
 from fs import path
 
-from .filter import Filter
+from . import Filter
 
 
 class Name(Filter):

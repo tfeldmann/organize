@@ -3,7 +3,7 @@ from .duplicate import Duplicate
 from .exif import Exif
 from .extension import Extension
 from .filecontent import FileContent
-from .filter import Filter
+from . import Filter
 from .hash import Hash
 from .lastmodified import LastModified
 from .mimetype import MimeType

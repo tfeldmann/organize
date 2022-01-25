@@ -4,7 +4,7 @@ import sys
 import simplematch as sm  # type: ignore
 from schema import Or
 
-from .action import Action
+from . import Action
 
 logger = logging.getLogger(__name__)
 
