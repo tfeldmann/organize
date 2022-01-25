@@ -1,11 +1,11 @@
 site_name: organize
 nav:
   - Home: index.md
-  - Configuration: config.md
-  - Locations: locations.md
-  - Filters: filters.md
-  - Actions: actions.md
-  - Changelog: changelog.md
+  - Configuration: 01-config.md
+  - Locations: 02-locations.md
+  - Filters: 03-filters.md
+  - Actions: 04-actions.md
+  - Changelog: 05-changelog.md
 plugins:
   - search
   - include-markdown

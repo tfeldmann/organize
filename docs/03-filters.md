@@ -1,5 +1,8 @@
 # Filters
 
+This page shows the specifics of each filter. For basic filter usage and options have a
+look at the [Config](01-config.md) section.
+
 ## created
 
 ::: organize.filters.Created

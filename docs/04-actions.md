@@ -1,5 +1,8 @@
 # Actions
 
+This page shows the specifics of each action. For basic action usage and options have a
+look at the [Config](01-config.md) section.
+
 ## copy
 
 ::: organize.actions.copy.Copy
