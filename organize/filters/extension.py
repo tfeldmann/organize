@@ -23,8 +23,6 @@ class ExtensionResult:
 
 
 class Extension(Filter):
-    name = "extension"
-
     """
     Filter by file extension
 

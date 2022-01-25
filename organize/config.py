@@ -4,8 +4,8 @@ import yaml
 from rich.console import Console
 from schema import And, Optional, Or, Schema, SchemaError, Literal
 
-from organize.actions import ALL as ACTIONS
-from organize.filters import ALL as FILTERS
+from organize.actions import ACTIONS
+from organize.filters import FILTERS
 
 console = Console()
 
@@ -14,7 +14,7 @@ CONFIG_SCHEMA = Schema(
         Optional("version"): int,
         "rules": [
             {
-                Optional("name", description="The name of the rule"): And(str, len),
+                Optional("name", description="The name of the rule"): str,
                 Optional("targets"): Or("dirs", "files"),
                 "locations": Or(
                     str,

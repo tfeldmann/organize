@@ -8,9 +8,9 @@ from fs.base import FS
 from fs.walk import Walker
 from schema import SchemaError
 
-from .actions import ALL as ACTIONS
+from .actions import ACTIONS
 from .actions.action import Action
-from .filters import ALL as FILTERS
+from .filters import FILTERS
 from .filters.filter import Filter
 from .output import RichOutput, console
 from .utils import deep_merge_inplace, JinjaEnv, ensure_list

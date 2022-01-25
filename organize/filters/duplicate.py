@@ -42,8 +42,6 @@ def get_hash(filename, first_chunk_only=False, hash_algo=hashlib.sha1):
 
 
 class Duplicate(Filter):
-    name = "duplicate"
-
     """
     Finds duplicate files.
 
@@ -70,6 +68,8 @@ class Duplicate(Filter):
                 actions:
                 - echo: "{path} is a duplicate of {duplicate}"
     """
+
+    name = "duplicate"
 
     def __init__(self) -> None:
         self.files_for_size = defaultdict(list)  # type: DDict[int, List[str]]

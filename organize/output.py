@@ -92,7 +92,9 @@ class RichOutput(Output):
         console.print()
 
     def print_path(self, path):
-        console.print(indent(str(path), " " * 2), style="purple bold")
+        # "page_facing_up": "📄",
+        #    "file_folder": "📁",
+        console.print(indent(":file_folder: %s" % path, " " * 2), style="purple bold")
 
     def print_not_found(self, path):
         msg = "Path not found: {}".format(path)

@@ -5,10 +5,10 @@ rules:
       - path: ~/Desktop/test
         max_depth: 3
     filters:
-      - name: "Bildschirmfoto {date} um {time}_*"
-      - extension: png
+      - hash:
+          algorithm: md5
     actions:
-      - move: "~/Desktop/Fotos/{name}.png"
+      - echo: "{hash}"
 
   # - name: Find some folders
   #   targets: dirs

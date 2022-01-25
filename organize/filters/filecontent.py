@@ -12,8 +12,6 @@ SUPPORTED_EXTENSIONS = (
 
 
 class FileContent(Filter):
-    name = "filecontent"
-
     r"""
     Matches file content with the given regular expression
 
@@ -54,6 +52,8 @@ class FileContent(Filter):
                 actions:
                   - move: '~/Documents/Invoices/{filecontent.customer}/'
     """
+
+    name = "filecontent"
 
     def __init__(self, expr) -> None:
         self.expr = re.compile(expr, re.MULTILINE | re.DOTALL)

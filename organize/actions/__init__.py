@@ -1,3 +1,4 @@
+from .action import Action
 from .confirm import Confirm
 from .copy import Copy
 from .delete import Delete
@@ -9,7 +10,7 @@ from .rename import Rename
 from .shell import Shell
 from .trash import Trash
 
-ALL = {
+ACTIONS = {
     Confirm.name: Confirm,
     Copy.name: Copy,
     Delete.name: Delete,
