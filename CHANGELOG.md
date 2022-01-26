@@ -7,27 +7,35 @@ Please backup all your important stuff before running.
 
 ### what's new
 
-- completely rewritten core!
-- respects your rule order - safer, less magic, less surprises.
+- Completely rewritten core!
+- Respects your rule order - safer, less magic, less surprises.
   (v1 tried to be clever. v2 now works your config file from top to bottom)
-- Now you can organize (S)FTP, S3 Buckets, Zip archives and many more!
-  (https://www.pyfilesystem.org/page/index-of-filesystems/)
-- Most of the actions like `move` and `copy` even work across file systems!
-- You can now target folders with your rules! Like copying a whole folder, renaming etc.
+- Now you can organize (S)FTP, S3 Buckets, Zip archives and many more.
+  - Most of the actions like `move` and `copy` even work across file systems!
+  - [Available filesystems](https://www.pyfilesystem.org/page/index-of-filesystems/)
+- You can now target folders with your rules. Like copying a whole folder, renaming etc.
 - `max_depth` setting when recursing into subfolders
-- starts instantly (does not need to gather all the folders before starting)
-- nice terminal output and rule names
+- starts instantly (does not need to gather all the files before starting)
+- nice terminal output
+- rule names
 - cleaner config file validation and stricter format
-- "confirm" and "prompt" action
-- `rename_template` option in `move` and `copy`
 - option to run `python` actions in simulation
+- added `empty` filter.
+- new conflict resolution settings in `move`, `copy` and `rename` action:
+  `skip`, `overwrite`, `trash`, `rename_new`, `rename_existing` as well as a
+  `rename_template` parameter.
+- the `shell` action now returns stdout and errorcode.
 
 ### changed
 
-- The config file format got a long due overhaul. Please see the migration documentation
-  for what is new.
+- The config file format got a long due overhaul. Please see the
+  [migration documentation](docs/06-updating-from-v1.md) for what is new.
 - The `timezone` keyword for `lastmodified` and `created` was removed. The timezone is
   now the local timezone by default.
+- The `filesize` filter was renamed to `size` and can now be used to get directory sizes
+  as well.
+- The `filename` filter was renamed to `name` and can now be used to get directory names
+  as well.
 
 ### removed
 

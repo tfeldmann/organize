@@ -6,6 +6,7 @@ nav:
   - Filters: 03-filters.md
   - Actions: 04-actions.md
   - Changelog: 05-changelog.md
+  - Updating from organize v1.x: 06-updating-from-v1.md
 plugins:
   - search
   - include-markdown
