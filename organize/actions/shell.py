@@ -4,7 +4,7 @@ import logging
 import subprocess
 from subprocess import PIPE
 
-from ..utils import JinjaEnv
+from ..utils import Template
 from .action import Action
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ class Shell(Action):
     )
 
     def __init__(self, cmd: str, run_in_simulation=False, ignore_errors=False):
-        self.cmd = JinjaEnv.from_string(cmd)
+        self.cmd = Template.from_string(cmd)
         self.run_in_simulation = run_in_simulation
         self.ignore_errors = ignore_errors
 

@@ -10,6 +10,12 @@ something I want to half-ass.
 So if you want all the new goodies, you'll need to do some changes in your config.
 Otherwise feel free to pin organize to the latest v1.x.
 
+<!--
+Alternative for
+{created.year}-{created.month:02}-{created.day:02}
+
+-->
+
 ## Config
 
 - `folders` must be renamed to `locations`. New options: [Locations](02-locations.md).

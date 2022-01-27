@@ -2,7 +2,7 @@ import logging
 
 from fs.base import FS
 
-from organize.utils import JinjaEnv
+from organize.utils import Template
 
 from .filter import Filter
 
@@ -41,7 +41,7 @@ class Hash(Filter):
     name = "hash"
 
     def __init__(self, algorithm="md5"):
-        self.algorithm = JinjaEnv.from_string(algorithm)
+        self.algorithm = Template.from_string(algorithm)
 
     def pipeline(self, args: dict):
         fs = args["fs"]  # type: FS

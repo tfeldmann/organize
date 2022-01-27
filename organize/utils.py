@@ -7,9 +7,17 @@ from typing import Any, Hashable, List, Sequence, Union
 from fs.base import FS
 from fs.osfs import OSFS
 from fs.errors import NoSysPath
-from jinja2 import Environment, Template
+from jinja2 import Environment
+from jinja2.nativetypes import NativeEnvironment
 
-JinjaEnv = Environment(
+Template = Environment(
+    variable_start_string="{",
+    variable_end_string="}",
+    finalize=lambda x: x() if callable(x) else x,
+    autoescape=False,
+)
+
+NativeTemplate = NativeEnvironment(
     variable_start_string="{",
     variable_end_string="}",
     finalize=lambda x: x() if callable(x) else x,

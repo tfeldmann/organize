@@ -2,12 +2,17 @@ rules:
   - name: "Find the last modification date of some png files"
     targets: files
     locations:
-      - path: ~/Desktop/test
+      - path: ~/Desktop/Testfolder
         max_depth: null
+      - path: "~/Desktop/Testfolder 2"
+        max_depth: null
+      - filesystem: zip:///Users/thomasfeldmann/Desktop/Testfolder.zip
+        max_depth: null
+        path: "/"
     filters:
-      - name
+      - duplicate
     actions:
-      - symlink: ~/Desktop/symlinks/{name}{name}
+      - echo: "{fs_path}"
 
   # - name: Find some folders
   #   targets: dirs

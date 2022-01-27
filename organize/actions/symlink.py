@@ -4,7 +4,7 @@ from fs.base import FS
 from fs import path
 from fs.osfs import OSFS
 from .action import Action
-from organize.utils import JinjaEnv
+from organize.utils import Template
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ class Symlink(Action):
     name = "symlink"
 
     def __init__(self, dest):
-        self._dest = JinjaEnv.from_string(dest)
+        self._dest = Template.from_string(dest)
 
     def pipeline(self, args: dict, simulate: bool):
         fs = args["fs"]  # type: FS

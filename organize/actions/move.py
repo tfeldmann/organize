@@ -6,7 +6,7 @@ from fs.move import move_dir, move_file
 from fs.path import basename, dirname, join
 from schema import Optional, Or
 
-from organize.utils import JinjaEnv, file_desc
+from organize.utils import Template, file_desc
 
 from .action import Action
 from .utils import CONFLICT_OPTIONS, resolve_overwrite_conflict
@@ -112,9 +112,9 @@ class Move(Action):
                 "on_conflict must be one of %s" % ", ".join(CONFLICT_OPTIONS)
             )
 
-        self.dest = JinjaEnv.from_string(dest)
+        self.dest = Template.from_string(dest)
         self.conflict_mode = on_conflict
-        self.rename_template = JinjaEnv.from_string(rename_template)
+        self.rename_template = Template.from_string(rename_template)
         self.dest_filesystem = dest_filesystem
 
     def pipeline(self, args: dict, simulate: bool):
@@ -130,7 +130,7 @@ class Move(Action):
             dst_fs_ = self.dest_filesystem
             # render if we have a template
             if isinstance(dst_fs_, str):
-                dst_fs_ = JinjaEnv.from_string(dst_fs_).render(**args)
+                dst_fs_ = Template.from_string(dst_fs_).render(**args)
             dst_fs = open_fs(dst_fs_, writeable=True, create=True)
             dst_path = dst_path
         else:

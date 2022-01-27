@@ -13,7 +13,7 @@ from .actions.action import Action
 from .filters import FILTERS
 from .filters.filter import Filter
 from .output import RichOutput, console
-from .utils import deep_merge_inplace, JinjaEnv, ensure_list
+from .utils import deep_merge_inplace, Template, ensure_list
 
 logger = logging.getLogger(__name__)
 
@@ -69,8 +69,8 @@ def instantiate_location(loc):
     else:
         walker = loc["walker"]
 
-    if "fs" in loc:
-        base_fs = loc["fs"]
+    if "filesystem" in loc:
+        base_fs = loc["filesystem"]
         path = loc.get("path", "/")
     else:
         base_fs = loc["path"]
@@ -78,8 +78,8 @@ def instantiate_location(loc):
 
     return Location(
         walker=walker,
-        base_fs=fs.open_fs(JinjaEnv.from_string(base_fs).render(env=os.environ)),
-        path=JinjaEnv.from_string(path).render(env=os.environ),
+        base_fs=fs.open_fs(Template.from_string(base_fs).render(env=os.environ)),
+        path=Template.from_string(path).render(env=os.environ),
     )
 
 
@@ -200,7 +200,7 @@ if __name__ == "__main__":
         # console.print(CONFIG_SCHEMA.json_schema(None))
         CONFIG_SCHEMA.validate(conf)
         replace_with_instances(conf)
-        run(conf, simulate=False)
+        run(conf, simulate=True)
     except SchemaError as e:
         console.print("Invalid config file")
         console.print(e.autos[-1])

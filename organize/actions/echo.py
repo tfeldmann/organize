@@ -4,7 +4,7 @@ from .action import Action
 
 logger = logging.getLogger(__name__)
 
-from ..utils import JinjaEnv
+from ..utils import Template
 
 
 class Echo(Action):
@@ -25,7 +25,7 @@ class Echo(Action):
         return {cls.name: str}
 
     def __init__(self, msg) -> None:
-        self.msg = JinjaEnv.from_string(msg)
+        self.msg = Template.from_string(msg)
         self.log = logging.getLogger(__name__)
 
     def pipeline(self, args: dict, simulate: bool) -> None:

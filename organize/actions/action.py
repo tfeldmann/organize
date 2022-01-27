@@ -6,10 +6,6 @@ class Error(Exception):
     pass
 
 
-class TemplateAttributeError(Error):
-    pass
-
-
 class Action:
     print_hook = None  # type: Optional[Callable]
     print_error_hook = None  # type: Optional[Callable]
@@ -59,16 +55,6 @@ class Action:
     def print_error(self, msg: str):
         if callable(self.print_error_hook):
             self.print_error_hook(name=self.name, msg=msg)
-
-    @staticmethod
-    def fill_template_tags(msg: str, args) -> str:
-        try:
-            return msg.format(**args)
-        except AttributeError as exc:
-            cause = exc.args[0]
-            raise TemplateAttributeError(
-                'Missing template variable %s for "%s"' % (cause, msg)
-            )
 
     def __str__(self) -> str:
         return self.__class__.__name__

@@ -6,7 +6,7 @@ from fs.base import FS
 from fs.move import move_dir, move_file
 from schema import Optional, Or
 
-from organize.utils import JinjaEnv, file_desc
+from organize.utils import Template, file_desc
 
 from .action import Action
 from .utils import CONFLICT_OPTIONS, resolve_overwrite_conflict
@@ -79,9 +79,9 @@ class Rename(Action):
                 "on_conflict must be one of %s" % ", ".join(CONFLICT_OPTIONS)
             )
 
-        self.new_name = JinjaEnv.from_string(new_name)
+        self.new_name = Template.from_string(new_name)
         self.conflict_mode = on_conflict
-        self.rename_template = JinjaEnv.from_string(rename_template)
+        self.rename_template = Template.from_string(rename_template)
 
     def pipeline(self, args: dict, simulate: bool):
         fs = args["fs"]  # type: FS
