@@ -47,23 +47,6 @@ class Duplicate(Filter):
 
     :returns:
         - ``{duplicate}`` -- path to the duplicate source
-
-    Examples:
-        - Show all duplicate files in your desktop and download folder (and their
-          subfolders).
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-            - folders:
-                - ~/Desktop
-                - ~/Downloads
-                subfolders: true
-                filters:
-                - duplicate
-                actions:
-                - echo: "{path} is a duplicate of {duplicate}"
     """
 
     name = "duplicate"

@@ -5,7 +5,7 @@ from .filter import Filter
 
 class Empty(Filter):
 
-    """Only lets through empty dirs and folders"""
+    """Finds empty dirs and files"""
 
     name = "empty"
 

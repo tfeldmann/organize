@@ -20,7 +20,7 @@ Otherwise feel free to pin organize to the latest v1.x.
 - the `subfolders` setting is removed and replaced by the `max_depth` setting
   of a specific location.
 - You can now name your rules via `name`.
-- The `enabled` setting has been removed. # TODO
+- The `enabled` setting has been removed. # TODO: ?
 
 organize v1.x:
 

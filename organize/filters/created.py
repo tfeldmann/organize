@@ -7,82 +7,23 @@ from .filter import Filter
 
 class Created(Filter):
     """
-    Matches files by created date
+    Matches files / folders by created date
 
-    :param int years:
-        specify number of years
+    Args:
+        years (int): specify number of years
+        months (int): specify number of months
+        weeks (float): specify number of weeks
+        days (float): specify number of days
+        hours (float): specify number of hours
+        minutes (float): specify number of minutes
+        seconds (float): specify number of seconds
+        mode (str):
+            either 'older' or 'newer'. 'older' matches all files created before the given
+            time, 'newer' matches all files created within the given time.
+            (default = 'older')
 
-    :param int months:
-        specify number of months
-
-    :param float weeks:
-        specify number of weeks
-
-    :param float days:
-        specify number of days
-
-    :param float hours:
-        specify number of hours
-
-    :param float minutes:
-        specify number of minutes
-
-    :param float seconds:
-        specify number of seconds
-
-    :param str mode:
-        either 'older' or 'newer'. 'older' matches all files created before the given
-        time, 'newer' matches all files created within the given time.
-        (default = 'older')
-
-    :returns:
-        - ``{created.year}`` -- the year the file was created
-        - ``{created.month}`` -- the month the file was created
-        - ``{created.day}`` -- the day the file was created
-        - ``{created.hour}`` -- the hour the file was created
-        - ``{created.minute}`` -- the minute the file was created
-        - ``{created.second}`` -- the second the file was created
-
-    Examples:
-        - Show all files on your desktop created at least 10 days ago:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Desktop'
-                filters:
-                  - created:
-                      days: 10
-                actions:
-                  - echo: 'Was created at least 10 days ago'
-
-        - Show all files on your desktop which were created within the last 5 hours:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Desktop'
-                filters:
-                  - created:
-                      hours: 5
-                      mode: newer
-                actions:
-                  - echo: 'Was created within the last 5 hours'
-
-        - Sort pdfs by year of creation:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Documents'
-                filters:
-                  - extension: pdf
-                  - created
-                actions:
-                  - move: '~/Documents/PDF/{created.year}/'
+    Returns:
+        {created}: The datetime the file / dir was created.
     """
 
     name = "created"

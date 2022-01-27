@@ -7,9 +7,58 @@ look at the [Config](01-config.md) section.
 
 ::: organize.filters.Created
 
+**Examples**
+
+```yaml
+- : rules:
+      - name: Show all files on your desktop created at least 10 days ago
+        folders: "~/Desktop"
+        filters:
+          - created:
+              days: 10
+        actions:
+          - echo: "Was created at least 10 days ago"
+```
+
+```yaml
+rules:
+  - name: Show all files on your desktop which were created within the last 5 hours
+    folders: "~/Desktop"
+    filters:
+      - created:
+          hours: 5
+          mode: newer
+    actions:
+      - echo: "Was created within the last 5 hours"
+```
+
+```yaml
+rules:
+  - name: Sort pdfs by year of creation
+    folders: "~/Documents"
+    filters:
+      - extension: pdf
+      - created
+    actions:
+      - move: "~/Documents/PDF/{created.year}/"
+```
+
 ## duplicate
 
 ::: organize.filters.Duplicate
+
+```yaml
+rules:
+  - name: Show all duplicate files in your desktop and download folder (and their subfolders)
+    folders:
+      - ~/Desktop
+      - ~/Downloads
+    subfolders: true
+    filters:
+      - duplicate
+    actions:
+      - echo: "{path} is a duplicate of {duplicate}"
+```
 
 ## empty
 
