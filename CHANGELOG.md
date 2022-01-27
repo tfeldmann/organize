@@ -25,6 +25,7 @@ Please backup all your important stuff before running.
   `skip`, `overwrite`, `trash`, `rename_new`, `rename_existing` as well as a
   `rename_template` parameter.
 - the `shell` action now returns stdout and errorcode.
+- Added `symlink` action
 
 ### changed
 

@@ -8,6 +8,7 @@ from .move import Move
 from .python import Python
 from .rename import Rename
 from .shell import Shell
+from .symlink import Symlink
 from .trash import Trash
 
 ACTIONS = {
@@ -20,5 +21,6 @@ ACTIONS = {
     Python.name: Python,
     Rename.name: Rename,
     Shell.name: Shell,
+    Symlink.name: Symlink,
     Trash.name: Trash,
 }

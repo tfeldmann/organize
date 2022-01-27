@@ -71,7 +71,7 @@ rules:
       - delete
 ```
 
-````yaml
+```yaml
 rules:
   - name: Delete all empty subfolders
     locations:
@@ -99,7 +99,7 @@ rules:
           days: 365
     actions:
       - echo: "Found old file"
-````
+```
 
 Prints "Hello World!" and filepath for each file on the desktop:
 
@@ -222,6 +222,10 @@ rules:
 ## shell
 
 ::: organize.actions.Shell
+
+## symlink
+
+::: organize.actions.Symlink
 
 ## trash
 

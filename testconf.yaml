@@ -1,14 +1,13 @@
 rules:
   - name: "Find the last modification date of some png files"
-    targets: dirs
+    targets: files
     locations:
       - path: ~/Desktop/test
         max_depth: null
     filters:
-      - empty
+      - name
     actions:
-      - echo: "{path}"
-      - delete
+      - symlink: ~/Desktop/symlinks/{name}{name}
 
   # - name: Find some folders
   #   targets: dirs
