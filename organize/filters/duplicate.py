@@ -8,34 +8,37 @@ Which I updated for python3 in:
     https://gist.github.com/tfeldmann/fc875e6630d11f2256e746f67a09c1ae
 """
 import hashlib
-import os
 from collections import defaultdict
-from typing import DefaultDict as DDict
-from typing import Dict, List, Set, Tuple, Union
-
-from organize.utils import fullpath
+from fs.base import FS
+from typing import Dict, Set, Union, NamedTuple
+from organize.output import console
 
 from .filter import Filter
 
-
-def chunk_reader(fobj, chunk_size=1024):
-    """Generator that reads a file in chunks of bytes"""
-    while True:
-        chunk = fobj.read(chunk_size)
-        if not chunk:
-            return
-        yield chunk
+HASH_ALGORITHM = "sha1"
 
 
-def get_hash(filename, first_chunk_only=False, hash_algo=hashlib.sha1):
-    hashobj = hash_algo()
-    with open(filename, "rb") as f:
-        if first_chunk_only:
-            hashobj.update(f.read(1024))
-        else:
-            for chunk in chunk_reader(f):
-                hashobj.update(chunk)
-    return hashobj.digest()
+class File(NamedTuple):
+    fs: FS
+    path: str
+
+
+def getsize(f: File):
+    return f.fs.getsize(f.path)
+
+
+def full_hash(f: File):
+    return f.fs.hash(f.path, name=HASH_ALGORITHM)
+
+
+def first_chunk_hash(f: File):
+    hash_object = hashlib.new(HASH_ALGORITHM)
+    with f.fs.openbin(f.path) as file_:
+        hash_object.update(file_.read(1024))
+    return hash_object.hexdigest()
+
+
+ORDER_BY = ("location", "created", "lastmodified", "name")
 
 
 class Duplicate(Filter):
@@ -50,79 +53,80 @@ class Duplicate(Filter):
     """
 
     name = "duplicate"
+    schema_support_instance_without_args = True
 
-    def __init__(self) -> None:
-        self.files_for_size = defaultdict(list)  # type: DDict[int, List[str]]
+    def __init__(self, order_by="location") -> None:
+        self.files_for_size = defaultdict(list)
+        self.files_for_size  # type: DDict[int, List[PyFSFile]]
 
-        # to prevent false positives the keys must be tuples of (file_size, hash).
-        self.files_for_small_hash = defaultdict(
-            list
-        )  # type: DDict[Tuple[int, bytes], List[str]]
-        self.file_for_full_hash = dict()  # type: Dict[Tuple[int, bytes], str]
+        self.files_for_chunk = defaultdict(list)
+        self.files_for_chunk  # type: Dict[str, List[PyFSFile]]
 
-        # we keep track of which files we already computed the hashes for so we only do
+        self.file_for_hash = dict()
+        self.file_for_hash  # type: Dict[str, PyFSFile]
+
+        # we keep track of the files we already computed the hashes for so we only do
         # that once.
-        self.small_hash_known = set()  # type: Set[str]
-        self.full_hash_known = set()  # type: Set[str]
+        self.first_chunk_known = set()  # type: Set[PyFSFile]
+        self.hash_known = set()  # type: Set[PyFSFile]
 
-    def matches(self, path: str) -> Union[bool, Dict[str, str]]:
-        # the exact same path has already been handled. This might happen if path is a
-        # symlink which resolves to file that is already known. We skip these.
-        if path in self.small_hash_known:
+    def matches(self, fs: FS, path: str) -> Union[bool, Dict[str, str]]:
+        file_ = File(fs=fs, path=path)
+        # the exact same path has already been handled. This happens if multiple
+        # locations emit this file in a single rule. We skip these.
+        if file_ in self.first_chunk_known:
             return False
 
         # check for files with equal size
-        file_size = os.path.getsize(path)  # type: int
+        file_size = getsize(file_)
         same_size = self.files_for_size[file_size]
-        candidates_fsize = same_size[:]
-        same_size.append(path)
-        if not candidates_fsize:
+        same_size.append(file_)
+        if len(same_size) == 1:
             # the file is unique in size and cannot be a duplicate
             return False
 
-        # for all other files with the same file size, get their hash of the first 1024
-        # bytes
-        for c in candidates_fsize:
-            if c not in self.small_hash_known:
-                try:
-                    c_small_hash = get_hash(c, first_chunk_only=True)
-                    self.files_for_small_hash[(file_size, c_small_hash)].append(c)
-                    self.small_hash_known.add(c)
-                except OSError:
-                    pass
+        # for all other files with the same file size:
+        # make sure we know their hash of their first 1024 byte chunk
+        for f in same_size[:-1]:
+            if f not in self.first_chunk_known:
+                chunk_hash = first_chunk_hash(f)
+                self.first_chunk_known.add(f)
+                self.files_for_chunk[chunk_hash].append(f)
 
-        # check small hash collisions with the current file
-        small_hash = get_hash(path, first_chunk_only=True)
-        same_small_hash = self.files_for_small_hash[(file_size, small_hash)]
-        candidates_shash = same_small_hash[:]
-        same_small_hash.append(path)
-        self.small_hash_known.add(path)
-        if not candidates_shash:
+        # check first chunk hash collisions with the current file
+        chunk_hash = first_chunk_hash(file_)
+        same_first_chunk = self.files_for_chunk[chunk_hash]
+        same_first_chunk.append(file_)
+        self.first_chunk_known.add(file_)
+        if len(same_first_chunk) == 1:
             # the file has a unique small hash and cannot be a duplicate
             return False
 
-        # For all other files with the same file size and small hash get the full hash
-        for c in candidates_shash:
-            if c not in self.full_hash_known:
-                try:
-                    c_full_hash = get_hash(c, first_chunk_only=False)
-                    self.file_for_full_hash[(file_size, c_full_hash)] = c
-                    self.full_hash_known.add(c)
-                except OSError:
-                    pass
+        # Ensure we know the full hashes of all files with the same first chunk as
+        # the investigated file
+        for f in same_first_chunk[:-1]:
+            if f not in self.hash_known:
+                hash_ = full_hash(f)
+                self.hash_known.add(f)
+                self.file_for_hash[hash_] = f
 
         # check full hash collisions with the current file
-        full_hash = get_hash(path, first_chunk_only=False)
-        duplicate = self.file_for_full_hash.get((file_size, full_hash))
-        if duplicate:
-            return {"duplicate": duplicate}
-        self.file_for_full_hash[(file_size, full_hash)] = path
+        hash_ = full_hash(file_)
+        original = self.file_for_hash.get(hash_)
+        if original:
+            return {"duplicate": original}
+
         return False
 
     def pipeline(self, args):
         fs = args["fs"]
         fs_path = args["fs_path"]
-        return self.matches(fs.getsyspath(fs_path))
+        if fs.isdir(fs_path):
+            raise EnvironmentError("Dirs are not supported")
+        try:
+            return self.matches(fs=fs, path=fs_path)
+        except Exception:
+            console.print_exception()
 
     def __str__(self) -> str:
         return "Duplicate()"
