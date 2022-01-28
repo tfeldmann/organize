@@ -23,11 +23,15 @@ class Filter:
         return cls.__name__.lower()
 
     @classmethod
-    def get_schema(cls):
-        name = Schema(
+    def get_name_schema(cls):
+        return Schema(
             Or("not " + cls.get_name(), cls.get_name()),
             description=cls.get_description(),
         )
+
+    @classmethod
+    def get_schema(cls):
+        name = cls.get_name_schema()
 
         if cls.arg_schema:
             arg_schema = cls.arg_schema

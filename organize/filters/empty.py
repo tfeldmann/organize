@@ -11,7 +11,7 @@ class Empty(Filter):
 
     @classmethod
     def get_schema(cls):
-        return cls.name
+        return cls.get_name_schema()
 
     def pipeline(self, args: dict) -> FilterResult:
         fs = args["fs"]  # type: FS

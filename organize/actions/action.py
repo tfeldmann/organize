@@ -44,7 +44,7 @@ class Action:
     def run(self, **kwargs) -> tyOptional[Dict[str, Any]]:
         return self.pipeline(kwargs)
 
-    def pipeline(self, args: dict) -> tyOptional[Dict[str, Any]]:
+    def pipeline(self, args: dict, simulate: bool) -> tyOptional[Dict[str, Any]]:
         raise NotImplementedError
 
     def print(self, msg, *args, **kwargs) -> None:

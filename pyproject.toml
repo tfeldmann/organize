@@ -50,11 +50,17 @@ textract = ["textract"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
-mypy = "^0.812"
+mypy = "^0.931"
 mkdocs = "^1.2.3"
 mkdocstrings = "^0.17.0"
 mkdocs-include-markdown-plugin = "^3.2.3"
 mkdocs-autorefs = "^0.3.1"
+
+[tool.mypy]
+
+[[tool.mypy.overrides]]
+module = ["schema"]
+ignore_missing_imports = true
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
