@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Thomas Feldmann">
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Updating from organize v1.x - organize</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Updating from organize v1.x";
+    var mkdocs_page_input_path = "06-updating-from-v1.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> organize</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../01-config/">Configuration</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../02-locations/">Locations</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../03-filters/">Filters</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../04-actions/">Actions</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../05-changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Updating from organize v1.x</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#config">Config</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#filters">Filters</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#actions">Actions</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">organize</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Updating from organize v1.x</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/tfeldmann/organize/edit/master/docs/06-updating-from-v1.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="updating-from-organize-v1x">Updating from organize v1.x<a class="headerlink" href="#updating-from-organize-v1x" title="Permanent link">#</a></h1>
+<p>First of all, thank you for being a long time user of <code>organize</code>.</p>
+<p>As this project is only maintained by the single person writing this article it is not
+feasible to write an automatic config file migration or a compatibility layer.
+Many people use organize for important documents and personal files, this is not
+something I want to half-ass.</p>
+<p>So if you want all the new goodies, you'll need to do some changes in your config.
+Otherwise feel free to pin organize to the latest v1.x.</p>
+<!--
+Alternative for
+{created.year}-{created.month:02}-{created.day:02}
+
+-->
+
+<h2 id="config">Config<a class="headerlink" href="#config" title="Permanent link">#</a></h2>
+<ul>
+<li><code>folders</code> must be renamed to <code>locations</code>. New options: <a href="../02-locations/">Locations</a>.</li>
+<li>the <strong>glob syntax</strong> (eg. <code>"~/Documents/**"</code>) has been removed.</li>
+<li>the <strong>exclamation mark exclude</strong> (eg. <code>"! ~/Desktop"</code>) syntax has been removed.</li>
+<li>They are replaced by the <code>max_depth</code>, <code>exclude_files</code>, <code>exclude_dirs</code>, <code>filter</code> and
+    <code>filter_dirs</code> settings. See <a href="../02-locations/">Locations</a>.</li>
+<li>the <code>subfolders</code> setting is removed and replaced by the <code>max_depth</code> setting
+  of a specific location.</li>
+<li>You can now name your rules via <code>name</code>.</li>
+<li>The <code>enabled</code> setting has been removed. # TODO: ?</li>
+</ul>
+<p>organize v1.x:</p>
+<pre><code class="language-yaml">rules:
+  # find some pdf files in various dirs and echo &quot;Hello&quot; for each one
+  - folders:
+      - &quot;~/Desktop/**/*.pdf&quot;
+      - &quot;! ~/Desktop/donotmove/*&quot;
+    subfolders: true
+    ...
+
+  # move all pdfs into documents
+  - folders:
+      - &quot;~/Downloads/*.pdf&quot;
+    ...
+</code></pre>
+<p>becomes (organize v2.x)</p>
+<pre><code class="language-yaml">rules:
+  - name: find some pdf files in various dirs and echo &quot;Hello&quot; for each one
+    locations:
+      - path: ~/Desktop/
+        max_depth: null
+        filter: &quot;*.pdf&quot;
+        exclude_dirs: donotmove
+    ...
+
+  - name: move all pdfs into documents
+    locations: &quot;~/Downloads&quot;
+    filters:
+      - extension: pdf
+    ...
+</code></pre>
+<h2 id="filters">Filters<a class="headerlink" href="#filters" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="../03-filters/#created"><code>created</code></a> no longer accepts a timezone and uses the local timezone by default.</li>
+<li><a href="../03-filters/#lastmodified"><code>lastmodified</code></a> no longer accepts a timezone and uses the local timezone by default.</li>
+<li><a href="../03-filters/#name"><code>filename</code></a> is renamed to <code>name</code>.</li>
+<li><a href="../03-filters/#size"><code>filesize</code></a> is renamed to <code>size</code>.</li>
+</ul>
+<h2 id="actions">Actions<a class="headerlink" href="#actions" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="../04-actions/#copy"><code>copy</code></a> arguments changed.</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../05-changelog/" class="btn btn-neutral" title="Changelog"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/tfeldmann/organize/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../05-changelog/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

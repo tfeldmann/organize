@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Thomas Feldmann">
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Changelog - organize</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Changelog";
+    var mkdocs_page_input_path = "05-changelog.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> organize</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../01-config/">Configuration</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../02-locations/">Locations</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../03-filters/">Filters</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../04-actions/">Actions</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Changelog</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#v2-in-progress">v2 - In Progress</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#whats-new">what's new</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#changed">changed</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#removed">removed</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v1101-2021-04-21">v1.10.1 (2021-04-21)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v1100-2021-04-20">v1.10.0 (2021-04-20)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v191-2020-11-10">v1.9.1 (2020-11-10)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v19-2020-06-12">v1.9 (2020-06-12)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v182-2020-04-03">v1.8.2 (2020-04-03)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v181-2020-03-28">v1.8.1 (2020-03-28)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v180-2020-03-04">v1.8.0 (2020-03-04)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v170-2019-11-26">v1.7.0 (2019-11-26)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v162-2019-11-22">v1.6.2 (2019-11-22)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v161-2019-10-25">v1.6.1 (2019-10-25)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v16-2019-08-19">v1.6 (2019-08-19)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v153-2019-08-01">v1.5.3 (2019-08-01)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v152-2019-07-29">v1.5.2 (2019-07-29)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v151-2019-07-23">v1.5.1 (2019-07-23)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v15-2019-07-17">v1.5 (2019-07-17)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v145-2019-07-03">v1.4.5 (2019-07-03)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v144-2019-07-02">v1.4.4 (2019-07-02)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v143-2019-06-05">v1.4.3 (2019-06-05)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v142-2018-11-14">v1.4.2 (2018-11-14)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v141-2018-10-05">v1.4.1 (2018-10-05)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v14-2018-09-21">v1.4 (2018-09-21)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v13-2018-07-06">v1.3 (2018-07-06)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v12-2018-03-19">v1.2 (2018-03-19)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v11-2018-03-13">v1.1 (2018-03-13)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v10-2018-03-13">v1.0 (2018-03-13)</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../06-updating-from-v1/">Updating from organize v1.x</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">organize</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Changelog</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/tfeldmann/organize/edit/master/docs/05-changelog.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <!-- BEGIN INCLUDE ../CHANGELOG.md   -->
+<h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">#</a></h1>
+<h2 id="v2-in-progress">v2 - In Progress<a class="headerlink" href="#v2-in-progress" title="Permanent link">#</a></h2>
+<p>This is a huge update with a large refactoring.
+Please backup all your important stuff before running.</p>
+<h3 id="whats-new">what's new<a class="headerlink" href="#whats-new" title="Permanent link">#</a></h3>
+<ul>
+<li>Completely rewritten core!</li>
+<li>Respects your rule order - safer, less magic, less surprises.
+  (v1 tried to be clever. v2 now works your config file from top to bottom)</li>
+<li>Now you can organize (S)FTP, S3 Buckets, Zip archives and many more.</li>
+<li>Most of the actions like <code>move</code> and <code>copy</code> even work across file systems!</li>
+<li><a href="https://www.pyfilesystem.org/page/index-of-filesystems/">Available filesystems</a></li>
+<li>You can now target folders with your rules. Like copying a whole folder, renaming etc.</li>
+<li><code>max_depth</code> setting when recursing into subfolders</li>
+<li>starts instantly (does not need to gather all the files before starting)</li>
+<li>filters can now be excluded</li>
+<li>nice terminal output</li>
+<li>rule names</li>
+<li>cleaner config file validation and stricter format</li>
+<li>option to run <code>python</code> actions in simulation</li>
+<li>added <code>empty</code> filter.</li>
+<li>new conflict resolution settings in <code>move</code>, <code>copy</code> and <code>rename</code> action:
+  <code>skip</code>, <code>overwrite</code>, <code>trash</code>, <code>rename_new</code>, <code>rename_existing</code> as well as a
+  <code>rename_template</code> parameter.</li>
+<li>the <code>shell</code> action now returns stdout and errorcode.</li>
+<li>Added <code>symlink</code> action</li>
+</ul>
+<h3 id="changed">changed<a class="headerlink" href="#changed" title="Permanent link">#</a></h3>
+<ul>
+<li>The config file format got a long due overhaul. Please see the
+  <a href="../06-updating-from-v1/">migration documentation</a> for what is new.</li>
+<li>The <code>timezone</code> keyword for <code>lastmodified</code> and <code>created</code> was removed. The timezone is
+  now the local timezone by default.</li>
+<li>The <code>filesize</code> filter was renamed to <code>size</code> and can now be used to get directory sizes
+  as well.</li>
+<li>The <code>filename</code> filter was renamed to <code>name</code> and can now be used to get directory names
+  as well.</li>
+</ul>
+<h3 id="removed">removed<a class="headerlink" href="#removed" title="Permanent link">#</a></h3>
+<ul>
+<li>Glob syntax is gone from folders (no longer needed)</li>
+<li>"!"-exclude syntax is gone (no longer needed)</li>
+</ul>
+<h2 id="v1101-2021-04-21">v1.10.1 (2021-04-21)<a class="headerlink" href="#v1101-2021-04-21" title="Permanent link">#</a></h2>
+<ul>
+<li>Action <code>macos_tags</code> now supports colors and placeholders.</li>
+<li>Show full expanded path if folder is not found.</li>
+</ul>
+<h2 id="v1100-2021-04-20">v1.10.0 (2021-04-20)<a class="headerlink" href="#v1100-2021-04-20" title="Permanent link">#</a></h2>
+<ul>
+<li>Add filter <code>mimetype</code></li>
+<li>Add action <code>macos_tags</code></li>
+<li>Support <a href="https://github.com/tfeldmann/simplematch"><code>simplematch</code></a> syntax in
+  <code>lename</code>-filter.</li>
+<li>Updated dependencies</li>
+<li>Because installing <code>textract</code> is quite hard on some platforms it is now an optional
+  dendency. Install it with <code>pip install organize-tool[textract]</code></li>
+<li>This version needs python 3.6 minimum. Some dependencies that were simply backports
+  (thlib2, typing) are removed.</li>
+<li>Add timezones in created and last_modified filters (Thank you, @win0err!)</li>
+</ul>
+<h2 id="v191-2020-11-10">v1.9.1 (2020-11-10)<a class="headerlink" href="#v191-2020-11-10" title="Permanent link">#</a></h2>
+<ul>
+<li>Add {env} variable</li>
+<li>Add {now} variable</li>
+</ul>
+<h2 id="v19-2020-06-12">v1.9 (2020-06-12)<a class="headerlink" href="#v19-2020-06-12" title="Permanent link">#</a></h2>
+<ul>
+<li>Add filter <code>Duplicate</code>.</li>
+</ul>
+<h2 id="v182-2020-04-03">v1.8.2 (2020-04-03)<a class="headerlink" href="#v182-2020-04-03" title="Permanent link">#</a></h2>
+<ul>
+<li>Fix a bug in the filename filter config parsing algorithm with digits-only filenames.</li>
+</ul>
+<h2 id="v181-2020-03-28">v1.8.1 (2020-03-28)<a class="headerlink" href="#v181-2020-03-28" title="Permanent link">#</a></h2>
+<ul>
+<li>Flatten filter and action lists to allow enhanced config file configuration (Thanks to @rawdamedia!)</li>
+<li>Add support for multiline content filters (Thanks to @zor-el!)</li>
+</ul>
+<h2 id="v180-2020-03-04">v1.8.0 (2020-03-04)<a class="headerlink" href="#v180-2020-03-04" title="Permanent link">#</a></h2>
+<ul>
+<li>Added action <code>Delete</code>.</li>
+<li>Added filter <code>FileContent</code>.</li>
+<li>Python 3.4 is officially deprecated and no longer supported.</li>
+<li><code>--config-file</code> command line option now supports <code>~</code> for user folder and expansion
+  oenvironment variables</li>
+<li>Added <code>years</code>, <code>months</code>, <code>weeks</code> and <code>seconds</code> parameter to filter <code>created</code> and
+  <code>stmodified</code></li>
+</ul>
+<h2 id="v170-2019-11-26">v1.7.0 (2019-11-26)<a class="headerlink" href="#v170-2019-11-26" title="Permanent link">#</a></h2>
+<ul>
+<li>Added filter <code>Exif</code> to filter by image exif data.</li>
+<li>Placeholder variable properties are now case insensitve.</li>
+</ul>
+<h2 id="v162-2019-11-22">v1.6.2 (2019-11-22)<a class="headerlink" href="#v162-2019-11-22" title="Permanent link">#</a></h2>
+<ul>
+<li>Fix <code>Rename</code> action (<code>'PosixPath' object has no attribute 'items'</code>).</li>
+<li>Use type hints everywhere.</li>
+</ul>
+<h2 id="v161-2019-10-25">v1.6.1 (2019-10-25)<a class="headerlink" href="#v161-2019-10-25" title="Permanent link">#</a></h2>
+<ul>
+<li>Shows a warning for missing folders instead of raising an exception.</li>
+</ul>
+<h2 id="v16-2019-08-19">v1.6 (2019-08-19)<a class="headerlink" href="#v16-2019-08-19" title="Permanent link">#</a></h2>
+<ul>
+<li>Added filter: <code>Python</code></li>
+<li>Added filter: <code>FileSize</code></li>
+<li>The organize module can now be run directly: <code>python3 -m organize</code></li>
+<li>Various code simplifications and speedups.</li>
+<li>Fixes an issue with globstring file exclusion.</li>
+<li>Remove <code>clint</code> dependency as it is no longer maintained.</li>
+<li>Added various integration tests</li>
+<li>The "~~ SIMULATION ~~"-banner now takes up the whole terminal width</li>
+</ul>
+<h2 id="v153-2019-08-01">v1.5.3 (2019-08-01)<a class="headerlink" href="#v153-2019-08-01" title="Permanent link">#</a></h2>
+<ul>
+<li>Filename filter now supports lists.</li>
+</ul>
+<h2 id="v152-2019-07-29">v1.5.2 (2019-07-29)<a class="headerlink" href="#v152-2019-07-29" title="Permanent link">#</a></h2>
+<ul>
+<li>Environment variables in folder pathes are now expanded (syntax <code>$name</code> or <code>${name}</code>
+  a additionally <code>%name%</code> on windows).
+  F example this allows the usage of e.g. <code>%public/Desktop%</code> in windows.</li>
+</ul>
+<h2 id="v151-2019-07-23">v1.5.1 (2019-07-23)<a class="headerlink" href="#v151-2019-07-23" title="Permanent link">#</a></h2>
+<ul>
+<li>New filter "Created" to filter by creation date.</li>
+<li>Fixes issue #39 where globstrings don't work most of the time.</li>
+<li>Integration test for issue #39</li>
+<li>Support indented config files</li>
+</ul>
+<h2 id="v15-2019-07-17">v1.5 (2019-07-17)<a class="headerlink" href="#v15-2019-07-17" title="Permanent link">#</a></h2>
+<ul>
+<li>Fixes issue #31 where the {path} variable always resolves to the source path</li>
+<li>Updated dependencies</li>
+<li>Exclude changelog and readme from published wheel</li>
+</ul>
+<h2 id="v145-2019-07-03">v1.4.5 (2019-07-03)<a class="headerlink" href="#v145-2019-07-03" title="Permanent link">#</a></h2>
+<ul>
+<li>Filter and Actions names are now case-insensitive</li>
+</ul>
+<h2 id="v144-2019-07-02">v1.4.4 (2019-07-02)<a class="headerlink" href="#v144-2019-07-02" title="Permanent link">#</a></h2>
+<ul>
+<li>Fixes issues #36 with umlauts in config file on windows</li>
+</ul>
+<h2 id="v143-2019-06-05">v1.4.3 (2019-06-05)<a class="headerlink" href="#v143-2019-06-05" title="Permanent link">#</a></h2>
+<ul>
+<li>Use safe YAML loader to fix a deprecation warning. (Thanks mope1!)</li>
+<li>Better error message if a folder does not exist. (Again thanks mope1!)</li>
+<li>Fix example code in documentation for LastModified filter.</li>
+<li>Custom config file locations (given by cmd line argument or environment variable).</li>
+<li><code>config --debug</code> now shows the full path to the config file.</li>
+</ul>
+<h2 id="v142-2018-11-14">v1.4.2 (2018-11-14)<a class="headerlink" href="#v142-2018-11-14" title="Permanent link">#</a></h2>
+<ul>
+<li>Fixes a bug with command line arguments in the <code>$EDITOR</code> environment
+  viable.</li>
+<li>Fixes a bug where an empty config wouldn't show the correct error message.</li>
+<li>Fix binary wheel creation in setup.py by using environment markers</li>
+</ul>
+<h2 id="v141-2018-10-05">v1.4.1 (2018-10-05)<a class="headerlink" href="#v141-2018-10-05" title="Permanent link">#</a></h2>
+<ul>
+<li>A custom separator <code>counter_separator</code> can now be set in the actions Move,
+  Cy and Rename.</li>
+</ul>
+<h2 id="v14-2018-09-21">v1.4 (2018-09-21)<a class="headerlink" href="#v14-2018-09-21" title="Permanent link">#</a></h2>
+<ul>
+<li>Fixes a bug where glob wildcards are not detected correctly</li>
+<li>Adds support for excluding folders and files via glob syntax.</li>
+<li>Makes sure that files are only handled once per rule.</li>
+</ul>
+<h2 id="v13-2018-07-06">v1.3 (2018-07-06)<a class="headerlink" href="#v13-2018-07-06" title="Permanent link">#</a></h2>
+<ul>
+<li>Glob support in folder configuration.</li>
+<li>New variable {relative_path} is now available in actions.</li>
+</ul>
+<h2 id="v12-2018-03-19">v1.2 (2018-03-19)<a class="headerlink" href="#v12-2018-03-19" title="Permanent link">#</a></h2>
+<ul>
+<li>Shows the relative path to files in subfolders.</li>
+</ul>
+<h2 id="v11-2018-03-13">v1.1 (2018-03-13)<a class="headerlink" href="#v11-2018-03-13" title="Permanent link">#</a></h2>
+<ul>
+<li>Removes the colon from extension filter output so <code>{extension.lower}</code> now
+  rurns <code>'png'</code> instead of <code>'.png'</code>.</li>
+</ul>
+<h2 id="v10-2018-03-13">v1.0 (2018-03-13)<a class="headerlink" href="#v10-2018-03-13" title="Permanent link">#</a></h2>
+<ul>
+<li>Initial release.</li>
+</ul>
+<!-- END INCLUDE -->
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../06-updating-from-v1/" class="btn btn-neutral float-right" title="Updating from organize v1.x">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../04-actions/" class="btn btn-neutral" title="Actions"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/tfeldmann/organize/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../04-actions/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../06-updating-from-v1/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

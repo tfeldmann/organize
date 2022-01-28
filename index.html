@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="None">
+  <meta name="author" content="Thomas Feldmann">
+  
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>organize</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="assets/_mkdocstrings.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Home";
+    var mkdocs_page_input_path = "index.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> organize</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href=".">Home</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#about">About</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting started</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#creating-your-first-rule">Creating your first rule</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#example-rules">Example rules</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#advanced-usage">Advanced usage</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#command-line-interface">Command line interface</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="01-config/">Configuration</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="02-locations/">Locations</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="03-filters/">Filters</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="04-actions/">Actions</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="05-changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="06-updating-from-v1/">Updating from organize v1.x</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">organize</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Home</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/tfeldmann/organize/edit/master/docs/index.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="welcome-to-the-documentation-for-organize">Welcome to the documentation for organize<a class="headerlink" href="#welcome-to-the-documentation-for-organize" title="Permanent link">#</a></h1>
+<!-- BEGIN INCLUDE ../README.md   -->
+<p align="center">
+ <img width="623" height="168" src="https://github.com/tfeldmann/organize/raw/master/docs/images/organize.svg?sanitize=true" alt="organize logo">
+</p>
+
+<div align="center">
+
+<a href="https://github.com/tfeldmann/organize/actions/workflows/tests.yml">
+  <img src="https://github.com/tfeldmann/organize/actions/workflows/tests.yml/badge.svg" title="tests">
+</a>
+<a href="https://organize.readthedocs.io/en/latest/?badge=latest">
+  <img src="https://readthedocs.org/projects/organize/badge/?version=latest" title="Documentation Status">
+</a>
+<a href="https://github.com/tfeldmann/organize/blob/master/LICENSE.txt">
+  <img src="https://img.shields.io/badge/license-MIT-blue.svg" title="License">
+</a>
+<a href="https://pypi.org/project/organize-tool/">
+  <img src="https://img.shields.io/pypi/v/organize-tool" title="PyPI Version">
+</a>
+
+</div>
+
+<hr />
+<p align="center"> <b>organize</b> - The file management automation tool
+<br>
+<a href="https://organize.readthedocs.io/" target="_blank">Full documentation at Read the docs</a>
+</p>
+
+<ul>
+<li><a href="..#about">About</a></li>
+<li><a href="..#getting-started">Getting started</a></li>
+<li><a href="..#installation">Installation</a></li>
+<li><a href="..#creating-your-first-rule">Creating your first rule</a></li>
+<li><a href="..#example-rules">Example rules</a></li>
+<li><a href="..#advanced-usage">Advanced usage</a></li>
+<li><a href="..#command-line-interface">Command line interface</a></li>
+</ul>
+<h2 id="about">About<a class="headerlink" href="#about" title="Permanent link">#</a></h2>
+<p>Your desktop is a mess? You cannot find anything in your downloads and
+documents? Sorting and renaming all these files by hand is too tedious?
+Time to automate it once and benefit from it forever.</p>
+<p><strong>organize</strong> is a command line, open-source alternative to apps like Hazel (macOS)
+or File Juggler (Windows).</p>
+<h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">#</a></h2>
+<h3 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h3>
+<p>Python 3.6+ is needed. Install it via your package manager or from <a href="https://python.org/..">python.org</a>.</p>
+<p>Installation is done via pip. Note that the package name is <code>organize-tool</code>:</p>
+<pre><code class="language-bash">pip3 install -U organize-tool
+</code></pre>
+<p>If you want the text extraction capabilities, install with <code>textract</code> like this:</p>
+<pre><code class="language-bash">pip3 install -U &quot;organize-tool[textract]&quot;
+</code></pre>
+<p>This command can also be used to update to the newest version. Now you can run <code>organize --help</code> to check if the installation was successful.</p>
+<h3 id="creating-your-first-rule">Creating your first rule<a class="headerlink" href="#creating-your-first-rule" title="Permanent link">#</a></h3>
+<p>In your shell, <strong>run <code>organize config</code></strong> to edit the configuration:</p>
+<pre><code class="language-yaml">rules:
+  - folders: ~/Downloads
+    subfolders: true
+    filters:
+      - extension: pdf
+    actions:
+      - echo: &quot;Found PDF!&quot;
+</code></pre>
+<blockquote>
+<p>If you have problems editing the configuration you can run <code>organize config --open-folder</code> to reveal the configuration folder in your file manager. You can then edit the <code>config.yaml</code> in your favourite editor.</p>
+<p>Alternatively you can run <code>organize config --path</code> to see the full path to
+your <code>config.yaml</code>)</p>
+</blockquote>
+<p><strong>Save your config file and run <code>organize run</code>.</strong></p>
+<p>You will see a list of all <code>.pdf</code> files you have in your downloads folder (+ subfolders). For now we only show the text <code>Found PDF!</code> for each file, but this will change soon...
+(If it shows <code>Nothing to do</code> you simply don't have any pdfs in your downloads folder).</p>
+<p>Run <code>organize config</code> again and add a <code>copy</code>-action to your rule:</p>
+<pre><code class="language-yaml">actions:
+  - echo: &quot;Found PDF!&quot;
+  - move: ~/Documents/PDFs/
+</code></pre>
+<p><strong>Now run <code>organize sim</code> to see what would happen without touching your files</strong>. You will see that your pdf-files would be moved over to your <code>Documents/PDFs</code> folder.</p>
+<p>Congratulations, you just automated your first task. You can now run <code>organize run</code> whenever you like and all your pdfs are a bit more organized. It's that easy.</p>
+<blockquote>
+<p>There is so much more. You want to rename / copy files, run custom shell- or python scripts, match filenames with regular expressions or use placeholder variables? organize has you covered. Have a look at the advanced usage example below!</p>
+</blockquote>
+<h2 id="example-rules">Example rules<a class="headerlink" href="#example-rules" title="Permanent link">#</a></h2>
+<p>Here are some examples of simple organization and cleanup rules. Modify to your needs!</p>
+<p>Move all invoices, orders or purchase documents into your documents folder:</p>
+<pre><code class="language-yaml">rules:
+  # sort my invoices and receipts
+  - folders: ~/Downloads
+    subfolders: true
+    filters:
+      - extension: pdf
+      - filename:
+          contains:
+            - Invoice
+            - Order
+            - Purchase
+          case_sensitive: false
+    actions:
+      - move: ~/Documents/Shopping/
+</code></pre>
+<p>Move incomplete downloads older than 30 days into the trash:</p>
+<pre><code class="language-yaml">rules:
+  # move incomplete downloads older &gt; 30 days into the trash
+  - folders: ~/Downloads
+    filters:
+      - extension:
+          - download
+          - crdownload
+          - part
+      - lastmodified:
+          days: 30
+          mode: older
+    actions:
+      - trash
+</code></pre>
+<p>Delete empty files from downloads and desktop:</p>
+<pre><code class="language-yaml">rules:
+  # delete empty files from downloads and desktop
+  - folders:
+      - ~/Downloads
+      - ~/Desktop
+    filters:
+      - filesize: 0
+    actions:
+      - trash
+</code></pre>
+<p>Move screenshots into a "Screenshots" folder on your desktop:</p>
+<pre><code class="language-yaml">rules:
+  # move screenshots into &quot;Screenshots&quot; folder
+  - folders: ~/Desktop
+    filters:
+      - filename:
+          startswith: &quot;Screen Shot&quot;
+    actions:
+      - move: ~/Desktop/Screenshots/
+</code></pre>
+<p>Organize your font downloads:</p>
+<pre><code class="language-yaml">rules:
+  # organize your font files but keep the folder structure:
+  #   &quot;~/Downloads/favourites/helvetica/helvetica-bold.ttf&quot;
+  #     is moved to
+  #   &quot;~/Documents/FONTS/favourites/helvetica/helvetica-bold.ttf&quot;
+  - folders: ~/Downloads/**/*.ttf
+    actions:
+      - Move: &quot;~/Documents/FONTS/{relative_path}&quot;
+</code></pre>
+<p>You'll find many more examples in the <a href="https://organize.readthedocs.io/" target="_blank">full documentation</a>.</p>
+<h2 id="advanced-usage">Advanced usage<a class="headerlink" href="#advanced-usage" title="Permanent link">#</a></h2>
+<p>This example shows some advanced features like placeholder variables, pluggable
+actions, recursion through subfolders and glob syntax:</p>
+<pre><code class="language-yaml">rules:
+  - folders: ~/Documents/**/*
+    filters:
+      - extension:
+          - pdf
+          - docx
+      - created
+    actions:
+      - move: &quot;~/Documents/{extension.upper}/{created.year}{created.month:02}/&quot;
+      - shell: 'open &quot;{path}&quot;'
+</code></pre>
+<p>Given we have two files in our <code>~/Documents</code> folder (or any of its subfolders)
+named <code>script.docx</code> from january 2018 and <code>demo.pdf</code> from december 2016 this will
+happen:</p>
+<ul>
+<li><code>script.docx</code> will be moved to <code>~/Documents/DOCX/2018-01/script.docx</code></li>
+<li><code>demo.pdf</code> will be moved to <code>~/Documents/PDF/2016-12/demo.pdf</code></li>
+<li>The files will be opened (<code>open</code> command in macOS) <em>from their new location</em>.</li>
+<li>Note the format syntax for <code>{created.month}</code> to make sure the month is prepended with a zero.</li>
+</ul>
+<h2 id="command-line-interface">Command line interface<a class="headerlink" href="#command-line-interface" title="Permanent link">#</a></h2>
+<pre><code>The file management automation tool.
+
+Usage:
+    organize sim [--config-file=&lt;path&gt;]
+    organize run [--config-file=&lt;path&gt;]
+    organize config [--open-folder | --path | --debug] [--config-file=&lt;path&gt;]
+    organize list
+    organize --help
+    organize --version
+
+Arguments:
+    sim             Simulate a run. Does not touch your files.
+    run             Organizes your files according to your rules.
+    config          Open the configuration file in $EDITOR.
+    list            List available filters and actions.
+    --version       Show program version and exit.
+    -h, --help      Show this screen and exit.
+
+Options:
+    -o, --open-folder  Open the folder containing the configuration files.
+    -p, --path         Show the path to the configuration file.
+    -d, --debug        Debug your configuration file.
+
+Full documentation: https://organize.readthedocs.io
+</code></pre>
+<!-- END INCLUDE -->
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="01-config/" class="btn btn-neutral float-right" title="Configuration">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/tfeldmann/organize/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+      <span><a href="01-config/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
+    <script src="js/theme.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.2.3
+Build Date UTC : 2022-01-28 14:53:35.749739+00:00
+-->

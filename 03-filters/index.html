@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Thomas Feldmann">
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Filters - organize</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Filters";
+    var mkdocs_page_input_path = "03-filters.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> organize</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../01-config/">Configuration</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../02-locations/">Locations</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Filters</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#created">created</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#duplicate">duplicate</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#empty">empty</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#exif">exif</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#extension">extension</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#filecontent">filecontent</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hash">hash</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#name">name</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#size">size</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lastmodified">lastmodified</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#mimetype">mimetype</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#python">python</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#regex">regex</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../04-actions/">Actions</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../05-changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../06-updating-from-v1/">Updating from organize v1.x</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">organize</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Filters</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/tfeldmann/organize/edit/master/docs/03-filters.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="filters">Filters<a class="headerlink" href="#filters" title="Permanent link">#</a></h1>
+<p>This page shows the specifics of each filter. For basic filter usage and options have a
+look at the <a href="../01-config/">Config</a> section.</p>
+<h2 id="created">created<a class="headerlink" href="#created" title="Permanent link">#</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Matches files / folders by created date</p>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li><p><strong>years</strong> (<code>int</code>) – specify number of years</p></li>
+            <li><p><strong>months</strong> (<code>int</code>) – specify number of months</p></li>
+            <li><p><strong>weeks</strong> (<code>float</code>) – specify number of weeks</p></li>
+            <li><p><strong>days</strong> (<code>float</code>) – specify number of days</p></li>
+            <li><p><strong>hours</strong> (<code>float</code>) – specify number of hours</p></li>
+            <li><p><strong>minutes</strong> (<code>float</code>) – specify number of minutes</p></li>
+            <li><p><strong>seconds</strong> (<code>float</code>) – specify number of seconds</p></li>
+            <li><p><strong>mode</strong> (<code>str</code>) – either 'older' or 'newer'. 'older' matches all files created before the given
+time, 'newer' matches all files created within the given time.
+(default = 'older')</p></li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+    <th class="field-name">Returns:</th>
+    <td class="field-body">
+        <ul class="first simple">
+          <li><p><code>{created}</code> – The datetime the file / dir was created.</p></li>
+        </ul>
+    </td>
+    </tr>
+  </tbody>
+</table>
+
+
+    </div>
+
+  </div>
+
+<p><strong>Examples</strong></p>
+<pre><code class="language-yaml">- : rules:
+      - name: Show all files on your desktop created at least 10 days ago
+        locations: &quot;~/Desktop&quot;
+        filters:
+          - created:
+              days: 10
+        actions:
+          - echo: &quot;Was created at least 10 days ago&quot;
+</code></pre>
+<pre><code class="language-yaml">rules:
+  - name: Show all files on your desktop which were created within the last 5 hours
+    locations: &quot;~/Desktop&quot;
+    filters:
+      - created:
+          hours: 5
+          mode: newer
+    actions:
+      - echo: &quot;Was created within the last 5 hours&quot;
+</code></pre>
+<pre><code class="language-yaml">rules:
+  - name: Sort pdfs by year of creation
+    locations: &quot;~/Documents&quot;
+    filters:
+      - extension: pdf
+      - created
+    actions:
+      - move: &quot;~/Documents/PDF/{created.year}/&quot;
+</code></pre>
+<h2 id="duplicate">duplicate<a class="headerlink" href="#duplicate" title="Permanent link">#</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Finds duplicate files.</p>
+<p>This filter compares files byte by byte and finds identical files with potentially
+different filenames.</p>
+<p>:returns:
+    - <code>{duplicate}</code> -- path to the duplicate source</p>
+
+
+
+    </div>
+
+  </div>
+
+<pre><code class="language-yaml">rules:
+  - name: Show all duplicate files in your desktop and download folder (and their subfolders)
+    locations:
+      - ~/Desktop
+      - ~/Downloads
+    sublocations: true
+    filters:
+      - duplicate
+    actions:
+      - echo: &quot;{path} is a duplicate of {duplicate}&quot;
+</code></pre>
+<h2 id="empty">empty<a class="headerlink" href="#empty" title="Permanent link">#</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Finds empty dirs and files</p>
+
+
+
+    </div>
+
+  </div>
+
+<pre><code class="language-yaml">rules:
+  - name: &quot;Recursively delete empty folders&quot;
+    targets: dirs
+    locations:
+      - path: ~/Desktop
+        max_depth: null
+    filters:
+      - empty
+    actions:
+      - delete
+</code></pre>
+<h2 id="exif">exif<a class="headerlink" href="#exif" title="Permanent link">#</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Filter by image EXIF data</p>
+<p>The <code>exif</code> filter can be used as a filter as well as a way to get exif information
+into your actions.</p>
+<p>:returns:
+    <code>{exif}</code> -- a dict of all the collected exif inforamtion available in the
+    file. Typically it consists of the following tags (if present in the file):</p>
+<pre><code>- ``{exif.image}`` -- information related to the main image
+- ``{exif.exif}`` -- Exif information
+- ``{exif.gps}`` -- GPS information
+- ``{exif.interoperability}`` -- Interoperability information
+</code></pre>
+
+<p><strong>Examples:</strong></p>
+    <ul>
+<li>Show available EXIF data of your pictures:</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - folders: ~/Pictures
+    subfolders: true
+    filters:
+      - exif
+    actions:
+      - echo: "{exif}"
+</code></pre>
+<ul>
+<li>Copy all images which contain GPS information while keeping subfolder
+  structure:</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+- folders: ~/Pictures
+  subfolders: true
+  filters:
+    - exif:
+        gps.gpsdate
+  actions:
+    - copy: ~/Pictures/with_gps/{relative_path}/
+</code></pre>
+<ul>
+<li>Filter by camera manufacturer:</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - folders: ~/Pictures
+    subfolders: true
+    filters:
+      - exif:
+          image.model: Nikon D3200
+    actions:
+      - move: '~/Pictures/My old Nikon/'
+</code></pre>
+<ul>
+<li>Sort images by camera manufacturer. This will create folders for each camera
+  model (for example "Nikon D3200", "iPhone 6s", "iPhone 5s", "DMC-GX80") and
+  move the pictures accordingly:</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - folders: ~/Pictures
+    subfolders: true
+    filters:
+      - extension: jpg
+      - exif:
+          image.model
+    actions:
+      - move: '~/Pictures/{exif.image.model}/'
+</code></pre>
+
+
+
+    </div>
+
+  </div>
+
+<h2 id="extension">extension<a class="headerlink" href="#extension" title="Permanent link">#</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Filter by file extension</p>
+<p>:param extensions:
+    The file extensions to match (does not need to start with a colon).</p>
+<p>:returns:
+    - <code>{extension}</code> -- the original file extension (without colon)
+    - <code>{extension.lower}</code> -- the file extension in lowercase
+    - <code>{extension.upper}</code> -- the file extension in UPPERCASE</p>
+
+<p><strong>Examples:</strong></p>
+    <ul>
+<li>Match a single file extension:</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - folders: '~/Desktop'
+    filters:
+      - extension: png
+    actions:
+      - echo: 'Found PNG file: {path}'
+</code></pre>
+<ul>
+<li>Match multiple file extensions:</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - folders: '~/Desktop'
+    filters:
+      - extension:
+        - .jpg
+        - jpeg
+    actions:
+      - echo: 'Found JPG file: {path}'
+</code></pre>
+<ul>
+<li>Make all file extensions lowercase:</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - folders: '~/Desktop'
+    filters:
+      - extension
+    actions:
+      - rename: '{path.stem}.{extension.lower}'
+</code></pre>
+<ul>
+<li>Using extension lists:</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>img_ext: &amp;img
+  - png
+  - jpg
+  - tiff
+
+audio_ext: &amp;audio
+  - mp3
+  - wav
+  - ogg
+
+rules:
+  - folders: '~/Desktop'
+    filters:
+      - extension:
+        - *img
+        - *audio
+    actions:
+      - echo: 'Found media file: {path}'
+</code></pre>
+
+
+
+    </div>
+
+  </div>
+
+<h2 id="filecontent">filecontent<a class="headerlink" href="#filecontent" title="Permanent link">#</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Matches file content with the given regular expression</p>
+<p>:param str expr:
+    The regular expression to be matched.</p>
+<p>Any named groups in your regular expression will be returned like this:</p>
+<p>:returns:
+    - <code>{filecontent.yourgroupname}</code> -- The text matched with the named group
+      <code>(?P&lt;yourgroupname&gt;)</code></p>
+
+<p><strong>Examples:</strong></p>
+    <ul>
+<li>Show the content of all your PDF files:</li>
+</ul>
+<p>.. code-block::yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - folders: ~/Documents
+    filters:
+      - extension: pdf
+      - filecontent: '(?P&lt;all&gt;.*)'
+    actions:
+      - echo: "{filecontent.all}"
+</code></pre>
+<ul>
+<li>Match an invoice with a regular expression and sort by customer:</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - folders: '~/Desktop'
+    filters:
+      - filecontent: 'Invoice.*Customer (?P&lt;customer&gt;\w+)'
+    actions:
+      - move: '~/Documents/Invoices/{filecontent.customer}/'
+</code></pre>
+
+
+
+    </div>
+
+  </div>
+
+<h2 id="hash">hash<a class="headerlink" href="#hash" title="Permanent link">#</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Calculates the hash of a file.</p>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li><p><strong>algorithm</strong> (<code>str</code>) – Any hashing algorithm available to python's <code>hashlib</code>.
+<code>md5</code> by default.</p></li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>      <p>Algorithms guaranteed to be available are
+<code>shake_256</code>, <code>sha3_256</code>, <code>sha1</code>, <code>sha3_224</code>, <code>sha384</code>, <code>sha512</code>, <code>blake2b</code>,
+<code>blake2s</code>, <code>sha256</code>, <code>sha224</code>, <code>shake_128</code>, <code>sha3_512</code>, <code>sha3_384</code> and <code>md5</code>.</p>
+<p>Depending on your python installation and installed libs there may be additional
+hash algorithms to chose from.</p>
+<p>To list the available algorithms on your installation run this in a python
+interpreter:</p>
+<pre><code class="language-py">&gt;&gt;&gt; import hashlib
+&gt;&gt;&gt; hashlib.algorithms_available
+{'shake_256', 'whirlpool', 'mdc2', 'blake2s', 'sha224', 'shake_128', 'sha3_512', 'sha3_224', 'sha384', 'md5', 'sha1', 'sha512_256', 'blake2b', 'sha256', 'sha512_224', 'ripemd160', 'sha3_384', 'md4', 'sm3', 'sha3_256', 'md5-sha1', 'sha512'}
+</code></pre>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+    <th class="field-name">Returns:</th>
+    <td class="field-body">
+        <ul class="first simple">
+          <li><p><code>str</code> – The hash of the file.</p></li>
+        </ul>
+    </td>
+    </tr>
+  </tbody>
+</table>
+
+
+    </div>
+
+  </div>
+
+<h2 id="name">name<a class="headerlink" href="#name" title="Permanent link">#</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Match files by filename</p>
+<p>:param str match:
+    A matching string in <code>simplematch</code>-syntax
+    (https://github.com/tfeldmann/simplematch)</p>
+<p>:param str startswith:
+    The filename must begin with the given string</p>
+<p>:param str contains:
+    The filename must contain the given string</p>
+<p>:param str endswith:
+    The filename (without extension) must end with the given string</p>
+<p>:param bool case_sensitive = True:
+    By default, the matching is case sensitive. Change this to False to use
+    case insensitive matching.</p>
+
+<p><strong>Examples:</strong></p>
+    <ul>
+<li>Match all files starting with 'Invoice':</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - folders: '~/Desktop'
+    filters:
+      - filename:
+          startswith: Invoice
+    actions:
+      - echo: 'This is an invoice'
+</code></pre>
+<ul>
+<li>Match all files starting with 'A' end containing the string 'hole'
+  (case insensitive)</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - folders: '~/Desktop'
+    filters:
+      - filename:
+          startswith: A
+          contains: hole
+          case_sensitive: false
+    actions:
+      - echo: 'Found a match.'
+</code></pre>
+<ul>
+<li>Match all files starting with 'A' or 'B' containing '5' or '6' and ending with
+  '_end'</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - folders: '~/Desktop'
+    filters:
+      - filename:
+          startswith:
+            - A
+            - B
+          contains:
+            - 5
+            - 6
+          endswith: _end
+          case_sensitive: false
+    actions:
+      - echo: 'Found a match.'
+</code></pre>
+
+
+
+    </div>
+
+  </div>
+
+<h2 id="size">size<a class="headerlink" href="#size" title="Permanent link">#</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Matches files and folders by size</p>
+<p>:param str conditions:</p>
+<p>Accepts file size conditions, e.g: <code>'&gt;= 500 MB'</code>, <code>'&lt; 20k'</code>, <code>'&gt;0'</code>,
+<code>'= 10 KiB'</code>.</p>
+<p>It is possible to define both lower and upper conditions like this:
+<code>'&gt;20k, &lt; 1 TB'</code>, <code>'&gt;= 20 Mb, &lt;25 Mb'</code>. The filter will match if all given
+conditions are satisfied.</p>
+<ul>
+<li>Accepts all units from KB to YB.</li>
+<li>If no unit is given, kilobytes are assumend.</li>
+<li>If binary prefix is given (KiB, GiB) the size is calculated using base 1024.</li>
+</ul>
+<p>:returns:
+    - <code>{size.bytes}</code> -- Size in bytes</p>
+
+<p><strong>Examples:</strong></p>
+    <ul>
+<li>Trash big downloads:</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - locations: '~/Downloads'
+    targets: files
+    filters:
+      - filesize: '&gt; 0.5 GB'
+    actions:
+      - trash
+</code></pre>
+<ul>
+<li>Move all JPEGS bigger &gt; 1MB and &lt;10 MB. Search all subfolders and keep the
+  original relative path.</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - folders: '~/Pictures'
+    subfolders: true
+    filters:
+      - extension:
+          - jpg
+          - jpeg
+      - filesize: '&gt;1mb, &lt;10mb'
+    actions:
+      - move: '~/Pictures/sorted/{relative_path}/'
+</code></pre>
+
+
+
+    </div>
+
+  </div>
+
+<h2 id="lastmodified">lastmodified<a class="headerlink" href="#lastmodified" title="Permanent link">#</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Matches files by last modified date</p>
+<p>:param int years:
+    specify number of years</p>
+<p>:param int months:
+    specify number of months</p>
+<p>:param float weeks:
+    specify number of weeks</p>
+<p>:param float days:
+    specify number of days</p>
+<p>:param float hours:
+    specify number of hours</p>
+<p>:param float minutes:
+    specify number of minutes</p>
+<p>:param float seconds:
+    specify number of seconds</p>
+<p>:param str mode:
+    either 'older' or 'newer'. 'older' matches all files last modified
+    before the given time, 'newer' matches all files last modified within
+    the given time. (default = 'older')</p>
+<p>:returns:
+    - <code>{lastmodified.year}</code> -- the year the file was last modified
+    - <code>{lastmodified.month}</code> -- the month the file was last modified
+    - <code>{lastmodified.day}</code> -- the day the file was last modified
+    - <code>{lastmodified.hour}</code> -- the hour the file was last modified
+    - <code>{lastmodified.minute}</code> -- the minute the file was last modified
+    - <code>{lastmodified.second}</code> -- the second the file was last modified</p>
+
+<p><strong>Examples:</strong></p>
+    <ul>
+<li>Show all files on your desktop last modified at least 10 days ago:</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - folders: '~/Desktop'
+    filters:
+      - lastmodified:
+          days: 10
+    actions:
+      - echo: 'Was modified at least 10 days ago'
+</code></pre>
+<ul>
+<li>Show all files on your desktop which were modified within the last
+  5 hours:</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - folders: '~/Desktop'
+    filters:
+      - lastmodified:
+          hours: 5
+          mode: newer
+    actions:
+      - echo: 'Was modified within the last 5 hours'
+</code></pre>
+<ul>
+<li>Sort pdfs by year of last modification</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - folders: '~/Documents'
+    filters:
+      - extension: pdf
+      - lastmodified
+    actions:
+      - move: '~/Documents/PDF/{lastmodified.year}/'
+</code></pre>
+
+
+
+    </div>
+
+  </div>
+
+<h2 id="mimetype">mimetype<a class="headerlink" href="#mimetype" title="Permanent link">#</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Filter by MIME type associated with the file extension.</p>
+<p>Supports a single string or list of MIME type strings as argument.
+The types don't need to be fully specified, for example "audio" matches everything
+from "audio/midi" to "audio/quicktime".</p>
+<p>You can see a list of known MIME types on your system by running this oneliner:</p>
+<p>.. code-block:: yaml</p>
+<p>python3 -c "import mimetypes as m; print('\n'.join(sorted(set(m.common_types.values()) | set(m.types_map.values()))))"</p>
+
+
+
+    </div>
+
+  </div>
+
+<p><strong>Examples</strong></p>
+<pre><code class="language-yaml">rules:
+  - name: &quot;Show MIME types&quot;
+    locations: &quot;~/Downloads&quot;
+    filters:
+      - mimetype
+    actions:
+      - echo: &quot;{mimetype}&quot;
+</code></pre>
+<pre><code class="language-yaml">rules:
+  - name: &quot;Filter by 'image' mimetype&quot;
+    locations: &quot;~/Downloads&quot;
+    filters:
+      - mimetype: image
+    actions:
+      - echo: &quot;This file is an image: {mimetype}&quot;
+</code></pre>
+<pre><code class="language-yaml">rules:
+  - name: Filter by specific MIME type
+    locations: &quot;~/Desktop&quot;
+    filters:
+      - mimetype: application/pdf
+    actions:
+      - echo: &quot;Found a PDF file&quot;
+</code></pre>
+<pre><code class="language-yaml">rules:
+  - name: Filter by multiple specific MIME types
+    locations: &quot;~/Music&quot;
+    filters:
+      - mimetype:
+          - application/pdf
+          - audio/midi
+    actions:
+      - echo: &quot;Found Midi or PDF.&quot;
+</code></pre>
+<h2 id="python">python<a class="headerlink" href="#python" title="Permanent link">#</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Use python code to filter files.</p>
+<p>:param str code:
+    The python code to execute. The code must contain a <code>return</code> statement.</p>
+<p>:returns:
+    - If your code returns <code>False</code> or <code>None</code> the file is filtered out,
+      otherwise the file is passed on to the next filters.
+    - <code>{python}</code> contains the returned value. If you return a dictionary (for
+      example <code>return {"some_key": some_value, "nested": {"k": 2}}</code>) it will be
+      accessible via dot syntax in your actions: <code>{python.some_key}</code>,
+      <code>{python.nested.k}</code>.</p>
+
+
+
+    </div>
+
+  </div>
+
+<p><strong>Examples</strong></p>
+<pre><code class="language-yaml">rules:
+  - name: A file name reverser.
+    locations: ~/Documents
+    filters:
+      - extension
+      - python: |
+          return {&quot;reversed_name&quot;: path.stem[::-1]}
+    actions:
+      - rename: &quot;{python.reversed_name}.{extension}&quot;
+</code></pre>
+<p>A filter for odd student numbers. Assuming the folder <code>~/Students</code> contains
+the files <code>student-01.jpg</code>, <code>student-01.txt</code>, <code>student-02.txt</code> and
+<code>student-03.txt</code> this rule will print
+<code>"Odd student numbers: student-01.txt"</code> and
+<code>"Odd student numbers: student-03.txt"</code></p>
+<pre><code class="language-yaml">rules:
+  - name: &quot;Filter odd student numbers&quot;
+    locations: ~/Students/
+    filters:
+      - python: |
+        return int(path.stem.split('-')[1]) % 2 == 1
+      actions:
+      - echo: &quot;Odd student numbers: {path.name}&quot;
+</code></pre>
+<p>Advanced usecase. You can access data from previous filters in your python code.
+This can be used to match files and capturing names with a regular expression
+and then renaming the files with the output of your python script.</p>
+<pre><code class="language-yaml">rules:
+  - name: &quot;Access placeholders in python filter&quot;
+    locations: files
+    filters:
+      - extension: txt
+      - regex: (?P&lt;firstname&gt;\w+)-(?P&lt;lastname&gt;\w+)\..*
+      - python: |
+          emails = {
+              &quot;Betts&quot;: &quot;dbetts@mail.de&quot;,
+              &quot;Cornish&quot;: &quot;acornish@google.com&quot;,
+              &quot;Bean&quot;: &quot;dbean@aol.com&quot;,
+              &quot;Frey&quot;: &quot;l-frey@frey.org&quot;,
+          }
+          if regex.lastname in emails: # get emails from wherever
+              return {&quot;mail&quot;: emails[regex.lastname]}
+    actions:
+      - rename: &quot;{python.mail}.txt&quot;
+</code></pre>
+<p>Result:</p>
+<ul>
+<li><code>Devonte-Betts.txt</code> becomes <code>dbetts@mail.de.txt</code></li>
+<li><code>Alaina-Cornish.txt</code> becomes <code>acornish@google.com.txt</code></li>
+<li><code>Dimitri-Bean.txt</code> becomes <code>dbean@aol.com.txt</code></li>
+<li><code>Lowri-Frey.txt</code> becomes <code>l-frey@frey.org.txt</code></li>
+<li><code>Someunknown-User.txt</code> remains unchanged because the email is not found</li>
+</ul>
+<h2 id="regex">regex<a class="headerlink" href="#regex" title="Permanent link">#</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Matches filenames with the given regular expression</p>
+<p>:param str expr:
+    The regular expression to be matched.</p>
+<p>Any named groups in your regular expression will be returned like this:</p>
+<p>:returns:
+    - <code>{regex.yourgroupname}</code> -- The text matched with the named group
+      <code>(?P&lt;yourgroupname&gt;)</code></p>
+
+<p><strong>Examples:</strong></p>
+    <ul>
+<li>Match an invoice with a regular expression:</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - folders: '~/Desktop'
+    filters:
+      - regex: '^RG(\d{12})-sig\.pdf$'
+    actions:
+      - move: '~/Documents/Invoices/1und1/'
+</code></pre>
+<ul>
+<li>Match and extract data from filenames with regex named groups:
+  This is just like the previous example but we rename the invoice using
+  the invoice number extracted via the regular expression and the named
+  group <code>the_number</code>.</li>
+</ul>
+<p>.. code-block:: yaml
+    :caption: config.yaml</p>
+<pre><code>rules:
+  - folders: ~/Desktop
+    filters:
+      - regex: '^RG(?P&lt;the_number&gt;\d{12})-sig\.pdf$'
+    actions:
+      - move: ~/Documents/Invoices/1und1/{regex.the_number}.pdf
+</code></pre>
+
+
+
+    </div>
+
+  </div>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../04-actions/" class="btn btn-neutral float-right" title="Actions">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../02-locations/" class="btn btn-neutral" title="Locations"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/tfeldmann/organize/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../02-locations/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../04-actions/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
