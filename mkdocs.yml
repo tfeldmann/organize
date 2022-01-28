@@ -1,4 +1,6 @@
 site_name: organize
+repo_url: https://github.com/tfeldmann/organize/
+site_author: "Thomas Feldmann"
 nav:
   - Home: index.md
   - Configuration: 01-config.md

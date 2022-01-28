@@ -4,10 +4,18 @@
 
 <div align="center">
 
-[![tests](https://github.com/tfeldmann/organize/actions/workflows/tests.yml/badge.svg)](https://github.com/tfeldmann/organize/actions/workflows/tests.yml)
-[![Documentation Status](https://readthedocs.org/projects/organize/badge/?version=latest)](https://organize.readthedocs.io/en/latest/?badge=latest)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
-[![PyPI Version](https://img.shields.io/pypi/v/organize-tool)](https://pypi.org/project/organize-tool/)
+<a href="https://github.com/tfeldmann/organize/actions/workflows/tests.yml">
+  <img src="https://github.com/tfeldmann/organize/actions/workflows/tests.yml/badge.svg" title="tests">
+</a>
+<a href="https://organize.readthedocs.io/en/latest/?badge=latest">
+  <img src="https://readthedocs.org/projects/organize/badge/?version=latest" title="Documentation Status">
+</a>
+<a href="https://github.com/tfeldmann/organize/blob/master/LICENSE.txt">
+  <img src="https://img.shields.io/badge/license-MIT-blue.svg" title="License">
+</a>
+<a href="https://pypi.org/project/organize-tool/">
+  <img src="https://img.shields.io/pypi/v/organize-tool" title="PyPI Version">
+</a>
 
 </div>
 
