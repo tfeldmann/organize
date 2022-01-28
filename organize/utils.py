@@ -29,11 +29,11 @@ def is_same_resource(fs1, path1, fs2, path2):
     from fs.tarfs import WriteTarFS, ReadTarFS
     from fs.errors import NoSysPath, NoURL
 
+    try:
+        return fs1.getsyspath(path1) == fs2.getsyspath(path2)
+    except NoSysPath:
+        pass
     if isinstance(fs1, fs2.__class__):
-        try:
-            return fs1.getsyspath(path1) == fs2.getsyspath(path2)
-        except NoSysPath:
-            pass
         try:
             return fs1.geturl(path1) == fs2.geturl(path2)
         except NoURL:
@@ -84,7 +84,7 @@ def first_key(dic: Mapping) -> Hashable:
 def deep_merge(a: dict, b: dict) -> dict:
     result = deepcopy(a)
     for bk, bv in b.items():
-        av = result.get("k")
+        av = result.get(bk)
         if isinstance(av, dict) and isinstance(bv, dict):
             result[bk] = deep_merge(av, bv)
         else:
@@ -94,7 +94,7 @@ def deep_merge(a: dict, b: dict) -> dict:
 
 def deep_merge_inplace(base: dict, updates: dict) -> None:
     for bk, bv in updates.items():
-        av = base.get("k")
+        av = base.get(bk)
         if isinstance(av, dict) and isinstance(bv, dict):
             deep_merge_inplace(av, bv)
         else:

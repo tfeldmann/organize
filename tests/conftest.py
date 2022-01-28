@@ -5,7 +5,6 @@ from unittest.mock import patch
 import pytest
 
 from pathlib import Path
-from organize.utils import DotDict
 
 TESTS_FOLDER = os.path.dirname(os.path.abspath(__file__))
 

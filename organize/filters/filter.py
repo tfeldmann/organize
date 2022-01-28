@@ -12,8 +12,8 @@ class Filter:
     print_hook = None
     print_error_hook = None
 
-    name: str
-    arg_schema: Schema
+    name = None  # type: Union[str, None]
+    arg_schema = None  # type: Union[Schema, None]
     schema_support_instance_without_args = False
 
     @classmethod

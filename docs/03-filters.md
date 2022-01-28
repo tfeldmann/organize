@@ -53,7 +53,6 @@ rules:
     locations:
       - ~/Desktop
       - ~/Downloads
-    sublocations: true
     filters:
       - duplicate
     actions:
@@ -183,8 +182,8 @@ rules:
     locations: ~/Students/
     filters:
       - python: |
-        return int(path.stem.split('-')[1]) % 2 == 1
-      actions:
+          return int(path.stem.split('-')[1]) % 2 == 1
+    actions:
       - echo: "Odd student numbers: {path.name}"
 ```
 
