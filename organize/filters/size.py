@@ -5,7 +5,7 @@ from typing import Optional as Opt
 from typing import Sequence, Set, Tuple
 
 from fs.filesize import binary, decimal, traditional
-from schema import Optional, Or
+from schema import Optional, Or  # type: ignore
 
 from organize.utils import flattened_string_list, fullpath
 
@@ -122,7 +122,7 @@ class Size(Filter):
             return True
         return all(op(filesize, c_size) for op, c_size in self.constraints)
 
-    def pipeline(self, args: dict) -> Opt[Dict[str, Dict[str, int]]]:
+    def pipeline(self, args: dict) -> FilterResult:
         fs = args["fs"]
         fs_path = args["fs_path"]
 

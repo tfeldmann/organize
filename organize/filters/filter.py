@@ -1,4 +1,4 @@
-from schema import Schema, Optional, Or
+from schema import Schema, Optional, Or  # type: ignore
 from textwrap import indent
 from typing import Any, Dict, Union, NamedTuple
 
@@ -12,8 +12,8 @@ class Filter:
     print_hook = None
     print_error_hook = None
 
-    name = None
-    arg_schema = None
+    name: str
+    arg_schema: Schema
     schema_support_instance_without_args = False
 
     @classmethod
@@ -66,7 +66,7 @@ class Filter:
 
     def __str__(self) -> str:
         """Return filter name and properties"""
-        return self.name
+        return self.get_name()
 
     def __repr__(self) -> str:
         return "<%s>" % str(self)

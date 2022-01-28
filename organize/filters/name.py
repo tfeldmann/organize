@@ -108,7 +108,7 @@ class Name(Filter):
         )
         return is_match
 
-    def pipeline(self, args: Dict) -> Optional[Dict[str, Any]]:
+    def pipeline(self, args: Dict) -> FilterResult:
         fs = args["fs"]
         fs_path = args["fs_path"]
         if fs.isdir(fs_path):

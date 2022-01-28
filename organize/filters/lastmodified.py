@@ -1,4 +1,4 @@
-from schema import Or, Optional
+from schema import Or, Optional  # type: ignore
 from datetime import datetime, timedelta
 from typing import Dict, Optional as tyOptional
 

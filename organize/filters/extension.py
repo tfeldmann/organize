@@ -1,26 +1,10 @@
-from typing import Dict, Optional, Union
+from typing import Union
 
 from fs.base import FS
 
 from organize.utils import flatten
 
 from .filter import Filter, FilterResult
-
-
-class ExtensionResult:
-    def __init__(self, ext):
-        self.ext = ext[1:] if ext.startswith(".") else ext
-
-    @property
-    def lower(self):
-        return self.ext.lower()
-
-    @property
-    def upper(self):
-        return self.ext.upper()
-
-    def __str__(self):
-        return self.ext
 
 
 class Extension(Filter):
@@ -129,7 +113,7 @@ class Extension(Filter):
         suffix = fs.getinfo(fs_path).suffix
         ext = suffix[1:]
         return FilterResult(
-            matches=self.matches(ext),
+            matches=bool(self.matches(ext)),
             updates={self.get_name(): ext},
         )
 

@@ -63,13 +63,8 @@ class Duplicate(Filter):
         self.select_original_by = select_original_by
 
         self.files_for_size = defaultdict(list)
-        self.files_for_size  # type: DDict[int, List[File]]
-
         self.files_for_chunk = defaultdict(list)
-        self.files_for_chunk  # type: Dict[str, List[File]]
-
         self.file_for_hash = dict()
-        self.file_for_hash  # type: Dict[str, File]
 
         # we keep track of the files we already computed the hashes for so we only do
         # that once.

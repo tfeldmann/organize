@@ -104,7 +104,7 @@ class Exif(Filter):
                 result[key] = value  # type: ignore
         return dict(result)
 
-    def matches(self, exiftags: dict) -> Union[bool, ExifDict]:
+    def matches(self, exiftags: dict) -> bool:
         if not exiftags:
             return False
         tags = {k.lower(): v.printable for k, v in exiftags.items()}
@@ -121,7 +121,7 @@ class Exif(Filter):
                 return False
         return True
 
-    def pipeline(self, args: Mapping[str, Any]) -> Optional[Dict[str, ExifDict]]:
+    def pipeline(self, args: dict) -> FilterResult:
         fs = args["fs"]
         fs_path = args["fs_path"]
         with fs.openbin(fs_path) as f:

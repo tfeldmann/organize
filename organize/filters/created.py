@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from fs.base import FS
-from schema import Optional, Or
+from schema import Optional, Or  # type: ignore
 
 from .filter import Filter, FilterResult
 
@@ -66,7 +66,7 @@ class Created(Filter):
         fs = args["fs"]  # type: FS
         fs_path = args["fs_path"]
 
-        file_created: datetime
+        file_created: Optional[datetime]
         file_created = fs.getinfo(fs_path, namespaces=["details"]).created
         if file_created:
             file_created = file_created.astimezone()

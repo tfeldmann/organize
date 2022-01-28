@@ -48,4 +48,4 @@ class Python(Filter):
         result = self.usercode(**args)  # pylint: disable=assignment-from-no-return
         if result not in (False, None):
             return FilterResult(matches=True, updates={self.get_name(): result})
-        return FilterResult(matches=False, updates=None)
+        return FilterResult(matches=False, updates={})
