@@ -1,27 +1,33 @@
-from pathlib import Path
+from fs import open_fs
+from fs.path import dirname
 from organize.filters import Extension
 
 
 def test_extension():
     extension = Extension("JPG", ".gif", "pdf")
     testpathes = [
-        (Path("~/somefile.pdf"), True),
-        (Path("/home/test/somefile.pdf.jpeg"), False),
-        (Path("/home/test/gif.TXT"), False),
-        (Path("/home/test/txt.GIF"), True),
-        (Path("~/somefile.pdf"), True),
+        ("/somefile.pdf", True),
+        ("/home/test/somefile.pdf.jpeg", False),
+        ("/home/test/gif.TXT", False),
+        ("/home/test/txt.GIF", True),
+        ("/somefile.pdf", True),
     ]
-    for path, match in testpathes:
-        assert bool(extension.matches(path)) == match
+    with open_fs("mem://", writeable=True, create=True) as mem:
+        for f, match in testpathes:
+            mem.makedirs(dirname(f), recreate=True)
+            mem.touch(f)
+            assert extension.run(fs=mem, fs_path=f).matches == match
 
 
 def test_extension_empty():
+    fs = open_fs("mem://")
+    fs.touch("test.txt")
     extension = Extension()
-    assert extension.matches(Path("~/test.txt"))
+    assert extension.run(fs=fs, fs_path="test.txt").matches
 
 
 def test_extension_result():
-    path = Path("~/somefile.TxT")
+    path = "~/somefile.TxT"
     extension = Extension("txt")
     assert extension.matches(path)
     result = extension.run(path=path)["extension"]

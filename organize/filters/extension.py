@@ -96,12 +96,12 @@ class Extension(Filter):
         else:
             return ext.lower()
 
-    def matches(self, suffix: str) -> Union[bool, str]:
+    def matches(self, ext: str) -> Union[bool, str]:
         if not self.extensions:
             return True
-        if not suffix:
+        if not ext:
             return False
-        return self.normalize_extension(suffix) in self.extensions
+        return self.normalize_extension(ext) in self.extensions
 
     def pipeline(self, args: dict) -> FilterResult:
         fs = args["fs"]  # type: FS
