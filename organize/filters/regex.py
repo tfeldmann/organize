@@ -1,7 +1,7 @@
 import re
 from typing import Any, Dict, Mapping, Optional
 
-from .filter import Filter
+from .filter import Filter, FilterResult
 
 
 class Regex(Filter):
@@ -55,9 +55,11 @@ class Regex(Filter):
     def matches(self, path: str) -> Any:
         return self.expr.search(path)
 
-    def pipeline(self, args: dict) -> Optional[Dict[str, Dict]]:
+    def pipeline(self, args: dict) -> FilterResult:
         match = self.matches(args["relative_path"])
-        if match:
-            result = match.groupdict()
-            return {"regex": result}
-        return None
+        return FilterResult(
+            matches=bool(match),
+            updates={
+                self.get_name(): match.groupdict(),
+            },
+        )

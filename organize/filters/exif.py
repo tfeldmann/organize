@@ -5,7 +5,7 @@ import exifread  # type: ignore
 
 from pathlib import Path
 
-from .filter import Filter
+from .filter import Filter, FilterResult
 
 ExifDict = Mapping[str, Union[str, Mapping[str, str]]]
 
@@ -103,11 +103,9 @@ class Exif(Filter):
                 result[category][field] = value
             else:
                 result[key] = value  # type: ignore
-        return result
+        return dict(result)
 
     def matches(self, exiftags: dict) -> Union[bool, ExifDict]:
-        # NOTE: This should return Union[Literal[False], ExifDict] but Literal is only
-        # available in Python>=3.8.
         if not exiftags:
             return False
         tags = {k.lower(): v.printable for k, v in exiftags.items()}
@@ -122,7 +120,7 @@ class Exif(Filter):
             key = normkey(key)
             if not (key in tags and tags[key].lower() == value.lower()):
                 return False
-        return self.category_dict(tags)
+        return True
 
     def pipeline(self, args: Mapping[str, Any]) -> Optional[Dict[str, ExifDict]]:
         fs = args["fs"]
@@ -130,10 +128,14 @@ class Exif(Filter):
         with fs.openbin(fs_path) as f:
             exiftags = exifread.process_file(f, details=False)
 
-        tags = self.matches(exiftags)
-        if isinstance(tags, dict):
-            return {"exif": tags}
-        return None
+        tags = {k.lower(): v.printable for k, v in exiftags.items()}
+        matches = self.matches(tags)
+        exif_result = self.category_dict(tags)
+
+        return FilterResult(
+            matches=matches,
+            updates={self.get_name(): exif_result},
+        )
 
     def __str__(self) -> str:
         return "EXIF(%s)" % ", ".join("%s=%s" % (k, v) for k, v in self.kwargs.items())

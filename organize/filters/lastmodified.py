@@ -2,7 +2,7 @@ from schema import Or, Optional
 from datetime import datetime, timedelta
 from typing import Dict, Optional as tyOptional
 
-from .filter import Filter
+from .filter import Filter, FilterResult
 
 
 class LastModified(Filter):
@@ -123,7 +123,7 @@ class LastModified(Filter):
             seconds=seconds,
         )
 
-    def pipeline(self, args: dict) -> tyOptional[Dict[str, datetime]]:
+    def pipeline(self, args: dict) -> FilterResult:
         fs = args["fs"]
         fs_path = args["fs_path"]
         file_modified: datetime
@@ -140,9 +140,11 @@ class LastModified(Filter):
                 match = self.should_be_older == is_past
         else:
             match = True
-        if match:
-            return {"lastmodified": file_modified}
-        return None
+
+        return FilterResult(
+            matches=match,
+            updates={self.get_name(): file_modified},
+        )
 
     def __str__(self):
         return "[LastModified] All files last modified %s than %s" % (

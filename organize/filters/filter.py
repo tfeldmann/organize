@@ -1,8 +1,11 @@
 from schema import Schema, Optional, Or
 from textwrap import indent
-from typing import Any, Dict, Union
+from typing import Any, Dict, Union, NamedTuple
 
-FilterResult = Union[Dict[str, Any], bool, None]
+
+class FilterResult(NamedTuple):
+    matches: bool
+    updates: dict
 
 
 class Filter:

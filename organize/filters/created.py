@@ -1,8 +1,9 @@
-from schema import Optional, Or
 from datetime import datetime, timedelta
-from typing import Dict, Optional as tyOptional
 
-from .filter import Filter
+from fs.base import FS
+from schema import Optional, Or
+
+from .filter import Filter, FilterResult
 
 
 class Created(Filter):
@@ -62,8 +63,8 @@ class Created(Filter):
             seconds=seconds,
         )
 
-    def pipeline(self, args: dict) -> tyOptional[Dict[str, datetime]]:
-        fs = args["fs"]
+    def pipeline(self, args: dict) -> FilterResult:
+        fs = args["fs"]  # type: FS
         fs_path = args["fs_path"]
 
         file_created: datetime
@@ -81,9 +82,11 @@ class Created(Filter):
                 match = self.should_be_older == is_past
         else:
             match = True
-        if match:
-            return {"created": file_created}
-        return None
+
+        return FilterResult(
+            matches=match,
+            updates={self.get_name(): file_created},
+        )
 
     def __str__(self):
         return "[Created] All files %s than %s" % (

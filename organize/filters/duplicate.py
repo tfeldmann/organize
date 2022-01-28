@@ -14,8 +14,7 @@ from typing import Dict, Set, Union, NamedTuple
 from organize.output import console
 from organize.utils import is_same_resource
 
-from itertools import chain
-from .filter import Filter
+from .filter import Filter, FilterResult
 
 HASH_ALGORITHM = "sha1"
 ORDER_BY = ("location", "created", "lastmodified", "name")
@@ -138,10 +137,10 @@ class Duplicate(Filter):
         fs_path = args["fs_path"]
         if fs.isdir(fs_path):
             raise EnvironmentError("Dirs are not supported")
-        try:
-            return self.matches(fs=fs, path=fs_path)
-        except Exception:
-            console.print_exception()
+        result = self.matches(fs=fs, path=fs_path)
+        if result is False:
+            return FilterResult(matches=False, updates={})
+        return FilterResult(matches=True, updates={self.get_name(): result})
 
     def __str__(self) -> str:
         return "Duplicate()"

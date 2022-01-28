@@ -1,9 +1,10 @@
 import re
 from typing import Any, Dict, Mapping, Optional
 
+from fs.base import FS
 from fs.errors import NoSysPath
 
-from .filter import Filter
+from .filter import Filter, FilterResult
 
 SUPPORTED_EXTENSIONS = (
     # not supported: .gif, .jpg, .mp3, .ogg, .png, .tiff, .wav
@@ -78,8 +79,8 @@ class FileContent(Filter):
         except textract.exceptions.CommandLineError:
             pass
 
-    def pipeline(self, args: Mapping) -> Optional[Dict[str, Dict]]:
-        fs = args["fs"]
+    def pipeline(self, args: dict) -> FilterResult:
+        fs = args["fs"]  # type: FS
         fs_path = args["fs_path"]
         if fs.isdir(fs_path):
             raise ValueError("Dirs not supported")
@@ -91,7 +92,7 @@ class FileContent(Filter):
                 "filecontent only supports the local filesystem"
             ) from e
         match = self.matches(path=syspath, extension=extension)
-        if match:
-            result = match.groupdict()
-            return {"filecontent": result}
-        return None
+        return FilterResult(
+            matches=match,
+            updates={self.get_name(): match.groupdict()},
+        )

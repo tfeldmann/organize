@@ -1,6 +1,6 @@
 from fs.base import FS
 
-from .filter import Filter
+from .filter import Filter, FilterResult
 
 
 class Empty(Filter):
@@ -13,13 +13,16 @@ class Empty(Filter):
     def get_schema(cls):
         return cls.name
 
-    def pipeline(self, args: dict):
+    def pipeline(self, args: dict) -> FilterResult:
         fs = args["fs"]  # type: FS
         fs_path = args["fs_path"]  # type: str
 
         if fs.isdir(fs_path):
-            return fs.isempty(fs_path)
-        return fs.getsize(fs_path) == 0
+            result = fs.isempty(fs_path)
+        else:
+            result = fs.getsize(fs_path) == 0
+
+        return FilterResult(matches=result, updates={})
 
     def __str__(self) -> str:
         return "Empty()"

@@ -3,7 +3,7 @@ from typing import Any, List, Union, Optional, Dict
 import simplematch  # type: ignore
 from fs import path
 
-from .filter import Filter
+from .filter import Filter, FilterResult
 
 
 class Name(Filter):
@@ -117,13 +117,13 @@ class Name(Filter):
         else:
             name, _ = path.splitext(path.basename(fs_path))
         result = self.matches(name)
-
-        if result:
-            m = self.matcher.match(name)
-            if m == {}:
-                m = name
-            return {self.get_name(): m}
-        return None
+        m = self.matcher.match(name)
+        if m == {}:
+            m = name
+        return FilterResult(
+            matches=result,
+            updates={self.get_name(): m},
+        )
 
     @staticmethod
     def create_list(x: Union[int, str, List[Any]], case_sensitive: bool) -> List[str]:

@@ -5,7 +5,7 @@ from fs.move import move_dir, move_file
 from fs.path import splitext
 from jinja2 import Template
 
-from organize.utils import file_desc, next_free_name
+from organize.utils import resource_description, next_free_name
 
 from .trash import Trash
 
@@ -43,7 +43,7 @@ def resolve_overwrite_conflict(
         return ResolverResult(dst_fs=dst_fs, dst_path=dst_path, skip=True)
 
     elif conflict_mode == "overwrite":
-        print("Overwrite %s." % file_desc(dst_fs, dst_path))
+        print("Overwrite %s." % resource_description(dst_fs, dst_path))
         return ResolverResult(dst_fs=dst_fs, dst_path=dst_path, skip=False)
 
     elif conflict_mode == "rename_new":

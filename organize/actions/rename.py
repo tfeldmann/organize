@@ -6,7 +6,7 @@ from fs.base import FS
 from fs.move import move_dir, move_file
 from schema import Optional, Or
 
-from organize.utils import Template, file_desc
+from organize.utils import Template, resource_description
 
 from .action import Action
 from .utils import CONFLICT_OPTIONS, resolve_overwrite_conflict
@@ -110,7 +110,7 @@ class Rename(Action):
             if fs.exists(dst_path):
                 self.print(
                     '%s already exists (conflict mode is "%s").'
-                    % (file_desc(fs, dst_path), self.conflict_mode)
+                    % (resource_description(fs, dst_path), self.conflict_mode)
                 )
                 fs, dst_path, skip = resolve_overwrite_conflict(
                     dst_fs=fs,
@@ -123,7 +123,7 @@ class Rename(Action):
             if not skip:
                 if not simulate:
                     move_action(fs, src_path, fs, dst_path)
-                self.print("Renamed to %s" % file_desc(fs, dst_path))
+                self.print("Renamed to %s" % resource_description(fs, dst_path))
 
         # the next action should work with the newly created copy
         return {

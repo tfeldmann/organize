@@ -117,13 +117,10 @@ def filter_pipeline(filters: Iterable[Filter], args: dict) -> bool:
     """
     for filter_ in filters:
         try:
-            result = filter_.pipeline(args)
-            if isinstance(result, dict):
-                deep_merge_inplace(args, result)
-            elif not result:
-                # filters might return a simple True / False.
-                # Exit early if a filter does not match.
+            match, updates = filter_.pipeline(args)
+            if not match:
                 return False
+            deep_merge_inplace(args, updates)
         except Exception as e:  # pylint: disable=broad-except
             logger.exception(e)
             # console.print_exception()

@@ -6,7 +6,7 @@ from fs.copy import copy_dir, copy_file
 from fs.path import basename, dirname, join
 from schema import Optional, Or
 
-from organize.utils import Template, file_desc
+from organize.utils import Template, resource_description
 
 from .action import Action
 from .utils import CONFLICT_OPTIONS, resolve_overwrite_conflict
@@ -99,7 +99,7 @@ class Copy(Action):
         if dst_fs.exists(dst_path):
             self.print(
                 '%s already exists (conflict mode is "%s").'
-                % (file_desc(dst_fs, dst_path), self.conflict_mode)
+                % (resource_description(dst_fs, dst_path), self.conflict_mode)
             )
             dst_fs, dst_path, skip = resolve_overwrite_conflict(
                 dst_fs=dst_fs,
@@ -112,7 +112,7 @@ class Copy(Action):
         if not skip:
             if not simulate:
                 copy_action(src_fs, src_path, dst_fs, dst_path)
-            self.print("Copied to %s" % file_desc(dst_fs, dst_path))
+            self.print("Copied to %s" % resource_description(dst_fs, dst_path))
 
         # the next action should work with the newly created copy
         return {

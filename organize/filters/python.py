@@ -1,7 +1,7 @@
 import textwrap
 from typing import Any, Dict, Optional, Sequence
 
-from .filter import Filter
+from .filter import Filter, FilterResult
 
 
 class Python(Filter):
@@ -44,9 +44,9 @@ class Python(Filter):
         )
         exec(funccode, globals_, locals_)  # pylint: disable=exec-used
 
-    def pipeline(self, args) -> Optional[Dict[str, Any]]:
+    def pipeline(self, args) -> FilterResult:
         self.create_method(name="usercode", argnames=args.keys(), code=self.code)
         result = self.usercode(**args)  # pylint: disable=assignment-from-no-return
         if result not in (False, None):
-            return {"python": result}
-        return None
+            return FilterResult(matches=True, updates={self.get_name(): result})
+        return FilterResult(matches=False, updates=None)

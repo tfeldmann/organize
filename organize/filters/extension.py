@@ -1,9 +1,10 @@
 from typing import Dict, Optional, Union
 
-from pathlib import Path
+from fs.base import FS
+
 from organize.utils import flatten
 
-from .filter import Filter
+from .filter import Filter, FilterResult
 
 
 class ExtensionResult:
@@ -119,16 +120,19 @@ class Extension(Filter):
             return False
         return self.normalize_extension(suffix) in self.extensions
 
-    def pipeline(self, args: dict):
-        fs = args["fs"]
+    def pipeline(self, args: dict) -> FilterResult:
+        fs = args["fs"]  # type: FS
         fs_path = args["fs_path"]
         if fs.isdir(fs_path):
             raise ValueError("Dirs not supported")
+
+        # suffix is the extension with dot
         suffix = fs.getinfo(fs_path).suffix
-        if self.matches(suffix):
-            result = ExtensionResult(suffix)
-            return {"extension": result}
-        return None
+        ext = suffix[1:]
+        return FilterResult(
+            matches=self.matches(ext),
+            updates={self.get_name(): ext},
+        )
 
     def __str__(self):
         return "Extension(%s)" % ", ".join(self.extensions)

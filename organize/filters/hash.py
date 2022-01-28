@@ -4,7 +4,7 @@ from fs.base import FS
 
 from organize.utils import Template
 
-from .filter import Filter
+from .filter import Filter, FilterResult
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,10 @@ class Hash(Filter):
         fs_path = args["fs_path"]  # type: str
         algo = self.algorithm.render(**args)
         hash_ = fs.hash(fs_path, name=algo)
-        return {"hash": hash_}
+        return FilterResult(
+            matches=True,
+            updates={self.get_name(): hash_},
+        )
 
     def __str__(self) -> str:
         return "Hash(algorithm={})".format(self.algorithm)

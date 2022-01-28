@@ -12,9 +12,11 @@ rules:
         max_depth: null
         path: "/"
     filters:
-      - duplicate
+      - name:
+          startswith: Let
+      - extension: webloc
     actions:
-      - echo: "{fs_path}"
+      - echo: "{extension.upper()[1:]} {name}"
 
   # - name: Find some folders
   #   targets: dirs

@@ -9,7 +9,7 @@ from schema import Optional, Or
 
 from organize.utils import flattened_string_list, fullpath
 
-from .filter import Filter
+from .filter import Filter, FilterResult
 
 OPERATORS = {
     "<": operator.lt,
@@ -134,16 +134,18 @@ class Size(Filter):
             )
         else:
             size = fs.getsize(fs_path)
-        if self.matches(size):
-            return {
-                self.name: {
+
+        return FilterResult(
+            matches=self.matches(size),
+            updates={
+                self.get_name(): {
                     "bytes": size,
                     "traditional": traditional(size),
                     "binary": binary(size),
                     "decimal": decimal(size),
                 },
-            }
-        return None
+            },
+        )
 
     def __str__(self) -> str:
         return "FileSize({})".format(" ".join(self.conditions))
