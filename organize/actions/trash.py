@@ -16,7 +16,7 @@ class Trash(Action):
         return cls.name
 
     def trash(self, path: str, simulate: bool):
-        from send2trash import send2trash  # type: ignore
+        from send2trash import send2trash
 
         self.print('Trash "%s"' % path)
         if not simulate:

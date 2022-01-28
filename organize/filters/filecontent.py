@@ -62,7 +62,7 @@ class FileContent(Filter):
         if extension not in SUPPORTED_EXTENSIONS:
             return
         try:
-            import textract  # type: ignore
+            import textract
 
             content = textract.process(
                 str(path),

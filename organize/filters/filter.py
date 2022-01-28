@@ -1,4 +1,4 @@
-from schema import Schema, Optional, Or  # type: ignore
+from schema import Schema, Optional, Or
 from textwrap import indent
 from typing import Any, Dict, Union, NamedTuple
 

@@ -1,7 +1,7 @@
 import logging
 import sys
 
-import simplematch as sm  # type: ignore
+import simplematch as sm
 from schema import Or
 
 from .action import Action
@@ -44,7 +44,7 @@ class MacOSTags(Action):
             self.print("The macos_tags action is only available on macOS")
             return
 
-        import macos_tags  # type: ignore
+        import macos_tags
 
         COLORS = [c.name.lower() for c in macos_tags.Color]
 

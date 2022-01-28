@@ -30,8 +30,8 @@ import sys
 from pathlib import Path
 from typing import Union
 
-from colorama import Fore, Style  # type: ignore
-from docopt import docopt  # type: ignore
+from colorama import Fore, Style
+from docopt import docopt
 from rich import print
 
 from . import CONFIG_DIR, CONFIG_PATH, LOG_PATH

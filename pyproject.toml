@@ -59,7 +59,7 @@ mkdocs-autorefs = "^0.3.1"
 [tool.mypy]
 
 [[tool.mypy.overrides]]
-module = ["schema"]
+module = ["schema", "simplematch", "appdirs", "send2trash", "exifread", "textract"]
 ignore_missing_imports = true
 
 [build-system]

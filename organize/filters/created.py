@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from fs.base import FS
-from schema import Optional, Or  # type: ignore
+from schema import Optional, Or
 
 from .filter import Filter, FilterResult
 

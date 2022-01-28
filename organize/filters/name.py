@@ -1,6 +1,6 @@
 from typing import Any, List, Union, Optional, Dict
 
-import simplematch  # type: ignore
+import simplematch
 from fs import path
 
 from .filter import Filter, FilterResult

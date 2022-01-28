@@ -2,8 +2,8 @@ import logging
 import logging.config
 import os
 
-import appdirs  # type: ignore
-import colorama  # type: ignore
+import appdirs
+import colorama
 import yaml
 
 from pathlib import Path

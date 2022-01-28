@@ -1,7 +1,7 @@
 import collections
 from typing import Any, DefaultDict, Dict, Mapping, Optional, Union
 
-import exifread  # type: ignore
+import exifread
 
 from pathlib import Path
 
@@ -101,7 +101,7 @@ class Exif(Filter):
                 category, field = key.split(" ", maxsplit=1)
                 result[category][field] = value
             else:
-                result[key] = value  # type: ignore
+                result[key] = value
         return dict(result)
 
     def matches(self, exiftags: dict) -> bool:

@@ -6,17 +6,17 @@ from typing import Any, Hashable, List, NamedTuple, Sequence, Union
 
 from fs.base import FS
 from fs.osfs import OSFS
-from jinja2 import Environment
-from jinja2.nativetypes import NativeEnvironment
+import jinja2
+from jinja2 import nativetypes
 
-Template = Environment(
+Template = jinja2.Environment(
     variable_start_string="{",
     variable_end_string="}",
     finalize=lambda x: x() if callable(x) else x,
     autoescape=False,
 )
 
-NativeTemplate = NativeEnvironment(
+NativeTemplate = nativetypes.NativeEnvironment(
     variable_start_string="{",
     variable_end_string="}",
     finalize=lambda x: x() if callable(x) else x,
@@ -101,7 +101,7 @@ def deep_merge_inplace(base: dict, updates: dict) -> None:
             base[bk] = bv
 
 
-def next_free_name(fs: FS, template: Template, name: str, extension: str) -> str:
+def next_free_name(fs: FS, template: jinja2.Template, name: str, extension: str) -> str:
     """
     Increments {counter} in the template until the given resource does not exist.
 

@@ -5,7 +5,7 @@ from typing import Optional as Opt
 from typing import Sequence, Set, Tuple
 
 from fs.filesize import binary, decimal, traditional
-from schema import Optional, Or  # type: ignore
+from schema import Optional, Or
 
 from organize.utils import flattened_string_list, fullpath
 
