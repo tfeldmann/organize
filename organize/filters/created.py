@@ -7,8 +7,7 @@ from .filter import Filter, FilterResult
 
 
 class Created(Filter):
-    """
-    Matches files / folders by created date
+    """Matches files / folders by created date
 
     Args:
         years (int): specify number of years

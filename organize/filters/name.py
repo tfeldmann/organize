@@ -7,8 +7,7 @@ from .filter import Filter, FilterResult
 
 
 class Name(Filter):
-    """
-    Match files by filename
+    """Match files by filename
 
     :param str match:
         A matching string in `simplematch`-syntax

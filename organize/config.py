@@ -2,7 +2,7 @@ import textwrap
 
 import yaml
 from rich.console import Console
-from schema import And, Optional, Or, Schema, SchemaError, Literal
+from schema import And, Optional, Or, Schema
 
 from organize.actions import ACTIONS
 from organize.filters import FILTERS
@@ -14,8 +14,11 @@ CONFIG_SCHEMA = Schema(
         Optional("version"): int,
         "rules": [
             {
-                Optional("name", description="The name of the rule"): str,
-                Optional("targets"): Or("dirs", "files"),
+                Optional("name", description="The name of the rule."): str,
+                Optional(
+                    "targets",
+                    description="Whether the rule should apply to directories or folders.",
+                ): Or("dirs", "files"),
                 "locations": Or(
                     str,
                     [

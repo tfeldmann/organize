@@ -58,8 +58,7 @@ def satisfies_constraints(size, constraints):
 
 
 class Size(Filter):
-    """
-    Matches files and folders by size
+    """Matches files and folders by size
 
     :param str conditions:
 

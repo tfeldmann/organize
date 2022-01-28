@@ -24,8 +24,7 @@ class ExtensionResult:
 
 
 class Extension(Filter):
-    """
-    Filter by file extension
+    """Filter by file extension
 
     :param extensions:
         The file extensions to match (does not need to start with a colon).

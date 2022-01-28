@@ -47,8 +47,7 @@ def original_duplicate(a: File, b: File, ordering, reverse):
 
 
 class Duplicate(Filter):
-    """
-    Finds duplicate files.
+    """Finds duplicate files.
 
     This filter compares files byte by byte and finds identical files with potentially
     different filenames.

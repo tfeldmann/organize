@@ -7,8 +7,7 @@ from .filter import Filter, FilterResult
 
 class MimeType(Filter):
 
-    """
-    Filter by MIME type associated with the file extension.
+    """Filter by MIME type associated with the file extension.
 
     Supports a single string or list of MIME type strings as argument.
     The types don't need to be fully specified, for example "audio" matches everything

@@ -6,8 +6,7 @@ from .filter import Filter, FilterResult
 
 class Python(Filter):
 
-    r"""
-    Use python code to filter files.
+    r"""Use python code to filter files.
 
     :param str code:
         The python code to execute. The code must contain a ``return`` statement.

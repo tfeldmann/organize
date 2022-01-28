@@ -11,8 +11,7 @@ ExifDict = Mapping[str, Union[str, Mapping[str, str]]]
 
 
 class Exif(Filter):
-    """
-    Filter by image EXIF data
+    """Filter by image EXIF data
 
     The `exif` filter can be used as a filter as well as a way to get exif information
     into your actions.

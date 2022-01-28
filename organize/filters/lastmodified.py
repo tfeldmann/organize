@@ -7,8 +7,7 @@ from .filter import Filter, FilterResult
 
 class LastModified(Filter):
 
-    """
-    Matches files by last modified date
+    """Matches files by last modified date
 
     :param int years:
         specify number of years

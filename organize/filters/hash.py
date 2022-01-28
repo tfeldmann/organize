@@ -11,8 +11,7 @@ logger = logging.getLogger(__name__)
 
 class Hash(Filter):
 
-    """
-    Calculates the hash of a file.
+    """Calculates the hash of a file.
 
     Args:
         algorithm (str): Any hashing algorithm available to python's `hashlib`.

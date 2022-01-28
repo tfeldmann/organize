@@ -24,6 +24,11 @@ class Filter:
 
     @classmethod
     def get_schema(cls):
+        name = Schema(
+            Or("not " + cls.get_name(), cls.get_name()),
+            description=cls.get_description(),
+        )
+
         if cls.arg_schema:
             arg_schema = cls.arg_schema
         else:
@@ -32,16 +37,17 @@ class Filter:
                 [str],
                 Schema({}, ignore_extra_keys=True),
             )
+
         if cls.schema_support_instance_without_args:
-            return Or(
-                cls.get_name(),
-                {
-                    cls.get_name(): arg_schema,
-                },
-            )
+            return Or(name, {name: arg_schema})
         return {
-            cls.get_name(): arg_schema,
+            name: arg_schema,
         }
+
+    @classmethod
+    def get_description(cls):
+        """the first line of the class docstring"""
+        return cls.__doc__.splitlines()[0]
 
     def run(self, **kwargs: Dict) -> FilterResult:
         return self.pipeline(dict(kwargs))

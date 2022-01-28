@@ -13,8 +13,7 @@ SUPPORTED_EXTENSIONS = (
 
 
 class FileContent(Filter):
-    r"""
-    Matches file content with the given regular expression
+    r"""Matches file content with the given regular expression
 
     :param str expr:
         The regular expression to be matched.

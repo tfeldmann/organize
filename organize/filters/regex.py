@@ -6,8 +6,7 @@ from .filter import Filter, FilterResult
 
 class Regex(Filter):
 
-    r"""
-    Matches filenames with the given regular expression
+    r"""Matches filenames with the given regular expression
 
     :param str expr:
         The regular expression to be matched.
