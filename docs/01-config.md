@@ -126,7 +126,7 @@ actions: - echo: '{path}'
 
 .. note::
 
-- You have to target files with the globstring, not folders. So to scan through all folders starting with \_log\__ you would write `yourpath/log__/_`
+- You have to target files with the globstring, not folders. So to scan through all folders starting with \_log\__ you would write `yourpath/log\_\_/_`
 
 ### Excluding files and folders
 

@@ -12,10 +12,14 @@ from collections import defaultdict
 from fs.base import FS
 from typing import Dict, Set, Union, NamedTuple
 from organize.output import console
+from organize.utils import is_same_resource
 
+from itertools import chain
 from .filter import Filter
 
 HASH_ALGORITHM = "sha1"
+ORDER_BY = ("location", "created", "lastmodified", "name")
+ORDER_BY_REGEX = r"(-?)\s*?({})".format("|".join(ORDER_BY))
 
 
 class File(NamedTuple):
@@ -38,7 +42,9 @@ def first_chunk_hash(f: File):
     return hash_object.hexdigest()
 
 
-ORDER_BY = ("location", "created", "lastmodified", "name")
+def original_duplicate(a: File, b: File, ordering, reverse):
+    if ordering == "location":
+        return (a, b) if not reverse else (b, a)
 
 
 class Duplicate(Filter):
@@ -55,27 +61,36 @@ class Duplicate(Filter):
     name = "duplicate"
     schema_support_instance_without_args = True
 
-    def __init__(self, order_by="location") -> None:
+    def __init__(self, select_original_by="location"):
+        self.select_original_by = select_original_by
+
         self.files_for_size = defaultdict(list)
-        self.files_for_size  # type: DDict[int, List[PyFSFile]]
+        self.files_for_size  # type: DDict[int, List[File]]
 
         self.files_for_chunk = defaultdict(list)
-        self.files_for_chunk  # type: Dict[str, List[PyFSFile]]
+        self.files_for_chunk  # type: Dict[str, List[File]]
 
         self.file_for_hash = dict()
-        self.file_for_hash  # type: Dict[str, PyFSFile]
+        self.file_for_hash  # type: Dict[str, File]
 
         # we keep track of the files we already computed the hashes for so we only do
         # that once.
-        self.first_chunk_known = set()  # type: Set[PyFSFile]
-        self.hash_known = set()  # type: Set[PyFSFile]
+        self.handled_files = set()  # type: Set[File]
+        self.first_chunk_known = set()  # type: Set[File]
+        self.hash_known = set()  # type: Set[File]
 
     def matches(self, fs: FS, path: str) -> Union[bool, Dict[str, str]]:
         file_ = File(fs=fs, path=path)
         # the exact same path has already been handled. This happens if multiple
-        # locations emit this file in a single rule. We skip these.
-        if file_ in self.first_chunk_known:
+        # locations emit this file in a single rule or if we follow symlinks.
+        # We skip these.
+        if file_ in self.handled_files or any(
+            is_same_resource(file_.fs, file_.path, x.fs, x.path)
+            for x in self.handled_files
+        ):
             return False
+
+        self.handled_files.add(file_)
 
         # check for files with equal size
         file_size = getsize(file_)

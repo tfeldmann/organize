@@ -4,6 +4,8 @@ rules:
     locations:
       - path: ~/Desktop/Testfolder
         max_depth: null
+      - path: ~/Desktop/Testfolder
+        max_depth: null
       - path: "~/Desktop/Testfolder 2"
         max_depth: null
       - filesystem: zip:///Users/thomasfeldmann/Desktop/Testfolder.zip

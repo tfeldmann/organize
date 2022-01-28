@@ -19,58 +19,6 @@ class MimeType(Filter):
     .. code-block:: yaml
 
       python3 -c "import mimetypes as m; print('\\n'.join(sorted(set(m.common_types.values()) | set(m.types_map.values()))))"
-
-
-    Examples:
-        - Show MIME types:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Downloads'
-                filters:
-                  - mimetype
-                actions:
-                  - echo: '{mimetype}'
-
-        - Filter by "image" mimetype:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Downloads'
-                filters:
-                  - mimetype: image
-                actions:
-                  - echo: This file is an image: {mimetype}
-
-        - Filter by specific MIME type:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Desktop'
-                filters:
-                  - mimetype: application/pdf
-                actions:
-                  - echo: 'Found a PDF file'
-
-        - Filter by multiple specific MIME types:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Music'
-                filters:
-                  - mimetype:
-                    - application/pdf
-                    - audio/midi
-                actions:
-                  - echo: 'Found Midi or PDF.'
     """
 
     name = "mimetype"
