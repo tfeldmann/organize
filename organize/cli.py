@@ -95,7 +95,7 @@ def sim(rule_file, working_dir, config_file):
 
     if config_file and not rule_file:
         rule_file = config_file
-    run_file(rule_file=rule_file, working_dir=working_dir, simulate=False)
+    run_file(rule_file=rule_file, working_dir=working_dir, simulate=True)
 
 
 @cli.command()

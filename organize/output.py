@@ -27,10 +27,15 @@ class Output:
         self.curr_path = None
         self.prev_folder = None
         self.prev_path = None
+        self._location_target = ""
 
-    def set_location(self, folder, path) -> None:
+    def set_location(self, folder, path, targets="files") -> None:
         self.curr_folder = folder
         self.curr_path = path
+        if targets == "dirs":
+            self._location_target = "🗀"  # ":file_folder:"
+        else:
+            self._location_target = "🗅"  # ":page_facing_up:"
 
     def print_location_update(self):
         if self.curr_folder != self.prev_folder:
@@ -89,7 +94,7 @@ class Output:
 class ColoredOutput(Output):
     def print_info(self, rule_file, working_dir, simulate):
         console.print("organize {}".format(__version__))
-        console.print("Rule file: \"{}\"".format(rule_file))
+        console.print('Rule file: "{}"'.format(rule_file))
         if working_dir != ".":
             console.print("Working dir: {}".format(working_dir))
 
@@ -100,29 +105,35 @@ class ColoredOutput(Output):
         console.print(Panel("[bold green]SIMULATION", style="green"))
 
     def print_rule(self, rule):
-        console.print()
-        console.print(Rule(rule, align="left", style="gray"), style="bold")
+        console.print(
+            Rule(
+                "[bold yellow]:gear: %s[/bold yellow]" % rule,
+                align="left",
+                style="yellow",
+            )
+        )
 
     def print_location(self, folder):
         if isinstance(folder, OSFS):
-            console.print(folder.root_path)
+            console.print(folder.root_path, style="purple bold")
         else:
-            console.print(str(folder), style="bold")
+            console.print(str(folder), style="purple bold")
 
     def print_location_spacer(self):
         console.print()
 
     def print_path(self, path):
-        # file "page_facing_up": "📄",
-        # dirs "file_folder": "📁",
-        console.print(indent(":file_folder: %s" % path, " " * 2), style="purple bold")
+        console.print(
+            indent("%s %s" % (self._location_target, path), " " * 2),
+            style="italic purple",
+        )
 
     def print_not_found(self, path):
         msg = "Path not found: {}".format(path)
         console.print(msg, style="bold yellow")
 
     def print_pipeline_message(self, name, msg, *args, **kwargs):
-        console.print(indent("- (%s) %s" % (name, msg), " " * 4))
+        console.print(indent("- (%s) %s" % (name, msg), " " * 4), style="green")
 
     def print_pipeline_error(self, name, msg):
         console.print(

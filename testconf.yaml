@@ -1,24 +1,25 @@
 rules:
-  - name: "Find the last modification date of some png files"
+  - name: "Files starting with L"
     targets: files
     locations:
-      - path: ~/Desktop/Testfolder
-        max_depth: null
-      - path: ~/Desktop/Testfolder
-        max_depth: null
-      - path: "~/Desktop/Testfolder 2"
-        max_depth: null
-        ignore_errors: true
-      - filesystem: zip:///Users/thomasfeldmann/Desktop/Testfolder.zip
-        max_depth: null
-        ignore_errors: true
-        path: "/"
+      - path: ~/Desktop
+        max_depth: 3
     filters:
       - name:
-          startswith: Let
-      - extension: webloc
+          startswith: L
     actions:
-      - echo: "{extension.upper()[1:]} {name}"
+      - echo: "{name}"
+
+  - name: "Folders"
+    targets: dirs
+    locations:
+      - path: ~/Desktop
+        max_depth: 3
+    filters:
+      - name:
+          startswith: I
+    actions:
+      - echo: "{name}"
 
   # - name: Find some folders
   #   targets: dirs
@@ -26,7 +27,5 @@ rules:
   #     - ~/Desktop
   #     - path: ~/Desktop/Inbox
   #       max_depth: null
-  #   filters:
-  #     - extension: pdf
   #   actions:
-  #     - copy: ~/Dir
+  #     - echo: ~/Dir

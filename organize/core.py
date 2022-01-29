@@ -179,7 +179,7 @@ def run(config, simulate: bool = True):
                 walk = walker.files if target == "files" else walker.dirs
                 for path in walk(fs=base_fs, path=base_path):
                     relative_path = fs.path.relativefrom(base_path, path)
-                    output.set_location(base_fs, relative_path)
+                    output.set_location(base_fs, relative_path, targets=target)
                     args = {
                         "fs": base_fs,
                         "fs_path": path,
