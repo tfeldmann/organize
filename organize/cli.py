@@ -12,8 +12,6 @@ import click
 from .__version__ import __version__
 from .output import console, warn
 
-DOCS_URL = "https://organize.readthedocs.io"
-
 # prepare config and log folders
 APP_DIRS = appdirs.AppDirs("organize")
 
@@ -45,6 +43,7 @@ CLI_RULES_FILE = click.argument(
     "rule_file",
     required=False,
     envvar="ORGANIZE_RULE_FILE",
+    default=CONFIG_PATH,
     type=click.Path(exists=True),
 )
 CLI_WORKING_DIR_OPTION = click.option(
@@ -79,7 +78,11 @@ def cli():
 @CLI_CONFIG_FILE_OPTION
 def run(rule_file, working_dir, config_file):
     """Organizes your files according to your rules."""
-    print(rule_file, working_dir, config_file)
+    from .core import run_file
+
+    if config_file and not rule_file:
+        rule_file = config_file
+    run_file(rule_file=rule_file, working_dir=working_dir, simulate=False)
 
 
 @cli.command()
@@ -88,7 +91,11 @@ def run(rule_file, working_dir, config_file):
 @CLI_CONFIG_FILE_OPTION
 def sim(rule_file, working_dir, config_file):
     """Simulates a run (does not touch your files)."""
-    print(rule_file, working_dir, config_file)
+    from .core import run_file
+
+    if config_file and not rule_file:
+        rule_file = config_file
+    run_file(rule_file=rule_file, working_dir=working_dir, simulate=False)
 
 
 @cli.command()
@@ -123,12 +130,7 @@ def check(rule_file):
 
 
 @cli.command()
-def path():
-    """Prints the path of the default rule file."""
-
-
-@cli.command()
-@click.option("--path", is_flag=True, help="Print the path")
+@click.option("--path", is_flag=True, help="Print the path instead of revealing it.")
 def reveal(path):
     """Reveals the default rule file."""
     if path:
@@ -155,7 +157,7 @@ def schema():
 @cli.command()
 def docs():
     """Opens the documentation."""
-    click.launch(DOCS_URL)
+    click.launch("https://organize.readthedocs.io")
 
 
 # deprecated - only here for backwards compatibility

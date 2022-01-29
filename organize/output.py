@@ -4,6 +4,7 @@ from fs.osfs import OSFS
 from rich.rule import Rule
 from rich.console import Console
 from rich.panel import Panel
+from organize.__version__ import __version__
 
 logger = logging.getLogger(__name__)
 console = Console()
@@ -78,12 +79,28 @@ class Output:
     def print_pipeline_error(self, name, msg):
         raise NotImplementedError
 
+    def print_info(self):
+        raise NotImplementedError
 
-class RichOutput(Output):
+    def print_warning(self):
+        raise NotImplementedError
+
+
+class ColoredOutput(Output):
+    def print_info(self, rule_file, working_dir, simulate):
+        console.print("organize {}".format(__version__))
+        console.print("Rule file: \"{}\"".format(rule_file))
+        if working_dir != ".":
+            console.print("Working dir: {}".format(working_dir))
+
+    def print_warning(self, msg):
+        console.print("[yellow][bold]Warning:[/bold] {}[/yellow]".format(msg))
+
     def print_simulation_banner(self):
         console.print(Panel("[bold green]SIMULATION", style="green"))
 
     def print_rule(self, rule):
+        console.print()
         console.print(Rule(rule, align="left", style="gray"), style="bold")
 
     def print_location(self, folder):

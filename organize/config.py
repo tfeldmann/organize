@@ -2,7 +2,7 @@ import textwrap
 
 import yaml
 from rich.console import Console
-from schema import And, Optional, Or, Schema
+from schema import And, Optional, Or, Schema, Literal, Const
 
 from organize.actions import ACTIONS
 from organize.filters import FILTERS
@@ -11,8 +11,7 @@ console = Console()
 
 CONFIG_SCHEMA = Schema(
     {
-        Optional("version"): int,
-        "rules": [
+        Literal("rules", description="All rules are defined here."): [
             {
                 Optional("name", description="The name of the rule."): str,
                 Optional(
@@ -48,6 +47,7 @@ CONFIG_SCHEMA = Schema(
                 ],
             }
         ],
+        Optional("version"): int,
     },
     name="organize rule configuration",
 )

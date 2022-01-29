@@ -8,8 +8,10 @@ rules:
         max_depth: null
       - path: "~/Desktop/Testfolder 2"
         max_depth: null
+        ignore_errors: true
       - filesystem: zip:///Users/thomasfeldmann/Desktop/Testfolder.zip
         max_depth: null
+        ignore_errors: true
         path: "/"
     filters:
       - name:

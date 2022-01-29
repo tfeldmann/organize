@@ -10,10 +10,11 @@ from schema import SchemaError
 
 from .actions import ACTIONS
 from .actions.action import Action
+from .config import CONFIG_SCHEMA, load_from_file
 from .filters import FILTERS
 from .filters.filter import Filter
-from .output import RichOutput, console
-from .utils import deep_merge_inplace, Template, ensure_list
+from .output import ColoredOutput, console, warn
+from .utils import Template, deep_merge_inplace, ensure_list
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ class Location(NamedTuple):
     path: str
 
 
-output_helper = RichOutput()
+output = ColoredOutput()
 
 DEFAULT_SYSTEM_EXCLUDE_FILES = [
     "thumbs.db",
@@ -59,7 +60,7 @@ def walker_args_from_location_options(options):
     }
 
 
-def instantiate_location(loc):
+def instantiate_location(loc) -> Location:
     if isinstance(loc, str):
         loc = {"path": loc}
 
@@ -96,10 +97,23 @@ def instantiate_by_name(d, classes):
 
 
 def replace_with_instances(config):
+    warnings = []
+
     for rule in config["rules"]:
-        rule["locations"] = [
-            instantiate_location(loc) for loc in ensure_list(rule["locations"])
-        ]
+        locations = []
+
+        for loc in ensure_list(rule["locations"]):
+            try:
+                instance = instantiate_location(loc)
+                locations.append(instance)
+            except Exception as e:
+                if loc.get("ignore_errors", False):
+                    warnings.append(str(e))
+                else:
+                    raise e
+
+        rule["locations"] = locations
+
         # filters are optional
         rule["filters"] = [
             instantiate_by_name(x, FILTERS)
@@ -108,6 +122,8 @@ def replace_with_instances(config):
         rule["actions"] = [
             instantiate_by_name(x, ACTIONS) for x in ensure_list(rule["actions"])
         ]
+
+    return warnings
 
 
 def filter_pipeline(filters: Iterable[Filter], args: dict) -> bool:
@@ -145,17 +161,17 @@ def action_pipeline(actions: Iterable[Action], args: dict, simulate: bool) -> bo
 
 def run(config, simulate: bool = True):
     count = [0, 0]
-    Action.print_hook = output_helper.pipeline_message
-    Action.print_error_hook = output_helper.pipeline_error
-    Filter.print_hook = output_helper.pipeline_message
-    Filter.print_error_hook = output_helper.pipeline_error
+    Action.print_hook = output.pipeline_message
+    Action.print_error_hook = output.pipeline_error
+    Filter.print_hook = output.pipeline_message
+    Filter.print_error_hook = output.pipeline_error
 
     if simulate:
-        output_helper.print_simulation_banner()
+        output.print_simulation_banner()
 
     for rule in config["rules"]:
         target = rule.get("targets", "files")
-        output_helper.print_rule(rule["name"])
+        output.print_rule(rule["name"])
 
         status_verb = "simulating" if simulate else "organizing"
         with console.status("[bold green]%s..." % status_verb) as status:
@@ -163,7 +179,7 @@ def run(config, simulate: bool = True):
                 walk = walker.files if target == "files" else walker.dirs
                 for path in walk(fs=base_fs, path=base_path):
                     relative_path = fs.path.relativefrom(base_path, path)
-                    output_helper.set_location(base_fs, relative_path)
+                    output.set_location(base_fs, relative_path)
                     args = {
                         "fs": base_fs,
                         "fs_path": path,
@@ -186,18 +202,19 @@ def run(config, simulate: bool = True):
                         count[success] += 1
 
     if simulate:
-        output_helper.print_simulation_banner()
+        output.print_simulation_banner()
 
 
-if __name__ == "__main__":
-    from .config import CONFIG_SCHEMA, load_from_file
-
-    conf = load_from_file("testconf.yaml")
+def run_file(rule_file: str, working_dir: str, simulate: bool):
     try:
-        console.print(CONFIG_SCHEMA.json_schema(None))
-        CONFIG_SCHEMA.validate(conf)
-        replace_with_instances(conf)
-        run(conf, simulate=True)
+        output.print_info(rule_file, working_dir, simulate)
+        rules = load_from_file(rule_file)
+        CONFIG_SCHEMA.validate(rules)
+        warnings = replace_with_instances(rules)
+        for msg in warnings:
+            output.print_warning(msg)
+        os.chdir(working_dir)
+        run(rules, simulate=simulate)
     except SchemaError as e:
         console.print("Invalid config file")
         console.print(e.autos[-1])
