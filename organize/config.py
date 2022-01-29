@@ -48,7 +48,8 @@ CONFIG_SCHEMA = Schema(
                 ],
             }
         ],
-    }
+    },
+    name="organize rule configuration",
 )
 
 

@@ -16,6 +16,7 @@ Please backup all your important stuff before running.
 - You can now target folders with your rules. Like copying a whole folder, renaming etc.
 - `max_depth` setting when recursing into subfolders
 - starts instantly (does not need to gather all the files before starting)
+- filters can now be excluded
 - nice terminal output
 - rule names
 - cleaner config file validation and stricter format
