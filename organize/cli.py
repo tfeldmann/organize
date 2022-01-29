@@ -1,12 +1,18 @@
+"""
+organize
+
+The file management automation tool.
+"""
+import os
+from pathlib import Path
+
+import appdirs
 import click
-from . import CONFIG_DIR, CONFIG_PATH, LOG_PATH
+
 from .__version__ import __version__
-from .config import CONFIG_SCHEMA
 from .output import console
 
-import os
-import appdirs
-from pathlib import Path
+DOCS_URL = "https://organize.readthedocs.io"
 
 # prepare config and log folders
 APP_DIRS = appdirs.AppDirs("organize")
@@ -18,6 +24,16 @@ if os.getenv("ORGANIZE_CONFIG"):
 else:
     CONFIG_DIR = Path(APP_DIRS.user_config_dir)
     CONFIG_PATH = CONFIG_DIR / "config.yaml"
+
+LOG_DIR = Path(APP_DIRS.user_log_dir)
+LOG_PATH = LOG_DIR / "organize.log"
+
+for folder in (CONFIG_DIR, LOG_DIR):
+    folder.mkdir(parents=True, exist_ok=True)
+
+# create empty config file if it does not exist
+if not CONFIG_PATH.exists():
+    CONFIG_PATH.touch()
 
 
 class NaturalOrderGroup(click.Group):
@@ -52,16 +68,12 @@ def warn(msg):
 
 
 @click.group(
+    help=__doc__,
     cls=NaturalOrderGroup,
     context_settings=dict(help_option_names=["-h", "--help"]),
 )
 @click.version_option(__version__)
 def cli():
-    """
-    organize
-
-    The file management automation tool.
-    """
     pass
 
 
@@ -122,6 +134,8 @@ def schema():
     """Checks whether the given rule file is valid"""
     import json
 
+    from .config import CONFIG_SCHEMA
+
     js = json.dumps(
         CONFIG_SCHEMA.json_schema(
             schema_id="https://tfeldmann.de/organize.schema.json",
@@ -162,7 +176,7 @@ def config(ctx, path, debug, open_folder):
 
 @cli.command(help="Open the documentation")
 def docs():
-    click.launch("https://organize.readthedocs.io")
+    click.launch(DOCS_URL)
 
 
 if __name__ == "__main__":
