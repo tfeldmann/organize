@@ -91,13 +91,7 @@ def sim(rule_file, working_dir, config_file):
     print(rule_file, working_dir, config_file)
 
 
-@cli.group()
-def rules():
-    """Manage your rules"""
-    pass
-
-
-@rules.command()
+@cli.command()
 @click.argument(
     "rule_file",
     required=False,
@@ -111,23 +105,41 @@ def rules():
     help="The editor to use. (Default: $EDITOR)",
 )
 def edit(rule_file, editor):
-    """Edit a rule file.
+    """Edit the rules.
 
-    If called without further arguments, it will open the default rule file in $EDITOR.
+    If called without arguments, it will open the default rule file in $EDITOR.
     """
     click.edit(filename=rule_file, editor=editor)
 
 
-@rules.command()
+@cli.command()
 @CLI_RULES_FILE
 def check(rule_file):
-    """Checks whether the given rule file is valid"""
+    """Checks whether a given rule file is valid.
+
+    If called without arguments, it will check the default rule file
+    """
     print(rule_file)
 
 
-@rules.command()
+@cli.command()
+def path():
+    """Prints the path of the default rule file."""
+
+
+@cli.command()
+@click.option("--path", is_flag=True, help="Print the path")
+def reveal(path):
+    """Reveals the default rule file."""
+    if path:
+        click.echo(CONFIG_PATH)
+    else:
+        click.launch(str(CONFIG_PATH), locate=True)
+
+
+@cli.command()
 def schema():
-    """Checks whether the given rule file is valid"""
+    """Prints the json schema for rule files."""
     import json
 
     from .config import CONFIG_SCHEMA
@@ -140,39 +152,31 @@ def schema():
     console.print_json(js)
 
 
-@rules.command()
-def path():
-    """Prints the path of the default rule file"""
-    click.echo(CONFIG_PATH)
+@cli.command()
+def docs():
+    """Opens the documentation."""
+    click.launch(DOCS_URL)
 
 
-@rules.command()
-def reveal():
-    """Reveals the default rule file"""
-    click.launch(str(CONFIG_PATH), locate=True)
-
-
+# deprecated - only here for backwards compatibility
 @cli.command(hidden=True)
 @click.option("--path", is_flag=True, help="Print the default config file path")
 @click.option("--debug", is_flag=True, help="Debug the default config file")
-@click.option("--open-folder", is_flag=True)  # backwards compatibility
+@click.option("--open-folder", is_flag=True)
 @click.pass_context
 def config(ctx, path, debug, open_folder):
     """Edit the default configuration file."""
-    warn("`organize config` is deprecated. Please try the new `organize rules`.")
     if open_folder:
         ctx.invoke(reveal)
     elif path:
-        ctx.invoke(path)
+        ctx.invoke(reveal, path=True)
+        return
     elif debug:
         ctx.invoke(check)
     else:
         ctx.invoke(edit)
-
-
-@cli.command(help="Open the documentation")
-def docs():
-    click.launch(DOCS_URL)
+    warn("`organize config` is deprecated.")
+    warn("Please see `organize --help` for all available commands.")
 
 
 if __name__ == "__main__":
