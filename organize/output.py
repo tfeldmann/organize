@@ -9,6 +9,10 @@ logger = logging.getLogger(__name__)
 console = Console()
 
 
+def warn(msg):
+    console.print("Warning: %s" % msg, style="yellow")
+
+
 class Output:
     """
     class to track the current folder / file and print only changes.

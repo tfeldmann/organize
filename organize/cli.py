@@ -10,7 +10,7 @@ import appdirs
 import click
 
 from .__version__ import __version__
-from .output import console
+from .output import console, warn
 
 DOCS_URL = "https://organize.readthedocs.io"
 
@@ -61,10 +61,6 @@ CLI_CONFIG_FILE_OPTION = click.option(
     hidden=True,
     type=click.Path(exists=True),
 )
-
-
-def warn(msg):
-    console.print("Warning: %s" % msg, style="yellow")
 
 
 @click.group(
@@ -227,24 +223,6 @@ if __name__ == "__main__":
 #             print_error(e)
 #             print("Full traceback at: %s" % LOG_PATH)
 #             sys.exit(1)
-
-
-# def config_edit(config_path: Path) -> None:
-#     """open the config file in $EDITOR or default text editor"""
-#     # attention: the env variable might contain command line arguments.
-#     # https://github.com/tfeldmann/organize/issues/24
-#     editor = os.getenv("EDITOR")
-#     if editor:
-#         os.system('%s "%s"' % (editor, config_path))
-#     else:
-#         open_in_filemanager(config_path)
-
-
-# def open_in_filemanager(path: Path) -> None:
-#     """opens the given path in file manager, using the default application"""
-#     import webbrowser  # pylint: disable=import-outside-toplevel
-
-#     webbrowser.open(path.as_uri())
 
 
 # def config_debug(config_path: Path) -> None:
