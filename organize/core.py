@@ -140,7 +140,7 @@ def filter_pipeline(filters: Iterable[Filter], args: dict) -> bool:
         except Exception as e:  # pylint: disable=broad-except
             logger.exception(e)
             # console.print_exception()
-            filter_.print_error(e)
+            filter_.print_error(str(e))
             return False
     return True
 
@@ -154,13 +154,13 @@ def action_pipeline(actions: Iterable[Action], args: dict, simulate: bool) -> bo
                 deep_merge_inplace(args, updates)
         except Exception as e:  # pylint: disable=broad-except
             logger.exception(e)
-            action.print_error(e)
+            action.print_error(str(e))
             return False
     return True
 
 
 def run(config, simulate: bool = True):
-    count = Counter(done=0, fail=0)
+    count = Counter(done=0, fail=0) # type: Counter
 
     if simulate:
         output.simulation_banner()
@@ -213,7 +213,7 @@ def run_file(config_file: str, working_dir: str, simulate: bool):
         CONFIG_SCHEMA.validate(rules)
         warnings = replace_with_instances(rules)
         for msg in warnings:
-            output.print_warning(msg)
+            output.warn(msg)
         os.chdir(working_dir)
         count = run(rules, simulate=simulate)
         output.summary(count)

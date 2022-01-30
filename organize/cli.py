@@ -18,7 +18,7 @@ APP_DIRS = appdirs.AppDirs("organize")
 
 # setting the $ORGANIZE_CONFIG env variable overrides the default config path
 if os.getenv("ORGANIZE_CONFIG"):
-    CONFIG_PATH = Path(os.getenv("ORGANIZE_CONFIG")).resolve()
+    CONFIG_PATH = Path(os.getenv("ORGANIZE_CONFIG", "")).resolve()
     CONFIG_DIR = CONFIG_PATH.parent
 else:
     CONFIG_DIR = Path(APP_DIRS.user_config_dir)

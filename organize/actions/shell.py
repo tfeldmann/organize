@@ -45,7 +45,7 @@ class Shell(Action):
         self.run_in_simulation = run_in_simulation
         self.ignore_errors = ignore_errors
 
-    def pipeline(self, args: dict, simulate: bool) -> None:
+    def pipeline(self, args: dict, simulate: bool):
         full_cmd = self.cmd.render(**args)
         self.print("$ %s" % full_cmd)
         if not simulate or self.run_in_simulation:

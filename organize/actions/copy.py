@@ -1,4 +1,5 @@
 import logging
+from typing import Callable
 
 from fs import open_fs
 from fs.base import FS
@@ -90,6 +91,7 @@ class Copy(Action):
             dst_fs = open_fs(dirname(dst_path), writeable=True, create=True)
             dst_path = basename(dst_path)
 
+        copy_action: Callable[[FS, str, FS, str],None]
         if src_fs.isdir(src_path):
             copy_action = copy_dir
         elif src_fs.isfile(src_path):

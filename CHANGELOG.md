@@ -2,34 +2,33 @@
 
 ## v2 - In Progress
 
-This is a huge update with a large refactoring.
-Please backup all your important stuff before running.
+This is a huge update with lots of improvements.
+Please backup all your important stuff before running and use the simulate option!
 
 ### what's new
 
-- Completely rewritten core!
 - Respects your rule order - safer, less magic, less surprises.
   (v1 tried to be clever. v2 now works your config file from top to bottom)
-- Now you can organize (S)FTP, S3 Buckets, Zip archives and many more.
-  - Most of the actions like `move` and `copy` even work across file systems!
+- You can now target directories with your rules (copying, renaming, etc a whole folder)
+- Organize inside or between (S)FTP, S3 Buckets, Zip archives and many more.
   - [Available filesystems](https://www.pyfilesystem.org/page/index-of-filesystems/)
-- You can now target folders with your rules. Like copying a whole folder, renaming etc.
 - `max_depth` setting when recursing into subfolders
-- starts instantly (does not need to gather all the files before starting)
-- filters can now be excluded
-- nice terminal output
-- rule names
-- cleaner config file validation and stricter format
-- option to run `python` actions in simulation
-- added `empty` filter.
+- Instant start. (does not need to gather all the files before starting)
+- Filters can now be excluded.
+- Nice terminal output.
+- Rule names.
 - new conflict resolution settings in `move`, `copy` and `rename` action:
-  `skip`, `overwrite`, `trash`, `rename_new`, `rename_existing` as well as a
-  `rename_template` parameter.
-- the `shell` action now returns stdout and errorcode.
-- Added `symlink` action
+  - Options are `skip`, `overwrite`, `trash`, `rename_new` or `rename_existing`
+  - You can now define a custom `rename_template`.
+- The `python` action can now be run in simulation.
+- The `shell` action now returns stdout and errorcode.
+- Added filter `empty`.
+- Added filter `hash`.
+- Added action `symlink`.
 
 ### changed
 
+- cleaner config file validation and stricter format
 - The config file format got a long due overhaul. Please see the
   [migration documentation](docs/06-updating-from-v1.md) for what is new.
 - The `timezone` keyword for `lastmodified` and `created` was removed. The timezone is

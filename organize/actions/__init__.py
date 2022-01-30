@@ -1,3 +1,4 @@
+from typing import Dict, Type
 from .action import Action
 from .confirm import Confirm
 from .copy import Copy
@@ -23,4 +24,4 @@ ACTIONS = {
     Shell.name: Shell,
     Symlink.name: Symlink,
     Trash.name: Trash,
-}
+}  # type: Dict[str, Type[Action]]

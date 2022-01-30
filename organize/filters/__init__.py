@@ -1,3 +1,5 @@
+from typing import Dict, Type
+
 from .created import Created
 from .duplicate import Duplicate
 from .empty import Empty
@@ -27,4 +29,4 @@ FILTERS = {
     MimeType.name: MimeType,
     Python.name: Python,
     Regex.name: Regex,
-}
+}  # type: Dict[str, Type[Filter]]

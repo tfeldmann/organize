@@ -51,11 +51,6 @@ def resource_description(fs, path):
     return "{} on {}".format(path, fs)
 
 
-def fullpath(path: Union[str, Path]) -> Path:
-    """Expand '~' and resolve the given path. Path can be a string or a Path obj."""
-    return Path(os.path.expandvars(str(path))).expanduser().resolve(strict=False)
-
-
 def ensure_list(inp):
     if not isinstance(inp, list):
         return [inp]

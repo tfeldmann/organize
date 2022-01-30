@@ -35,7 +35,6 @@ organize = "organize.cli:main"
 python = "^3.6.2"
 fs = "^2.4.14"
 rich = "^11.0.0"
-docopt = "^0.6.2"
 PyYAML = "^5.4.1"
 Send2Trash = "^1.8.0"
 ExifRead = "^2.3.2"
@@ -45,6 +44,7 @@ macos-tags = { version = "^1.5.1", markers = "sys_platform == 'darwin'" }
 schema = "^0.7.5"
 Jinja2 = "^3.0.3"
 click = "^8.0.3"
+appdirs = "^1.4.4"
 
 [tool.poetry.extras]
 textract = ["textract"]
@@ -56,12 +56,22 @@ mkdocs = "^1.2.3"
 mkdocstrings = "^0.17.0"
 mkdocs-include-markdown-plugin = "^3.2.3"
 mkdocs-autorefs = "^0.3.1"
+requests = "^2.27.1"
+types-PyYAML = "^6.0.3"
 
 [tool.mypy]
 python_version = "3.6"
 
 [[tool.mypy.overrides]]
-module = ["schema", "simplematch", "appdirs", "send2trash", "exifread", "textract"]
+module = [
+    "schema",
+    "simplematch",
+    "appdirs",
+    "send2trash",
+    "exifread",
+    "textract",
+    "requests",
+]
 ignore_missing_imports = true
 
 [build-system]

@@ -95,7 +95,7 @@ class Exif(Filter):
         self.kwargs = tag_filters  # exif keys with expected values
 
     def category_dict(self, tags: Mapping[str, str]) -> ExifDict:
-        result = collections.defaultdict(dict)  # type: DefaultDict[str, Dict[str, str]]
+        result = collections.defaultdict(dict)  # type: DefaultDict
         for key, value in tags.items():
             if " " in key:
                 category, field = key.split(" ", maxsplit=1)

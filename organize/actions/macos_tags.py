@@ -4,6 +4,8 @@ import sys
 import simplematch as sm
 from schema import Or
 
+from organize.utils import Template
+
 from .action import Action
 
 logger = logging.getLogger(__name__)
@@ -33,7 +35,7 @@ class MacOSTags(Action):
         return {cls.name: Or(str, [str])}
 
     def __init__(self, *tags):
-        self.tags = tags
+        self.tags = [Template(tag) for tag in tags]
 
     def pipeline(self, args: dict, simulate: bool):
         fs = args["fs"]
@@ -49,7 +51,7 @@ class MacOSTags(Action):
         COLORS = [c.name.lower() for c in macos_tags.Color]
 
         for template in self.tags:
-            tag = self.fill_template_tags(template, args)
+            tag = template.render(**args)
             name, color = self._parse_tag(tag)
 
             if color not in COLORS:
@@ -62,7 +64,7 @@ class MacOSTags(Action):
                 _tag = macos_tags.Tag(
                     name=name,
                     color=macos_tags.Color[color.upper()],
-                )
+                )  # type: ignore
                 macos_tags.add(_tag, file=str(path))
 
     def _parse_tag(self, s):

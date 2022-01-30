@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, Union
 from typing import Optional as tyOptional
 
 from schema import Optional, Or, Schema
@@ -11,7 +11,7 @@ class Error(Exception):
 
 
 class Action:
-    name = None
+    name = None # type: Union[str, None]
     arg_schema = None
     schema_support_instance_without_args = False
 
@@ -42,8 +42,8 @@ class Action:
             cls.get_name(): arg_schema,
         }
 
-    def run(self, **kwargs) -> tyOptional[Dict[str, Any]]:
-        return self.pipeline(kwargs)
+    def run(self, simulate: bool, **kwargs) -> tyOptional[Dict[str, Any]]:
+        return self.pipeline(kwargs, simulate=simulate)
 
     def pipeline(self, args: dict, simulate: bool) -> tyOptional[Dict[str, Any]]:
         raise NotImplementedError

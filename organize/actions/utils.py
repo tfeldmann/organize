@@ -72,3 +72,5 @@ def resolve_overwrite_conflict(
                 move_file(dst_fs, dst_path, dst_fs, name)
 
         return ResolverResult(dst_fs=dst_fs, dst_path=dst_path, skip=False)
+
+    raise ValueError("Unknown conflict_mode %s" % conflict_mode)

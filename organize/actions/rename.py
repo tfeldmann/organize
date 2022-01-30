@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Callable
 
 from fs import path
 from fs.base import FS
@@ -101,6 +102,7 @@ class Rename(Action):
         if dst_path == src_path:
             self.print("Name did not change")
         else:
+            move_action: Callable[[FS, str, FS, str], None]
             if fs.isdir(src_path):
                 move_action = move_dir
             elif fs.isfile(src_path):
@@ -132,4 +134,7 @@ class Rename(Action):
         }
 
     def __str__(self) -> str:
-        return "Move(dest=%s, conflict_mode=%s)" % (self.dest, self.conflict_mode)
+        return "Rename(new_name=%s, conflict_mode=%s)" % (
+            self.new_name,
+            self.conflict_mode,
+        )
