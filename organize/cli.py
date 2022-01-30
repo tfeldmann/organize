@@ -9,15 +9,16 @@ from pathlib import Path
 import appdirs
 import click
 
+from . import output
+from .output import console
 from .__version__ import __version__
-from .output import console, warn
 
 # prepare config and log folders
 APP_DIRS = appdirs.AppDirs("organize")
 
 # setting the $ORGANIZE_CONFIG env variable overrides the default config path
 if os.getenv("ORGANIZE_CONFIG"):
-    CONFIG_PATH = Path(os.getenv("ORGANIZE_CONFIG", "")).resolve()
+    CONFIG_PATH = Path(os.getenv("ORGANIZE_CONFIG")).resolve()
     CONFIG_DIR = CONFIG_PATH.parent
 else:
     CONFIG_DIR = Path(APP_DIRS.user_config_dir)
@@ -39,10 +40,10 @@ class NaturalOrderGroup(click.Group):
         return self.commands.keys()
 
 
-CLI_RULES_FILE = click.argument(
-    "rule_file",
+CLI_CONFIG = click.argument(
+    "config",
     required=False,
-    envvar="ORGANIZE_RULE_FILE",
+    envvar="ORGANIZE_CONFIG",
     default=CONFIG_PATH,
     type=click.Path(exists=True),
 )
@@ -55,7 +56,6 @@ CLI_WORKING_DIR_OPTION = click.option(
 # for CLI backwards compatibility with organize v1.x
 CLI_CONFIG_FILE_OPTION = click.option(
     "--config-file",
-    envvar="ORGANIZE_CONFIG",
     default=None,
     hidden=True,
     type=click.Path(exists=True),
@@ -73,37 +73,43 @@ def cli():
 
 
 @cli.command()
-@CLI_RULES_FILE
+@CLI_CONFIG
 @CLI_WORKING_DIR_OPTION
 @CLI_CONFIG_FILE_OPTION
-def run(rule_file, working_dir, config_file):
+def run(config, working_dir, config_file):
     """Organizes your files according to your rules."""
     from .core import run_file
 
-    if config_file and not rule_file:
-        rule_file = config_file
-    run_file(rule_file=rule_file, working_dir=working_dir, simulate=False)
+    if config_file:
+        config = config_file
+        output.deprecated(
+            "The --config-file option can now be omitted. See organize --help."
+        )
+    run_file(config_file=config, working_dir=working_dir, simulate=False)
 
 
 @cli.command()
-@CLI_RULES_FILE
+@CLI_CONFIG
 @CLI_WORKING_DIR_OPTION
 @CLI_CONFIG_FILE_OPTION
-def sim(rule_file, working_dir, config_file):
+def sim(config, working_dir, config_file):
     """Simulates a run (does not touch your files)."""
     from .core import run_file
 
-    if config_file and not rule_file:
-        rule_file = config_file
-    run_file(rule_file=rule_file, working_dir=working_dir, simulate=True)
+    if config_file:
+        config = config_file
+        output.deprecated(
+            "The --config-file option can now be omitted. See organize --help."
+        )
+    run_file(config_file=config, working_dir=working_dir, simulate=True)
 
 
 @cli.command()
 @click.argument(
-    "rule_file",
+    "config",
     required=False,
     default=CONFIG_PATH,
-    envvar="ORGANIZE_RULE_FILE",
+    envvar="ORGANIZE_CONFIG",
     type=click.Path(),
 )
 @click.option(
@@ -111,22 +117,22 @@ def sim(rule_file, working_dir, config_file):
     envvar="EDITOR",
     help="The editor to use. (Default: $EDITOR)",
 )
-def edit(rule_file, editor):
+def edit(config, editor):
     """Edit the rules.
 
-    If called without arguments, it will open the default rule file in $EDITOR.
+    If called without arguments it will open the default rule file in $EDITOR.
     """
-    click.edit(filename=rule_file, editor=editor)
+    click.edit(filename=config, editor=editor)
 
 
 @cli.command()
-@CLI_RULES_FILE
-def check(rule_file):
+@CLI_CONFIG
+def check(config):
     """Checks whether a given rule file is valid.
 
-    If called without arguments, it will check the default rule file
+    If called without arguments it will check the default rule file.
     """
-    print(rule_file)
+    print(config)
 
 
 @cli.command()
@@ -177,58 +183,12 @@ def config(ctx, path, debug, open_folder):
         ctx.invoke(check)
     else:
         ctx.invoke(edit)
-    warn("`organize config` is deprecated.")
-    warn("Please see `organize --help` for all available commands.")
+    output.deprecated("`organize config` is deprecated.")
+    output.deprecated("Please see `organize --help` for all available commands.")
 
 
 if __name__ == "__main__":
     cli()
-
-
-# def main(argv=None):
-#     """entry point for the command line interface"""
-#     args = docopt(__doc__, argv=argv, version=__version__, help=True)
-
-#     # override default config file path
-#     if args["--config-file"]:
-#         expanded_path = os.path.expandvars(args["--config-file"])
-#         config_path = Path(expanded_path).expanduser().resolve()
-#         config_dir = config_path.parent
-#     else:
-#         config_dir = CONFIG_DIR
-#         config_path = CONFIG_PATH
-
-#     # > organize config
-#     if args["config"]:
-#         if args["--open-folder"]:
-#             open_in_filemanager(config_dir)
-#         elif args["--path"]:
-#             print(str(config_path))
-#         elif args["--debug"]:
-#             config_debug(config_path)
-#         else:
-#             config_edit(config_path)
-
-#     # > organize list
-#     elif args["list"]:
-#         list_actions_and_filters()
-
-#     # > organize sim / run
-#     else:
-#         try:
-#             config = Config.from_file(config_path)
-#             execute_rules(config.rules, simulate=args["sim"])
-#         except Config.Error as e:
-#             logger.exception(e)
-#             print_error(e)
-#             print("Try 'organize config --debug' for easier debugging.")
-#             print("Full traceback at: %s" % LOG_PATH)
-#             sys.exit(1)
-#         except Exception as e:  # pylint: disable=broad-except
-#             logger.exception(e)
-#             print_error(e)
-#             print("Full traceback at: %s" % LOG_PATH)
-#             sys.exit(1)
 
 
 # def config_debug(config_path: Path) -> None:
@@ -275,7 +235,3 @@ if __name__ == "__main__":
 #     print(Style.BRIGHT + "Actions:")
 #     for name, _ in inspect.getmembers(actions, inspect.isclass):
 #         print("  " + name)
-
-
-# def print_error(e: Union[Exception, str]) -> None:
-#     print(Style.BRIGHT + Fore.RED + "ERROR:" + Style.RESET_ALL + " %s" % e)

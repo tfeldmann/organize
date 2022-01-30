@@ -1,5 +1,9 @@
-from schema import Or, Schema, Optional
-from typing import Any, Dict, Optional as tyOptional, Callable
+from typing import Any, Dict
+from typing import Optional as tyOptional
+
+from schema import Optional, Or, Schema
+
+from organize.output import pipeline_error, pipeline_message
 
 
 class Error(Exception):
@@ -7,9 +11,6 @@ class Error(Exception):
 
 
 class Action:
-    print_hook = None  # type: Optional[Callable]
-    print_error_hook = None  # type: Optional[Callable]
-
     name = None
     arg_schema = None
     schema_support_instance_without_args = False
@@ -47,14 +48,12 @@ class Action:
     def pipeline(self, args: dict, simulate: bool) -> tyOptional[Dict[str, Any]]:
         raise NotImplementedError
 
-    def print(self, msg, *args, **kwargs) -> None:
+    def print(self, msg) -> None:
         """print a message for the user"""
-        if callable(self.print_hook):
-            self.print_hook(name=self.name, msg=msg, *args, **kwargs)
+        pipeline_message(source=self.get_name(), msg=msg)
 
     def print_error(self, msg: str):
-        if callable(self.print_error_hook):
-            self.print_error_hook(name=self.name, msg=msg)
+        pipeline_error(source=self.get_name(), msg=msg)
 
     def __str__(self) -> str:
         return self.__class__.__name__

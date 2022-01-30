@@ -1,5 +1,6 @@
 import logging
 import os
+from collections import Counter
 from datetime import datetime
 from typing import Iterable, NamedTuple
 
@@ -8,12 +9,13 @@ from fs.base import FS
 from fs.walk import Walker
 from schema import SchemaError
 
+from . import output
 from .actions import ACTIONS
 from .actions.action import Action
 from .config import CONFIG_SCHEMA, load_from_file
 from .filters import FILTERS
 from .filters.filter import Filter
-from .output import ColoredOutput, console, warn
+from .output import console
 from .utils import Template, deep_merge_inplace, ensure_list
 
 logger = logging.getLogger(__name__)
@@ -24,8 +26,6 @@ class Location(NamedTuple):
     base_fs: FS
     path: str
 
-
-output = ColoredOutput()
 
 DEFAULT_SYSTEM_EXCLUDE_FILES = [
     "thumbs.db",
@@ -160,26 +160,22 @@ def action_pipeline(actions: Iterable[Action], args: dict, simulate: bool) -> bo
 
 
 def run(config, simulate: bool = True):
-    count = [0, 0]
-    Action.print_hook = output.pipeline_message
-    Action.print_error_hook = output.pipeline_error
-    Filter.print_hook = output.pipeline_message
-    Filter.print_error_hook = output.pipeline_error
+    count = Counter(done=0, fail=0)
 
     if simulate:
-        output.print_simulation_banner()
+        output.simulation_banner()
 
     for rule in config["rules"]:
         target = rule.get("targets", "files")
-        output.print_rule(rule["name"])
+        output.rule(rule["name"])
 
-        status_verb = "simulating" if simulate else "organizing"
-        with console.status("[bold green]%s..." % status_verb) as status:
+        with output.spinner(simulate=simulate):
             for walker, base_fs, base_path in rule["locations"]:
+                output.location(base_fs, base_path)
                 walk = walker.files if target == "files" else walker.dirs
                 for path in walk(fs=base_fs, path=base_path):
+                    output.path(base_fs, path)
                     relative_path = fs.path.relativefrom(base_path, path)
-                    output.set_location(base_fs, relative_path, targets=target)
                     args = {
                         "fs": base_fs,
                         "fs_path": path,
@@ -194,27 +190,33 @@ def run(config, simulate: bool = True):
                         args=args,
                     )
                     if match:
-                        success = action_pipeline(
+                        is_success = action_pipeline(
                             actions=rule["actions"],
                             args=args,
                             simulate=simulate,
                         )
-                        count[success] += 1
+                        if is_success:
+                            count["done"] += 1
+                        else:
+                            count["fail"] += 1
 
     if simulate:
-        output.print_simulation_banner()
+        output.simulation_banner()
+
+    return count
 
 
-def run_file(rule_file: str, working_dir: str, simulate: bool):
+def run_file(config_file: str, working_dir: str, simulate: bool):
+    output.info(config_file, working_dir)
     try:
-        output.print_info(rule_file, working_dir, simulate)
-        rules = load_from_file(rule_file)
+        rules = load_from_file(config_file)
         CONFIG_SCHEMA.validate(rules)
         warnings = replace_with_instances(rules)
         for msg in warnings:
             output.print_warning(msg)
         os.chdir(working_dir)
-        run(rules, simulate=simulate)
+        count = run(rules, simulate=simulate)
+        output.summary(count)
     except SchemaError as e:
         console.print("Invalid config file")
         console.print(e.autos[-1])

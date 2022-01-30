@@ -1,13 +1,10 @@
 import textwrap
 
 import yaml
-from rich.console import Console
-from schema import And, Optional, Or, Schema, Literal, Const
+from schema import And, Optional, Or, Schema, Literal
 
 from organize.actions import ACTIONS
 from organize.filters import FILTERS
-
-console = Console()
 
 CONFIG_SCHEMA = Schema(
     {

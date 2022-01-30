@@ -2,11 +2,19 @@ rules:
   - name: "Files starting with L"
     targets: files
     locations:
-      - path: ~/Desktop
+      - path: ~/Downloads
         max_depth: 3
+      - path: ~/Documents
+        max_depth: 3
+      - path: ~/Pictures
+        max_depth: 3
+        ignore_errors: true
+      - filesystem: zip:///Users/thomasfeldmann/Downloads/105133-0001_stp.zip
+        path: "/Test"
+        ignore_errors: true
     filters:
       - name:
-          startswith: L
+          startswith: Liasd
     actions:
       - echo: "{name}"
 
@@ -17,7 +25,7 @@ rules:
         max_depth: 3
     filters:
       - name:
-          startswith: I
+          startswith: Iasdawf
     actions:
       - echo: "{name}"
 

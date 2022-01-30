@@ -1,6 +1,7 @@
 from schema import Schema, Optional, Or
 from textwrap import indent
 from typing import Any, Dict, Union, NamedTuple
+from organize.output import pipeline_message, pipeline_error
 
 
 class FilterResult(NamedTuple):
@@ -9,9 +10,6 @@ class FilterResult(NamedTuple):
 
 
 class Filter:
-    print_hook = None
-    print_error_hook = None
-
     name = None  # type: Union[str, None]
     arg_schema = None  # type: Union[Schema, None]
     schema_support_instance_without_args = False
@@ -61,12 +59,10 @@ class Filter:
 
     def print(self, msg: str) -> None:
         """print a message for the user"""
-        if callable(self.print_hook):
-            self.print_hook(name=self.name, msg=msg)
+        pipeline_message(self.get_name(), msg)
 
     def print_error(self, msg: str):
-        if callable(self.print_error_hook):
-            self.print_error_hook(name=self.name, msg=msg)
+        pipeline_error(self.get_name(), msg)
 
     def __str__(self) -> str:
         """Return filter name and properties"""

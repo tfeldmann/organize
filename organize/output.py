@@ -1,141 +1,156 @@
-import logging
-from textwrap import indent
-from fs.osfs import OSFS
-from rich.rule import Rule
+from collections import Counter
+from fs.path import basename, dirname, forcedir
 from rich.console import Console
 from rich.panel import Panel
+from rich.text import Text
+from rich.theme import Theme
+
 from organize.__version__ import __version__
 
-logger = logging.getLogger(__name__)
-console = Console()
+from .utils import resource_description
+
+ICON_DIR = "🗁"
+ICON_FILE = ""
+INDENT = " " * 2
+
+theme = Theme(
+    {
+        "info": "dim cyan",
+        "warning": "yellow",
+        "error": "bold red",
+        "simulation": "bold green",
+        "status": "bold green",
+        "rule": "bold cyan",
+        "location.fs": "yellow",
+        "location.base": "green",
+        "location.main": "bold green",
+        "path.base": "dim white",
+        "path.main": "white",
+        "path.icon": "white",
+        "pipeline.source": "cyan",
+        "pipeline.msg": "white",
+        "pipeline.error": "bold red",
+        "summary.done": "bold green",
+        "summary.fail": "red",
+    }
+)
+console = Console(theme=theme, highlight=False)
 
 
-def warn(msg):
-    console.print("Warning: %s" % msg, style="yellow")
+class Prefixer:
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self._args = None
+        self._kwargs = None
+
+    def set_prefix(self, *args, **kwargs):
+        self._args = args
+        self._kwargs = kwargs
+
+    def print(self, *args, **kwargs):
+        if self._args is not None:
+            console.print(*self._args, **self._kwargs)
+            self.reset()
+        console.print(*args, **kwargs)
 
 
-class Output:
-    """
-    class to track the current folder / file and print only changes.
-    This is needed because we only want to output the current folder and file if the
-    filter or action prints something.
-    """
-
-    def __init__(self) -> None:
-        self.not_found = set()
-        self.curr_folder = None
-        self.curr_path = None
-        self.prev_folder = None
-        self.prev_path = None
-        self._location_target = ""
-
-    def set_location(self, folder, path, targets="files") -> None:
-        self.curr_folder = folder
-        self.curr_path = path
-        if targets == "dirs":
-            self._location_target = "🗀"  # ":file_folder:"
-        else:
-            self._location_target = "🗅"  # ":page_facing_up:"
-
-    def print_location_update(self):
-        if self.curr_folder != self.prev_folder:
-            if self.prev_folder is not None:
-                self.print_location_spacer()
-            self.print_location(self.curr_folder)
-            self.prev_folder = self.curr_folder
-
-        if self.curr_path != self.prev_path:
-            self.print_path(self.curr_path)
-            self.prev_path = self.curr_path
-
-    def pipeline_message(self, name, msg, *args, **kwargs) -> None:
-        """
-        pre-print hook that is called everytime the moment before a filter or action is
-        about to print something to the cli
-        """
-        self.print_location_update()
-        self.print_pipeline_message(name, msg, *args, **kwargs)
-
-    def pipeline_error(self, name, msg):
-        self.print_location_update()
-        self.print_pipeline_error(name, msg)
-
-    def path_not_found(self, folderstr: str) -> None:
-        if folderstr not in self.not_found:
-            self.not_found.add(folderstr)
-            self.print_not_found(folderstr)
-            logger.warning("Path not found: %s", folderstr)
-
-    def print_location_spacer(self):
-        raise NotImplementedError
-
-    def print_location(self, folder):
-        raise NotImplementedError
-
-    def print_path(self, path):
-        raise NotImplementedError
-
-    def print_not_found(self, path):
-        raise NotImplementedError
-
-    def print_pipeline_message(self, name, msg):
-        raise NotImplementedError
-
-    def print_pipeline_error(self, name, msg):
-        raise NotImplementedError
-
-    def print_info(self):
-        raise NotImplementedError
-
-    def print_warning(self):
-        raise NotImplementedError
+with_path = Prefixer()
+with_newline = Prefixer()
 
 
-class ColoredOutput(Output):
-    def print_info(self, rule_file, working_dir, simulate):
-        console.print("organize {}".format(__version__))
-        console.print('Rule file: "{}"'.format(rule_file))
-        if working_dir != ".":
-            console.print("Working dir: {}".format(working_dir))
+def _highlight_path(path, base_style, main_style):
+    return Text.assemble(
+        (forcedir(dirname(path)), base_style),
+        (basename(path), main_style),
+    )
 
-    def print_warning(self, msg):
-        console.print("[yellow][bold]Warning:[/bold] {}[/yellow]".format(msg))
 
-    def print_simulation_banner(self):
-        console.print(Panel("[bold green]SIMULATION", style="green"))
+def info(rule_file, working_dir):
+    console.print("organize {}".format(__version__))
+    console.print('Config file: "{}"'.format(rule_file))
+    if working_dir != ".":
+        console.print("Working dir: {}".format(working_dir))
 
-    def print_rule(self, rule):
-        console.print(
-            Rule(
-                "[bold yellow]:gear: %s[/bold yellow]" % rule,
-                align="left",
-                style="yellow",
-            )
+
+def warn(msg, title="Warning"):
+    console.print("[warning][b]{}:[/b] {}[/warning]".format(title, msg))
+
+
+def deprecated(msg):
+    warn(msg, title="Deprecated")
+
+
+def simulation_banner():
+    console.print()
+    console.print(Panel("SIMULATION", style="simulation"))
+
+
+def spinner(simulate: bool):
+    status_verb = "simulating" if simulate else "organizing"
+    return console.status("[status]%s..." % status_verb)
+
+
+def rule(rule):
+    console.print()
+    console.rule("[rule]:gear: %s" % rule, align="left", style="rule")
+    with_newline.reset()
+
+
+def location(fs, path):
+    result = Text()
+    if fs.hassyspath(path):
+        syspath = fs.getsyspath(path)
+        result = _highlight_path(syspath.rstrip("/"), "location.base", "location.main")
+    else:
+        result = Text.assemble(
+            (str(fs), "location.fs"),
+            " ",
+            _highlight_path(path.rstrip("/"), "location.base", "location.main"),
         )
+    with_newline.print(result)
 
-    def print_location(self, folder):
-        if isinstance(folder, OSFS):
-            console.print(folder.root_path, style="purple bold")
-        else:
-            console.print(str(folder), style="purple bold")
 
-    def print_location_spacer(self):
-        console.print()
+def path(fs, path):
+    icon = ICON_DIR if fs.isdir(path) else ICON_FILE
+    msg = Text.assemble(
+        INDENT,
+        _highlight_path(path, "path.base", "path.main"),
+        " ",
+        (icon, "path.icon"),
+    )
+    with_path.set_prefix(msg)
 
-    def print_path(self, path):
-        console.print(
-            indent("%s %s" % (self._location_target, path), " " * 2),
-            style="italic purple",
+
+def pipeline_message(source: str, msg: str) -> None:
+    line = Text.assemble(
+        INDENT * 2,
+        ("- ({})".format(source), "pipeline.source"),
+        (msg, "pipeline.msg"),
+    )
+    with_path.print(line)
+    with_newline.set_prefix("")
+
+
+def pipeline_error(source: str, msg: str):
+    line = Text.assemble(
+        INDENT * 2,
+        ("- ({})".format(source), "pipeline.source"),
+        ("ERROR! {}".format(msg), "pipeline.error"),
+    )
+    with_path.print(line)
+    with_newline.set_prefix("")
+
+
+def summary(count: Counter):
+    console.print()
+    if not sum(count.values()):
+        console.print("Nothing to do.")
+    else:
+        result = Text.assemble(
+            ("success {done}".format(**count), "summary.done"),
+            " / ",
+            ("fail {fail}".format(**count), "summary.fail"),
         )
-
-    def print_not_found(self, path):
-        msg = "Path not found: {}".format(path)
-        console.print(msg, style="bold yellow")
-
-    def print_pipeline_message(self, name, msg, *args, **kwargs):
-        console.print(indent("- (%s) %s" % (name, msg), " " * 4), style="green")
-
-    def print_pipeline_error(self, name, msg):
-        console.print(
-            indent("- ([bold red]%s[/]) [bold red]ERROR! %s[/]" % (name, msg), " " * 4)
-        )
+        console.print(result)
