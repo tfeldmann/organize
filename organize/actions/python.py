@@ -12,56 +12,12 @@ logger = logging.getLogger(__name__)
 
 class Python(Action):
 
-    r"""
-    Execute python code in your config file.
+    """Execute python code.
 
-    :param str code: The python code to execute
-
-    Examples:
-      - A basic example that shows how to get the current file path and do some
-        printing in a for loop. The ``|`` is yaml syntax for defining a string
-        literal spanning multiple lines.
-
-        .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-            - folders: '~/Desktop'
-              actions:
-                - python: |
-                    print('The path of the current file is %s' % path)
-                    for _ in range(5):
-                        print('Heyho, its me from the loop')
-
-      - You can access filter data:
-
-        .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-            - folders: ~/Desktop
-              filters:
-                - regex: '^(?P<name>.*)\.(?P<extension>.*)$'
-              actions:
-                - python: |
-                    print('Name: %s' % regex.name)
-                    print('Extension: %s' % regex.extension)
-
-      - You have access to all the python magic -- do a google search for each
-        filename starting with an underscore:
-
-        .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-            - folders: ~/Desktop
-              filters:
-                - filename:
-                    startswith: '_'
-              actions:
-                - python: |
-                    import webbrowser
-                    webbrowser.open('https://www.google.com/search?q=%s' % path.stem)
+    Args:
+        code (str): The python code to execute.
+        run_in_simulation (bool):
+            Whether to execute this code in simulation mode (Default false).
     """
 
     name = "python"

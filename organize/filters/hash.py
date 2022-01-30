@@ -33,8 +33,9 @@ class Hash(Filter):
     {'shake_256', 'whirlpool', 'mdc2', 'blake2s', 'sha224', 'shake_128', 'sha3_512', 'sha3_224', 'sha384', 'md5', 'sha1', 'sha512_256', 'blake2b', 'sha256', 'sha512_224', 'ripemd160', 'sha3_384', 'md4', 'sm3', 'sha3_256', 'md5-sha1', 'sha512'}
     ```
 
-    Returns:
-        str: The hash of the file.
+    **Returns:**
+
+    - `{hash}`:  The hash of the file.
     """
 
     name = "hash"

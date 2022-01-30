@@ -15,9 +15,16 @@ class MimeType(Filter):
 
     You can see a list of known MIME types on your system by running this oneliner:
 
-    .. code-block:: yaml
+    ```sh
+    python3 -c "import mimetypes as m; print('\\n'.join(sorted(set(m.common_types.values()) | set(m.types_map.values()))))"
+    ```
 
-      python3 -c "import mimetypes as m; print('\\n'.join(sorted(set(m.common_types.values()) | set(m.types_map.values()))))"
+    Args:
+        *mimetypes (list(str) or str): The MIME types to filter for.
+
+    **Returns:**
+
+    - `{mimetype}`: The MIME type of the file.
     """
 
     name = "mimetype"

@@ -13,44 +13,18 @@ SUPPORTED_EXTENSIONS = (
 
 
 class FileContent(Filter):
-    r"""Matches file content with the given regular expression
+    """Matches file content with the given regular expression
 
-    :param str expr:
-        The regular expression to be matched.
+    Args:
+        expr (str): The regular expression to be matched.
 
-    Any named groups in your regular expression will be returned like this:
+    Any named groups (`(?P<groupname>.*)`) in your regular expression will
+    be returned like this:
 
-    :returns:
-        - ``{filecontent.yourgroupname}`` -- The text matched with the named group
-          ``(?P<yourgroupname>)``
+    **Returns:**
 
-    Examples:
-
-        - Show the content of all your PDF files:
-
-          .. code-block::yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: ~/Documents
-                filters:
-                  - extension: pdf
-                  - filecontent: '(?P<all>.*)'
-                actions:
-                  - echo: "{filecontent.all}"
-
-
-        - Match an invoice with a regular expression and sort by customer:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Desktop'
-                filters:
-                  - filecontent: 'Invoice.*Customer (?P<customer>\w+)'
-                actions:
-                  - move: '~/Documents/Invoices/{filecontent.customer}/'
+    - `{filecontent.groupname}`: The text matched with the named group
+      `(?P<groupname>)`
     """
 
     name = "filecontent"

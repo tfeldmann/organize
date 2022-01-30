@@ -10,76 +10,13 @@ from .filter import Filter, FilterResult
 class Extension(Filter):
     """Filter by file extension
 
-    :param extensions:
-        The file extensions to match (does not need to start with a colon).
+    Args:
+        *extensions (list(str) or str):
+            The file extensions to match (does not need to start with a colon).
 
-    :returns:
-        - ``{extension}`` -- the original file extension (without colon)
-        - ``{extension.lower}`` -- the file extension in lowercase
-        - ``{extension.upper}`` -- the file extension in UPPERCASE
+    **Returns:**
 
-    Examples:
-        - Match a single file extension:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Desktop'
-                filters:
-                  - extension: png
-                actions:
-                  - echo: 'Found PNG file: {path}'
-
-        - Match multiple file extensions:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Desktop'
-                filters:
-                  - extension:
-                    - .jpg
-                    - jpeg
-                actions:
-                  - echo: 'Found JPG file: {path}'
-
-        - Make all file extensions lowercase:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Desktop'
-                filters:
-                  - extension
-                actions:
-                  - rename: '{path.stem}.{extension.lower}'
-
-        - Using extension lists:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            img_ext: &img
-              - png
-              - jpg
-              - tiff
-
-            audio_ext: &audio
-              - mp3
-              - wav
-              - ogg
-
-            rules:
-              - folders: '~/Desktop'
-                filters:
-                  - extension:
-                    - *img
-                    - *audio
-                actions:
-                  - echo: 'Found media file: {path}'
+    - `{extension}`: the original file extension (without colon)
     """
 
     name = "extension"

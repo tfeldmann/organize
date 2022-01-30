@@ -30,8 +30,8 @@ def create_constraints(inp: str) -> Set[Tuple[Callable[[int, int], bool], int]]:
     Given an input string it returns a list of tuples (comparison operator,
     number of bytes).
 
-    Accepted formats are: '30k', '>= 5 TiB, <10tb', '< 60 tb', ...
-    Calculation is in bytes, even if the 'b' is lowercase. If an 'i' is present
+    Accepted formats are: "30k", ">= 5 TiB, <10tb", "< 60 tb", ...
+    Calculation is in bytes, even if the "b" is lowercase. If an "i" is present
     we calculate base 1024.
     """
     result = set()  # type: Set[Tuple[Callable[[int, int], bool], int]]
@@ -46,7 +46,7 @@ def create_constraints(inp: str) -> Set[Tuple[Callable[[int, int], bool], int]]:
                 unit = match["unit"]
                 base = 1024 if unit.endswith("i") else 1000
                 exp = "kmgtpezy".index(unit[0]) + 1 if unit else 0
-                numbytes = num * base ** exp
+                numbytes = num * base**exp
                 result.add((op, numbytes))
         except (AttributeError, KeyError, IndexError, ValueError, TypeError) as e:
             raise ValueError("Invalid size format: %s" % part) from e
@@ -60,53 +60,27 @@ def satisfies_constraints(size, constraints):
 class Size(Filter):
     """Matches files and folders by size
 
-    :param str conditions:
+    Args:
+        *conditions (list(str) or str):
+            The size constraints.
 
-    Accepts file size conditions, e.g: ``'>= 500 MB'``, ``'< 20k'``, ``'>0'``,
-    ``'= 10 KiB'``.
+    Accepts file size conditions, e.g: `">= 500 MB"`, `"< 20k"`, `">0"`,
+    `"= 10 KiB"`.
 
     It is possible to define both lower and upper conditions like this:
-    ``'>20k, < 1 TB'``, ``'>= 20 Mb, <25 Mb'``. The filter will match if all given
+    `">20k, < 1 TB"`, `">= 20 Mb, <25 Mb"`. The filter will match if all given
     conditions are satisfied.
 
     - Accepts all units from KB to YB.
     - If no unit is given, kilobytes are assumend.
     - If binary prefix is given (KiB, GiB) the size is calculated using base 1024.
 
-    :returns:
-        - ``{size.bytes}`` -- Size in bytes
+    **Returns:**
 
-    Examples:
-        - Trash big downloads:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - locations: '~/Downloads'
-                targets: files
-                filters:
-                  - filesize: '> 0.5 GB'
-                actions:
-                  - trash
-
-        - Move all JPEGS bigger > 1MB and <10 MB. Search all subfolders and keep the
-          original relative path.
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Pictures'
-                subfolders: true
-                filters:
-                  - extension:
-                      - jpg
-                      - jpeg
-                  - filesize: '>1mb, <10mb'
-                actions:
-                  - move: '~/Pictures/sorted/{relative_path}/'
-
+    - `{size.bytes}`: (int) Size in bytes
+    - `{size.traditional}`: (str) Size with unit (powers of 1024, JDEC prefixes)
+    - `{size.binary}`: (str) Size with unit (powers of 1024, IEC prefixes)
+    - `{size.decimal}`: (str) Size with unit (powers of 1000, SI prefixes)
     """
 
     name = "size"

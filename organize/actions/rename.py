@@ -17,46 +17,26 @@ logger = logging.getLogger(__name__)
 
 class Rename(Action):
 
-    """
-    Renames a file.
+    """Renames a file.
 
-    :param str name:
-        The new filename.
-        Can be a format string which uses file attributes from a filter.
+    Args:
+        name (str):
+            The new name for the file / dir.
 
-    :param bool overwrite:
-        specifies whether existing files should be overwritten.
-        Otherwise it will start enumerating files (append a counter to the
-        filename) to resolve naming conflicts. [Default: False]
+        on_conflict (str):
+            What should happen in case **dest** already exists.
+            One of `skip`, `overwrite`, `trash`, `rename_new` and `rename_existing`.
+            Defaults to `rename_new`.
 
-    :param str counter_separator:
-        specifies the separator between filename and the appended counter.
-        Only relevant if **overwrite** is disabled. [Default: ``\' \'``]
+        rename_template (str):
+            A template for renaming the file / dir in case of a conflict.
+            Defaults to `{name} {counter}{extension}`.
 
-    Examples:
-        - Convert all .PDF file extensions to lowercase (.pdf):
+        dest_filesystem (str):
+            (Optional) A pyfilesystem opener url of the filesystem you want to copy to.
+            If this is not given, the local filesystem is used.
 
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Desktop'
-                filters:
-                  - extension: PDF
-                actions:
-                  - rename: "{path.stem}.pdf"
-
-        - Convert **all** file extensions to lowercase:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Desktop'
-                filters:
-                  - Extension
-                actions:
-                  - rename: "{path.stem}.{extension.lower}"
+    The next action will work with the renamed file / dir.
     """
 
     name = "rename"
@@ -71,7 +51,7 @@ class Rename(Action):
 
     def __init__(
         self,
-        new_name: str,
+        name: str,
         on_conflict="rename_new",
         rename_template="{name} {counter}{extension}",
     ) -> None:
@@ -80,7 +60,7 @@ class Rename(Action):
                 "on_conflict must be one of %s" % ", ".join(CONFLICT_OPTIONS)
             )
 
-        self.new_name = Template.from_string(new_name)
+        self.new_name = Template.from_string(name)
         self.conflict_mode = on_conflict
         self.rename_template = Template.from_string(rename_template)
 

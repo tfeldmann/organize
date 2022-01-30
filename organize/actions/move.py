@@ -17,77 +17,34 @@ logger = logging.getLogger(__name__)
 
 class Move(Action):
 
-    """
-    Move a file to a new location. The file can also be renamed.
+    """Move a file to a new location.
+
+    The file can also be renamed.
     If the specified path does not exist it will be created.
 
     If you only want to rename the file and keep the folder, it is
-    easier to use the Rename-Action.
+    easier to use the `rename` action.
 
-    :param str dest:
-        The destination folder or path.
-        If `dest` ends with a slash / backslash, the file will be moved into
-        this folder and not renamed.
+    Args:
+        dest (str):
+            The destination where the file / dir should be moved to.
+            If `dest` ends with a slash, it is assumed to be a target directory
+            and the file / dir will be moved into `dest` and keep its name.
 
-    :param bool overwrite:
-        specifies whether existing files should be overwritten.
-        Otherwise it will start enumerating files (append a counter to the
-        filename) to resolve naming conflicts. [Default: False]
+        on_conflict (str):
+            What should happen in case **dest** already exists.
+            One of `skip`, `overwrite`, `trash`, `rename_new` and `rename_existing`.
+            Defaults to `rename_new`.
 
-    :param str counter_separator:
-        specifies the separator between filename and the appended counter.
-        Only relevant if **overwrite** is disabled. [Default: ``\' \'``]
+        rename_template (str):
+            A template for renaming the file / dir in case of a conflict.
+            Defaults to `{name} {counter}{extension}`.
 
-    Examples:
-        - Move all pdfs and jpgs from the desktop into the folder "~/Desktop/media/".
-          Filenames are not changed.
+        dest_filesystem (str):
+            (Optional) A pyfilesystem opener url of the filesystem you want to copy to.
+            If this is not given, the local filesystem is used.
 
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: ~/Desktop
-                filters:
-                  - extension:
-                      - pdf
-                      - jpg
-                actions:
-                  - move: '~/Desktop/media/'
-
-        - Use a placeholder to move all .pdf files into a "PDF" folder and all
-          .jpg files into a "JPG" folder. Existing files will be overwritten.
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: ~/Desktop
-                filters:
-                  - extension:
-                      - pdf
-                      - jpg
-                actions:
-                  - move:
-                      dest: '~/Desktop/{extension.upper}/'
-                      overwrite: true
-
-        - Move pdfs into the folder `Invoices`. Keep the filename but do not
-          overwrite existing files. To prevent overwriting files, an index is
-          added to the filename, so ``somefile.jpg`` becomes ``somefile 2.jpg``.
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: ~/Desktop/Invoices
-                filters:
-                  - extension:
-                      - pdf
-                actions:
-                  - move:
-                      dest: '~/Documents/Invoices/'
-                      overwrite: false
-                      counter_separator: '_'
+    The next action will work with the moved file / dir.
     """
 
     name = "move"

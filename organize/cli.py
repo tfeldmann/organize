@@ -120,7 +120,7 @@ def sim(config, working_dir, config_file):
 def edit(config, editor):
     """Edit the rules.
 
-    If called without arguments it will open the default rule file in $EDITOR.
+    If called without arguments it will open the default config file in $EDITOR.
     """
     click.edit(filename=config, editor=editor)
 
@@ -128,9 +128,9 @@ def edit(config, editor):
 @cli.command()
 @CLI_CONFIG
 def check(config):
-    """Checks whether a given rule file is valid.
+    """Checks whether a given config file is valid.
 
-    If called without arguments it will check the default rule file.
+    If called without arguments it will check the default config file.
     """
     print(config)
 
@@ -138,7 +138,7 @@ def check(config):
 @cli.command()
 @click.option("--path", is_flag=True, help="Print the path instead of revealing it.")
 def reveal(path):
-    """Reveals the default rule file."""
+    """Reveals the default config file."""
     if path:
         click.echo(CONFIG_PATH)
     else:
@@ -147,7 +147,7 @@ def reveal(path):
 
 @cli.command()
 def schema():
-    """Prints the json schema for rule files."""
+    """Prints the json schema for config files."""
     import json
 
     from .config import CONFIG_SCHEMA

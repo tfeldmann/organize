@@ -11,7 +11,6 @@ import hashlib
 from collections import defaultdict
 from fs.base import FS
 from typing import Dict, Set, Union, NamedTuple
-from organize.output import console
 from organize.utils import is_same_resource
 
 from .filter import Filter, FilterResult
@@ -52,8 +51,9 @@ class Duplicate(Filter):
     This filter compares files byte by byte and finds identical files with potentially
     different filenames.
 
-    :returns:
-        - ``{duplicate}`` -- path to the duplicate source
+    **Returns:**
+
+    - `{duplicate}` -- full path of the duplicate source
     """
 
     name = "duplicate"

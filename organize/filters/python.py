@@ -8,17 +8,19 @@ class Python(Filter):
 
     r"""Use python code to filter files.
 
-    :param str code:
-        The python code to execute. The code must contain a ``return`` statement.
+    Args:
+        code (str):
+            The python code to execute. The code must contain a `return` statement.
 
 
-    :returns:
-        - If your code returns ``False`` or ``None`` the file is filtered out,
-          otherwise the file is passed on to the next filters.
-        - ``{python}`` contains the returned value. If you return a dictionary (for
-          example ``return {"some_key": some_value, "nested": {"k": 2}}``) it will be
-          accessible via dot syntax in your actions: ``{python.some_key}``,
-          ``{python.nested.k}``.
+    **Returns:**
+
+    - If your code returns `False` or `None` the file is filtered out,
+        otherwise the file is passed on to the next filters.
+    - `{python}` contains the returned value. If you return a dictionary (for
+        example `return {"some_key": some_value, "nested": {"k": 2}}`) it will be
+        accessible via dot syntax in your actions: `{python.some_key}`,
+        `{python.nested.k}`.
     """
 
     name = "python"

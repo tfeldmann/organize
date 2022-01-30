@@ -14,20 +14,17 @@ class Shell(Action):
     """
     Executes a shell command
 
-    :param str cmd: The command to execute.
+    Args:
+        cmd (str): The command to execute.
+        run_in_simulation (bool):
+            Whether to execute in simulation mode (default = false)
+        ignore_errors (bool):
+            Whether to continue on returncodes != 0.
 
-    Example:
-      - (macOS) Open all pdfs on your desktop:
+    Returns
 
-        .. code-block:: yaml
-          :caption: config.yaml
-
-          rules:
-            - folders: '~/Desktop'
-              filters:
-                - extension: pdf
-              actions:
-                - shell: 'open "{path}"'
+    - `{shell.output}` (`str`): The stdout of the executed process.
+    - `{shell.returncode}` (`int`): The returncode of the executed process.
     """
 
     name = "shell"

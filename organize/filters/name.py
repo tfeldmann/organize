@@ -9,73 +9,22 @@ from .filter import Filter, FilterResult
 class Name(Filter):
     """Match files by filename
 
-    :param str match:
-        A matching string in `simplematch`-syntax
-        (https://github.com/tfeldmann/simplematch)
+    Args:
+        match (str):
+            A matching string in [simplematch-syntax](https://github.com/tfeldmann/simplematch)
 
-    :param str startswith:
-        The filename must begin with the given string
+        startswith (str):
+            The filename must begin with the given string
 
-    :param str contains:
-        The filename must contain the given string
+        contains (str):
+            The filename must contain the given string
 
-    :param str endswith:
-        The filename (without extension) must end with the given string
+        endswith (str):
+            The filename (without extension) must end with the given string
 
-    :param bool case_sensitive = True:
-        By default, the matching is case sensitive. Change this to False to use
-        case insensitive matching.
-
-    Examples:
-        - Match all files starting with 'Invoice':
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Desktop'
-                filters:
-                  - filename:
-                      startswith: Invoice
-                actions:
-                  - echo: 'This is an invoice'
-
-        - Match all files starting with 'A' end containing the string 'hole'
-          (case insensitive)
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Desktop'
-                filters:
-                  - filename:
-                      startswith: A
-                      contains: hole
-                      case_sensitive: false
-                actions:
-                  - echo: 'Found a match.'
-
-        - Match all files starting with 'A' or 'B' containing '5' or '6' and ending with
-          '_end'
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Desktop'
-                filters:
-                  - filename:
-                      startswith:
-                        - A
-                        - B
-                      contains:
-                        - 5
-                        - 6
-                      endswith: _end
-                      case_sensitive: false
-                actions:
-                  - echo: 'Found a match.'
+        case_sensitive (bool):
+            By default, the matching is case sensitive. Change this to False to use
+            case insensitive matching.
     """
 
     name = "name"

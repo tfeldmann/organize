@@ -88,7 +88,7 @@ rules:
 
 ::: organize.actions.Echo
 
-<details><summary>Examples</summary>
+**Examples**
 
 ```yaml
 rules:
@@ -134,22 +134,20 @@ Show the `{basedir}` and `{path}` of all files in '~/Downloads', '~/Desktop' and
 
 rules:
   - locations:
-      - ~/Desktop
-      - ~/Downloads
-    subfolders: true
+      - path: ~/Desktop
+        max_depth: null
+      - path: ~/Downloads
+        max_depth: null
     actions:
       - echo: "Basedir: {basedir}"
       - echo: "Path:    {path}"
 ```
 
-</details>
-
 ## macos_tags
 
 ::: organize.actions.MacOSTags
 
-<details>
-<summary>Examples</summary>
+**Examples**
 
 ```yaml
 rules:
@@ -205,23 +203,141 @@ rules:
           - Year-{created.year} (red)
 ```
 
-</details>
-
 ## move
 
 ::: organize.actions.Move
+
+**Examples**
+
+Move all pdfs and jpgs from the desktop into the folder "~/Desktop/media/". Filenames are not changed.
+
+```yaml
+rules:
+  - locations: ~/Desktop
+    filters:
+      - extension:
+          - pdf
+          - jpg
+    actions:
+      - move: "~/Desktop/media/"
+```
+
+Use a placeholder to move all .pdf files into a "PDF" folder and all .jpg files into a
+"JPG" folder. Existing files will be overwritten.
+
+```yaml
+rules:
+  - locations: ~/Desktop
+    filters:
+      - extension:
+          - pdf
+          - jpg
+    actions:
+      - move:
+          dest: "~/Desktop/{extension.upper}/"
+          overwrite: true
+```
+
+Move pdfs into the folder `Invoices`. Keep the filename but do not overwrite existing files. To prevent overwriting files, an index is added to the filename, so `somefile.jpg` becomes `somefile 2.jpg`.
+
+```yaml
+rules:
+  - locations: ~/Desktop/Invoices
+    filters:
+      - extension:
+          - pdf
+    actions:
+      - move:
+          dest: "~/Documents/Invoices/"
+          overwrite: false
+          counter_separator: "_"
+```
 
 ## python
 
 ::: organize.actions.Python
 
+A basic example that shows how to get the current file path and do some printing in a
+for loop. The `|` is yaml syntax for defining a string literal spanning multiple lines.
+
+```yaml
+rules:
+  - folders: "~/Desktop"
+    actions:
+      - python: |
+          print('The path of the current file is %s' % path)
+          for _ in range(5):
+              print('Heyho, its me from the loop')
+```
+
+```yaml
+rules:
+  - name: "You can access filter data"
+  - folders: ~/Desktop
+    filters:
+      - regex: '^(?P<name>.*)\.(?P<extension>.*)$'
+    actions:
+      - python: |
+          print('Name: %s' % regex.name)
+          print('Extension: %s' % regex.extension)
+```
+
+You have access to all the python magic -- do a google search for each
+filename starting with an underscore:
+
+```yaml
+rules:
+  - folders: ~/Desktop
+    filters:
+      - filename:
+          startswith: "_"
+    actions:
+      - python: |
+          import webbrowser
+          webbrowser.open('https://www.google.com/search?q=%s' % path.stem)
+```
+
 ## rename
 
 ::: organize.actions.Rename
 
+**Examples**
+
+```yaml
+rules:
+  - name: "Convert all .PDF file extensions to lowercase (.pdf)"
+    locations: "~/Desktop"
+    filters:
+      - extension: PDF
+    actions:
+      - rename: "{path.stem}.pdf"
+```
+
+```yaml
+rules:
+  - name: "Convert **all** file extensions to lowercase"
+    folders: "~/Desktop"
+    filters:
+      - Extension
+    actions:
+      - rename: "{path.stem}.{extension.lower}"
+```
+
 ## shell
 
 ::: organize.actions.Shell
+
+**Examples**
+
+```yaml
+rules:
+  - name: "On macOS: Open all pdfs on your desktop"
+    folders: "~/Desktop"
+    filters:
+      - extension: pdf
+    actions:
+      - shell: 'open "{path}"'
+```
 
 ## symlink
 

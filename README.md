@@ -214,28 +214,22 @@ happen:
 ## Command line interface
 
 ```
-The file management automation tool.
+Usage: organize [OPTIONS] COMMAND [ARGS]...
 
-Usage:
-    organize sim [--config-file=<path>]
-    organize run [--config-file=<path>]
-    organize config [--open-folder | --path | --debug] [--config-file=<path>]
-    organize list
-    organize --help
-    organize --version
+  organize
 
-Arguments:
-    sim             Simulate a run. Does not touch your files.
-    run             Organizes your files according to your rules.
-    config          Open the configuration file in $EDITOR.
-    list            List available filters and actions.
-    --version       Show program version and exit.
-    -h, --help      Show this screen and exit.
+  The file management automation tool.
 
 Options:
-    -o, --open-folder  Open the folder containing the configuration files.
-    -p, --path         Show the path to the configuration file.
-    -d, --debug        Debug your configuration file.
+  --version   Show the version and exit.
+  -h, --help  Show this message and exit.
 
-Full documentation: https://organize.readthedocs.io
+Commands:
+  run     Organizes your files according to your rules.
+  sim     Simulates a run (does not touch your files).
+  edit    Edit the rules.
+  check   Checks whether a given config file is valid.
+  reveal  Reveals the default config file.
+  schema  Prints the json schema for config files.
+  docs    Opens the documentation.
 ```
