@@ -7,7 +7,7 @@ look at the [Config](01-config.md) section.
 
 ::: organize.actions.copy.Copy
 
-**Examples**
+**Examples:**
 
 Copy all pdfs into `~/Desktop/somefolder/` and keep filenames
 
@@ -56,7 +56,7 @@ rules:
 
 ::: organize.actions.delete.Delete
 
-**Examples**
+**Examples:**
 
 ```yaml
 rules:
@@ -88,7 +88,7 @@ rules:
 
 ::: organize.actions.Echo
 
-**Examples**
+**Examples:**
 
 ```yaml
 rules:
@@ -147,7 +147,7 @@ rules:
 
 ::: organize.actions.MacOSTags
 
-**Examples**
+**Examples:**
 
 ```yaml
 rules:
@@ -207,7 +207,7 @@ rules:
 
 ::: organize.actions.Move
 
-**Examples**
+**Examples:**
 
 Move all pdfs and jpgs from the desktop into the folder "~/Desktop/media/". Filenames are not changed.
 
@@ -235,7 +235,7 @@ rules:
     actions:
       - move:
           dest: "~/Desktop/{extension.upper}/"
-          overwrite: true
+          on_conflict: "overwrite"
 ```
 
 Move pdfs into the folder `Invoices`. Keep the filename but do not overwrite existing files. To prevent overwriting files, an index is added to the filename, so `somefile.jpg` becomes `somefile 2.jpg`.
@@ -249,20 +249,22 @@ rules:
     actions:
       - move:
           dest: "~/Documents/Invoices/"
-          overwrite: false
-          counter_separator: "_"
+          on_conflict: "rename_new"
+          rename_template: "{name} {counter}{extension}"
 ```
 
 ## python
 
 ::: organize.actions.Python
 
+**Examples:**
+
 A basic example that shows how to get the current file path and do some printing in a
 for loop. The `|` is yaml syntax for defining a string literal spanning multiple lines.
 
 ```yaml
 rules:
-  - folders: "~/Desktop"
+  - locations: "~/Desktop"
     actions:
       - python: |
           print('The path of the current file is %s' % path)
@@ -273,7 +275,7 @@ rules:
 ```yaml
 rules:
   - name: "You can access filter data"
-  - folders: ~/Desktop
+    locations: ~/Desktop
     filters:
       - regex: '^(?P<name>.*)\.(?P<extension>.*)$'
     actions:
@@ -287,9 +289,9 @@ filename starting with an underscore:
 
 ```yaml
 rules:
-  - folders: ~/Desktop
+  - locations: ~/Desktop
     filters:
-      - filename:
+      - name:
           startswith: "_"
     actions:
       - python: |
@@ -301,7 +303,7 @@ rules:
 
 ::: organize.actions.Rename
 
-**Examples**
+**Examples:**
 
 ```yaml
 rules:
@@ -316,9 +318,9 @@ rules:
 ```yaml
 rules:
   - name: "Convert **all** file extensions to lowercase"
-    folders: "~/Desktop"
+    locations: "~/Desktop"
     filters:
-      - Extension
+      - extension
     actions:
       - rename: "{path.stem}.{extension.lower}"
 ```
@@ -327,12 +329,12 @@ rules:
 
 ::: organize.actions.Shell
 
-**Examples**
+**Examples:**
 
 ```yaml
 rules:
   - name: "On macOS: Open all pdfs on your desktop"
-    folders: "~/Desktop"
+    locations: "~/Desktop"
     filters:
       - extension: pdf
     actions:
@@ -347,7 +349,7 @@ rules:
 
 ::: organize.actions.Trash
 
-Example:
+**Examples:**
 
 ```yaml
 rules:

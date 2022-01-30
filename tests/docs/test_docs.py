@@ -21,11 +21,14 @@ def test_examples_are_valid():
     for f in DOCS.values():
         text = docdir.readtext(f)
         for match in RE_CONFIG.findall(text):
+            err = ""
             try:
                 config = load_from_string(match)
                 CONFIG_SCHEMA.validate(config)
             except SchemaError as e:
-                raise ValueError(e.autos[-1])
+                print(f"{f}:\n({match})")
+                err = e.autos[-1]
+            assert not err
 
 
 def test_all_filters_documented():

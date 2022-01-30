@@ -7,7 +7,7 @@ look at the [Config](01-config.md) section.
 
 ::: organize.filters.Created
 
-**Examples**
+**Examples:**
 
 ```yaml
 rules:
@@ -47,6 +47,8 @@ rules:
 
 ::: organize.filters.Duplicate
 
+**Examples:**
+
 ```yaml
 rules:
   - name: Show all duplicate files in your desktop and download folder (and their subfolders)
@@ -62,6 +64,8 @@ rules:
 ## empty
 
 ::: organize.filters.Empty
+
+**Examples:**
 
 ```yaml
 rules:
@@ -83,8 +87,9 @@ rules:
 ```yaml
 rules:
   - name: "Show available EXIF data of your pictures"
-    folders: ~/Pictures
-    subfolders: true
+    locations:
+      - path: ~/Pictures
+        max_depth: null
     filters:
       - exif
     actions:
@@ -96,8 +101,9 @@ Copy all images which contain GPS information while keeping subfolder structure:
 ```yaml
 rules:
   - name: "GPS demo"
-    locations: ~/Pictures
-    subfolders: true
+    locations:
+      - path: ~/Pictures
+        max_depth: null
     filters:
       - exif: gps.gpsdate
     actions:
@@ -107,8 +113,9 @@ rules:
 ```yaml
 rules:
   - name: "Filter by camera manufacturer"
-    folders: ~/Pictures
-    subfolders: true
+    locations:
+      - path: ~/Pictures
+        max_depth: null
     filters:
       - exif:
           image.model: Nikon D3200
@@ -123,8 +130,9 @@ accordingly:
 ```yaml
 rules:
   - name: "camera sort"
-    locations: ~/Pictures
-    subfolders: true
+    locations:
+      - path: ~/Pictures
+        max_depth: null
     filters:
       - extension: jpg
       - exif: image.model
@@ -136,7 +144,7 @@ rules:
 
 ::: organize.filters.Extension
 
-**Examples**
+**Examples:**
 
 ```yaml
 rules:
@@ -196,12 +204,12 @@ rules:
 
 ::: organize.filters.FileContent
 
-**Examples**
+**Examples:**
 
 ```yaml
 rules:
   - name: "Show the content of all your PDF files"
-    folders: ~/Documents
+    locations: ~/Documents
     filters:
       - extension: pdf
       - filecontent: "(?P<all>.*)"
@@ -227,7 +235,7 @@ rules:
 
 ::: organize.filters.LastModified
 
-**Examples**:
+**Examples:**
 
 ```yaml
 rules:
@@ -268,7 +276,7 @@ rules:
 
 ::: organize.filters.MimeType
 
-**Examples**
+**Examples:**
 
 ```yaml
 rules:
@@ -316,7 +324,7 @@ rules:
 
 ::: organize.filters.Name
 
-**Examples**
+**Examples:**
 
 Match all files starting with 'Invoice':
 
@@ -324,7 +332,7 @@ Match all files starting with 'Invoice':
 rules:
   - locations: "~/Desktop"
     filters:
-      - filename:
+      - name:
           startswith: Invoice
     actions:
       - echo: "This is an invoice"
@@ -337,7 +345,7 @@ Match all files starting with 'A' end containing the string 'hole'
 rules:
   - locations: "~/Desktop"
     filters:
-      - filename:
+      - name:
           startswith: A
           contains: hole
           case_sensitive: false
@@ -352,7 +360,7 @@ Match all files starting with 'A' or 'B' containing '5' or '6' and ending with
 rules:
   - locations: "~/Desktop"
     filters:
-      - filename:
+      - name:
           startswith:
             - A
             - B
@@ -369,7 +377,7 @@ rules:
 
 ::: organize.filters.Python
 
-**Examples**
+**Examples:**
 
 ```yaml
 rules:
@@ -436,13 +444,13 @@ Result:
 
 ::: organize.filters.Regex
 
-**Examples**
+**Examples:**
 
 Match an invoice with a regular expression:
 
 ```yaml
 rules:
-  - folders: "~/Desktop"
+  - locations: "~/Desktop"
     filters:
       - regex: '^RG(\d{12})-sig\.pdf$'
     actions:
@@ -456,7 +464,7 @@ group `the_number`.
 
 ```yaml
 rules:
-  - folders: ~/Desktop
+  - locations: ~/Desktop
     filters:
       - regex: '^RG(?P<the_number>\d{12})-sig\.pdf$'
     actions:
@@ -476,7 +484,7 @@ rules:
   - locations: "~/Downloads"
     targets: files
     filters:
-      - filesize: "> 0.5 GB"
+      - size: "> 0.5 GB"
     actions:
       - trash
 ```
@@ -486,13 +494,14 @@ original relative path.
 
 ```yaml
 rules:
-  - folders: "~/Pictures"
-    subfolders: true
+  - locations:
+      - path: "~/Pictures"
+        max_depth: null
     filters:
       - extension:
           - jpg
           - jpeg
-      - filesize: ">1mb, <10mb"
+      - size: ">1mb, <10mb"
     actions:
       - move: "~/Pictures/sorted/{relative_path}/"
 ```
