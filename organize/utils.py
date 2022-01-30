@@ -12,14 +12,12 @@ from jinja2 import nativetypes
 Template = jinja2.Environment(
     variable_start_string="{",
     variable_end_string="}",
-    finalize=lambda x: x() if callable(x) else x,
     autoescape=False,
 )
 
 NativeTemplate = nativetypes.NativeEnvironment(
     variable_start_string="{",
     variable_end_string="}",
-    finalize=lambda x: x() if callable(x) else x,
     autoescape=False,
 )
 

@@ -1,4 +1,3 @@
-from collections import Counter
 from fs.path import basename, dirname, forcedir
 from rich.console import Console
 from rich.panel import Panel
@@ -6,8 +5,6 @@ from rich.text import Text
 from rich.theme import Theme
 
 from organize.__version__ import __version__
-
-from .utils import resource_description
 
 ICON_DIR = "🗁"
 ICON_FILE = ""
@@ -17,15 +14,15 @@ theme = Theme(
     {
         "info": "dim cyan",
         "warning": "yellow",
-        "error": "bold red",
+        "error": "red",
         "simulation": "bold green",
         "status": "bold green",
         "rule": "bold cyan",
         "location.fs": "yellow",
         "location.base": "green",
         "location.main": "bold green",
-        "path.base": "dim white",
-        "path.main": "white",
+        "path.base": "dim green",
+        "path.main": "green",
         "path.icon": "white",
         "pipeline.source": "cyan",
         "pipeline.msg": "white",
@@ -82,6 +79,10 @@ def deprecated(msg):
     warn(msg, title="Deprecated")
 
 
+def error(msg, title="Error"):
+    console.print("[error][b]{}:[/b] {}[/error]".format(title, msg))
+
+
 def simulation_banner():
     console.print()
     console.print(Panel("SIMULATION", style="simulation"))
@@ -126,7 +127,7 @@ def path(fs, path):
 def pipeline_message(source: str, msg: str) -> None:
     line = Text.assemble(
         INDENT * 2,
-        ("- ({})".format(source), "pipeline.source"),
+        ("- ({}) ".format(source), "pipeline.source"),
         (msg, "pipeline.msg"),
     )
     with_path.print(line)
@@ -136,14 +137,14 @@ def pipeline_message(source: str, msg: str) -> None:
 def pipeline_error(source: str, msg: str):
     line = Text.assemble(
         INDENT * 2,
-        ("- ({})".format(source), "pipeline.source"),
+        ("- ({}) ".format(source), "pipeline.source"),
         ("ERROR! {}".format(msg), "pipeline.error"),
     )
     with_path.print(line)
     with_newline.set_prefix("")
 
 
-def summary(count: Counter):
+def summary(count: dict):
     console.print()
     if not sum(count.values()):
         console.print("Nothing to do.")

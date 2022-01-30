@@ -6,7 +6,7 @@ from .filter import Filter, FilterResult
 
 class Regex(Filter):
 
-    r"""Matches filenames with the given regular expression
+    """Matches filenames with the given regular expression
 
     Args:
         expr (str): The regular expression to be matched.
@@ -33,6 +33,6 @@ class Regex(Filter):
         return FilterResult(
             matches=bool(match),
             updates={
-                self.get_name(): match.groupdict(),
+                self.get_name(): match.groupdict() if match else "",
             },
         )

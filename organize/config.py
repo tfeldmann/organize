@@ -11,6 +11,8 @@ CONFIG_SCHEMA = Schema(
         Literal("rules", description="All rules are defined here."): [
             {
                 Optional("name", description="The name of the rule."): str,
+                Optional("enabled"): bool,
+                Optional("subfolders"): bool,
                 Optional(
                     "targets",
                     description="Whether the rule should apply to directories or folders.",
@@ -40,7 +42,7 @@ CONFIG_SCHEMA = Schema(
                     Optional(x.get_schema()) for x in FILTERS.values()
                 ],
                 "actions": [Optional(x.get_schema()) for x in ACTIONS.values()],
-            }
+            },
         ],
         Optional("version"): int,
     },

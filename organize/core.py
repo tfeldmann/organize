@@ -7,6 +7,7 @@ from typing import Iterable, NamedTuple
 import fs
 from fs.base import FS
 from fs.walk import Walker
+from rich.console import Console
 from schema import SchemaError
 
 from . import output
@@ -15,10 +16,10 @@ from .actions.action import Action
 from .config import CONFIG_SCHEMA, load_from_file
 from .filters import FILTERS
 from .filters.filter import Filter
-from .output import console
 from .utils import Template, deep_merge_inplace, ensure_list
 
 logger = logging.getLogger(__name__)
+console = Console()
 
 
 class Location(NamedTuple):
@@ -60,9 +61,13 @@ def walker_args_from_location_options(options):
     }
 
 
-def instantiate_location(loc) -> Location:
+def instantiate_location(loc, default_max_depth=0) -> Location:
     if isinstance(loc, str):
         loc = {"path": loc}
+
+    # set default max depth from rule
+    if not "max_depth" in loc:
+        loc["max_depth"] = default_max_depth
 
     if "walker" not in loc:
         args = walker_args_from_location_options(loc)
@@ -99,29 +104,42 @@ def instantiate_by_name(d, classes):
 def replace_with_instances(config):
     warnings = []
 
+    # delete disabled rules
+    config["rules"] = [rule for rule in config["rules"] if rule.get("enabled", True)]
+
     for rule in config["rules"]:
-        locations = []
+        _locations = []
+        default_depth = None if rule.get("subfolders", False) else 0
 
         for loc in ensure_list(rule["locations"]):
             try:
-                instance = instantiate_location(loc)
-                locations.append(instance)
+                instance = instantiate_location(loc, default_max_depth=default_depth)
+                _locations.append(instance)
             except Exception as e:
-                if loc.get("ignore_errors", False):
+                if isinstance(loc, dict) and loc.get("ignore_errors", False):
                     warnings.append(str(e))
                 else:
-                    raise e
-
-        rule["locations"] = locations
+                    raise ValueError("Invalid location %s" % loc) from e
 
         # filters are optional
-        rule["filters"] = [
-            instantiate_by_name(x, FILTERS)
-            for x in ensure_list(rule.get("filters", []))
-        ]
-        rule["actions"] = [
-            instantiate_by_name(x, ACTIONS) for x in ensure_list(rule["actions"])
-        ]
+        _filters = []
+        for x in ensure_list(rule.get("filters", [])):
+            try:
+                _filters.append(instantiate_by_name(x, FILTERS))
+            except Exception as e:
+                raise ValueError("Invalid filter %s (%s)" % (x, e)) from e
+
+        # actions
+        _actions = []
+        for x in ensure_list(rule["actions"]):
+            try:
+                _actions.append(instantiate_by_name(x, ACTIONS))
+            except Exception as e:
+                raise ValueError("Invalid action %s (%s)" % (x, e)) from e
+
+        rule["locations"] = _locations
+        rule["filters"] = _filters
+        rule["actions"] = _actions
 
     return warnings
 
@@ -160,14 +178,14 @@ def action_pipeline(actions: Iterable[Action], args: dict, simulate: bool) -> bo
 
 
 def run(config, simulate: bool = True):
-    count = Counter(done=0, fail=0) # type: Counter
+    count = Counter(done=0, fail=0)  # type: Counter
 
     if simulate:
         output.simulation_banner()
 
-    for rule in config["rules"]:
+    for rule_nr, rule in enumerate(config["rules"], start=1):
         target = rule.get("targets", "files")
-        output.rule(rule["name"])
+        output.rule(rule.get("name", "Rule %s" % rule_nr))
 
         with output.spinner(simulate=simulate):
             for walker, base_fs, base_path in rule["locations"]:
@@ -218,7 +236,7 @@ def run_file(config_file: str, working_dir: str, simulate: bool):
         count = run(rules, simulate=simulate)
         output.summary(count)
     except SchemaError as e:
-        console.print("Invalid config file")
+        output.error("Invalid config file")
         console.print(e.autos[-1])
     except Exception as e:
         console.print_exception()

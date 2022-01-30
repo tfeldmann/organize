@@ -4,35 +4,44 @@ organize
 The file management automation tool.
 """
 import os
-from pathlib import Path
+import sys
 
-import appdirs
 import click
+from fs import appfs, osfs
 
 from . import output
-from .output import console
 from .__version__ import __version__
+from .output import console
 
-# prepare config and log folders
-APP_DIRS = appdirs.AppDirs("organize")
+DOCS_URL = "https://organize.readthedocs.io"
+DEFAULT_CONFIG = """# organize configuration file
+# {docs}
 
-# setting the $ORGANIZE_CONFIG env variable overrides the default config path
-if os.getenv("ORGANIZE_CONFIG"):
-    CONFIG_PATH = Path(os.getenv("ORGANIZE_CONFIG", "")).resolve()
-    CONFIG_DIR = CONFIG_PATH.parent
-else:
-    CONFIG_DIR = Path(APP_DIRS.user_config_dir)
-    CONFIG_PATH = CONFIG_DIR / "config.yaml"
+rules:
+  locations:
+    -
+  filters:
+    -
+  actions:
+    -
+""".format(
+    docs=DOCS_URL
+)
 
-LOG_DIR = Path(APP_DIRS.user_log_dir)
-LOG_PATH = LOG_DIR / "organize.log"
+try:
+    config_filename = "config.yaml"
+    if os.getenv("ORGANIZE_CONFIG"):
+        dirname, config_filename = os.path.split(os.getenv("ORGANIZE_CONFIG"))
+        config_fs = osfs.OSFS(dirname, create=False)
+    else:
+        config_fs = appfs.UserConfigFS("organize", create=True)
 
-for folder in (CONFIG_DIR, LOG_DIR):
-    folder.mkdir(parents=True, exist_ok=True)
-
-# create empty config file if it does not exist
-if not CONFIG_PATH.exists():
-    CONFIG_PATH.touch()
+    if not config_fs.exists(config_filename):
+        config_fs.writetext(config_filename, DEFAULT_CONFIG)
+    CONFIG_PATH = config_fs.getsyspath(config_filename)
+except Exception as e:
+    output.error(str(e), title="Config file")
+    sys.exit(1)
 
 
 class NaturalOrderGroup(click.Group):
@@ -43,7 +52,6 @@ class NaturalOrderGroup(click.Group):
 CLI_CONFIG = click.argument(
     "config",
     required=False,
-    envvar="ORGANIZE_CONFIG",
     default=CONFIG_PATH,
     type=click.Path(exists=True),
 )
@@ -109,7 +117,6 @@ def sim(config, working_dir, config_file):
     "config",
     required=False,
     default=CONFIG_PATH,
-    envvar="ORGANIZE_CONFIG",
     type=click.Path(),
 )
 @click.option(
@@ -163,7 +170,7 @@ def schema():
 @cli.command()
 def docs():
     """Opens the documentation."""
-    click.launch("https://organize.readthedocs.io")
+    click.launch(DOCS_URL)
 
 
 # deprecated - only here for backwards compatibility
