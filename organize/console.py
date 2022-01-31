@@ -84,8 +84,10 @@ class Prompt(PipelineMixin, RichPrompt):
     pass
 
 
-def _highlight_path(path, base_style, main_style):
+def _highlight_path(path, base_style, main_style, relative=False):
     dir_ = forcedir(dirname(path))
+    if relative:
+        dir_ = relpath(dir_)
     name = basename(path)
     return Text.assemble(
         (dir_, base_style),
@@ -147,7 +149,7 @@ def path(fs, path):
     icon = ICON_DIR if fs.isdir(path) else ICON_FILE
     msg = Text.assemble(
         INDENT,
-        _highlight_path(relpath(path), "path.base", "path.main"),
+        _highlight_path(path, "path.base", "path.main", relative=True),
         " ",
         (icon, "path.icon"),
     )

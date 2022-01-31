@@ -25,6 +25,7 @@ Please backup all your important stuff before running and use the simulate optio
 - Added filter `empty`.
 - Added filter `hash`.
 - Added action `symlink`.
+- Added action `confirm`.
 
 ### changed
 
