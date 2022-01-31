@@ -171,7 +171,7 @@ def action_pipeline(actions: Iterable[Action], args: dict, simulate: bool) -> bo
             if updates is not None:
                 deep_merge_inplace(args, updates)
         except Exception as e:  # pylint: disable=broad-except
-            #logger.exception(e)
+            # logger.exception(e)
             action.print_error(str(e))
             return False
     return True
@@ -236,7 +236,7 @@ def run_file(config_file: str, working_dir: str, simulate: bool):
         count = run(rules, simulate=simulate)
         console.summary(count)
     except SchemaError as e:
-        highlighted_console.error("Invalid config file")
+        console.error("Invalid config file")
         highlighted_console.print(e.autos[-1])
     except Exception as e:
         highlighted_console.print_exception()

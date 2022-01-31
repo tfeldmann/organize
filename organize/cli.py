@@ -11,7 +11,6 @@ from fs import appfs, osfs
 
 from . import console
 from .__version__ import __version__
-from .console import console
 
 DOCS_URL = "https://organize.readthedocs.io"
 DEFAULT_CONFIG = """# organize configuration file
@@ -31,7 +30,7 @@ rules:
 try:
     config_filename = "config.yaml"
     if os.getenv("ORGANIZE_CONFIG"):
-        dirname, config_filename = os.path.split(os.getenv("ORGANIZE_CONFIG"))
+        dirname, config_filename = os.path.split(os.getenv("ORGANIZE_CONFIG", ""))
         config_fs = osfs.OSFS(dirname, create=False)
     else:
         config_fs = appfs.UserConfigFS("organize", create=True)
@@ -159,13 +158,14 @@ def schema():
     import json
 
     from .config import CONFIG_SCHEMA
+    from .console import console as richconsole
 
     js = json.dumps(
         CONFIG_SCHEMA.json_schema(
             schema_id="https://tfeldmann.de/organize.schema.json",
         )
     )
-    console.print_json(js)
+    richconsole.print_json(js)
 
 
 @cli.command()

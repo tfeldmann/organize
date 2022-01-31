@@ -966,7 +966,7 @@ textract = ["textract"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "f8bf1c60f540c1372b02cf4f7af43dee5ece0bdadfba5d751ca45a862bff88f1"
+content-hash = "2dcfc08bd911333a7ea1da72b2af1c95985949d1ec2426828fe55a8472910eee"
 
 [metadata.files]
 appdirs = [

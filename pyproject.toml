@@ -44,7 +44,6 @@ macos-tags = { version = "^1.5.1", markers = "sys_platform == 'darwin'" }
 schema = "^0.7.5"
 Jinja2 = "^3.0.3"
 click = "^8.0.3"
-appdirs = "^1.4.4"
 
 [tool.poetry.extras]
 textract = ["textract"]
