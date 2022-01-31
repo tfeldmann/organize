@@ -9,16 +9,25 @@ from fs.osfs import OSFS
 import jinja2
 from jinja2 import nativetypes
 
+
+def raise_exceptions(x):
+    if isinstance(x, Exception):
+        raise x
+    return x
+
+
 Template = jinja2.Environment(
     variable_start_string="{",
     variable_end_string="}",
     autoescape=False,
+    finalize=raise_exceptions,
 )
 
 NativeTemplate = nativetypes.NativeEnvironment(
     variable_start_string="{",
     variable_end_string="}",
     autoescape=False,
+    finalize=raise_exceptions,
 )
 
 
@@ -66,16 +75,22 @@ def ensure_dict(inp):
 def to_args(inp):
     """Convert a argument into a (args, kwargs) tuple.
 
+    >>> to_args(None)
+    ([], {})
     >>> to_args('test')
     (['test'], {})
     >>> to_args([1, 2, 3])
     ([1, 2, 3], {})
     >>> to_args({'a': {'b': 'c'}})
     ([], {'a': {'b': 'c'}})
+    >>> to_args([[1, 2, [3, 4], [5, 6]]])
+    ([1, 2, 3, 4, 5, 6], {})
     """
+    if inp is None:
+        return ([], {})
     if isinstance(inp, dict):
         return ([], inp)
-    return (ensure_list(inp), {})
+    return (flatten(ensure_list(inp)), {})
 
 
 def flatten(arr: List[Any]) -> List[Any]:
@@ -95,6 +110,21 @@ def flattened_string_list(x, case_sensitive=True) -> Sequence[str]:
 
 def first_key(dic: Mapping) -> Hashable:
     return list(dic.keys())[0]
+
+
+def flatten_all_lists_in_dict(obj):
+    """
+    >>> flatten_all_lists_in_dict({1: [[2], [3, {5: [5, 6]}]]})
+    {1: [2, 3, {5: [5, 6]}]}
+    """
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            obj[key] = flatten_all_lists_in_dict(value)
+        return obj
+    elif isinstance(obj, list):
+        return [flatten_all_lists_in_dict(x) for x in flatten(obj)]
+    else:
+        return obj
 
 
 def deep_merge(a: dict, b: dict) -> dict:

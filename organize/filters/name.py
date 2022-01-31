@@ -1,4 +1,5 @@
-from typing import Any, List, Union, Optional, Dict
+from schema import Or, Optional
+from typing import Any, List, Union, Dict
 
 import simplematch
 from fs import path
@@ -29,6 +30,17 @@ class Name(Filter):
 
     name = "name"
     schema_support_instance_without_args = True
+
+    arg_schema = Or(
+        str,
+        {
+            Optional("match"): str,
+            Optional("startswith"): Or(str, [str]),
+            Optional("contains"): Or(str, [str]),
+            Optional("endswith"): Or(str, [str]),
+            Optional("case_sensitive"): bool,
+        },
+    )
 
     def __init__(
         self,

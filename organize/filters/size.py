@@ -84,7 +84,7 @@ class Size(Filter):
     """
 
     name = "size"
-    arg_schema = Optional(Or(str, [str], int, [int]))
+    arg_schema = Or(object, [object])
     schema_support_instance_without_args = True
 
     def __init__(self, *conditions: Sequence[str]) -> None:

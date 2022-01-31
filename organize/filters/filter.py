@@ -24,6 +24,7 @@ class Filter:
     def get_name_schema(cls):
         return Schema(
             Or("not " + cls.get_name(), cls.get_name()),
+            name=cls.get_name(),
             description=cls.get_description(),
         )
 

@@ -2,36 +2,36 @@
 
 ## Editing the configuration
 
-All configuration takes place in your `config.yaml` file.
+organize has a default config file if no other file is given.
 
-To edit your configuration in `$EDITOR` run:
+To edit the default configuration file:
 
-```bash
-$ organize config # example: "EDITOR=vim organize config"
-```
-
-To show the full path to your configuration file:
-
-```bash
-$ organize config --path
+```sh
+$ organize edit  # opens in $EDITOR
+$ organize edit --editor=vim
+$ EDITOR=code organize edit
 ```
 
 To open the folder containing the configuration file:
 
-```bash
-$ organize config --open-folder
+```sh
+$ organize reveal
+$ organize reveal --path  # show the full path to the default config
 ```
 
 To debug your configuration run:
 
-```bash
-$ organize config --debug
+```sh
+$ organize check
 ```
+
+## Configuration basics
 
 ## Environment variables
 
-- `$EDITOR` - The editor used to edit the config file.
-- `$ORGANIZE_CONFIG` - The config file path. Is overridden by `--config-file` cmd line argument.
+- `EDITOR` - The editor used to edit the config file.
+- `ORGANIZE_CONFIG` - The path to the default config file.
+- `NO_COLOR` - if this is set, the output is not colored.
 
 ## Rule syntax
 

@@ -16,6 +16,7 @@ Please backup all your important stuff before running and use the simulate optio
 - Jinja2 template engine for placeholders.
 - Instant start. (does not need to gather all the files before starting)
 - Filters can now be excluded.
+- Filter modes: `all`, `any` and `none`.
 - Nice terminal output.
 - Rule names.
 - new conflict resolution settings in `move`, `copy` and `rename` action:

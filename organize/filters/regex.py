@@ -1,6 +1,4 @@
 import re
-from typing import Any, Dict, Mapping, Optional
-
 from .filter import Filter, FilterResult
 
 
@@ -22,10 +20,12 @@ class Regex(Filter):
 
     name = "regex"
 
+    arg_schema = str
+
     def __init__(self, expr) -> None:
         self.expr = re.compile(expr, flags=re.UNICODE)
 
-    def matches(self, path: str) -> Any:
+    def matches(self, path: str):
         return self.expr.search(path)
 
     def pipeline(self, args: dict) -> FilterResult:

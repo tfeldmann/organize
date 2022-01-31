@@ -20,15 +20,29 @@ rules:
       - confirm
       - echo: "{name}"
 
+  - name: Zip syspath
+    locations:
+      - filesystem: "zip:///Users/thomasfeldmann/Documents/Nachrichten Backup 2016-11-04.zip"
+        path: "/"
+    filters:
+      - name
+    actions:
+      - echo: "{name}"
+
   - name: "Folders"
+    enabled: false
     targets: dirs
     locations:
       - path: ~/Desktop
+    filter_mode: nones
     filters:
       - not name:
-          startswith: Inbox
+          startswith2: Inbox
+      - size
+      - name:
+          startswith: Projekt
     actions:
-      - echo: "{name}"
+      - echo: "{name} {size.decimal}"
 
   # - name: Find some folders
   #   targets: dirs

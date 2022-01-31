@@ -1,5 +1,6 @@
 import textwrap
-from typing import Any, Dict, Optional, Sequence
+from schema import Or
+from typing import Any, Optional as tyOpt, Sequence
 
 from .filter import Filter, FilterResult
 
@@ -25,12 +26,14 @@ class Python(Filter):
 
     name = "python"
 
+    arg_schema = Or(str, {"code": str})
+
     def __init__(self, code) -> None:
         self.code = textwrap.dedent(code)
         if "return" not in self.code:
             raise ValueError("No return statement found in your code!")
 
-    def usercode(self, *args, **kwargs) -> Optional[Any]:
+    def usercode(self, *args, **kwargs) -> tyOpt[Any]:
         pass  # will be overwritten by `create_method`
 
     def create_method(self, name: str, argnames: Sequence[str], code: str) -> None:

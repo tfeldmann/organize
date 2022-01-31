@@ -362,11 +362,11 @@ rules:
     filters:
       - name:
           startswith:
-            - A
-            - B
+            - "A"
+            - "B"
           contains:
-            - 5
-            - 6
+            - "5"
+            - "6"
           endswith: _end
           case_sensitive: false
     actions:

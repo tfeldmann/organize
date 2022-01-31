@@ -16,7 +16,7 @@ theme = Theme(
     {
         "info": "dim cyan",
         "warning": "yellow",
-        "error": "red",
+        "error": "bold red",
         "simulation": "bold green",
         "status": "bold green",
         "rule": "bold cyan",
@@ -111,7 +111,7 @@ def deprecated(msg):
 
 
 def error(msg, title="Error"):
-    console.print("[error][b]{}:[/b] {}[/error]".format(title, msg))
+    console.print("[error]{}: {}[/error]".format(title, msg))
 
 
 def simulation_banner():
