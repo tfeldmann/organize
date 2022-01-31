@@ -1,27 +1,30 @@
-import logging
-
 from rich.prompt import Prompt
 
-from organize.output import console
+from organize import console
+from organize.utils import Template
 
 from .action import Action
 
-logger = logging.getLogger(__name__)
-
-# TODO not working right now
-
 
 class Confirm(Action):
-    def __init__(self, msg, default):
-        self.msg = msg
+
+    name = "confirm"
+    schema_support_instance_without_args = True
+
+    def __init__(self, msg="Continue?", default=True):
+        self.msg = Template.from_string(msg)
         self.default = default
         self.prompt = Prompt(console=console)
 
     def pipeline(self, args: dict, simulate: bool):
-        chosen = self.prompt.ask("", default=self.default)
-        self.print(chosen)
+        msg = self.msg.render(**args)
+        result = console.pipeline_confirm(
+            self.get_name(),
+            msg,
+            default=self.default,
+        )
+        if not result:
+            raise ValueError("Aborted")
 
     def __str__(self) -> str:
-        return 'Echo(msg="%s")' % self.msg
-
-    name = "confirm"
+        return 'Confirm(msg="%s")' % self.msg

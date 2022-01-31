@@ -10,7 +10,7 @@ from fs.walk import Walker
 from rich.console import Console
 from schema import SchemaError
 
-from . import output
+from . import console
 from .actions import ACTIONS
 from .actions.action import Action
 from .config import CONFIG_SCHEMA, load_from_file
@@ -19,7 +19,7 @@ from .filters.filter import Filter
 from .utils import Template, deep_merge_inplace, ensure_list
 
 logger = logging.getLogger(__name__)
-console = Console()
+highlighted_console = Console()
 
 
 class Location(NamedTuple):
@@ -171,7 +171,7 @@ def action_pipeline(actions: Iterable[Action], args: dict, simulate: bool) -> bo
             if updates is not None:
                 deep_merge_inplace(args, updates)
         except Exception as e:  # pylint: disable=broad-except
-            logger.exception(e)
+            #logger.exception(e)
             action.print_error(str(e))
             return False
     return True
@@ -181,62 +181,62 @@ def run(config, simulate: bool = True):
     count = Counter(done=0, fail=0)  # type: Counter
 
     if simulate:
-        output.simulation_banner()
+        console.simulation_banner()
 
+    console.spinner(simulate=simulate)
     for rule_nr, rule in enumerate(config["rules"], start=1):
         target = rule.get("targets", "files")
-        output.rule(rule.get("name", "Rule %s" % rule_nr))
+        console.rule(rule.get("name", "Rule %s" % rule_nr))
 
-        with output.spinner(simulate=simulate):
-            for walker, base_fs, base_path in rule["locations"]:
-                output.location(base_fs, base_path)
-                walk = walker.files if target == "files" else walker.dirs
-                for path in walk(fs=base_fs, path=base_path):
-                    output.path(base_fs, path)
-                    relative_path = fs.path.relativefrom(base_path, path)
-                    args = {
-                        "fs": base_fs,
-                        "fs_path": path,
-                        "relative_path": relative_path,
-                        "env": os.environ,
-                        "now": datetime.now(),
-                        "utcnow": datetime.utcnow(),
-                        "path": lambda: base_fs.getsyspath(path),
-                    }
-                    match = filter_pipeline(
-                        filters=rule["filters"],
+        for walker, base_fs, base_path in rule["locations"]:
+            console.location(base_fs, base_path)
+            walk = walker.files if target == "files" else walker.dirs
+            for path in walk(fs=base_fs, path=base_path):
+                console.path(base_fs, path)
+                relative_path = fs.path.relativefrom(base_path, path)
+                args = {
+                    "fs": base_fs,
+                    "fs_path": path,
+                    "relative_path": relative_path,
+                    "env": os.environ,
+                    "now": datetime.now(),
+                    "utcnow": datetime.utcnow(),
+                    "path": lambda: base_fs.getsyspath(path),
+                }
+                match = filter_pipeline(
+                    filters=rule["filters"],
+                    args=args,
+                )
+                if match:
+                    is_success = action_pipeline(
+                        actions=rule["actions"],
                         args=args,
+                        simulate=simulate,
                     )
-                    if match:
-                        is_success = action_pipeline(
-                            actions=rule["actions"],
-                            args=args,
-                            simulate=simulate,
-                        )
-                        if is_success:
-                            count["done"] += 1
-                        else:
-                            count["fail"] += 1
+                    if is_success:
+                        count["done"] += 1
+                    else:
+                        count["fail"] += 1
 
     if simulate:
-        output.simulation_banner()
+        console.simulation_banner()
 
     return count
 
 
 def run_file(config_file: str, working_dir: str, simulate: bool):
-    output.info(config_file, working_dir)
+    console.info(config_file, working_dir)
     try:
         rules = load_from_file(config_file)
         CONFIG_SCHEMA.validate(rules)
         warnings = replace_with_instances(rules)
         for msg in warnings:
-            output.warn(msg)
+            console.warn(msg)
         os.chdir(working_dir)
         count = run(rules, simulate=simulate)
-        output.summary(count)
+        console.summary(count)
     except SchemaError as e:
-        output.error("Invalid config file")
-        console.print(e.autos[-1])
+        highlighted_console.error("Invalid config file")
+        highlighted_console.print(e.autos[-1])
     except Exception as e:
-        console.print_exception()
+        highlighted_console.print_exception()

@@ -6,7 +6,7 @@ from .filter import Filter, FilterResult
 
 class Python(Filter):
 
-    r"""Use python code to filter files.
+    """Use python code to filter files.
 
     Args:
         code (str):

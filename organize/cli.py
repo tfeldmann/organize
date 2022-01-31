@@ -9,9 +9,9 @@ import sys
 import click
 from fs import appfs, osfs
 
-from . import output
+from . import console
 from .__version__ import __version__
-from .output import console
+from .console import console
 
 DOCS_URL = "https://organize.readthedocs.io"
 DEFAULT_CONFIG = """# organize configuration file
@@ -36,11 +36,12 @@ try:
     else:
         config_fs = appfs.UserConfigFS("organize", create=True)
 
+    # create default config file if it not exists
     if not config_fs.exists(config_filename):
         config_fs.writetext(config_filename, DEFAULT_CONFIG)
     CONFIG_PATH = config_fs.getsyspath(config_filename)
 except Exception as e:
-    output.error(str(e), title="Config file")
+    console.error(str(e), title="Config file")
     sys.exit(1)
 
 
@@ -90,7 +91,7 @@ def run(config, working_dir, config_file):
 
     if config_file:
         config = config_file
-        output.deprecated(
+        console.deprecated(
             "The --config-file option can now be omitted. See organize --help."
         )
     run_file(config_file=config, working_dir=working_dir, simulate=False)
@@ -106,7 +107,7 @@ def sim(config, working_dir, config_file):
 
     if config_file:
         config = config_file
-        output.deprecated(
+        console.deprecated(
             "The --config-file option can now be omitted. See organize --help."
         )
     run_file(config_file=config, working_dir=working_dir, simulate=True)
@@ -190,8 +191,8 @@ def config(ctx, path, debug, open_folder):
         ctx.invoke(check)
     else:
         ctx.invoke(edit)
-    output.deprecated("`organize config` is deprecated.")
-    output.deprecated("Please see `organize --help` for all available commands.")
+    console.deprecated("`organize config` is deprecated.")
+    console.deprecated("Please see `organize --help` for all available commands.")
 
 
 if __name__ == "__main__":

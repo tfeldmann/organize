@@ -14,8 +14,9 @@ rules:
         ignore_errors: true
     filters:
       - name:
-          startswith: Liasd
+          startswith: L
     actions:
+      - confirm
       - echo: "{name}"
 
   - name: "Folders"

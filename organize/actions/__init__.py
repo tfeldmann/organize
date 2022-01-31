@@ -13,7 +13,7 @@ from .symlink import Symlink
 from .trash import Trash
 
 ACTIONS = {
-    # Confirm.name: Confirm,
+    Confirm.name: Confirm,
     Copy.name: Copy,
     Delete.name: Delete,
     Echo.name: Echo,

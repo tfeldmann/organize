@@ -3,7 +3,7 @@ from typing import Optional as tyOptional
 
 from schema import Optional, Or, Schema
 
-from organize.output import pipeline_error, pipeline_message
+from organize.console import pipeline_error, pipeline_message
 
 
 class Error(Exception):
