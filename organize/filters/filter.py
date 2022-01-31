@@ -60,10 +60,12 @@ class Filter:
 
     def print(self, msg: str) -> None:
         """print a message for the user"""
-        pipeline_message(self.get_name(), msg)
+        for line in msg.splitlines():
+            pipeline_message(self.get_name(), line)
 
     def print_error(self, msg: str):
-        pipeline_error(self.get_name(), msg)
+        for line in msg.splitlines(msg):
+            pipeline_error(self.get_name(), line)
 
     def set_logic(self, inverted=False):
         self.inverted = inverted

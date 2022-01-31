@@ -22,12 +22,12 @@ rules:
 
   - name: Zip syspath
     locations:
-      - filesystem: "zip:///Users/thomasfeldmann/Documents/Nachrichten Backup 2016-11-04.zip"
-        path: "/"
+      - path: ~/Desktop
     filters:
-      - name
+      - extension: pdf
+      - filecontent
     actions:
-      - echo: "{name}"
+      - echo: "{filecontent.all[:100]}"
 
   - name: "Folders"
     enabled: false

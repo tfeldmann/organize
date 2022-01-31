@@ -39,6 +39,7 @@ class Hash(Filter):
     """
 
     name = "hash"
+    schema_support_instance_without_args = True
 
     def __init__(self, algorithm="md5"):
         self.algorithm = Template.from_string(algorithm)

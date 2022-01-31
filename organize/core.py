@@ -286,7 +286,7 @@ def run_file(config_file: str, working_dir: str, simulate: bool):
     except SchemaError as e:
         console.error("Invalid config file!")
         for err in e.autos:
-            if err:
+            if err and len(err) < 200:
                 highlighted_console.print(err)
     except Exception as e:
         highlighted_console.print_exception()

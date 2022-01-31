@@ -11,7 +11,7 @@ class Error(Exception):
 
 
 class Action:
-    name = None # type: Union[str, None]
+    name = None  # type: Union[str, None]
     arg_schema = None
     schema_support_instance_without_args = False
 
@@ -50,10 +50,12 @@ class Action:
 
     def print(self, msg) -> None:
         """print a message for the user"""
-        pipeline_message(source=self.get_name(), msg=msg)
+        for line in msg.splitlines():
+            pipeline_message(source=self.get_name(), msg=line)
 
     def print_error(self, msg: str):
-        pipeline_error(source=self.get_name(), msg=msg)
+        for line in msg.splitlines():
+            pipeline_error(source=self.get_name(), msg=line)
 
     def __str__(self) -> str:
         return self.__class__.__name__

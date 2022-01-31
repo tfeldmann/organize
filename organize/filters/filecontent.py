@@ -28,8 +28,9 @@ class FileContent(Filter):
     """
 
     name = "filecontent"
+    schema_support_instance_without_args = True
 
-    def __init__(self, expr) -> None:
+    def __init__(self, expr="(?P<all>.*)") -> None:
         self.expr = re.compile(expr, re.MULTILINE | re.DOTALL)
 
     def matches(self, path: str, extension: str) -> Any:
@@ -66,6 +67,6 @@ class FileContent(Filter):
             ) from e
         match = self.matches(path=syspath, extension=extension)
         return FilterResult(
-            matches=match,
+            matches=bool(match),
             updates={self.get_name(): match.groupdict()},
         )
