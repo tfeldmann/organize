@@ -1,5 +1,6 @@
 rules:
   - name: "Files starting with L"
+    enabled: false
     targets: files
     locations:
       - path: ~/Downloads
@@ -23,10 +24,9 @@ rules:
     targets: dirs
     locations:
       - path: ~/Desktop
-        max_depth: 3
     filters:
-      - name:
-          startswith: Iasdawf
+      - not name:
+          startswith: Inbox
     actions:
       - echo: "{name}"
 

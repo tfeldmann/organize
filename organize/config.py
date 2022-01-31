@@ -13,6 +13,7 @@ CONFIG_SCHEMA = Schema(
                 Optional("name", description="The name of the rule."): str,
                 Optional("enabled"): bool,
                 Optional("subfolders"): bool,
+                Optional("filter_mode"): Or("all", "any", "none"),
                 Optional(
                     "targets",
                     description="Whether the rule should apply to directories or folders.",

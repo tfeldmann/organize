@@ -64,6 +64,9 @@ class Filter:
     def print_error(self, msg: str):
         pipeline_error(self.get_name(), msg)
 
+    def set_logic(self, inverted=False):
+        self.inverted = inverted
+
     def __str__(self) -> str:
         """Return filter name and properties"""
         return self.get_name()

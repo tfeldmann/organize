@@ -7,12 +7,13 @@ Please backup all your important stuff before running and use the simulate optio
 
 ### what's new
 
-- Respects your rule order - safer, less magic, less surprises.
-  (v1 tried to be clever. v2 now works your config file from top to bottom)
 - You can now target directories with your rules (copying, renaming, etc a whole folder)
 - Organize inside or between (S)FTP, S3 Buckets, Zip archives and many more.
   - [Available filesystems](https://www.pyfilesystem.org/page/index-of-filesystems/)
 - `max_depth` setting when recursing into subfolders
+- Respects your rule order - safer, less magic, less surprises.
+  (v1 tried to be clever. v2 now works your config file from top to bottom)
+- Jinja2 template engine for placeholders.
 - Instant start. (does not need to gather all the files before starting)
 - Filters can now be excluded.
 - Nice terminal output.

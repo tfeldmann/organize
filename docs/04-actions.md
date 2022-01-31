@@ -3,9 +3,32 @@
 This page shows the specifics of each action. For basic action usage and options have a
 look at the [Config](01-config.md) section.
 
+## confirm
+
+::: organize.actions.Confirm
+
+**Examples**
+
+Confirm before deleting a duplicate
+
+```yaml
+rules:
+  - name: "Delete duplicates"
+    locations:
+      - ~/Downloads
+      - ~/Documents
+    filters:
+      - not empty
+      - duplicate
+      - name
+    actions:
+      - confirm: "Delete {name}?"
+      - trash
+```
+
 ## copy
 
-::: organize.actions.copy.Copy
+::: organize.actions.Copy
 
 **Examples:**
 

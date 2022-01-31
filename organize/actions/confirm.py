@@ -8,6 +8,8 @@ from .action import Action
 
 class Confirm(Action):
 
+    """Ask for confirmation before continuing."""
+
     name = "confirm"
     schema_support_instance_without_args = True
 

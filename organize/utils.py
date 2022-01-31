@@ -55,6 +55,29 @@ def ensure_list(inp):
     return inp
 
 
+def ensure_dict(inp):
+    if isinstance(inp, dict):
+        return inp
+    elif isinstance(inp, str):
+        return {inp: {}}
+    raise ValueError("Cannot ensure dict: %s" % inp)
+
+
+def to_args(inp):
+    """Convert a argument into a (args, kwargs) tuple.
+
+    >>> to_args('test')
+    (['test'], {})
+    >>> to_args([1, 2, 3])
+    ([1, 2, 3], {})
+    >>> to_args({'a': {'b': 'c'}})
+    ([], {'a': {'b': 'c'}})
+    """
+    if isinstance(inp, dict):
+        return ([], inp)
+    return (ensure_list(inp), {})
+
+
 def flatten(arr: List[Any]) -> List[Any]:
     if arr == []:
         return []

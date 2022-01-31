@@ -25,6 +25,7 @@ plugins:
             show_root_heading: false
             show_source: false
       watch:
+        - .
         - organize
 
 markdown_extensions:

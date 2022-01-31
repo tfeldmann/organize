@@ -25,7 +25,7 @@ theme = Theme(
         "location.main": "bold green",
         "path.base": "dim green",
         "path.main": "green",
-        "path.icon": "white",
+        "path.icon": "green",
         "pipeline.source": "cyan",
         "pipeline.msg": "white",
         "pipeline.error": "bold red",

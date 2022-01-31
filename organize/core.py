@@ -16,7 +16,7 @@ from .actions.action import Action
 from .config import CONFIG_SCHEMA, load_from_file
 from .filters import FILTERS
 from .filters.filter import Filter
-from .utils import Template, deep_merge_inplace, ensure_list
+from .utils import Template, deep_merge_inplace, ensure_list, ensure_dict, to_args
 
 logger = logging.getLogger(__name__)
 highlighted_console = Console()
@@ -89,16 +89,25 @@ def instantiate_location(loc, default_max_depth=0) -> Location:
     )
 
 
-def instantiate_by_name(d, classes):
-    if isinstance(d, str):
-        return classes[d]()
-    key, value = list(d.items())[0]
-    if isinstance(key, str):
-        Class = classes[key]
-        if isinstance(value, dict):
-            return Class(**value)
-        return Class(value)
-    return d
+def instantiate_filter(filter_config):
+    spec = ensure_dict(filter_config)
+    name, value = next(iter(spec.items()))
+    parts = name.split(maxsplit=1)
+    invert = False
+    if len(parts) == 2 and parts[0] == "not":
+        name = parts[1]
+        invert = True
+    args, kwargs = to_args(value)
+    instance = FILTERS[name](*args, **kwargs)
+    instance.set_logic(inverted=invert)
+    return instance
+
+
+def instantiate_action(action_config):
+    spec = ensure_dict(action_config)
+    name, value = next(iter(spec.items()))
+    args, kwargs = to_args(value)
+    return ACTIONS[name](*args, **kwargs)
 
 
 def replace_with_instances(config):
@@ -125,7 +134,7 @@ def replace_with_instances(config):
         _filters = []
         for x in ensure_list(rule.get("filters", [])):
             try:
-                _filters.append(instantiate_by_name(x, FILTERS))
+                _filters.append(instantiate_filter(x))
             except Exception as e:
                 raise ValueError("Invalid filter %s (%s)" % (x, e)) from e
 
@@ -133,7 +142,7 @@ def replace_with_instances(config):
         _actions = []
         for x in ensure_list(rule["actions"]):
             try:
-                _actions.append(instantiate_by_name(x, ACTIONS))
+                _actions.append(instantiate_action(x))
             except Exception as e:
                 raise ValueError("Invalid action %s (%s)" % (x, e)) from e
 
@@ -152,7 +161,7 @@ def filter_pipeline(filters: Iterable[Filter], args: dict) -> bool:
     for filter_ in filters:
         try:
             match, updates = filter_.pipeline(args)
-            if not match:
+            if not (match ^ filter_.inverted):
                 return False
             deep_merge_inplace(args, updates)
         except Exception as e:  # pylint: disable=broad-except
