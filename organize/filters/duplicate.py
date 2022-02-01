@@ -68,6 +68,9 @@ class Duplicate(Filter):
                 - duplicate
                 actions:
                 - echo: "{path} is a duplicate of {duplicate}"
+
+    Note: 
+        This filter uses the glob.glob() function to retrieve the list of files. Duplicate list could be returned in arbitrary order depending on the filesystem and the Python glob.glob() function itself. If you have several duplicates of the same file in a folder, you can get arbitrary sorting of results. For a detailed explanation and proposed fix check: https://github.com/tfeldmann/organize/issues/158
     """
 
     def __init__(self) -> None:
