@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Any, List, Sequence, Callable
+from typing import Any, List, Sequence
 
 import jinja2
 from fs import open_fs, path as fspath
@@ -10,7 +10,7 @@ from jinja2 import nativetypes
 
 
 def finalize_placeholder(x):
-    if Callable(x):
+    if callable(x):
         return x()
     if isinstance(x, Exception):
         raise x

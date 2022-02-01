@@ -18,12 +18,12 @@ DEFAULT_CONFIG = """\
 # {docs}
 
 rules:
-  locations:
-    -
-  filters:
-    -
-  actions:
-    -
+  - locations:
+      -
+    filters:
+      -
+    actions:
+      -
 """.format(
     docs=DOCS_URL
 )

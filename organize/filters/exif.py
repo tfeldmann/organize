@@ -47,7 +47,7 @@ class Exif(Filter):
     def matches(self, exiftags: dict) -> bool:
         if not exiftags:
             return False
-        tags = {k.lower(): v.printable for k, v in exiftags.items()}
+        tags = {k.lower(): v for k, v in exiftags.items()}
 
         # no match if expected tag is not found
         normkey = lambda k: k.replace(".", " ").lower()
