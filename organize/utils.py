@@ -1,12 +1,12 @@
-import os
 from collections.abc import Mapping
 from copy import deepcopy
-from pathlib import Path
-from typing import Any, Hashable, List, Sequence, Union
+from typing import Any, Hashable, List, Sequence
 
-from fs.base import FS
-from fs.osfs import OSFS
 import jinja2
+from fs import open_fs, path as fspath
+from fs.base import FS
+from fs.memoryfs import MemoryFS
+from fs.osfs import OSFS
 from jinja2 import nativetypes
 
 
@@ -31,10 +31,30 @@ NativeTemplate = nativetypes.NativeEnvironment(
 )
 
 
+class SimulationFS(MemoryFS):
+    def __init__(self, fs_url, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fs_url = fs_url
+
+    def __str__(self):
+        if not self.fs_url:
+            return "<Simulation>"
+        elif "://" in self.fs_url:
+            return "<%s>" % self.fs_url
+        return self.fs_url
+
+
+def open_fs_or_sim(fs_url, *args, simulate=False, **kwargs):
+    if simulate:
+        simFS = SimulationFS(fs_url)
+        return simFS
+    return open_fs(fs_url, *args, **kwargs)
+
+
 def is_same_resource(fs1, path1, fs2, path2):
-    from fs.zipfs import WriteZipFS, ReadZipFS
-    from fs.tarfs import WriteTarFS, ReadTarFS
     from fs.errors import NoSysPath, NoURL
+    from fs.tarfs import ReadTarFS, WriteTarFS
+    from fs.zipfs import ReadZipFS, WriteZipFS
 
     try:
         return fs1.getsyspath(path1) == fs2.getsyspath(path2)
@@ -51,7 +71,9 @@ def is_same_resource(fs1, path1, fs2, path2):
 
 
 def resource_description(fs, path):
-    if isinstance(fs, OSFS):
+    if isinstance(fs, SimulationFS):
+        return "%s%s" % (str(fs), fspath.abspath(path))
+    elif isinstance(fs, OSFS):
         return fs.getsyspath(path)
     elif path == "/":
         return str(fs)

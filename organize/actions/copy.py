@@ -1,13 +1,12 @@
 import logging
 from typing import Callable
 
-from fs import open_fs
 from fs.base import FS
 from fs.copy import copy_dir, copy_file
 from fs.path import basename, dirname, join
 from schema import Optional, Or
 
-from organize.utils import Template, resource_description
+from organize.utils import Template, open_fs_or_sim, resource_description
 
 from .action import Action
 from .utils import CONFLICT_OPTIONS, resolve_overwrite_conflict
@@ -85,13 +84,23 @@ class Copy(Action):
             # render if we have a template
             if isinstance(dst_fs_, str):
                 dst_fs_ = Template.from_string(dst_fs_).render(**args)
-            dst_fs = open_fs(dst_fs_, writeable=True, create=True)
+            dst_fs = open_fs_or_sim(
+                dst_fs_,
+                writeable=True,
+                create=True,
+                simulate=simulate,
+            )
             dst_path = dst_path
         else:
-            dst_fs = open_fs(dirname(dst_path), writeable=True, create=True)
+            dst_fs = open_fs_or_sim(
+                dirname(dst_path),
+                writeable=True,
+                create=True,
+                simulate=simulate,
+            )
             dst_path = basename(dst_path)
 
-        copy_action: Callable[[FS, str, FS, str],None]
+        copy_action: Callable[[FS, str, FS, str], None]
         if src_fs.isdir(src_path):
             copy_action = copy_dir
         elif src_fs.isfile(src_path):

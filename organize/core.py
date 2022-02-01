@@ -27,6 +27,7 @@ from .utils import (
     to_args,
 )
 
+
 logger = logging.getLogger(__name__)
 highlighted_console = Console()
 

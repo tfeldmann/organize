@@ -28,8 +28,7 @@ rules:
     actions:
       - echo: "Found file! Size: {size.decimal}"
       - copy:
-          dest: "{relative_path}"
-          filesystem: zip:///Users/thomasfeldmann/Desktop/ftpfiles.zip
+          dest: "~/Desktop/test/{relative_path}"
 
   - name: Zip syspath
     enabled: false

@@ -1,7 +1,37 @@
 # Filters
 
-This page shows the specifics of each filter. For basic filter usage and options have a
-look at the [Configuration](00-configuration.md) section.
+This page shows the specifics of each filter.
+
+## - How to exclude filters -
+
+- To exclude all filters, simply set the `filter_mode` of the rule to `none`.
+- To exclude a single filter, prefix the filter name with `not` (e.g. `not empty`,
+  `not extension: jpg`, etc).
+
+Example:
+
+```yaml
+rules:
+  # using filter_mode
+  - locations: ~/Desktop
+    filter_mode: "none"
+    filters:
+      - empty
+      - name:
+          endswith: "2022"
+    actions:
+      - echo: "{name}"
+
+  # Exclude a single filter
+  - locations: ~/Desktop
+    filters:
+      - not extension: jpg
+      - name:
+          startswith: "Invoice"
+      - not empty
+    actions:
+      - echo: "{name}"
+```
 
 ## created
 
