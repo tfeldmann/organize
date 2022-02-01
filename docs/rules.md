@@ -11,7 +11,7 @@ A minimum config:
 
 ```yaml
 rules:
-  - locations: "~/some/location"
+  - locations: "~/Desktop"
     actions:
       - echo: "Hello World!"
 ```
@@ -19,7 +19,7 @@ rules:
 Organize checks your rules from top to bottom. For every resource in each location (top to bottom)
 it will check whether the filters apply (top to bottom) and then execute the given actions (top to bottom).
 
-So with this minimal configuration it will print "Hello World!" for each file it finds in `"~/some/location"`.
+So with this minimal configuration it will print "Hello World!" for each file it finds in your Desktop.
 
 ## Rule options
 
@@ -96,8 +96,6 @@ Instead of repeating the same folders in each and every rule you can use an alia
 Aliases are a standard feature of the YAML syntax.
 
 .. code-block:: yaml
-:caption: config.yaml
-
 all_my_messy_folders: &all - ~/Desktop - ~/Downloads - ~/Documents - ~/Dropbox
 
 rules: - folders: \*all
@@ -111,8 +109,6 @@ actions: ...
 You can even use multiple folder lists:
 
 .. code-block:: yaml
-:caption: config.yaml
-
 private_folders: &private - '/path/private' - '~/path/private'
 
 work_folders: &work - '/path/work' - '~/My work folder'

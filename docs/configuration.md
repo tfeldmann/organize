@@ -47,9 +47,3 @@ $ organize run [FILE]
 - `ORGANIZE_CONFIG` - The path to the default config file.
 - `NO_COLOR` - if this is set, the output is not colored.
 - `EDITOR` - The editor used to edit the config file.
-
-## Command line interface
-
-::: mkdocs-click
-    :module: organize.cli
-    :command: organize

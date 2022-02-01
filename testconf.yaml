@@ -21,13 +21,16 @@ rules:
       - echo: "{name}"
 
   - name: Zip syspath
+    targets: dirs
     locations:
       - path: ~/Desktop
+        exclude_dirs: ["Inbox"]
+        max_depth: null
     filters:
-      - extension: pdf
-      - filecontent
+      - name:
+          startswith: "I"
     actions:
-      - echo: "{filecontent.all[:100]}"
+      - echo: "{path}"
 
   - name: "Folders"
     enabled: false

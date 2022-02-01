@@ -127,8 +127,6 @@ rules:
 Prints "Hello World!" and filepath for each file on the desktop:
 
 ```yaml
-:caption: config.yaml
-
 rules:
   - locations:
       - ~/Desktop
@@ -139,8 +137,6 @@ rules:
 This will print something like `Found a PNG: "test.png"` for each file on your desktop
 
 ```yaml
-:caption: config.yaml
-
 rules:
   - locations:
       - ~/Desktop
@@ -153,8 +149,6 @@ rules:
 Show the `{basedir}` and `{path}` of all files in '~/Downloads', '~/Desktop' and their subfolders:
 
 ```yaml
-:caption: config.yaml
-
 rules:
   - locations:
       - path: ~/Desktop
