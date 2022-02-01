@@ -1,7 +1,7 @@
 # Rules
 
 A organize config file can be written in [YAML](https://learnxinyminutes.com/docs/yaml/)
-or [JSON](https://learnxinyminutes.com/docs/json/). See [configuration](00-configuration.md)
+or [JSON](https://learnxinyminutes.com/docs/json/). See [configuration](configuration.md)
 on how to locate your config file.
 
 The top level element must be a dict with a key "rules".
@@ -46,11 +46,11 @@ The rule options in detail:
 - **name** (`str`): The rule name
 - **enabled** (`bool`): Whether the rule is enabled / disabled _(Default: `true`)_
 - **targets** (`str`): `"dirs"` or `"files"` _(Default: `"files"`)_
-- **locations** (`str`|`list`) - A single location string or list of [locations](02-locations.md)
+- **locations** (`str`|`list`) - A single location string or list of [locations](locations.md)
 - **subfolders** (`bool`): Whether to recurse into subfolders of all locations _(Default: `false`)_
 - **filter_mode** (`str`): `"all"`, `"any"` or `"none"` of the filters must apply _(Default: `"all"`)_
-- **filters** (`list`): A list of [filters](03-filters.md) _(Default: `[]`)_
-- **actions** (`list`): A list of [actions](04-actions.md)
+- **filters** (`list`): A list of [filters](filters.md) _(Default: `[]`)_
+- **actions** (`list`): A list of [actions](actions.md)
 
 ## Targeting directories
 

@@ -33,7 +33,7 @@ Please backup all your important stuff before running and use the simulate optio
 
 - cleaner config file validation and stricter format
 - The config file format got a long due overhaul. Please see the
-  [migration documentation](docs/06-updating-from-v1.md) for what is new.
+  [migration documentation](docs/updating-from-v1.md) for what is new.
 - The `timezone` keyword for `lastmodified` and `created` was removed. The timezone is
   now the local timezone by default.
 - The `filesize` filter was renamed to `size` and can now be used to get directory sizes

@@ -12,8 +12,9 @@ from fs import appfs, osfs
 from . import console
 from .__version__ import __version__
 
-DOCS_URL = "https://organize.readthedocs.io"
-DEFAULT_CONFIG = """# organize configuration file
+DOCS_URL = "https://tfeldmann.github.io/organize/"  # "https://organize.readthedocs.io"
+DEFAULT_CONFIG = """\
+# organize configuration file
 # {docs}
 
 rules:

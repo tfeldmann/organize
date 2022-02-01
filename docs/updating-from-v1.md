@@ -18,11 +18,11 @@ Alternative for
 
 ## Config
 
-- `folders` must be renamed to `locations`. New options: [Locations](02-locations.md).
+- `folders` must be renamed to `locations`. New options: [Locations](locations.md).
   - the **glob syntax** (eg. `"~/Documents/**"`) has been removed.
   - the **exclamation mark exclude** (eg. `"! ~/Desktop"`) syntax has been removed.
   - They are replaced by the `max_depth`, `exclude_files`, `exclude_dirs`, `filter` and
-    `filter_dirs` settings. See [Locations](02-locations.md).
+    `filter_dirs` settings. See [Locations](locations.md).
 - the `subfolders` setting is removed and replaced by the `max_depth` setting
   of a specific location.
 - You can now name your rules via `name`.
@@ -66,11 +66,11 @@ rules:
 
 ## Filters
 
-- [`created`](03-filters.md#created) no longer accepts a timezone and uses the local timezone by default.
-- [`lastmodified`](03-filters.md#lastmodified) no longer accepts a timezone and uses the local timezone by default.
-- [`filename`](03-filters.md#name) is renamed to `name`.
-- [`filesize`](03-filters.md#size) is renamed to `size`.
+- [`created`](filters.md#created) no longer accepts a timezone and uses the local timezone by default.
+- [`lastmodified`](filters.md#lastmodified) no longer accepts a timezone and uses the local timezone by default.
+- [`filename`](filters.md#name) is renamed to `name`.
+- [`filesize`](filters.md#size) is renamed to `size`.
 
 ## Actions
 
-- [`copy`](04-actions.md#copy) arguments changed.
+- [`copy`](actions.md#copy) arguments changed.
