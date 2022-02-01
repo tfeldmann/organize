@@ -1,76 +1,49 @@
 # Updating from organize v1.x
 
-First of all, thank you for being a long time user of `organize`.
+First of all, thank you for being a long time user of `organize`!
 
-As this project is only maintained by the single person writing this article it is not
-feasible to write an automatic config file migration or a compatibility layer.
-Many people use organize for important documents and personal files, this is not
-something I want to half-ass.
+I tried to keep the amount of breaking changes small but could not avoid them
+completely. Feel free to pin organize to v1.x, but then you're missing the party.
 
-So if you want all the new goodies, you'll need to do some changes in your config.
-Otherwise feel free to pin organize to the latest v1.x.
-
-<!--
-Alternative for
-{created.year}-{created.month:02}-{created.day:02}
-
--->
+Please open a issue on Github if you need help migrating your config file!
 
 ## Config
 
-- `folders` must be renamed to `locations`. New options: [Locations](locations.md).
-  - the **glob syntax** (eg. `"~/Documents/**"`) has been removed.
-  - the **exclamation mark exclude** (eg. `"! ~/Desktop"`) syntax has been removed.
-  - They are replaced by the `max_depth`, `exclude_files`, `exclude_dirs`, `filter` and
-    `filter_dirs` settings. See [Locations](locations.md).
-- the `subfolders` setting is removed and replaced by the `max_depth` setting
-  of a specific location.
-- You can now name your rules via `name`.
-- The `enabled` setting has been removed. # TODO: ?
+- `folders` must be renamed to `locations`.
+- REMOVED: The glob syntax (`/Docs/**/*.png`)
+- REMOVED: The exclamation mark exlucde syntax (`! ~/Desktop/exclude`)
 
-organize v1.x:
+With `locations`, there are now much better options in place.
+Please change your `folders` definition to the `locations` definition: [Locations documentation](locations.md).
 
-```yml
-rules:
-  # find some pdf files in various dirs and echo "Hello" for each one
-  - folders:
-      - "~/Desktop/**/*.pdf"
-      - "! ~/Desktop/donotmove/*"
-    subfolders: true
-    ...
+- All keys (filter names, action names, option names) now must be lowercase.
 
-  # move all pdfs into documents
-  - folders:
-      - "~/Downloads/*.pdf"
-    ...
-```
+## Placeholders
 
-becomes (organize v2.x)
+organize v2 uses the Jinja template engine. You may need to change some of your placeholders.
 
-```yml
-rules:
-  - name: find some pdf files in various dirs and echo "Hello" for each one
-    locations:
-      - path: ~/Desktop/
-        max_depth: null
-        filter: "*.pdf"
-        exclude_dirs: donotmove
-    ...
+- `{basedir}` is no longer available.
+- Replace undocumented placeholders like this:
 
-  - name: move all pdfs into documents
-    locations: "~/Downloads"
-    filters:
-      - extension: pdf
-    ...
-```
+  ```py
+  {created.year}-{created.month:02}-{created.day:02}
+  ```
+
+  With this:
+
+  ```py
+  {created.strftime('%Y-%m-%d')}
+  ```
 
 ## Filters
 
-- [`created`](filters.md#created) no longer accepts a timezone and uses the local timezone by default.
-- [`lastmodified`](filters.md#lastmodified) no longer accepts a timezone and uses the local timezone by default.
 - [`filename`](filters.md#name) is renamed to `name`.
 - [`filesize`](filters.md#size) is renamed to `size`.
+- [`created`](filters.md#created) no longer accepts a timezone and uses the local timezone by default.
+- [`lastmodified`](filters.md#lastmodified) no longer accepts a timezone and uses the local timezone by default.
 
 ## Actions
 
-- [`copy`](actions.md#copy) arguments changed.
+- [`copy`](actions.md#copy) arguments changed to support conflict resolution options.
+- [`move`](actions.md#move) arguments changed to support conflict resolution options.
+- [`rename`](actions.md#rename) arguments changed to support conflict resolution options.

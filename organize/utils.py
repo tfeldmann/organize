@@ -1,6 +1,5 @@
-from collections.abc import Mapping
 from copy import deepcopy
-from typing import Any, Hashable, List, Sequence
+from typing import Any, List, Sequence, Callable
 
 import jinja2
 from fs import open_fs, path as fspath
@@ -10,7 +9,9 @@ from fs.osfs import OSFS
 from jinja2 import nativetypes
 
 
-def raise_exceptions(x):
+def finalize_placeholder(x):
+    if Callable(x):
+        return x()
     if isinstance(x, Exception):
         raise x
     return x
@@ -20,14 +21,14 @@ Template = jinja2.Environment(
     variable_start_string="{",
     variable_end_string="}",
     autoescape=False,
-    finalize=raise_exceptions,
+    finalize=finalize_placeholder,
 )
 
 NativeTemplate = nativetypes.NativeEnvironment(
     variable_start_string="{",
     variable_end_string="}",
     autoescape=False,
-    finalize=raise_exceptions,
+    finalize=finalize_placeholder,
 )
 
 
@@ -128,10 +129,6 @@ def flattened_string_list(x, case_sensitive=True) -> Sequence[str]:
     if not case_sensitive:
         x = [x.lower() for x in x]
     return x
-
-
-def first_key(dic: Mapping) -> Hashable:
-    return list(dic.keys())[0]
 
 
 def flatten_all_lists_in_dict(obj):

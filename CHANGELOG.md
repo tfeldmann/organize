@@ -9,7 +9,7 @@ Please backup all your important stuff before running and use the simulate optio
 
 - You can now target directories with your rules (copying, renaming, etc a whole folder)
 - Organize inside or between (S)FTP, S3 Buckets, Zip archives and many more.
-  - [Available filesystems](https://www.pyfilesystem.org/page/index-of-filesystems/)
+  [Available filesystems](https://www.pyfilesystem.org/page/index-of-filesystems/)
 - `max_depth` setting when recursing into subfolders
 - Respects your rule order - safer, less magic, less surprises.
   (v1 tried to be clever. v2 now works your config file from top to bottom)
@@ -28,12 +28,10 @@ Please backup all your important stuff before running and use the simulate optio
 - Added filter `hash`.
 - Added action `symlink`.
 - Added action `confirm`.
+- Many small fixes and improvements.
 
 ### changed
 
-- cleaner config file validation and stricter format
-- The config file format got a long due overhaul. Please see the
-  [migration documentation](docs/updating-from-v1.md) for what is new.
 - The `timezone` keyword for `lastmodified` and `created` was removed. The timezone is
   now the local timezone by default.
 - The `filesize` filter was renamed to `size` and can now be used to get directory sizes
@@ -44,7 +42,7 @@ Please backup all your important stuff before running and use the simulate optio
 ### removed
 
 - Glob syntax is gone from folders (no longer needed)
-- "!"-exclude syntax is gone (no longer needed)
+- `"!"` folder exclude syntax is gone (no longer needed)
 
 ## v1.10.1 (2021-04-21)
 

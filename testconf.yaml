@@ -1,8 +1,0 @@
-rules:
-  - locations: ~/Desktop
-    enabled: false
-    subfolders: true
-    filters:
-      - extension: pdf
-    actions:
-      - copy: here/{relative_path}

@@ -64,7 +64,7 @@ class Filter:
             pipeline_message(self.get_name(), line)
 
     def print_error(self, msg: str):
-        for line in msg.splitlines(msg):
+        for line in msg.splitlines():
             pipeline_error(self.get_name(), line)
 
     def set_logic(self, inverted=False):
