@@ -13,7 +13,7 @@ rules:
 
 If you want to handle multiple locations in a rule, create a list:
 
-```yaml
+```yml
 rules:
   - locations:
       - ~/Desktop
@@ -24,7 +24,7 @@ rules:
 
 Using options:
 
-```yaml
+```yml
 rules:
   - name: "Location list"
     locations:
@@ -37,7 +37,7 @@ Note that you can use environment variables in your locations.
 
 ## Location options
 
-```yaml
+```yml
 rules:
   - locations:
       - path: ...
@@ -96,7 +96,7 @@ A [Filesystem URL](#filesystems).
 
 If you want the location to be the root (`"/"`) of a filesystem, use `path`:
 
-```yaml
+```yml
 rules:
   - locations:
       - path: zip:///Users/theuser/Downloads/Test.zip
@@ -104,7 +104,7 @@ rules:
 
 If you want the location to be a subfolder inside a filesystem, use `path` and `filesystem`:
 
-```yaml
+```yml
 rules:
   - locations:
       - filesystem: zip:///Users/theuser/Downloads/Test.zip
@@ -184,8 +184,9 @@ copied between projects.
 
 There is a command line option to change the working directory should you need it.
 
+**huge-pic-warner.yaml**
+
 ```yaml
-# huge-pic-warner.yaml
 rules:
   - locations: "docs" # here "docs" is relative to the current working dir
     filters:

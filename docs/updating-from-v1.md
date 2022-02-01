@@ -30,7 +30,7 @@ Alternative for
 
 organize v1.x:
 
-```yaml
+```yml
 rules:
   # find some pdf files in various dirs and echo "Hello" for each one
   - folders:
@@ -47,7 +47,7 @@ rules:
 
 becomes (organize v2.x)
 
-```yaml
+```yml
 rules:
   - name: find some pdf files in various dirs and echo "Hello" for each one
     locations:

@@ -23,7 +23,7 @@ So with this minimal configuration it will print "Hello World!" for each file it
 
 ## Rule options
 
-```yaml
+```yml
 rules:
   # First rule
   - name: ...

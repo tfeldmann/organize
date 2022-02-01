@@ -141,7 +141,7 @@ rules:
   - locations:
       - ~/Desktop
     filters:
-      - Extension
+      - extension
     actions:
       - echo: 'Found a {extension.upper}: "{path.name}"'
 ```
