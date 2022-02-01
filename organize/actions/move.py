@@ -40,7 +40,7 @@ class Move(Action):
             A template for renaming the file / dir in case of a conflict.
             Defaults to `{name} {counter}{extension}`.
 
-        dest_filesystem (str):
+        filesystem (str):
             (Optional) A pyfilesystem opener url of the filesystem you want to copy to.
             If this is not given, the local filesystem is used.
 
@@ -54,7 +54,7 @@ class Move(Action):
             "dest": str,
             Optional("on_conflict"): Or(*CONFLICT_OPTIONS),
             Optional("rename_template"): str,
-            Optional("dest_filesystem"): str,
+            Optional("filesystem"): str,
         },
     )
 
@@ -63,7 +63,7 @@ class Move(Action):
         dest: str,
         on_conflict="rename_new",
         rename_template="{name} {counter}{extension}",
-        dest_filesystem=None,
+        filesystem=None,
     ) -> None:
         if on_conflict not in CONFLICT_OPTIONS:
             raise ValueError(
@@ -73,7 +73,7 @@ class Move(Action):
         self.dest = Template.from_string(dest)
         self.conflict_mode = on_conflict
         self.rename_template = Template.from_string(rename_template)
-        self.dest_filesystem = dest_filesystem
+        self.filesystem = filesystem
 
     def pipeline(self, args: dict, simulate: bool):
         src_fs = args["fs"]  # type: FS
@@ -84,8 +84,8 @@ class Move(Action):
         if dst_path.endswith(("\\", "/")):
             dst_path = join(dst_path, basename(src_path))
 
-        if self.dest_filesystem:
-            dst_fs_ = self.dest_filesystem
+        if self.filesystem:
+            dst_fs_ = self.filesystem
             # render if we have a template
             if isinstance(dst_fs_, str):
                 dst_fs_ = Template.from_string(dst_fs_).render(**args)

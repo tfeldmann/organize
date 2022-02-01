@@ -87,7 +87,7 @@ All other files are skipped.
 
 **filter_dirs** (`List[str]`)<br>
 A list of patterns to match directory names that are included in this location.
-  All other directories are skipped.
+All other directories are skipped.
 
 **filesystem** (str)<br>
 A [Filesystem URL](#filesystems).
@@ -114,17 +114,89 @@ rules:
 ### `max_depth` and `subfolders`
 
 - If `subfolders: true` is specified on the rule, all locations are set to `max_depth: null`
-by default.
+  by default.
 - A `max_depth` setting in a location is given precedence over the rule's `subfolders` setting.
+
+## Remote filesystems and archives
+
+Locations in organize can include:
+
+- Folders on the harddrive
+- ZIP archives
+- TAR archives
+- FTP servers
+- S3 Buckets
+- SSH and SMB connections
+- IMAP servers
+- WebDAV storages
+- Dropbox / OneDrive / Google Drive storage (no need to install the client)
+- Azure Datalake / Google Cloud Storage
+- [and many more!](https://www.pyfilesystem.org/page/index-of-filesystems)
+
+You can uses these just like the local harddrive, move/copy files or folders between
+them or organize them however you want.
+
+Filesystem URLs are formatted like this:
+
+```sh
+<protocol>://<username>:<password>@<resource>
+
+# Examples:
+ftp://ftp.example.org/pub
+ftps://will:daffodil@ftp.example.org/private
+zip://projects.zip
+s3://mybucket
+dropbox://dropbox.com?access_token=<dropbox access token>
+ssh://[user[:password]@]host[:port]
+```
+
+The ZIP, TAR, FTP and AppFS filesystems are builtin.
+For all other filesystems you need to
+[install the appropriate library](https://www.pyfilesystem.org/page/index-of-filesystems).
+
+**FTP Example**
+
+Show the size of all JPGs on a remote FTP server and put them into a local ZIP file.
+
+```yaml
+rules:
+  - locations: "ftps://demo:{env.FTP_PASSWORD}@demo.wftpserver.com"
+    subfolders: true
+    filters:
+      - size
+      - extension: jpg
+    actions:
+      - echo: "Found file! Size: {size.decimal}"
+      - copy:
+          dest: "{relative_path}"
+          filesystem: zip:///Users/thomas/Desktop/ftpfiles.zip
+```
+
+**Note:**
+
+You should never include a password in a config file. Better pass them in via an
+environment variable (`{env.FTP_PASSWORD}`) as you can see above.
 
 ## Relative locations
 
-## Filesystems
+Locations can be relative. This allows you to create simple one-off rules that can be
+copied between projects.
 
-      actions: ...
+There is a command line option to change the working directory should you need it.
 
-.. note::
+```yaml
+# huge-pic-warner.yaml
+rules:
+  - locations: "docs" # here "docs" is relative to the current working dir
+    filters:
+      - extension: jpg
+      - size: ">3 MB"
+    actions:
+      - echo: "Warning - huge pic found!"
+```
 
-- You can use environment variables in your folder names. On windows this means you can use `%public%/Desktop`, `%APPDATA%`, `%PROGRAMDATA%` etc.
+Then run it with:
 
-[PyFilesystem URL](https://docs.pyfilesystem.org/en/latest/openers.html)
+```sh
+organize sim huge-pic-warner.yaml --working-dir=some/other/dir/
+```

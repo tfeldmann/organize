@@ -32,10 +32,6 @@ class Rename(Action):
             A template for renaming the file / dir in case of a conflict.
             Defaults to `{name} {counter}{extension}`.
 
-        dest_filesystem (str):
-            (Optional) A pyfilesystem opener url of the filesystem you want to copy to.
-            If this is not given, the local filesystem is used.
-
     The next action will work with the renamed file / dir.
     """
 

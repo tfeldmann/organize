@@ -52,84 +52,118 @@ The rule options in detail:
 - **filters** (`list`): A list of [filters](03-filters.md) _(Default: `[]`)_
 - **actions** (`list`): A list of [actions](04-actions.md)
 
+## Targeting directories
+
+When `targets` is set to `dirs`, organize will work on the folders, not on files.
+
+The filters adjust their meaning automatically. For example the `size` filter sums up
+the size of all files contained in the given folder instead of returning the size of a
+single file.
+
+Of course other filters like `exif` or `filecontent` do not work on folders and will
+return an error.
+
 ## Templates and placeholders
 
-**You can use placeholder variables in your actions.**
-
 Placeholder variables are used with curly braces `{var}`.
-You always have access to the variables `{path}`, `{basedir}` and `{relative_path}`:
 
-- `{path}` -- is the full path to the current file
-- `{basedir}` -- the current base folder (the base folder is the folder you
-  specify in your configuration).
-- `{relative_path}` -- the relative path from `{basedir}` to `{path}`
+These variables are **always available**:
 
-Use the dot notation to access properties of `{path}`, `{basedir}` and `{relative_path}`:
+`{env}` (`dict`)<br>
+All your environment variables. You can access individual env vars like this: `{env.MY_VARIABLE}`.
 
-- `{path}` -- the full path to the current file
-- `{path.name}` -- the full filename including extension
-- `{path.stem}` -- just the file name without extension
-- `{path.suffix}` -- the file extension
-- `{path.parent}` -- the parent folder of the current file
-- `{path.parent.parent}` -- parent calls are chainable...
+`{path}` ([`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#methods-and-properties))<br>
+The full path to the current file / folder on the local harddrive.
+This is not available for remote locations - in this case use `fs` and `fs_path`.
 
-- `{basedir}` -- the full path to the current base folder
-- `{basedir.parent}` -- the full path to the base folder's parent
+`{now}` (`datetime`)<br>
+The current datetime in the local timezone.
 
-and any other property of the python `pathlib.Path` (`official documentation <https://docs.python.org/3/library/pathlib.html#methods-and-properties>`\_) object.
+`{utcnow}` (`datetime`)<br>
+The current UTC datetime.
 
-Additionally :ref:`Filters` may emit placeholder variables when applied to a
-path. Check the documentation and examples of the filter to see available
-placeholder variables and usage examples.
+`{fs}` (`FS`)<br>
+The filesystem of the current location.
 
-Some examples include:
+`{fs_path}` (`str`)<br>
+The path of the current file / folder in related to `fs`.
 
-- `{lastmodified.year}` -- the year the file was last modified
-- `{regex.yournamedgroup}` -- anything you can extract via regular expressions
-- `{extension.upper}` -- the file extension in uppercase
-- ... and many more.
+`{relative_path}` (`str`)<br>
+the relative path of the current file in `{fs}`.
 
+In addition to that nearly all filters add new placeholders with information about
+the currently handled file / folder.
+
+Example on how to access the size and hash of a file:
+
+```yaml
+rules:
+  - locations: ~/Desktop
+    filters:
+      - size
+      - hash
+    actions:
+      - echo: "{size} {hash}"
+```
+
+Note: In order to use a value returned by a filter it must be listed in the filters!
 
 ## Advanced: Aliases
 
-Instead of repeating the same folders in each and every rule you can use an alias for multiple folders which you can then reference in each rule.
+Instead of repeating the same locations / actions / filters in each and every rule you
+can use an alias for multiple locations which you can then reference in each rule.
+
 Aliases are a standard feature of the YAML syntax.
 
-.. code-block:: yaml
-all_my_messy_folders: &all - ~/Desktop - ~/Downloads - ~/Documents - ~/Dropbox
+```yml
+all_my_messy_folders: &all
+  - ~/Desktop
+  - ~/Downloads
+  - ~/Documents
+  - ~/Dropbox
 
-rules: - folders: \*all
-filters: ...
-actions: ...
+rules:
+  - locations: *all
+    filters: ...
+    actions: ...
 
-    - folders: *all
-      filters: ...
-      actions: ...
+  - locations: *all
+    filters: ...
+    actions: ...
+```
 
 You can even use multiple folder lists:
 
-.. code-block:: yaml
-private_folders: &private - '/path/private' - '~/path/private'
+```yml
+private_folders: &private
+  - "/path/private"
+  - "~/path/private"
 
-work_folders: &work - '/path/work' - '~/My work folder'
+work_folders: &work
+  - "/path/work"
+  - "~/My work folder"
 
-all_folders: &all - *private - *work
+all_folders: &all
+  - *private
+  - *work
 
-rules: - folders: \*private
-filters: ...
-actions: ...
+rules:
+  - locations: *private
+    filters: ...
+    actions: ...
 
-    - folders: *work
-      filters: ...
-      actions: ...
+  - locations: *work
+    filters: ...
+    actions: ...
 
-    - folders: *all
-      filters: ...
-      actions: ...
+  - locations: *all
+    filters: ...
+    actions: ...
 
-    # same as *all
-    - folders:
-        - *work
-        - *private
-      filters: ...
-      actions: ...
+  # same as *all
+  - locations:
+      - *work
+      - *private
+    filters: ...
+    actions: ...
+```

@@ -20,7 +20,19 @@ rules:
       - confirm
       - echo: "{name}"
 
+  - locations: "ftps://demo:demo@demo.wftpserver.com"
+    subfolders: true
+    filters:
+      - size
+      - extension: jpg
+    actions:
+      - echo: "Found file! Size: {size.decimal}"
+      - copy:
+          dest: "{relative_path}"
+          filesystem: zip:///Users/thomasfeldmann/Desktop/ftpfiles.zip
+
   - name: Zip syspath
+    enabled: false
     targets: dirs
     locations:
       - path: ~/Desktop

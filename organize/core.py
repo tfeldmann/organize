@@ -2,11 +2,12 @@ import logging
 import os
 from collections import Counter, defaultdict
 from datetime import datetime
+from pathlib import Path
 from typing import Iterable, NamedTuple
 
 import fs
-from fs.errors import NoSysPath
 from fs.base import FS
+from fs.errors import NoSysPath
 from fs.walk import Walker
 from rich.console import Console
 from schema import SchemaError
@@ -20,10 +21,10 @@ from .filters.filter import Filter
 from .utils import (
     Template,
     deep_merge_inplace,
-    ensure_list,
     ensure_dict,
-    to_args,
+    ensure_list,
     flatten_all_lists_in_dict,
+    to_args,
 )
 
 logger = logging.getLogger(__name__)
@@ -133,7 +134,7 @@ def instantiate_action(action_config):
 
 def syspath_or_exception(fs, path):
     try:
-        return fs.getsyspath(path)
+        return Path(fs.getsyspath(path))
     except NoSysPath as e:
         return e
 
