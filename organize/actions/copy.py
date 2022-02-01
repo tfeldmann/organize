@@ -122,7 +122,7 @@ class Copy(Action):
             )
         if not skip:
             if not simulate:
-                dst_fs.makedirs(dirname(dst_path))
+                dst_fs.makedirs(dirname(dst_path), recreate=True)
                 copy_action(src_fs, src_path, dst_fs, dst_path)
             self.print("Copied to %s" % resource_description(dst_fs, dst_path))
 

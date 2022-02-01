@@ -61,6 +61,9 @@ def config_cleanup(rules):
         if rule.get("enabled", True):
             result["rules"].append(rule)
 
+    if not result:
+        raise ValueError("No rules defined.")
+
     # flatten all lists everywhere
     return flatten_all_lists_in_dict(dict(result))
 
@@ -274,8 +277,8 @@ def run(config, simulate: bool = True):
 
 
 def run_file(config_file: str, working_dir: str, simulate: bool):
-    console.info(config_file, working_dir)
     try:
+        console.info(config_file, working_dir)
         rules = load_from_file(config_file)
         rules = config_cleanup(rules)
         CONFIG_SCHEMA.validate(rules)
@@ -292,3 +295,6 @@ def run_file(config_file: str, working_dir: str, simulate: bool):
                 highlighted_console.print(err)
     except Exception as e:
         highlighted_console.print_exception()
+    except (EOFError, KeyboardInterrupt):
+        console.status.stop()
+        console.warn("Aborted")

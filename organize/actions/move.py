@@ -126,6 +126,7 @@ class Move(Action):
             )
         if not skip:
             if not simulate:
+                dst_fs.makedirs(dirname(dst_path), recreate=True)
                 move_action(src_fs, src_path, dst_fs, dst_path)
             self.print("Moved to %s" % resource_description(dst_fs, dst_path))
 

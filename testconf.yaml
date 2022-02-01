@@ -1,68 +1,8 @@
 rules:
-  - name: "Files starting with L"
+  - locations: ~/Desktop
     enabled: false
-    targets: files
-    locations:
-      - path: ~/Downloads
-        max_depth: 3
-      - path: ~/Documents
-        max_depth: 3
-      - path: ~/Pictures
-        max_depth: 3
-        ignore_errors: true
-      - filesystem: zip:///Users/thomasfeldmann/Downloads/105133-0001_stp.zip
-        path: "/Test"
-        ignore_errors: true
-    filters:
-      - name:
-          startswith: L
-    actions:
-      - confirm
-      - echo: "{name}"
-
-  - locations: "ftps://demo:demo@demo.wftpserver.com"
     subfolders: true
     filters:
-      - size
-      - extension: jpg
+      - extension: pdf
     actions:
-      - echo: "Found file! Size: {size.decimal}"
-      - copy:
-          dest: "~/Desktop/test/{relative_path}"
-
-  - name: Zip syspath
-    enabled: false
-    targets: dirs
-    locations:
-      - path: ~/Desktop
-        exclude_dirs: ["Inbox"]
-        max_depth: null
-    filters:
-      - name:
-          startswith: "I"
-    actions:
-      - echo: "{path}"
-
-  - name: "Folders"
-    enabled: false
-    targets: dirs
-    locations:
-      - path: ~/Desktop
-    filter_mode: nones
-    filters:
-      - not name:
-          startswith2: Inbox
-      - size
-      - name:
-          startswith: Projekt
-    actions:
-      - echo: "{name} {size.decimal}"
-
-  # - name: Find some folders
-  #   targets: dirs
-  #   locations:
-  #     - ~/Desktop
-  #     - path: ~/Desktop/Inbox
-  #       max_depth: null
-  #   actions:
-  #     - echo: ~/Dir
+      - copy: here/{relative_path}
