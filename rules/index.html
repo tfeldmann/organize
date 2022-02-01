@@ -162,11 +162,11 @@ it will check whether the filters apply (top to bottom) and then execute the giv
 <li><strong>name</strong> (<code>str</code>): The rule name</li>
 <li><strong>enabled</strong> (<code>bool</code>): Whether the rule is enabled / disabled <em>(Default: <code>true</code>)</em></li>
 <li><strong>targets</strong> (<code>str</code>): <code>"dirs"</code> or <code>"files"</code> <em>(Default: <code>"files"</code>)</em></li>
-<li><strong>locations</strong> (<code>str</code>|<code>list</code>) - A single location string or list of <a href="02-locations.md">locations</a></li>
+<li><strong>locations</strong> (<code>str</code>|<code>list</code>) - A single location string or list of <a href="../locations/">locations</a></li>
 <li><strong>subfolders</strong> (<code>bool</code>): Whether to recurse into subfolders of all locations <em>(Default: <code>false</code>)</em></li>
 <li><strong>filter_mode</strong> (<code>str</code>): <code>"all"</code>, <code>"any"</code> or <code>"none"</code> of the filters must apply <em>(Default: <code>"all"</code>)</em></li>
-<li><strong>filters</strong> (<code>list</code>): A list of <a href="03-filters.md">filters</a> <em>(Default: <code>[]</code>)</em></li>
-<li><strong>actions</strong> (<code>list</code>): A list of <a href="04-actions.md">actions</a></li>
+<li><strong>filters</strong> (<code>list</code>): A list of <a href="../filters/">filters</a> <em>(Default: <code>[]</code>)</em></li>
+<li><strong>actions</strong> (<code>list</code>): A list of <a href="../actions/">actions</a></li>
 </ul>
 <h2 id="targeting-directories">Targeting directories<a class="headerlink" href="#targeting-directories" title="Permanent link">#</a></h2>
 <p>When <code>targets</code> is set to <code>dirs</code>, organize will work on the folders, not on files.</p>
