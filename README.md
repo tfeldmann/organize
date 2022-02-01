@@ -1,5 +1,5 @@
 <p align="center">
- <img width="623" height="168" src="https://github.com/tfeldmann/organize/raw/master/docs/img/organize.svg?sanitize=true" alt="organize logo">
+  <img width="623" height="168" src="https://github.com/tfeldmann/organize/raw/master/docs/img/organize.svg?sanitize=true" alt="organize logo">
 </p>
 
 <div align="center">

@@ -1,4 +1,4 @@
-# Welcome to the documentation for organize
+# Welcome to organize's documentation
 
 {%
    include-markdown "../README.md"

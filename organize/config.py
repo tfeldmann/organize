@@ -47,7 +47,6 @@ CONFIG_SCHEMA = Schema(
                 "actions": [Optional(x.get_schema()) for x in ACTIONS.values()],
             },
         ],
-        Optional("version"): int,
     },
     name="organize rule configuration",
 )

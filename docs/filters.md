@@ -1,7 +1,7 @@
 # Filters
 
 This page shows the specifics of each filter. For basic filter usage and options have a
-look at the [Config](01-config.md) section.
+look at the [Configuration](00-configuration.md) section.
 
 ## created
 

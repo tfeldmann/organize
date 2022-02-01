@@ -22,7 +22,7 @@ rules:
       - duplicate
       - name
     actions:
-      - confirm: "Delete {name}?"
+      - confirm: "Delete {duplicate}?"
       - trash
 ```
 
