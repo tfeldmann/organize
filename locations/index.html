@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Thomas Feldmann">
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Locations - organize</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Locations";
+    var mkdocs_page_input_path = "locations.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> organize</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../rules/">Rules</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Locations</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#location-options">Location options</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#filesystem-and-path">filesystem and path</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#max_depth-and-subfolders">max_depth and subfolders</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#remote-filesystems-and-archives">Remote filesystems and archives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#relative-locations">Relative locations</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../filters/">Filters</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../actions/">Actions</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../updating-from-v1/">Updating from organize v1.x</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">organize</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Locations</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/tfeldmann/organize/edit/master/docs/locations.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="locations">Locations<a class="headerlink" href="#locations" title="Permanent link">#</a></h1>
+<p><strong>Locations</strong> are the folders in which organize searches for resources.
+You can set multiple locations for each rule if you want.</p>
+<p>A minimum location definition is just a path where to look for files / folders:</p>
+<pre><code class="language-yml">rules:
+  - locations: ~/Desktop
+    actions: ...
+</code></pre>
+<p>If you want to handle multiple locations in a rule, create a list:</p>
+<pre><code class="language-yml">rules:
+  - locations:
+      - ~/Desktop
+      - /usr/bin/
+      - &quot;%PROGRAMDATA%/test&quot;
+    actions: ...
+</code></pre>
+<p>Using options:</p>
+<pre><code class="language-yml">rules:
+  - name: &quot;Location list&quot;
+    locations:
+      - path: &quot;~/Desktop&quot;
+        max_depth: 3
+    actions: ...
+</code></pre>
+<p>Note that you can use environment variables in your locations.</p>
+<h2 id="location-options">Location options<a class="headerlink" href="#location-options" title="Permanent link">#</a></h2>
+<pre><code class="language-yml">rules:
+  - locations:
+      - path: ...
+        max_depth: ...
+        search: ...
+        exclude_files: ...
+        exclude_dirs: ...
+        system_exlude_files: ...
+        system_exclude_dirs: ...
+        ignore_errors: ...
+        filter: ...
+        filter_dirs: ...
+        filesystem: ...
+</code></pre>
+<p><strong>path</strong> (<code>str</code>)<br>
+Path to a local folder or a <a href="#filesystems">Filesystem URL</a>.</p>
+<p><strong>max_depth</strong> (<code>int</code> or <code>null</code>)<br>
+Maximum directory depth to search.</p>
+<p><strong>search</strong> (<code>"breadth"</code> or <code>"depth"</code>)<br>
+Whether to use breadth or depth search to recurse into subfolders. Note that if you
+want to move or delete files from this location, this has to be set to <code>"depth"</code>.
+<em>(Default: <code>"depth"</code>)</em></p>
+<p><strong>exclude_files</strong> (<code>List[str]</code>)<br>
+A list of filename patterns that should be excluded in this location, e.g. <code>["~*"]</code>.</p>
+<p><strong>exclude_dirs</strong> (<code>List[str]</code>)<br>
+A list of patterns that will filter be used to filter out directory names in this location.
+e.g. <code>['do-not-move', '*-Important']</code></p>
+<p><strong>system_exlude_files</strong> (<code>List[str]</code>)<br>
+The list of filename patterns that are excluded by default. Defaults to:
+<code>["thumbs.db", "desktop.ini", "~$*", ".DS_Store", ".localized"]</code></p>
+<p><strong>system_exclude_dirs</strong> (<code>List[str]</code>)<br>
+The list of dir names that are excluded by default (<code>['.git', '.svn']</code>)</p>
+<p><strong>ignore_errors</strong> (<code>bool</code>)<br>
+If <code>true</code>, any errors reading the location will be ignored.</p>
+<p><strong>filter</strong> (<code>List[str]</code>)<br>
+A list of filename patterns that should be used in this location, e.g. <code>["*.py"]</code>.
+All other files are skipped.</p>
+<p><strong>filter_dirs</strong> (<code>List[str]</code>)<br>
+A list of patterns to match directory names that are included in this location.
+All other directories are skipped.</p>
+<p><strong>filesystem</strong> (str)<br>
+A <a href="#filesystems">Filesystem URL</a>.</p>
+<h3 id="filesystem-and-path"><code>filesystem</code> and <code>path</code><a class="headerlink" href="#filesystem-and-path" title="Permanent link">#</a></h3>
+<p>If you want the location to be the root (<code>"/"</code>) of a filesystem, use <code>path</code>:</p>
+<pre><code class="language-yml">rules:
+  - locations:
+      - path: zip:///Users/theuser/Downloads/Test.zip
+</code></pre>
+<p>If you want the location to be a subfolder inside a filesystem, use <code>path</code> and <code>filesystem</code>:</p>
+<pre><code class="language-yml">rules:
+  - locations:
+      - filesystem: zip:///Users/theuser/Downloads/Test.zip
+        path: &quot;/folder/in/the/zipfile/&quot;
+</code></pre>
+<h3 id="max_depth-and-subfolders"><code>max_depth</code> and <code>subfolders</code><a class="headerlink" href="#max_depth-and-subfolders" title="Permanent link">#</a></h3>
+<ul>
+<li>If <code>subfolders: true</code> is specified on the rule, all locations are set to <code>max_depth: null</code>
+  by default.</li>
+<li>A <code>max_depth</code> setting in a location is given precedence over the rule's <code>subfolders</code> setting.</li>
+</ul>
+<h2 id="remote-filesystems-and-archives">Remote filesystems and archives<a class="headerlink" href="#remote-filesystems-and-archives" title="Permanent link">#</a></h2>
+<p>Locations in organize can include:</p>
+<ul>
+<li>Folders on the harddrive</li>
+<li>ZIP archives</li>
+<li>TAR archives</li>
+<li>FTP servers</li>
+<li>S3 Buckets</li>
+<li>SSH and SMB connections</li>
+<li>IMAP servers</li>
+<li>WebDAV storages</li>
+<li>Dropbox / OneDrive / Google Drive storage (no need to install the client)</li>
+<li>Azure Datalake / Google Cloud Storage</li>
+<li><a href="https://www.pyfilesystem.org/page/index-of-filesystems">and many more!</a></li>
+</ul>
+<p>You can uses these just like the local harddrive, move/copy files or folders between
+them or organize them however you want.</p>
+<p>Filesystem URLs are formatted like this:</p>
+<pre><code class="language-sh">&lt;protocol&gt;://&lt;username&gt;:&lt;password&gt;@&lt;resource&gt;
+
+# Examples:
+ftp://ftp.example.org/pub
+ftps://will:daffodil@ftp.example.org/private
+zip://projects.zip
+s3://mybucket
+dropbox://dropbox.com?access_token=&lt;dropbox access token&gt;
+ssh://[user[:password]@]host[:port]
+</code></pre>
+<p>The ZIP, TAR, FTP and AppFS filesystems are builtin.
+For all other filesystems you need to
+<a href="https://www.pyfilesystem.org/page/index-of-filesystems">install the appropriate library</a>.</p>
+<p><strong>FTP Example</strong></p>
+<p>Show the size of all JPGs on a remote FTP server and put them into a local ZIP file.</p>
+<pre><code class="language-yaml">rules:
+  - locations: &quot;ftps://demo:{env.FTP_PASSWORD}@demo.wftpserver.com&quot;
+    subfolders: true
+    filters:
+      - size
+      - extension: jpg
+    actions:
+      - echo: &quot;Found file! Size: {size.decimal}&quot;
+      - copy:
+          dest: &quot;{relative_path}&quot;
+          filesystem: zip:///Users/thomas/Desktop/ftpfiles.zip
+</code></pre>
+<p><strong>Note:</strong></p>
+<p>You should never include a password in a config file. Better pass them in via an
+environment variable (<code>{env.FTP_PASSWORD}</code>) as you can see above.</p>
+<h2 id="relative-locations">Relative locations<a class="headerlink" href="#relative-locations" title="Permanent link">#</a></h2>
+<p>Locations can be relative. This allows you to create simple one-off rules that can be
+copied between projects.</p>
+<p>There is a command line option to change the working directory should you need it.</p>
+<p><strong>huge-pic-warner.yaml</strong></p>
+<pre><code class="language-yaml">rules:
+  - locations: &quot;docs&quot; # here &quot;docs&quot; is relative to the current working dir
+    filters:
+      - extension: jpg
+      - size: &quot;&gt;3 MB&quot;
+    actions:
+      - echo: &quot;Warning - huge pic found!&quot;
+</code></pre>
+<p>Then run it with:</p>
+<pre><code class="language-sh">organize sim huge-pic-warner.yaml --working-dir=some/other/dir/
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../filters/" class="btn btn-neutral float-right" title="Filters">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../rules/" class="btn btn-neutral" title="Rules"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/tfeldmann/organize/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../rules/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../filters/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

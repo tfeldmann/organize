@@ -20,7 +20,7 @@
   <script>
     // Current page data
     var mkdocs_page_name = "Changelog";
-    var mkdocs_page_input_path = "05-changelog.md";
+    var mkdocs_page_input_path = "changelog.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -52,19 +52,23 @@
                     </li>
                 </ul>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../01-config/">Configuration</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
                     </li>
                 </ul>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../02-locations/">Locations</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../rules/">Rules</a>
                     </li>
                 </ul>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../03-filters/">Filters</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../locations/">Locations</a>
                     </li>
                 </ul>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../04-actions/">Actions</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../filters/">Filters</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../actions/">Actions</a>
                     </li>
                 </ul>
                 <ul class="current">
@@ -134,7 +138,7 @@
                     </li>
                 </ul>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../06-updating-from-v1/">Updating from organize v1.x</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../updating-from-v1/">Updating from organize v1.x</a>
                     </li>
                 </ul>
       </div>
@@ -161,7 +165,7 @@
     <li>Changelog</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/tfeldmann/organize/edit/master/docs/05-changelog.md"
+        <a href="https://github.com/tfeldmann/organize/edit/master/docs/changelog.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -176,35 +180,37 @@
                 <!-- BEGIN INCLUDE ../CHANGELOG.md   -->
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">#</a></h1>
 <h2 id="v2-in-progress">v2 - In Progress<a class="headerlink" href="#v2-in-progress" title="Permanent link">#</a></h2>
-<p>This is a huge update with a large refactoring.
-Please backup all your important stuff before running.</p>
+<p>This is a huge update with lots of improvements.
+Please backup all your important stuff before running and use the simulate option!</p>
 <h3 id="whats-new">what's new<a class="headerlink" href="#whats-new" title="Permanent link">#</a></h3>
 <ul>
-<li>Completely rewritten core!</li>
+<li>You can now target directories with your rules (copying, renaming, etc a whole folder)</li>
+<li>Organize inside or between (S)FTP, S3 Buckets, Zip archives and many more.</li>
+<li><a href="https://www.pyfilesystem.org/page/index-of-filesystems/">Available filesystems</a></li>
+<li><code>max_depth</code> setting when recursing into subfolders</li>
 <li>Respects your rule order - safer, less magic, less surprises.
   (v1 tried to be clever. v2 now works your config file from top to bottom)</li>
-<li>Now you can organize (S)FTP, S3 Buckets, Zip archives and many more.</li>
-<li>Most of the actions like <code>move</code> and <code>copy</code> even work across file systems!</li>
-<li><a href="https://www.pyfilesystem.org/page/index-of-filesystems/">Available filesystems</a></li>
-<li>You can now target folders with your rules. Like copying a whole folder, renaming etc.</li>
-<li><code>max_depth</code> setting when recursing into subfolders</li>
-<li>starts instantly (does not need to gather all the files before starting)</li>
-<li>filters can now be excluded</li>
-<li>nice terminal output</li>
-<li>rule names</li>
-<li>cleaner config file validation and stricter format</li>
-<li>option to run <code>python</code> actions in simulation</li>
-<li>added <code>empty</code> filter.</li>
-<li>new conflict resolution settings in <code>move</code>, <code>copy</code> and <code>rename</code> action:
-  <code>skip</code>, <code>overwrite</code>, <code>trash</code>, <code>rename_new</code>, <code>rename_existing</code> as well as a
-  <code>rename_template</code> parameter.</li>
-<li>the <code>shell</code> action now returns stdout and errorcode.</li>
-<li>Added <code>symlink</code> action</li>
+<li>Jinja2 template engine for placeholders.</li>
+<li>Instant start. (does not need to gather all the files before starting)</li>
+<li>Filters can now be excluded.</li>
+<li>Filter modes: <code>all</code>, <code>any</code> and <code>none</code>.</li>
+<li>Nice terminal output.</li>
+<li>Rule names.</li>
+<li>new conflict resolution settings in <code>move</code>, <code>copy</code> and <code>rename</code> action:</li>
+<li>Options are <code>skip</code>, <code>overwrite</code>, <code>trash</code>, <code>rename_new</code> or <code>rename_existing</code></li>
+<li>You can now define a custom <code>rename_template</code>.</li>
+<li>The <code>python</code> action can now be run in simulation.</li>
+<li>The <code>shell</code> action now returns stdout and errorcode.</li>
+<li>Added filter <code>empty</code>.</li>
+<li>Added filter <code>hash</code>.</li>
+<li>Added action <code>symlink</code>.</li>
+<li>Added action <code>confirm</code>.</li>
 </ul>
 <h3 id="changed">changed<a class="headerlink" href="#changed" title="Permanent link">#</a></h3>
 <ul>
+<li>cleaner config file validation and stricter format</li>
 <li>The config file format got a long due overhaul. Please see the
-  <a href="../06-updating-from-v1/">migration documentation</a> for what is new.</li>
+  <a href="06-updating-from-v1.md">migration documentation</a> for what is new.</li>
 <li>The <code>timezone</code> keyword for <code>lastmodified</code> and <code>created</code> was removed. The timezone is
   now the local timezone by default.</li>
 <li>The <code>filesize</code> filter was renamed to <code>size</code> and can now be used to get directory sizes
@@ -371,10 +377,10 @@ Please backup all your important stuff before running.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../06-updating-from-v1/" class="btn btn-neutral float-right" title="Updating from organize v1.x">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../updating-from-v1/" class="btn btn-neutral float-right" title="Updating from organize v1.x">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../04-actions/" class="btn btn-neutral" title="Actions"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../actions/" class="btn btn-neutral" title="Actions"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -404,10 +410,10 @@ Please backup all your important stuff before running.</p>
         </span>
     
     
-      <span><a href="../04-actions/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../actions/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../06-updating-from-v1/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../updating-from-v1/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Thomas Feldmann">
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Rules - organize</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Rules";
+    var mkdocs_page_input_path = "rules.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> organize</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Rules</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#rule-options">Rule options</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#targeting-directories">Targeting directories</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#templates-and-placeholders">Templates and placeholders</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#advanced-aliases">Advanced: Aliases</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../locations/">Locations</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../filters/">Filters</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../actions/">Actions</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../updating-from-v1/">Updating from organize v1.x</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">organize</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Rules</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/tfeldmann/organize/edit/master/docs/rules.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="rules">Rules<a class="headerlink" href="#rules" title="Permanent link">#</a></h1>
+<p>A organize config file can be written in <a href="https://learnxinyminutes.com/docs/yaml/">YAML</a>
+or <a href="https://learnxinyminutes.com/docs/json/">JSON</a>. See <a href="00-configuration.md">configuration</a>
+on how to locate your config file.</p>
+<p>The top level element must be a dict with a key "rules".
+"rules" contains a list of objects with the required keys "locations" and "actions".</p>
+<p>A minimum config:</p>
+<pre><code class="language-yaml">rules:
+  - locations: &quot;~/Desktop&quot;
+    actions:
+      - echo: &quot;Hello World!&quot;
+</code></pre>
+<p>Organize checks your rules from top to bottom. For every resource in each location (top to bottom)
+it will check whether the filters apply (top to bottom) and then execute the given actions (top to bottom).</p>
+<p>So with this minimal configuration it will print "Hello World!" for each file it finds in your Desktop.</p>
+<h2 id="rule-options">Rule options<a class="headerlink" href="#rule-options" title="Permanent link">#</a></h2>
+<pre><code class="language-yml">rules:
+  # First rule
+  - name: ...
+    enabled: ...
+    targets: ...
+    locations: ...
+    subfolders: ...
+    filter_mode: ...
+    filters: ...
+    actions: ...
+
+  # Another rule
+  - name: ...
+    enabled: ...
+    # ... and so on
+</code></pre>
+<p>The rule options in detail:</p>
+<ul>
+<li><strong>name</strong> (<code>str</code>): The rule name</li>
+<li><strong>enabled</strong> (<code>bool</code>): Whether the rule is enabled / disabled <em>(Default: <code>true</code>)</em></li>
+<li><strong>targets</strong> (<code>str</code>): <code>"dirs"</code> or <code>"files"</code> <em>(Default: <code>"files"</code>)</em></li>
+<li><strong>locations</strong> (<code>str</code>|<code>list</code>) - A single location string or list of <a href="02-locations.md">locations</a></li>
+<li><strong>subfolders</strong> (<code>bool</code>): Whether to recurse into subfolders of all locations <em>(Default: <code>false</code>)</em></li>
+<li><strong>filter_mode</strong> (<code>str</code>): <code>"all"</code>, <code>"any"</code> or <code>"none"</code> of the filters must apply <em>(Default: <code>"all"</code>)</em></li>
+<li><strong>filters</strong> (<code>list</code>): A list of <a href="03-filters.md">filters</a> <em>(Default: <code>[]</code>)</em></li>
+<li><strong>actions</strong> (<code>list</code>): A list of <a href="04-actions.md">actions</a></li>
+</ul>
+<h2 id="targeting-directories">Targeting directories<a class="headerlink" href="#targeting-directories" title="Permanent link">#</a></h2>
+<p>When <code>targets</code> is set to <code>dirs</code>, organize will work on the folders, not on files.</p>
+<p>The filters adjust their meaning automatically. For example the <code>size</code> filter sums up
+the size of all files contained in the given folder instead of returning the size of a
+single file.</p>
+<p>Of course other filters like <code>exif</code> or <code>filecontent</code> do not work on folders and will
+return an error.</p>
+<h2 id="templates-and-placeholders">Templates and placeholders<a class="headerlink" href="#templates-and-placeholders" title="Permanent link">#</a></h2>
+<p>Placeholder variables are used with curly braces <code>{var}</code>.</p>
+<p>These variables are <strong>always available</strong>:</p>
+<p><code>{env}</code> (<code>dict</code>)<br>
+All your environment variables. You can access individual env vars like this: <code>{env.MY_VARIABLE}</code>.</p>
+<p><code>{path}</code> (<a href="https://docs.python.org/3/library/pathlib.html#methods-and-properties"><code>pathlib.Path</code></a>)<br>
+The full path to the current file / folder on the local harddrive.
+This is not available for remote locations - in this case use <code>fs</code> and <code>fs_path</code>.</p>
+<p><code>{now}</code> (<code>datetime</code>)<br>
+The current datetime in the local timezone.</p>
+<p><code>{utcnow}</code> (<code>datetime</code>)<br>
+The current UTC datetime.</p>
+<p><code>{fs}</code> (<code>FS</code>)<br>
+The filesystem of the current location.</p>
+<p><code>{fs_path}</code> (<code>str</code>)<br>
+The path of the current file / folder in related to <code>fs</code>.</p>
+<p><code>{relative_path}</code> (<code>str</code>)<br>
+the relative path of the current file in <code>{fs}</code>.</p>
+<p>In addition to that nearly all filters add new placeholders with information about
+the currently handled file / folder.</p>
+<p>Example on how to access the size and hash of a file:</p>
+<pre><code class="language-yaml">rules:
+  - locations: ~/Desktop
+    filters:
+      - size
+      - hash
+    actions:
+      - echo: &quot;{size} {hash}&quot;
+</code></pre>
+<p>Note: In order to use a value returned by a filter it must be listed in the filters!</p>
+<h2 id="advanced-aliases">Advanced: Aliases<a class="headerlink" href="#advanced-aliases" title="Permanent link">#</a></h2>
+<p>Instead of repeating the same locations / actions / filters in each and every rule you
+can use an alias for multiple locations which you can then reference in each rule.</p>
+<p>Aliases are a standard feature of the YAML syntax.</p>
+<pre><code class="language-yml">all_my_messy_folders: &amp;all
+  - ~/Desktop
+  - ~/Downloads
+  - ~/Documents
+  - ~/Dropbox
+
+rules:
+  - locations: *all
+    filters: ...
+    actions: ...
+
+  - locations: *all
+    filters: ...
+    actions: ...
+</code></pre>
+<p>You can even use multiple folder lists:</p>
+<pre><code class="language-yml">private_folders: &amp;private
+  - &quot;/path/private&quot;
+  - &quot;~/path/private&quot;
+
+work_folders: &amp;work
+  - &quot;/path/work&quot;
+  - &quot;~/My work folder&quot;
+
+all_folders: &amp;all
+  - *private
+  - *work
+
+rules:
+  - locations: *private
+    filters: ...
+    actions: ...
+
+  - locations: *work
+    filters: ...
+    actions: ...
+
+  - locations: *all
+    filters: ...
+    actions: ...
+
+  # same as *all
+  - locations:
+      - *work
+      - *private
+    filters: ...
+    actions: ...
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../locations/" class="btn btn-neutral float-right" title="Locations">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../configuration/" class="btn btn-neutral" title="Configuration"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/tfeldmann/organize/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../configuration/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../locations/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

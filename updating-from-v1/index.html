@@ -20,7 +20,7 @@
   <script>
     // Current page data
     var mkdocs_page_name = "Updating from organize v1.x";
-    var mkdocs_page_input_path = "06-updating-from-v1.md";
+    var mkdocs_page_input_path = "updating-from-v1.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -52,23 +52,27 @@
                     </li>
                 </ul>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../01-config/">Configuration</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
                     </li>
                 </ul>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../02-locations/">Locations</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../rules/">Rules</a>
                     </li>
                 </ul>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../03-filters/">Filters</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../locations/">Locations</a>
                     </li>
                 </ul>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../04-actions/">Actions</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../filters/">Filters</a>
                     </li>
                 </ul>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../05-changelog/">Changelog</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../actions/">Actions</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
                     </li>
                 </ul>
                 <ul class="current">
@@ -107,7 +111,7 @@
     <li>Updating from organize v1.x</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/tfeldmann/organize/edit/master/docs/06-updating-from-v1.md"
+        <a href="https://github.com/tfeldmann/organize/edit/master/docs/updating-from-v1.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -135,18 +139,18 @@ Alternative for
 
 <h2 id="config">Config<a class="headerlink" href="#config" title="Permanent link">#</a></h2>
 <ul>
-<li><code>folders</code> must be renamed to <code>locations</code>. New options: <a href="../02-locations/">Locations</a>.</li>
+<li><code>folders</code> must be renamed to <code>locations</code>. New options: <a href="02-locations.md">Locations</a>.</li>
 <li>the <strong>glob syntax</strong> (eg. <code>"~/Documents/**"</code>) has been removed.</li>
 <li>the <strong>exclamation mark exclude</strong> (eg. <code>"! ~/Desktop"</code>) syntax has been removed.</li>
 <li>They are replaced by the <code>max_depth</code>, <code>exclude_files</code>, <code>exclude_dirs</code>, <code>filter</code> and
-    <code>filter_dirs</code> settings. See <a href="../02-locations/">Locations</a>.</li>
+    <code>filter_dirs</code> settings. See <a href="02-locations.md">Locations</a>.</li>
 <li>the <code>subfolders</code> setting is removed and replaced by the <code>max_depth</code> setting
   of a specific location.</li>
 <li>You can now name your rules via <code>name</code>.</li>
 <li>The <code>enabled</code> setting has been removed. # TODO: ?</li>
 </ul>
 <p>organize v1.x:</p>
-<pre><code class="language-yaml">rules:
+<pre><code class="language-yml">rules:
   # find some pdf files in various dirs and echo &quot;Hello&quot; for each one
   - folders:
       - &quot;~/Desktop/**/*.pdf&quot;
@@ -160,7 +164,7 @@ Alternative for
     ...
 </code></pre>
 <p>becomes (organize v2.x)</p>
-<pre><code class="language-yaml">rules:
+<pre><code class="language-yml">rules:
   - name: find some pdf files in various dirs and echo &quot;Hello&quot; for each one
     locations:
       - path: ~/Desktop/
@@ -177,14 +181,14 @@ Alternative for
 </code></pre>
 <h2 id="filters">Filters<a class="headerlink" href="#filters" title="Permanent link">#</a></h2>
 <ul>
-<li><a href="../03-filters/#created"><code>created</code></a> no longer accepts a timezone and uses the local timezone by default.</li>
-<li><a href="../03-filters/#lastmodified"><code>lastmodified</code></a> no longer accepts a timezone and uses the local timezone by default.</li>
-<li><a href="../03-filters/#name"><code>filename</code></a> is renamed to <code>name</code>.</li>
-<li><a href="../03-filters/#size"><code>filesize</code></a> is renamed to <code>size</code>.</li>
+<li><a href="03-filters.md#created"><code>created</code></a> no longer accepts a timezone and uses the local timezone by default.</li>
+<li><a href="03-filters.md#lastmodified"><code>lastmodified</code></a> no longer accepts a timezone and uses the local timezone by default.</li>
+<li><a href="03-filters.md#name"><code>filename</code></a> is renamed to <code>name</code>.</li>
+<li><a href="03-filters.md#size"><code>filesize</code></a> is renamed to <code>size</code>.</li>
 </ul>
 <h2 id="actions">Actions<a class="headerlink" href="#actions" title="Permanent link">#</a></h2>
 <ul>
-<li><a href="../04-actions/#copy"><code>copy</code></a> arguments changed.</li>
+<li><a href="04-actions.md#copy"><code>copy</code></a> arguments changed.</li>
 </ul>
               
             </div>
@@ -194,7 +198,7 @@ Alternative for
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="../05-changelog/" class="btn btn-neutral" title="Changelog"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../changelog/" class="btn btn-neutral" title="Changelog"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -224,7 +228,7 @@ Alternative for
         </span>
     
     
-      <span><a href="../05-changelog/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../changelog/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
   </span>

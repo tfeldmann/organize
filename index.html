@@ -70,27 +70,31 @@
                     </li>
                 </ul>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="01-config/">Configuration</a>
+                    <li class="toctree-l1"><a class="reference internal" href="configuration/">Configuration</a>
                     </li>
                 </ul>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="02-locations/">Locations</a>
+                    <li class="toctree-l1"><a class="reference internal" href="rules/">Rules</a>
                     </li>
                 </ul>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="03-filters/">Filters</a>
+                    <li class="toctree-l1"><a class="reference internal" href="locations/">Locations</a>
                     </li>
                 </ul>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="04-actions/">Actions</a>
+                    <li class="toctree-l1"><a class="reference internal" href="filters/">Filters</a>
                     </li>
                 </ul>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="05-changelog/">Changelog</a>
+                    <li class="toctree-l1"><a class="reference internal" href="actions/">Actions</a>
                     </li>
                 </ul>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="06-updating-from-v1/">Updating from organize v1.x</a>
+                    <li class="toctree-l1"><a class="reference internal" href="changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="updating-from-v1/">Updating from organize v1.x</a>
                     </li>
                 </ul>
       </div>
@@ -129,10 +133,10 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="welcome-to-the-documentation-for-organize">Welcome to the documentation for organize<a class="headerlink" href="#welcome-to-the-documentation-for-organize" title="Permanent link">#</a></h1>
+                <h1 id="welcome-to-organizes-documentation">Welcome to organize's documentation<a class="headerlink" href="#welcome-to-organizes-documentation" title="Permanent link">#</a></h1>
 <!-- BEGIN INCLUDE ../README.md   -->
 <p align="center">
- <img width="623" height="168" src="https://github.com/tfeldmann/organize/raw/master/docs/images/organize.svg?sanitize=true" alt="organize logo">
+  <img width="623" height="168" src="https://github.com/tfeldmann/organize/raw/master/docs/img/organize.svg?sanitize=true" alt="organize logo">
 </p>
 
 <div align="center">
@@ -300,30 +304,24 @@ happen:</p>
 <li>Note the format syntax for <code>{created.month}</code> to make sure the month is prepended with a zero.</li>
 </ul>
 <h2 id="command-line-interface">Command line interface<a class="headerlink" href="#command-line-interface" title="Permanent link">#</a></h2>
-<pre><code>The file management automation tool.
+<pre><code>Usage: organize [OPTIONS] COMMAND [ARGS]...
 
-Usage:
-    organize sim [--config-file=&lt;path&gt;]
-    organize run [--config-file=&lt;path&gt;]
-    organize config [--open-folder | --path | --debug] [--config-file=&lt;path&gt;]
-    organize list
-    organize --help
-    organize --version
+  organize
 
-Arguments:
-    sim             Simulate a run. Does not touch your files.
-    run             Organizes your files according to your rules.
-    config          Open the configuration file in $EDITOR.
-    list            List available filters and actions.
-    --version       Show program version and exit.
-    -h, --help      Show this screen and exit.
+  The file management automation tool.
 
 Options:
-    -o, --open-folder  Open the folder containing the configuration files.
-    -p, --path         Show the path to the configuration file.
-    -d, --debug        Debug your configuration file.
+  --version   Show the version and exit.
+  -h, --help  Show this message and exit.
 
-Full documentation: https://organize.readthedocs.io
+Commands:
+  run     Organizes your files according to your rules.
+  sim     Simulates a run (does not touch your files).
+  edit    Edit the rules.
+  check   Checks whether a given config file is valid.
+  reveal  Reveals the default config file.
+  schema  Prints the json schema for config files.
+  docs    Opens the documentation.
 </code></pre>
 <!-- END INCLUDE -->
               
@@ -333,7 +331,7 @@ Full documentation: https://organize.readthedocs.io
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="01-config/" class="btn btn-neutral float-right" title="Configuration">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="configuration/" class="btn btn-neutral float-right" title="Configuration">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
     </div>
@@ -365,7 +363,7 @@ Full documentation: https://organize.readthedocs.io
     
     
     
-      <span><a href="01-config/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="configuration/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
@@ -384,5 +382,5 @@ Full documentation: https://organize.readthedocs.io
 
 <!--
 MkDocs version : 1.2.3
-Build Date UTC : 2022-01-28 14:53:35.749739+00:00
+Build Date UTC : 2022-02-01 15:12:49.745264+00:00
 -->
