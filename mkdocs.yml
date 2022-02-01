@@ -30,9 +30,9 @@ plugins:
         - organize
 
 markdown_extensions:
+  - admonition
   - toc:
       permalink: "#"
-  - mkdocs-click
 
 theme:
   name: readthedocs

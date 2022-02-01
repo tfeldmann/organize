@@ -65,10 +65,10 @@ class Rename(Action):
         src_path = args["fs_path"]
 
         new_name = self.new_name.render(**args)
-        if os.path.sep in new_name:
-            ValueError(
-                "Rename only takes a name as argument. "
-                "To move files or folders use the move action."
+        if "/" in new_name:
+            raise ValueError(
+                "The new name cannot contain slashes. "
+                "To move files or folders use `move`."
             )
 
         parents, full_name = path.split(src_path)
@@ -91,6 +91,8 @@ class Rename(Action):
                     % (resource_description(fs, dst_path), self.conflict_mode)
                 )
                 fs, dst_path, skip = resolve_overwrite_conflict(
+                    src_fs=fs,
+                    src_path=src_path,
                     dst_fs=fs,
                     dst_path=dst_path,
                     conflict_mode=self.conflict_mode,

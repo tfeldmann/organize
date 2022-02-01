@@ -113,6 +113,8 @@ class Copy(Action):
                 % (resource_description(dst_fs, dst_path), self.conflict_mode)
             )
             dst_fs, dst_path, skip = resolve_overwrite_conflict(
+                src_fs=src_fs,
+                src_path=src_path,
                 dst_fs=dst_fs,
                 dst_path=dst_path,
                 conflict_mode=self.conflict_mode,

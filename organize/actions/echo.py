@@ -10,7 +10,7 @@ class Echo(Action):
     variables.
 
     Args:
-        msg(str): The message to print. Accepts placeholder variables.
+        msg (str): The message to print. Accepts placeholder variables.
     """
 
     name = "echo"

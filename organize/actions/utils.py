@@ -5,7 +5,7 @@ from fs.move import move_dir, move_file
 from fs.path import splitext
 from jinja2 import Template
 
-from organize.utils import resource_description, next_free_name
+from organize.utils import resource_description, next_free_name, is_same_resource
 
 from .trash import Trash
 
@@ -27,6 +27,8 @@ class ResolverResult(NamedTuple):
 
 
 def resolve_overwrite_conflict(
+    src_fs: FS,
+    src_path: str,
     dst_fs: FS,
     dst_path: str,
     conflict_mode: str,
@@ -34,6 +36,10 @@ def resolve_overwrite_conflict(
     simulate: bool,
     print: Callable,
 ) -> ResolverResult:
+    if is_same_resource(src_fs, src_path, dst_fs, dst_path):
+        print("Same resource: Skipped.")
+        return ResolverResult(dst_fs=dst_fs, dst_path=dst_path, skip=True)
+
     if conflict_mode == "trash":
         Trash().pipeline({"fs": dst_fs, "fs_path": dst_path}, simulate=simulate)
         return ResolverResult(dst_fs=dst_fs, dst_path=dst_path, skip=False)

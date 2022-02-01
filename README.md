@@ -27,11 +27,11 @@
 </p>
 
 - [About](#about)
+- [Features](#features)
 - [Getting started](#getting-started)
   - [Installation](#installation)
-  - [Creating your first rule](#creating-your-first-rule)
+  - [Create your first rule](#create-your-first-rule)
 - [Example rules](#example-rules)
-- [Advanced usage](#advanced-usage)
 - [Command line interface](#command-line-interface)
 
 ## About
@@ -42,6 +42,19 @@ Time to automate it once and benefit from it forever.
 
 **organize** is a command line, open-source alternative to apps like Hazel (macOS)
 or File Juggler (Windows).
+
+## Features
+
+organize has too many features to list here. The highlights include:
+
+- Safe moving, renaming, copying of files with conflict resolution options
+- Fast duplicate file detection
+- Exif tags extraction
+- Categorization via text extracted from PDF, DOCX and many more
+- Supports working on FTP, WebDAV, S3 Buckets, SSH and many more
+- Powerful template engine
+- Inline python and shell commands as filters and actions for maximum flexibility!
+- Everything can be simulated before touching your files.
 
 ## Getting started
 
@@ -63,13 +76,13 @@ pip3 install -U "organize-tool[textract]"
 
 This command can also be used to update to the newest version. Now you can run `organize --help` to check if the installation was successful.
 
-### Creating your first rule
+### Create your first rule
 
-In your shell, **run `organize config`** to edit the configuration:
+In your shell, run `organize edit` to edit the configuration:
 
 ```yaml
 rules:
-  - folders: ~/Downloads
+  - locations: ~/Downloads
     subfolders: true
     filters:
       - extension: pdf
@@ -77,29 +90,34 @@ rules:
       - echo: "Found PDF!"
 ```
 
-> If you have problems editing the configuration you can run `organize config --open-folder` to reveal the configuration folder in your file manager. You can then edit the `config.yaml` in your favourite editor.
->
-> Alternatively you can run `organize config --path` to see the full path to
-> your `config.yaml`)
+> If you have problems editing the configuration you can run `organize reveal` to reveal the configuration folder in your file manager. You can then edit the `config.yaml` in your favourite editor.
 
-**Save your config file and run `organize run`.**
+save your config file and run:
 
-You will see a list of all `.pdf` files you have in your downloads folder (+ subfolders). For now we only show the text `Found PDF!` for each file, but this will change soon...
+```sh
+organize run
+```
+
+You will see a list of all `.pdf` files you have in your downloads folder (+ subfolders).
+For now we only show the text `Found PDF!` for each file, but this will change soon...
 (If it shows `Nothing to do` you simply don't have any pdfs in your downloads folder).
 
-Run `organize config` again and add a `copy`-action to your rule:
+Run `organize edit` again and add a `move`-action to your rule:
 
-```yaml
+```yml
 actions:
   - echo: "Found PDF!"
   - move: ~/Documents/PDFs/
 ```
 
-**Now run `organize sim` to see what would happen without touching your files**. You will see that your pdf-files would be moved over to your `Documents/PDFs` folder.
+Now run `organize sim` to see what would happen without touching your files.
 
-Congratulations, you just automated your first task. You can now run `organize run` whenever you like and all your pdfs are a bit more organized. It's that easy.
+You will see that your pdf-files would be moved over to your `Documents/PDFs` folder.
 
-> There is so much more. You want to rename / copy files, run custom shell- or python scripts, match filenames with regular expressions or use placeholder variables? organize has you covered. Have a look at the advanced usage example below!
+Congratulations, you just automated your first task. You can now run `organize run`
+whenever you like and all your pdfs are a bit more organized. It's that easy.
+
+> There is so much more. You want to rename / copy files, run custom shell- or python scripts, match names with regular expressions or use placeholder variables? organize has you covered. Have a look at the advanced usage example below!
 
 ## Example rules
 
@@ -109,12 +127,12 @@ Move all invoices, orders or purchase documents into your documents folder:
 
 ```yaml
 rules:
-  # sort my invoices and receipts
-  - folders: ~/Downloads
+  - name: "Sort my invoices and receipts"
+    locations: ~/Downloads
     subfolders: true
     filters:
       - extension: pdf
-      - filename:
+      - name:
           contains:
             - Invoice
             - Order
@@ -124,96 +142,67 @@ rules:
       - move: ~/Documents/Shopping/
 ```
 
-Move incomplete downloads older than 30 days into the trash:
+Recursively delete all empty directories:
 
 ```yaml
 rules:
-  # move incomplete downloads older > 30 days into the trash
-  - folders: ~/Downloads
+  - name: "Recursively delete all empty directories"
+    locations:
+      - path: ~/Downloads
+    subfolders: true
     filters:
-      - extension:
-          - download
-          - crdownload
-          - part
-      - lastmodified:
-          days: 30
-          mode: older
+      - empty
     actions:
-      - trash
+      - delete
 ```
 
-Delete empty files from downloads and desktop:
-
-```yaml
-rules:
-  # delete empty files from downloads and desktop
-  - folders:
-      - ~/Downloads
-      - ~/Desktop
-    filters:
-      - filesize: 0
-    actions:
-      - trash
-```
-
-Move screenshots into a "Screenshots" folder on your desktop:
-
-```yaml
-rules:
-  # move screenshots into "Screenshots" folder
-  - folders: ~/Desktop
-    filters:
-      - filename:
-          startswith: "Screen Shot"
-    actions:
-      - move: ~/Desktop/Screenshots/
-```
-
-Organize your font downloads:
-
-```yaml
-rules:
-  # organize your font files but keep the folder structure:
-  #   "~/Downloads/favourites/helvetica/helvetica-bold.ttf"
-  #     is moved to
-  #   "~/Documents/FONTS/favourites/helvetica/helvetica-bold.ttf"
-  - folders: ~/Downloads/**/*.ttf
-    actions:
-      - Move: "~/Documents/FONTS/{relative_path}"
-```
-
-You'll find many more examples in the <a href="https://organize.readthedocs.io/" target="_blank">full documentation</a>.
-
-## Advanced usage
+<!--<details markdown="1">
+  <summary markdown="1">Advanced example</summary>
 
 This example shows some advanced features like placeholder variables, pluggable
-actions, recursion through subfolders and glob syntax:
+actions, limited recursion through subfolders and filesystems (FTP and ZIP):
+
+This rule:
+
+- Searches recursively in your documents folder (three levels deep) and on a FTP server
+- for files with **pdf** or **docx** extension
+- that have a created timestamp
+- Asks for user confirmation for each file
+- Moves them according to their extensions and **created** timestamps:
+- `script.docx` will be moved to `~/Documents/DOCX/2018-01/script.docx`
+- `demo.pdf` will be moved to `~/Documents/PDF/2016-12/demo.pdf`
+- If this new is already taken, a counter is appended to the filename ("rename_new")
+- Creates a zip backup file on your desktop containing all files.
 
 ```yaml
 rules:
-  - folders: ~/Documents/**/*
+  - name: "Download, cleanup and backup"
+    locations:
+      - path: ~/Documents
+        max_depth: 3
+      - path: ftps://demo:demo@demo.wftpserver.com
     filters:
       - extension:
           - pdf
           - docx
       - created
     actions:
-      - move: "~/Documents/{extension.upper}/{created.year}{created.month:02}/"
-      - shell: 'open "{path}"'
+      - confirm:
+          msg: "Really continue?"
+          default: true
+      - move:
+          dest: "~/Documents/{extension.upper()}/{created.strftime('%Y-%m')}/"
+          on_conflict: rename_new
+      - copy: "zip:///Users/thomas/Desktop/backup.zip"
 ```
 
-Given we have two files in our `~/Documents` folder (or any of its subfolders)
-named `script.docx` from january 2018 and `demo.pdf` from december 2016 this will
-happen:
+</details>-->
 
-- `script.docx` will be moved to `~/Documents/DOCX/2018-01/script.docx`
-- `demo.pdf` will be moved to `~/Documents/PDF/2016-12/demo.pdf`
-- The files will be opened (`open` command in macOS) _from their new location_.
-- Note the format syntax for `{created.month}` to make sure the month is prepended with a zero.
+You'll find many more examples in the <a href="https://tfeldmann.github.io/organize" target="_blank">full documentation</a>.
 
 ## Command line interface
 
-```
+```sh
 Usage: organize [OPTIONS] COMMAND [ARGS]...
 
   organize

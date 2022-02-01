@@ -150,9 +150,11 @@ dropbox://dropbox.com?access_token=<dropbox access token>
 ssh://[user[:password]@]host[:port]
 ```
 
-The ZIP, TAR, FTP and AppFS filesystems are builtin.
-For all other filesystems you need to
-[install the appropriate library](https://www.pyfilesystem.org/page/index-of-filesystems).
+!!! note
+
+    The ZIP, TAR, FTP and AppFS filesystems are builtin.
+    For all other filesystems you need to
+    [install the appropriate library](https://www.pyfilesystem.org/page/index-of-filesystems).
 
 **FTP Example**
 
@@ -172,10 +174,10 @@ rules:
           filesystem: zip:///Users/thomas/Desktop/ftpfiles.zip
 ```
 
-**Note:**
+!!! note
 
-You should never include a password in a config file. Better pass them in via an
-environment variable (`{env.FTP_PASSWORD}`) as you can see above.
+    You should never include a password in a config file. Better pass them in via an
+    environment variable (`{env.FTP_PASSWORD}`) as you can see above.
 
 ## Relative locations
 
@@ -184,7 +186,7 @@ copied between projects.
 
 There is a command line option to change the working directory should you need it.
 
-**huge-pic-warner.yaml**
+**huge-pic-warner.yaml:**
 
 ```yaml
 rules:

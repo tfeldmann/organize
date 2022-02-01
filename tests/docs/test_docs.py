@@ -1,18 +1,11 @@
 """
-
-Use
+Tests all snippets in the docs and readme like this:
 
 ```yaml
 rules:
-
 ```
 
-for examples you want to test. Other yaml:
-
-```yml
-
-```
-
+To exclude, use shorthand `yml`.
 """
 
 import re
@@ -20,16 +13,16 @@ import re
 import fs
 from schema import SchemaError
 
-from organize.filters import FILTERS
 from organize.actions import ACTIONS
 from organize.config import CONFIG_SCHEMA, load_from_string
+from organize.filters import FILTERS
 
 RE_CONFIG = re.compile(r"```yaml\n(?P<config>rules:(?:.*?\n)+?)```", re.MULTILINE)
 
 
 def test_examples_are_valid():
-    docdir = fs.open_fs("docs")
-    for f in docdir.walk.files(filter=["*.md"]):
+    docdir = fs.open_fs(".")
+    for f in docdir.walk.files(filter=["*.md"], max_depth=2):
         text = docdir.readtext(f)
         for match in RE_CONFIG.findall(text):
             err = ""
