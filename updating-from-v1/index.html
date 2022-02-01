@@ -80,6 +80,8 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#config">Config</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#placeholders">Placeholders</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#filters">Filters</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#actions">Actions</a>
@@ -124,71 +126,44 @@
             <div class="section">
               
                 <h1 id="updating-from-organize-v1x">Updating from organize v1.x<a class="headerlink" href="#updating-from-organize-v1x" title="Permanent link">#</a></h1>
-<p>First of all, thank you for being a long time user of <code>organize</code>.</p>
-<p>As this project is only maintained by the single person writing this article it is not
-feasible to write an automatic config file migration or a compatibility layer.
-Many people use organize for important documents and personal files, this is not
-something I want to half-ass.</p>
-<p>So if you want all the new goodies, you'll need to do some changes in your config.
-Otherwise feel free to pin organize to the latest v1.x.</p>
-<!--
-Alternative for
-{created.year}-{created.month:02}-{created.day:02}
-
--->
-
+<p>First of all, thank you for being a long time user of <code>organize</code>!</p>
+<p>I tried to keep the amount of breaking changes small but could not avoid them
+completely. Feel free to pin organize to v1.x, but then you're missing the party.</p>
+<p>Please open a issue on Github if you need help migrating your config file!</p>
 <h2 id="config">Config<a class="headerlink" href="#config" title="Permanent link">#</a></h2>
 <ul>
-<li><code>folders</code> must be renamed to <code>locations</code>. New options: <a href="../locations/">Locations</a>.</li>
-<li>the <strong>glob syntax</strong> (eg. <code>"~/Documents/**"</code>) has been removed.</li>
-<li>the <strong>exclamation mark exclude</strong> (eg. <code>"! ~/Desktop"</code>) syntax has been removed.</li>
-<li>They are replaced by the <code>max_depth</code>, <code>exclude_files</code>, <code>exclude_dirs</code>, <code>filter</code> and
-    <code>filter_dirs</code> settings. See <a href="../locations/">Locations</a>.</li>
-<li>the <code>subfolders</code> setting is removed and replaced by the <code>max_depth</code> setting
-  of a specific location.</li>
-<li>You can now name your rules via <code>name</code>.</li>
-<li>The <code>enabled</code> setting has been removed. # TODO: ?</li>
+<li><code>folders</code> must be renamed to <code>locations</code>.</li>
+<li>REMOVED: The glob syntax (<code>/Docs/**/*.png</code>)</li>
+<li>REMOVED: The exclamation mark exlucde syntax (<code>! ~/Desktop/exclude</code>)</li>
 </ul>
-<p>organize v1.x:</p>
-<pre><code class="language-yml">rules:
-  # find some pdf files in various dirs and echo &quot;Hello&quot; for each one
-  - folders:
-      - &quot;~/Desktop/**/*.pdf&quot;
-      - &quot;! ~/Desktop/donotmove/*&quot;
-    subfolders: true
-    ...
-
-  # move all pdfs into documents
-  - folders:
-      - &quot;~/Downloads/*.pdf&quot;
-    ...
-</code></pre>
-<p>becomes (organize v2.x)</p>
-<pre><code class="language-yml">rules:
-  - name: find some pdf files in various dirs and echo &quot;Hello&quot; for each one
-    locations:
-      - path: ~/Desktop/
-        max_depth: null
-        filter: &quot;*.pdf&quot;
-        exclude_dirs: donotmove
-    ...
-
-  - name: move all pdfs into documents
-    locations: &quot;~/Downloads&quot;
-    filters:
-      - extension: pdf
-    ...
-</code></pre>
+<p>With <code>locations</code>, there are now much better options in place.
+Please change your <code>folders</code> definition to the <code>locations</code> definition: <a href="../locations/">Locations documentation</a>.</p>
+<ul>
+<li>All keys (filter names, action names, option names) now must be lowercase.</li>
+</ul>
+<h2 id="placeholders">Placeholders<a class="headerlink" href="#placeholders" title="Permanent link">#</a></h2>
+<p>organize v2 uses the Jinja template engine. You may need to change some of your placeholders.</p>
+<ul>
+<li><code>{basedir}</code> is no longer available.</li>
+<li>Replace undocumented placeholders like this:</li>
+</ul>
+<p><code>py
+  {created.year}-{created.month:02}-{created.day:02}</code></p>
+<p>With this:</p>
+<p><code>py
+  {created.strftime('%Y-%m-%d')}</code></p>
 <h2 id="filters">Filters<a class="headerlink" href="#filters" title="Permanent link">#</a></h2>
 <ul>
-<li><a href="../filters/#created"><code>created</code></a> no longer accepts a timezone and uses the local timezone by default.</li>
-<li><a href="../filters/#lastmodified"><code>lastmodified</code></a> no longer accepts a timezone and uses the local timezone by default.</li>
 <li><a href="../filters/#name"><code>filename</code></a> is renamed to <code>name</code>.</li>
 <li><a href="../filters/#size"><code>filesize</code></a> is renamed to <code>size</code>.</li>
+<li><a href="../filters/#created"><code>created</code></a> no longer accepts a timezone and uses the local timezone by default.</li>
+<li><a href="../filters/#lastmodified"><code>lastmodified</code></a> no longer accepts a timezone and uses the local timezone by default.</li>
 </ul>
 <h2 id="actions">Actions<a class="headerlink" href="#actions" title="Permanent link">#</a></h2>
 <ul>
-<li><a href="04-actions.md#copy"><code>copy</code></a> arguments changed.</li>
+<li><a href="../actions/#copy"><code>copy</code></a> arguments changed to support conflict resolution options.</li>
+<li><a href="../actions/#move"><code>move</code></a> arguments changed to support conflict resolution options.</li>
+<li><a href="../actions/#rename"><code>rename</code></a> arguments changed to support conflict resolution options.</li>
 </ul>
               
             </div>

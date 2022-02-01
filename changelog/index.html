@@ -185,8 +185,8 @@ Please backup all your important stuff before running and use the simulate optio
 <h3 id="whats-new">what's new<a class="headerlink" href="#whats-new" title="Permanent link">#</a></h3>
 <ul>
 <li>You can now target directories with your rules (copying, renaming, etc a whole folder)</li>
-<li>Organize inside or between (S)FTP, S3 Buckets, Zip archives and many more.</li>
-<li><a href="https://www.pyfilesystem.org/page/index-of-filesystems/">Available filesystems</a></li>
+<li>Organize inside or between (S)FTP, S3 Buckets, Zip archives and many more.
+  <a href="https://www.pyfilesystem.org/page/index-of-filesystems/">Available filesystems</a></li>
 <li><code>max_depth</code> setting when recursing into subfolders</li>
 <li>Respects your rule order - safer, less magic, less surprises.
   (v1 tried to be clever. v2 now works your config file from top to bottom)</li>
@@ -205,12 +205,10 @@ Please backup all your important stuff before running and use the simulate optio
 <li>Added filter <code>hash</code>.</li>
 <li>Added action <code>symlink</code>.</li>
 <li>Added action <code>confirm</code>.</li>
+<li>Many small fixes and improvements.</li>
 </ul>
 <h3 id="changed">changed<a class="headerlink" href="#changed" title="Permanent link">#</a></h3>
 <ul>
-<li>cleaner config file validation and stricter format</li>
-<li>The config file format got a long due overhaul. Please see the
-  <a href="../updating-from-v1/">migration documentation</a> for what is new.</li>
 <li>The <code>timezone</code> keyword for <code>lastmodified</code> and <code>created</code> was removed. The timezone is
   now the local timezone by default.</li>
 <li>The <code>filesize</code> filter was renamed to <code>size</code> and can now be used to get directory sizes
@@ -221,7 +219,7 @@ Please backup all your important stuff before running and use the simulate optio
 <h3 id="removed">removed<a class="headerlink" href="#removed" title="Permanent link">#</a></h3>
 <ul>
 <li>Glob syntax is gone from folders (no longer needed)</li>
-<li>"!"-exclude syntax is gone (no longer needed)</li>
+<li><code>"!"</code> folder exclude syntax is gone (no longer needed)</li>
 </ul>
 <h2 id="v1101-2021-04-21">v1.10.1 (2021-04-21)<a class="headerlink" href="#v1101-2021-04-21" title="Permanent link">#</a></h2>
 <ul>

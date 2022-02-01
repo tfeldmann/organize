@@ -243,9 +243,12 @@ s3://mybucket
 dropbox://dropbox.com?access_token=&lt;dropbox access token&gt;
 ssh://[user[:password]@]host[:port]
 </code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>The ZIP, TAR, FTP and AppFS filesystems are builtin.
 For all other filesystems you need to
 <a href="https://www.pyfilesystem.org/page/index-of-filesystems">install the appropriate library</a>.</p>
+</div>
 <p><strong>FTP Example</strong></p>
 <p>Show the size of all JPGs on a remote FTP server and put them into a local ZIP file.</p>
 <pre><code class="language-yaml">rules:
@@ -260,14 +263,16 @@ For all other filesystems you need to
           dest: &quot;{relative_path}&quot;
           filesystem: zip:///Users/thomas/Desktop/ftpfiles.zip
 </code></pre>
-<p><strong>Note:</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>You should never include a password in a config file. Better pass them in via an
 environment variable (<code>{env.FTP_PASSWORD}</code>) as you can see above.</p>
+</div>
 <h2 id="relative-locations">Relative locations<a class="headerlink" href="#relative-locations" title="Permanent link">#</a></h2>
 <p>Locations can be relative. This allows you to create simple one-off rules that can be
 copied between projects.</p>
 <p>There is a command line option to change the working directory should you need it.</p>
-<p><strong>huge-pic-warner.yaml</strong></p>
+<p><strong>huge-pic-warner.yaml:</strong></p>
 <pre><code class="language-yaml">rules:
   - locations: &quot;docs&quot; # here &quot;docs&quot; is relative to the current working dir
     filters:
