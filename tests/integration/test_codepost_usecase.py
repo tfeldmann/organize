@@ -14,11 +14,12 @@ def test_codepost_usecase():
             "Someunknown-User.txt": "",
         }
     }
-    conf = config.load_from_string(
-        r"""
-        rules:
-        - locations: files
-          filters:
+
+    with fs.open_fs("mem://") as mem:
+        make_files(mem, files)
+
+        filters = config.load_from_string(
+            """
             - extension: txt
             - regex: (?P<firstname>\w+)-(?P<lastname>\w+)\..*
             - python: |
@@ -30,13 +31,29 @@ def test_codepost_usecase():
                 }
                 if regex["lastname"] in emails:
                     return {"mail": emails[regex["lastname"]]}
-    """
-    )
-    with fs.open_fs("mem://") as mem:
-        conf["actions"] = actions.Move("{python.mail}.txt", filesystem=mem)
-        make_files(mem, files)
-        print(conf)
-        core.run(mem, conf, simulate=False)
+            """
+        )
+        conf = {
+            "rules": [
+                {
+                    "locations": [
+                        {"path": "files", "filesystem": mem},
+                    ],
+                    "filters": filters,
+                    "actions": [
+                        {"move": {"dest": "files/{python.mail}.txt", "filesystem": mem}}
+                    ],
+                },
+                {
+                    "locations": [
+                        {"path": "files", "filesystem": mem},
+                    ],
+                    "filters": [{"extension": "txt"}],
+                    "actions": [{"move": {"dest": "files/", "filesystem": mem}}],
+                },
+            ]
+        }
+        core.run(conf, simulate=False)
         result = read_files(mem)
         mem.tree()
 

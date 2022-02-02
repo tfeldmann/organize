@@ -1,20 +1,9 @@
 import fs
-from conftest import make_files, read_files, organize
+from conftest import make_files, read_files
+from organize import core
 
 
 def test_delete():
-    config = """
-    rules:
-        -   locations: "files"
-            subfolders: true
-            actions:
-            -   delete
-        -   locations: "files"
-            targets: dirs
-            subfolders: true
-            actions:
-            -   delete
-    """
     files = {
         "files": {
             "folder": {
@@ -27,8 +16,21 @@ def test_delete():
         }
     }
     with fs.open_fs("mem://") as mem:
+        config = {
+            "rules": [
+                {
+                    "locations": [{"path": "files", "filesystem": mem}],
+                    "actions": ["delete"],
+                },
+                {
+                    "locations": [{"path": "files", "filesystem": mem}],
+                    "targets": "dirs",
+                    "actions": ["delete"],
+                },
+            ]
+        }
         make_files(mem, files)
-        organize(mem, config, simulate=False)
+        core.run(config, simulate=False)
         result = read_files(mem)
 
         assert result == {

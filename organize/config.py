@@ -39,7 +39,7 @@ CONFIG_SCHEMA = Schema(
                                 Optional("ignore_errors"): bool,
                                 Optional("filter"): [str],
                                 Optional("filter_dirs"): [str],
-                                Optional("filesystem"): str,
+                                Optional("filesystem"): object,
                             },
                         ),
                     ],

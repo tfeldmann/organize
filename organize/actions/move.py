@@ -53,7 +53,7 @@ class Move(Action):
             "dest": str,
             Optional("on_conflict"): Or(*CONFLICT_OPTIONS),
             Optional("rename_template"): str,
-            Optional("filesystem"): str,
+            Optional("filesystem"): object,
         },
     )
 

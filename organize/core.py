@@ -3,7 +3,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Iterable, NamedTuple, Union
 
-from fs import path as fspath
+from fs import path as fspath, open_fs
 from fs.base import FS
 from fs.errors import NoSysPath
 from fs.walk import Walker
@@ -20,7 +20,7 @@ from .utils import (
     deep_merge_inplace,
     ensure_dict,
     ensure_list,
-    open_workdir_related_fs,
+    fs_path_from_options,
     to_args,
 )
 
@@ -48,7 +48,7 @@ DEFAULT_SYSTEM_EXCLUDE_DIRS = [
 ]
 
 
-def convert_location_options_to_walker_args(options: dict):
+def convert_options_to_walker_args(options: dict):
     # combine system_exclude and exclude into a single list
     excludes = options.get("system_exlude_files", DEFAULT_SYSTEM_EXCLUDE_FILES)
     excludes.extend(options.get("exclude_files", []))
@@ -67,30 +67,25 @@ def convert_location_options_to_walker_args(options: dict):
     }
 
 
-def instantiate_location(
-    work_fs: FS,
-    loc: Union[str, dict],
-    default_max_depth=0,
-) -> Location:
-    if isinstance(loc, str):
-        loc = {"path": loc}
+def instantiate_location(options: Union[str, dict], default_max_depth=0) -> Location:
+    if isinstance(options, str):
+        options = {"path": options}
 
     # set default max depth from rule
-    if not "max_depth" in loc:
-        loc["max_depth"] = default_max_depth
+    if not "max_depth" in options:
+        options["max_depth"] = default_max_depth
 
-    if "walker" not in loc:
-        args = convert_location_options_to_walker_args(loc)
+    if "walker" not in options:
+        args = convert_options_to_walker_args(options)
         walker = Walker(**args)
     else:
-        walker = loc["walker"]
+        walker = options["walker"]
 
-    walker_fs, path = open_workdir_related_fs(
-        working_dir=work_fs,
-        path=loc.get("path", "/"),
-        filesystem=loc.get("filesystem"),
+    fs, fs_path = fs_path_from_options(
+        path=options.get("path", "/"),
+        filesystem=options.get("filesystem"),
     )
-    return Location(walker=walker, fs=walker_fs, fs_path=path)
+    return Location(walker=walker, fs=fs, fs_path=fs_path)
 
 
 def instantiate_filter(filter_config):
@@ -121,26 +116,25 @@ def syspath_or_exception(fs, path):
         return e
 
 
-def replace_with_instances(work_fs: FS, config):
+def replace_with_instances(config: dict):
     warnings = []
 
     for rule in config["rules"]:
-        _locations = []
         default_depth = None if rule.get("subfolders", False) else 0
 
-        for loc in ensure_list(rule["locations"]):
+        _locations = []
+        for options in ensure_list(rule["locations"]):
             try:
                 instance = instantiate_location(
-                    work_fs=work_fs,
-                    loc=loc,
+                    options=options,
                     default_max_depth=default_depth,
                 )
                 _locations.append(instance)
             except Exception as e:
-                if isinstance(loc, dict) and loc.get("ignore_errors", False):
+                if isinstance(options, dict) and options.get("ignore_errors", False):
                     warnings.append(str(e))
                 else:
-                    raise ValueError("Invalid location %s" % loc) from e
+                    raise ValueError("Invalid location %s" % options) from e
 
         # filters are optional
         _filters = []
@@ -262,17 +256,17 @@ def run_rules(rules: dict, simulate: bool = True):
     return count
 
 
-def run(work_fs: FS, conf: Union[str, dict], simulate: bool):
+def run(conf: Union[str, dict], simulate: bool):
     try:
         # load and validate
         if isinstance(conf, str):
             conf = config.load_from_string(conf)
+
         conf = config.cleanup(conf)
         config.validate(conf)
 
         # instantiate
-        warnings = replace_with_instances(work_fs, conf)
-        print(conf)
+        warnings = replace_with_instances(conf)
         for msg in warnings:
             console.warn(msg)
 

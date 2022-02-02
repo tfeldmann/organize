@@ -1,3 +1,4 @@
+from fs import open_fs
 import pytest
 
 from organize import config, core

@@ -1,7 +1,7 @@
 import os
 from copy import deepcopy
 from datetime import datetime
-from typing import Any, List, Sequence
+from typing import Any, List, Sequence, Union
 
 import jinja2
 from fs import open_fs
@@ -87,34 +87,45 @@ def expand_with_args(fs_url: str, args=None):
     return fs_url
 
 
-def open_workdir_related_fs(working_dir: FS, path: str, filesystem=""):
+def fs_path_from_options(path: str, filesystem: Union[FS, str] = ""):
     """
-    path can be a fs_url or a absolute or relative path.
-    filesystem is optional and can be a fs_url.
+    path can be a fs_url a normal fs_path
+    filesystem is optional and may be a fs_url.
 
-    - if the path is relative we try to stay in working_dir.
-    - if it is absolute, we create a OSFS
+    - user tilde is expanded
     - if a filesystem is given, we use that.
+    - otherwise we treat the path as a filesystem.
     """
     path = expand_user(path)
-    filesystem = expand_user(filesystem) if filesystem else None
 
     if not filesystem:
-        if fspath.isabs(path) or "://" in path:
-            return (open_fs(path), "/")
-        else:
-            return (working_dir, path)
+        return (open_fs(path), "/")
     else:
-        (open_fs(filesystem), path)
+        if isinstance(filesystem, str):
+            filesystem = expand_user(filesystem) if filesystem else None
+            return (open_fs(filesystem), path)
+        return (filesystem.opendir(path), "/")
 
 
-def is_same_resource(fs1, path1, fs2, path2):
+def is_same_resource(fs1: FS, path1: str, fs2: FS, path2: str):
     from fs.errors import NoSysPath, NoURL
     from fs.tarfs import ReadTarFS, WriteTarFS
     from fs.zipfs import ReadZipFS, WriteZipFS
+    from fs.wrapfs import WrapFS
+    from fs.path import abspath
+
+    def unwrap(fs, path):
+        if isinstance(fs, WrapFS):
+            fs, path = fs.delegate_path(path)
+        return fs, abspath(path)
+
+    # completely unwrap WrapFS instances
+    fs1, path1 = unwrap(fs1, path1)
+    fs2, path2 = unwrap(fs2, path2)
 
     if fs1 == fs2 and path1 == path2:
         return True
+
     try:
         return fs1.getsyspath(path1) == fs2.getsyspath(path2)
     except NoSysPath:
