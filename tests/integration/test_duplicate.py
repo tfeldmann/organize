@@ -29,9 +29,7 @@ def test_duplicate_smallfiles(tmp_path):
         """,
     )
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
-    assertdir(
-        tmp_path, "unique.txt", "unique_too.txt", "a.txt", "large_unique.txt"
-    )
+    assertdir(tmp_path, "unique.txt", "unique_too.txt", "a.txt", "large_unique.txt")
 
 
 def test_duplicate_largefiles(tmp_path):
