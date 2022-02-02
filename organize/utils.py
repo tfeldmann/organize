@@ -1,4 +1,6 @@
+import os
 from copy import deepcopy
+from datetime import datetime
 from typing import Any, List, Sequence
 
 import jinja2
@@ -11,8 +13,9 @@ from jinja2 import nativetypes
 
 
 def finalize_placeholder(x):
-    if callable(x):
-        return x()
+    # This is used to make the `path` arg available in the filters and actions.
+    # If a template uses `path` where no syspath is available this makes it possible
+    # to raise an exception.
     if isinstance(x, Exception):
         raise x
     return x
@@ -31,6 +34,15 @@ NativeTemplate = nativetypes.NativeEnvironment(
     autoescape=False,
     finalize=finalize_placeholder,
 )
+
+
+def basic_args():
+    """The basic args which are guaranteed to be available."""
+    return {
+        "env": os.environ,
+        "now": datetime.now(),
+        "utcnow": datetime.utcnow(),
+    }
 
 
 class SimulationFS(MemoryFS):
@@ -53,11 +65,56 @@ def open_fs_or_sim(fs_url, *args, simulate=False, **kwargs):
     return open_fs(fs_url, *args, **kwargs)
 
 
+def expand_user(fs_url: str):
+    fs_url = os.path.expanduser(fs_url)
+    if fs_url.startswith("zip://~"):
+        fs_url = fs_url.replace("zip://~", "zip://" + os.path.expanduser("~"))
+    elif fs_url.startswith("tar://~"):
+        fs_url = fs_url.replace("tar://~", "tar://" + os.path.expanduser("~"))
+    return fs_url
+
+
+def expand_with_args(fs_url: str, args=None):
+    if not args:
+        args = basic_args()
+
+    fs_url = expand_user(fs_url)
+
+    # fill environment vars
+    fs_url = os.path.expandvars(fs_url)
+    fs_url = Template.from_string(fs_url).render()
+
+    return fs_url
+
+
+def open_workdir_related_fs(working_dir: FS, path: str, filesystem=""):
+    """
+    path can be a fs_url or a absolute or relative path.
+    filesystem is optional and can be a fs_url.
+
+    - if the path is relative we try to stay in working_dir.
+    - if it is absolute, we create a OSFS
+    - if a filesystem is given, we use that.
+    """
+    path = expand_user(path)
+    filesystem = expand_user(filesystem) if filesystem else None
+
+    if not filesystem:
+        if fspath.isabs(path) or "://" in path:
+            return (open_fs(path), "/")
+        else:
+            return (working_dir, path)
+    else:
+        (open_fs(filesystem), path)
+
+
 def is_same_resource(fs1, path1, fs2, path2):
     from fs.errors import NoSysPath, NoURL
     from fs.tarfs import ReadTarFS, WriteTarFS
     from fs.zipfs import ReadZipFS, WriteZipFS
 
+    if fs1 == fs2 and path1 == path2:
+        return True
     try:
         return fs1.getsyspath(path1) == fs2.getsyspath(path2)
     except NoSysPath:

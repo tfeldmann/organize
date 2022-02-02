@@ -1,6 +1,5 @@
-from typing import IO
 from fs.base import FS
-from fs.path import join
+from fs.path import join, basename
 
 
 def make_files(fs: FS, layout: dict, path="/"):
@@ -30,12 +29,14 @@ def make_files(fs: FS, layout: dict, path="/"):
             fs.writebytes(respath, v)
         elif isinstance(v, str):
             fs.writetext(respath, v)
-        elif isinstance(v, IO):
-            fs.writefile(respath, v)
         else:
             raise ValueError("Unknown file data %s" % v)
 
 
-# def assertdir(path, *files):
-#     os.chdir(str(path / "files"))
-#     assert set(files) == set(str(x) for x in Path(".").glob("**/*") if x.is_file())
+def read_files(fs: FS, path="/"):
+    result = dict()
+    for x in fs.walk.files(path, max_depth=0):
+        result[basename(x)] = fs.readtext(x)
+    for x in fs.walk.dirs(path, max_depth=0):
+        result[basename(x)] = read_files(fs, path=join(path, x))
+    return result

@@ -1,11 +1,9 @@
 import logging
-import os
 from collections import Counter
-from datetime import datetime
 from pathlib import Path
-from typing import Iterable, NamedTuple
+from typing import Iterable, NamedTuple, Union
 
-from fs import open_fs, path as fspath
+from fs import path as fspath
 from fs.base import FS
 from fs.errors import NoSysPath
 from fs.walk import Walker
@@ -17,7 +15,14 @@ from .actions import ACTIONS
 from .actions.action import Action
 from .filters import FILTERS
 from .filters.filter import Filter
-from .utils import Template, deep_merge_inplace, ensure_dict, ensure_list, to_args
+from .utils import (
+    basic_args,
+    deep_merge_inplace,
+    ensure_dict,
+    ensure_list,
+    open_workdir_related_fs,
+    to_args,
+)
 
 logger = logging.getLogger(__name__)
 highlighted_console = Console()
@@ -25,8 +30,8 @@ highlighted_console = Console()
 
 class Location(NamedTuple):
     walker: Walker
-    base_fs: FS
-    path: str
+    fs: FS
+    fs_path: str
 
 
 DEFAULT_SYSTEM_EXCLUDE_FILES = [
@@ -43,7 +48,7 @@ DEFAULT_SYSTEM_EXCLUDE_DIRS = [
 ]
 
 
-def walker_args_from_location_options(options):
+def convert_location_options_to_walker_args(options: dict):
     # combine system_exclude and exclude into a single list
     excludes = options.get("system_exlude_files", DEFAULT_SYSTEM_EXCLUDE_FILES)
     excludes.extend(options.get("exclude_files", []))
@@ -62,24 +67,11 @@ def walker_args_from_location_options(options):
     }
 
 
-def expand_location(url: str):
-    userhome = os.path.expanduser("~")
-
-    # fill environment vars
-    url = os.path.expandvars(url)
-    url = Template.from_string(url).render(env=os.environ)
-
-    # expand user
-    url = os.path.expanduser(url)
-    if url.startswith("zip://"):
-        url = url.replace("zip://~", "zip://" + userhome)
-    elif url.startswith("tar://"):
-        url = url.replace("tar://~", "tar://" + userhome)
-
-    return url
-
-
-def instantiate_location(fs: FS, loc, default_max_depth=0) -> Location:
+def instantiate_location(
+    work_fs: FS,
+    loc: Union[str, dict],
+    default_max_depth=0,
+) -> Location:
     if isinstance(loc, str):
         loc = {"path": loc}
 
@@ -88,28 +80,17 @@ def instantiate_location(fs: FS, loc, default_max_depth=0) -> Location:
         loc["max_depth"] = default_max_depth
 
     if "walker" not in loc:
-        args = walker_args_from_location_options(loc)
+        args = convert_location_options_to_walker_args(loc)
         walker = Walker(**args)
     else:
         walker = loc["walker"]
 
-    if "filesystem" in loc:
-        base_fs = loc["filesystem"]
-        path = loc.get("path", "/")
-    else:
-        base_fs = loc["path"]
-        path = "/"
-
-    base_fs = expand_location(base_fs)
-    path = expand_location(path)
-
-    if "://" in base_fs or fspath.isabs(base_fs):
-        base_fs = open_fs(base_fs)
-    else:
-        path = base_fs
-        base_fs = fs
-
-    return Location(walker=walker, base_fs=base_fs, path=path)
+    walker_fs, path = open_workdir_related_fs(
+        working_dir=work_fs,
+        path=loc.get("path", "/"),
+        filesystem=loc.get("filesystem"),
+    )
+    return Location(walker=walker, fs=walker_fs, fs_path=path)
 
 
 def instantiate_filter(filter_config):
@@ -140,7 +121,7 @@ def syspath_or_exception(fs, path):
         return e
 
 
-def replace_with_instances(fs: FS, config):
+def replace_with_instances(work_fs: FS, config):
     warnings = []
 
     for rule in config["rules"]:
@@ -150,7 +131,7 @@ def replace_with_instances(fs: FS, config):
         for loc in ensure_list(rule["locations"]):
             try:
                 instance = instantiate_location(
-                    fs=fs,
+                    work_fs=work_fs,
                     loc=loc,
                     default_max_depth=default_depth,
                 )
@@ -246,20 +227,24 @@ def run_rules(rules: dict, simulate: bool = True):
             for path in walk(fs=base_fs, path=base_path):
                 console.path(base_fs, path)
                 relative_path = fspath.relativefrom(base_path, path)
-                args = {
-                    "fs": base_fs,
-                    "fs_path": path,
-                    "relative_path": relative_path,
-                    "env": os.environ,
-                    "now": datetime.now(),
-                    "utcnow": datetime.utcnow(),
-                    "path": syspath_or_exception(base_fs, path),
-                }
+
+                # assemble the available args
+                args = basic_args()
+                args.update(
+                    fs=base_fs,
+                    fs_path=path,
+                    relative_path=relative_path,
+                    path=syspath_or_exception(base_fs, path),
+                )
+
+                # run resource through the filter pipeline
                 match = filter_pipeline(
                     filters=rule["filters"],
                     args=args,
                     filter_mode=filter_mode,
                 )
+
+                # run resource through the action pipeline
                 if match:
                     is_success = action_pipeline(
                         actions=rule["actions"],
@@ -277,18 +262,17 @@ def run_rules(rules: dict, simulate: bool = True):
     return count
 
 
-def run(fs: FS, rules: str, simulate: bool):
-    # TODO! os.chdir(working_dir)
-    # console.info(config_path)
-
+def run(work_fs: FS, conf: Union[str, dict], simulate: bool):
     try:
         # load and validate
-        conf = config.load_from_string(rules)
+        if isinstance(conf, str):
+            conf = config.load_from_string(conf)
         conf = config.cleanup(conf)
         config.validate(conf)
 
         # instantiate
-        warnings = replace_with_instances(fs, conf)
+        warnings = replace_with_instances(work_fs, conf)
+        print(conf)
         for msg in warnings:
             console.warn(msg)
 

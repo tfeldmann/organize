@@ -78,9 +78,10 @@ addopts = "--doctest-modules"
 testpaths = ["tests", "organize"]
 norecursedirs = [
     "tests/todo",
-    "tests/integration",
+    # "tests/integration",
     "tests/filters",
     "organize/filters",
+    ".configs",
 ]
 
 [build-system]
