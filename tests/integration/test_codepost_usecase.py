@@ -44,13 +44,14 @@ def test_codepost_usecase():
                         {"move": {"dest": "files/{python.mail}.txt", "filesystem": mem}}
                     ],
                 },
-                {
-                    "locations": [
-                        {"path": "files", "filesystem": mem},
-                    ],
-                    "filters": [{"extension": "txt"}],
-                    "actions": [{"move": {"dest": "files/", "filesystem": mem}}],
-                },
+                # TODO: Test for moving files onto themselves
+                #   {
+                #         "locations": [
+                #             {"path": "files", "filesystem": mem},
+                #         ],
+                #         "filters": [{"extension": "txt"}],
+                #         "actions": [{"move": {"dest": "files/", "filesystem": mem}}],
+                #     },
             ]
         }
         core.run(conf, simulate=False)

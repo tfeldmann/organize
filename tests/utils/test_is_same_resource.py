@@ -1,4 +1,5 @@
 from fs import open_fs
+from fs.memoryfs import MemoryFS
 from organize.utils import is_same_resource
 
 
@@ -14,6 +15,14 @@ def test_mem():
     assert is_same_resource(a, "file1", c, "file1")
 
 
+def test_mem2():
+    mem = MemoryFS()
+    fs1, path1 = mem.makedir("files"), "test.txt"
+    fs2, path2 = mem, "files/test.txt"
+
+    assert is_same_resource(fs1, path1, fs2, path2)
+
+
 def test_osfs():
     a = open_fs("~/Desktop")
     b = open_fs("~/")
@@ -24,5 +33,11 @@ def test_osfs():
     assert is_same_resource(a, "file.txt", c, "file.txt")
 
 
-def test_zipfs():
-    b = open_fs("~/")
+def test_inter():
+    a = open_fs("temp://")
+    b = open_fs(a.getsyspath("/"))
+    a_dir = a.makedir("a")
+
+    assert is_same_resource(a, "test.txt", b, "test.txt")
+    assert is_same_resource(b, "a/subfile.txt", a_dir, "subfile.txt")
+    assert is_same_resource(a, "test.txt", a_dir, "../test.txt")

@@ -112,31 +112,42 @@ def is_same_resource(fs1: FS, path1: str, fs2: FS, path2: str):
     from fs.tarfs import ReadTarFS, WriteTarFS
     from fs.zipfs import ReadZipFS, WriteZipFS
     from fs.wrapfs import WrapFS
-    from fs.path import abspath
+    from fs.path import normpath, join
 
     def unwrap(fs, path):
+        base = "/"
         if isinstance(fs, WrapFS):
-            fs, path = fs.delegate_path(path)
-        return fs, abspath(path)
+            fs, base = fs.delegate_path("/")
+        return fs, normpath(join(base, path))  # to support ".." in path
 
     # completely unwrap WrapFS instances
     fs1, path1 = unwrap(fs1, path1)
     fs2, path2 = unwrap(fs2, path2)
 
+    # obvious check
     if fs1 == fs2 and path1 == path2:
         return True
 
+    # check all fs with syspath support
     try:
         return fs1.getsyspath(path1) == fs2.getsyspath(path2)
     except NoSysPath:
         pass
+
+    # check zip and tar
+    Tar = (WriteTarFS, ReadTarFS)
+    Zip = (WriteZipFS, ReadZipFS)
+    if (isinstance(fs1, Tar) and isinstance(fs2, Tar)) or (
+        isinstance(fs1, Zip) and isinstance(fs2, Zip)
+    ):
+        return path1 == path2 and fs1._file == fs2._file
+
+    # check all fs with url support
     if isinstance(fs1, fs2.__class__):
         try:
             return fs1.geturl(path1) == fs2.geturl(path2)
         except NoURL:
             pass
-        if isinstance(fs1, (WriteZipFS, ReadZipFS, WriteTarFS, ReadTarFS)):
-            return path1 == path2 and fs1._file == fs2._file
     return False
 
 
