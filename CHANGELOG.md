@@ -38,6 +38,7 @@ Please backup all your important stuff before running and use the simulate optio
   as well.
 - The `filename` filter was renamed to `name` and can now be used to get directory names
   as well.
+- The `size` filter now returns multiple formats
 
 ### removed
 

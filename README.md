@@ -82,7 +82,9 @@ In your shell, run `organize edit` to edit the configuration:
 
 ```yaml
 rules:
-  - locations: ~/Downloads
+  - name: "Find PDFs"
+    locations:
+      - ~/Downloads
     subfolders: true
     filters:
       - extension: pdf
