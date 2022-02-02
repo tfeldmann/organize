@@ -2,7 +2,8 @@ from copy import deepcopy
 from typing import Any, List, Sequence
 
 import jinja2
-from fs import open_fs, path as fspath
+from fs import open_fs
+from fs import path as fspath
 from fs.base import FS
 from fs.memoryfs import MemoryFS
 from fs.osfs import OSFS
@@ -146,13 +147,13 @@ def flatten_all_lists_in_dict(obj):
         return obj
 
 
-def deep_merge(a: dict, b: dict) -> dict:
+def deep_merge(a: dict, b: dict, *, add_keys=True) -> dict:
     result = deepcopy(a)
     for bk, bv in b.items():
         av = result.get(bk)
         if isinstance(av, dict) and isinstance(bv, dict):
-            result[bk] = deep_merge(av, bv)
-        else:
+            result[bk] = deep_merge(av, bv, add_keys=add_keys)
+        elif (av is not None) or add_keys:
             result[bk] = deepcopy(bv)
     return result
 

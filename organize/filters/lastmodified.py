@@ -1,15 +1,18 @@
-from schema import Or, Optional
 from datetime import datetime, timedelta
-from typing import Dict, Optional as tyOptional
+from typing import Union
+
+from fs.base import FS
+from schema import Optional, Or
 
 from .filter import Filter, FilterResult
+from .utils import age_condition_applies
 
 
 class LastModified(Filter):
 
     """Matches files by last modified date
 
-        Args:
+    Args:
         years (int): specify number of years
         months (int): specify number of months
         weeks (float): specify number of weeks
@@ -18,12 +21,12 @@ class LastModified(Filter):
         minutes (float): specify number of minutes
         seconds (float): specify number of seconds
         mode (str):
-            either 'older' or 'newer'. 'older' matches all files created before the given
-            time, 'newer' matches all files created within the given time.
-            (default = 'older')
+            either 'older' or 'newer'. 'older' matches files / folders last modified before
+            the given time, 'newer' matches files / folders last modified within the given
+            time. (default = 'older')
 
     Returns:
-        {lastmodified}: The datetime the file / dir was created.
+        {lastmodified}: The datetime the files / folders was lastmodified.
     """
 
     name = "lastmodified"
@@ -49,44 +52,48 @@ class LastModified(Filter):
         minutes=0,
         seconds=0,
         mode="older",
-    ) -> None:
-        self._mode = mode.strip().lower()
-        if self._mode not in ("older", "newer"):
-            raise ValueError("Unknown option for 'mode': must be 'older' or 'newer'.")
-        self.should_be_older = self._mode == "older"
-        self.timedelta = timedelta(
-            weeks=years * 52 + months * 4 + weeks,  # quick and a bit dirty
+    ):
+        self.age = timedelta(
+            weeks=52 * years + 4 * months + weeks,  # quick and a bit dirty
             days=days,
             hours=hours,
             minutes=minutes,
             seconds=seconds,
         )
+        self.mode = mode.strip().lower()
+        if self.mode not in ("older", "newer"):
+            raise ValueError("Unknown option for 'mode': must be 'older' or 'newer'.")
 
-    def pipeline(self, args: dict) -> FilterResult:
-        fs = args["fs"]
-        fs_path = args["fs_path"]
-        file_modified: datetime
-        file_modified = fs.getmodified(fs_path)
-        if file_modified:
-            file_modified = file_modified.astimezone()
-        if self.timedelta.total_seconds():
-            if not file_modified:
+    def matches_lastmodified_time(self, lastmodified: Union[None, datetime]):
+        match = True
+        if self.age.total_seconds():
+            if not lastmodified:
                 match = False
             else:
-                is_past = (
-                    file_modified + self.timedelta
-                ).timestamp() < datetime.now().timestamp()
-                match = self.should_be_older == is_past
-        else:
-            match = True
+                match = age_condition_applies(
+                    dt=lastmodified,
+                    age=self.age,
+                    mode=self.mode,
+                    reference=datetime.now(),
+                )
+        return match
 
+    def pipeline(self, args: dict) -> FilterResult:
+        fs = args["fs"]  # type: FS
+        fs_path = args["fs_path"]
+
+        modified = fs.getmodified(fs_path)
+        if modified:
+            modified = modified.astimezone()
+
+        match = self.matches_lastmodified_time(modified)
         return FilterResult(
             matches=match,
-            updates={self.get_name(): file_modified},
+            updates={self.get_name(): modified},
         )
 
     def __str__(self):
-        return "[LastModified] All files last modified %s than %s" % (
+        return "[LastModified] All files / folders last modified %s than %s" % (
             self._mode,
             self.timedelta,
         )

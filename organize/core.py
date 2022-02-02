@@ -1,6 +1,6 @@
 import logging
 import os
-from collections import Counter, defaultdict
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
 from typing import Iterable, NamedTuple
@@ -12,21 +12,12 @@ from fs.walk import Walker
 from rich.console import Console
 from schema import SchemaError
 
-from . import console
+from . import config, console
 from .actions import ACTIONS
 from .actions.action import Action
-from .config import CONFIG_SCHEMA, load_from_file
 from .filters import FILTERS
 from .filters.filter import Filter
-from .utils import (
-    Template,
-    deep_merge_inplace,
-    ensure_dict,
-    ensure_list,
-    flatten_all_lists_in_dict,
-    to_args,
-)
-
+from .utils import Template, deep_merge_inplace, ensure_dict, ensure_list, to_args
 
 logger = logging.getLogger(__name__)
 highlighted_console = Console()
@@ -50,22 +41,6 @@ DEFAULT_SYSTEM_EXCLUDE_DIRS = [
     ".git",
     ".svn",
 ]
-
-
-def config_cleanup(rules):
-    result = defaultdict(list)
-
-    # delete every root key except "rules"
-    for rule in rules.get("rules", []):
-        # delete disabled rules
-        if rule.get("enabled", True):
-            result["rules"].append(rule)
-
-    if not result:
-        raise ValueError("No rules defined.")
-
-    # flatten all lists everywhere
-    return flatten_all_lists_in_dict(dict(result))
 
 
 def walker_args_from_location_options(options):
@@ -279,9 +254,9 @@ def run(config, simulate: bool = True):
 def run_file(config_file: str, working_dir: str, simulate: bool):
     try:
         console.info(config_file, working_dir)
-        rules = load_from_file(config_file)
-        rules = config_cleanup(rules)
-        CONFIG_SCHEMA.validate(rules)
+        rules = config.load_from_file(config_file)
+        rules = config.cleanup(rules)
+        config.validate(rules)
         warnings = replace_with_instances(rules)
         for msg in warnings:
             console.warn(msg)

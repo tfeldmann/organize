@@ -5,21 +5,15 @@ from pathlib import Path
 
 
 def test_shell_basic():
-    with patch("subprocess.call") as m:
-        shell = Shell("echo 'Hello World'")
-        shell.run(path=Path.home(), simulate=False)
-        m.assert_called_with("echo 'Hello World'", shell=True)
+    shell = Shell("echo 'Hello World'")
+    result = shell.run(simulate=True)
+    assert not result
+
+    result = shell.run(simulate=False)
+    assert result["shell"] == {"output": "Hello World\n", "returncode": 0}
 
 
-def test_shell_args():
-    with patch("subprocess.call") as m:
-        shell = Shell("echo {year}")
-        shell.run(path=Path.home(), year=2017, simulate=False)
-        m.assert_called_with("echo 2017", shell=True)
-
-
-def test_shell_path():
-    with patch("subprocess.call") as m:
-        shell = Shell("echo {path.stem} for {year}")
-        shell.run(path=Path("/") / "this" / "isafile.txt", year=2017, simulate=False)
-        m.assert_called_with("echo isafile for 2017", shell=True)
+def test_shell_template_simulation():
+    shell = Shell("echo '{msg}'", run_in_simulation=True)
+    result = shell.run(msg="Hello", simulate=True)
+    assert result["shell"] == {"output": "Hello\n", "returncode": 0}

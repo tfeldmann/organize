@@ -35,28 +35,20 @@ def test_inserts_new_keys():
     assert deep_merge(a, b)["c"] == 6
 
 
-@mark.skip
 def test_does_not_insert_new_keys():
     """Will it avoid inserting new keys when required?"""
     a = {"a": 1, "b": {"b1": 2, "b2": 3}}
     b = {"a": 1, "b": {"b1": 4, "b3": 5}, "c": 6}
 
-    assert deep_merge(a, b, add_keys=False)["a"] == 1
-    assert deep_merge(a, b, add_keys=False)["b"]["b2"] == 3
-    assert deep_merge(a, b, add_keys=False)["b"]["b1"] == 4
-    try:
-        assert deep_merge(a, b, add_keys=False)["b"]["b3"] == 5
-    except KeyError:
-        pass
-    else:
-        raise Exception("New keys added when they should not be")
-
-    try:
-        assert deep_merge(a, b, add_keys=False)["b"]["b3"] == 6
-    except KeyError:
-        pass
-    else:
-        raise Exception("New keys added when they should not be")
+    assert deep_merge(a, b, add_keys=True) == {
+        "a": 1,
+        "b": {"b1": 4, "b2": 3, "b3": 5},
+        "c": 6,
+    }
+    assert deep_merge(a, b, add_keys=False) == {
+        "a": 1,
+        "b": {"b1": 4, "b2": 3},
+    }
 
 
 def test_inplace_merge():

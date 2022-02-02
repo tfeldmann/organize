@@ -1,6 +1,5 @@
 from pathlib import Path
 from organize.filters import Regex
-from organize.utils import DotDict
 
 
 TESTDATA = [
@@ -34,7 +33,7 @@ def test_regex_return():
 
 def test_regex_umlaut():
     regex = Regex(r"^Erträgnisaufstellung-(?P<year>\d*)\.pdf")
-    doc = Path("~/Documents/Erträgnisaufstellung-1998.pdf")
+    doc = "Erträgnisaufstellung-1998.pdf"
     assert regex.matches(doc)
     dct = regex.run(path=doc)
     assert dct == {"regex": {"year": "1998"}}

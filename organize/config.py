@@ -1,10 +1,13 @@
 import textwrap
+from collections import defaultdict
 
 import yaml
-from schema import And, Optional, Or, Schema, Literal
+from schema import And, Literal, Optional, Or, Schema
 
 from organize.actions import ACTIONS
 from organize.filters import FILTERS
+
+from .utils import flatten_all_lists_in_dict
 
 CONFIG_SCHEMA = Schema(
     {
@@ -14,7 +17,7 @@ CONFIG_SCHEMA = Schema(
                 Optional("enabled"): bool,
                 Optional("subfolders"): bool,
                 Optional("filter_mode", description="The filter mode."): Or(
-                    "all", "any", "none", error='Invalid filter mode'
+                    "all", "any", "none", error="Invalid filter mode"
                 ),
                 Optional(
                     "targets",
@@ -69,3 +72,23 @@ def load_from_string(config):
 def load_from_file(path):
     with open(path, "r", encoding="utf-8") as f:
         return load_from_string(f.read())
+
+
+def cleanup(config: dict):
+    result = defaultdict(list)
+
+    # delete every root key except "rules"
+    for rule in config.get("rules", []):
+        # delete disabled rules
+        if rule.get("enabled", True):
+            result["rules"].append(rule)
+
+    if not result:
+        raise ValueError("No rules defined.")
+
+    # flatten all lists everywhere
+    return flatten_all_lists_in_dict(dict(result))
+
+
+def validate(config: dict):
+    return CONFIG_SCHEMA.validate(config)

@@ -20,14 +20,14 @@ def test_extension():
 
 
 def test_extension_empty():
-    fs = open_fs("mem://")
-    fs.touch("test.txt")
-    extension = Extension()
-    assert extension.run(fs=fs, fs_path="test.txt").matches
+    with open_fs("mem://") as mem:
+        mem.touch("test.txt")
+        extension = Extension()
+        assert extension.run(fs=mem, fs_path="test.txt").matches
 
 
 def test_extension_result():
-    path = "~/somefile.TxT"
+    path = "somefile.TxT"
     extension = Extension("txt")
     assert extension.matches(path)
     result = extension.run(path=path)["extension"]

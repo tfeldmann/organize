@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
+from typing import Union
 
 from fs.base import FS
 from schema import Optional, Or
 
 from .filter import Filter, FilterResult
+from .utils import age_condition_applies
 
 
 class Created(Filter):
@@ -18,12 +20,12 @@ class Created(Filter):
         minutes (float): specify number of minutes
         seconds (float): specify number of seconds
         mode (str):
-            either 'older' or 'newer'. 'older' matches all files created before the given
-            time, 'newer' matches all files created within the given time.
+            either 'older' or 'newer'. 'older' matches files / folders created before the given
+            time, 'newer' matches files / folders created within the given time.
             (default = 'older')
 
     Returns:
-        {created}: The datetime the file / dir was created.
+        {created}: The datetime the file / folder was created.
     """
 
     name = "created"
@@ -49,46 +51,48 @@ class Created(Filter):
         minutes=0,
         seconds=0,
         mode="older",
-    ) -> None:
-        self._mode = mode.strip().lower()
-        if self._mode not in ("older", "newer"):
-            raise ValueError("Unknown option for 'mode': must be 'older' or 'newer'.")
-        self.should_be_older = self._mode == "older"
-        self.timedelta = timedelta(
+    ):
+        self.age = timedelta(
             weeks=52 * years + 4 * months + weeks,  # quick and a bit dirty
             days=days,
             hours=hours,
             minutes=minutes,
             seconds=seconds,
         )
+        self.mode = mode.strip().lower()
+        if self.mode not in ("older", "newer"):
+            raise ValueError("Unknown option for 'mode': must be 'older' or 'newer'.")
+
+    def matches_created_time(self, created: Union[None, datetime]):
+        match = True
+        if self.age.total_seconds():
+            if not created:
+                match = False
+            else:
+                match = age_condition_applies(
+                    dt=created,
+                    age=self.age,
+                    mode=self.mode,
+                    reference=datetime.now(),
+                )
+        return match
 
     def pipeline(self, args: dict) -> FilterResult:
         fs = args["fs"]  # type: FS
         fs_path = args["fs_path"]
 
-        file_created: Optional[datetime]
-        file_created = fs.getinfo(fs_path, namespaces=["details"]).created
-        if file_created:
-            file_created = file_created.astimezone()
+        created = fs.getinfo(fs_path, namespaces=["details"]).created
+        if created:
+            created = created.astimezone()
 
-        if self.timedelta.total_seconds():
-            if not file_created:
-                match = False
-            else:
-                is_past = (
-                    file_created + self.timedelta
-                ).timestamp() < datetime.now().timestamp()
-                match = self.should_be_older == is_past
-        else:
-            match = True
-
+        match = self.matches_created_time(created)
         return FilterResult(
             matches=match,
-            updates={self.get_name(): file_created},
+            updates={self.get_name(): created},
         )
 
     def __str__(self):
-        return "[Created] All files %s than %s" % (
+        return "[Created] All files / folders %s than %s" % (
             self._mode,
             self.timedelta,
         )
