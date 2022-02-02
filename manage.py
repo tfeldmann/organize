@@ -140,7 +140,7 @@ def publish(args):
             auth=(input("Benutzer: "), getpass.getpass(prompt="API token: ")),
             json={
                 "tag_name": f"v{version}",
-                "target_commitish": "master",
+                "target_commitish": "main",
                 "name": f"v{version}",
                 "body": changes,
                 "draft": False,
