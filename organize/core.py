@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Iterable, NamedTuple
 
-import fs
+from fs import open_fs, path as fspath
 from fs.base import FS
 from fs.errors import NoSysPath
 from fs.walk import Walker
@@ -62,7 +62,24 @@ def walker_args_from_location_options(options):
     }
 
 
-def instantiate_location(loc, default_max_depth=0) -> Location:
+def expand_location(url: str):
+    userhome = os.path.expanduser("~")
+
+    # fill environment vars
+    url = os.path.expandvars(url)
+    url = Template.from_string(url).render(env=os.environ)
+
+    # expand user
+    url = os.path.expanduser(url)
+    if url.startswith("zip://"):
+        url = url.replace("zip://~", "zip://" + userhome)
+    elif url.startswith("tar://"):
+        url = url.replace("tar://~", "tar://" + userhome)
+
+    return url
+
+
+def instantiate_location(fs: FS, loc, default_max_depth=0) -> Location:
     if isinstance(loc, str):
         loc = {"path": loc}
 
@@ -83,11 +100,16 @@ def instantiate_location(loc, default_max_depth=0) -> Location:
         base_fs = loc["path"]
         path = "/"
 
-    return Location(
-        walker=walker,
-        base_fs=fs.open_fs(Template.from_string(base_fs).render(env=os.environ)),
-        path=Template.from_string(path).render(env=os.environ),
-    )
+    base_fs = expand_location(base_fs)
+    path = expand_location(path)
+
+    if "://" in base_fs or fspath.isabs(base_fs):
+        base_fs = open_fs(base_fs)
+    else:
+        path = base_fs
+        base_fs = fs
+
+    return Location(walker=walker, base_fs=base_fs, path=path)
 
 
 def instantiate_filter(filter_config):
@@ -118,7 +140,7 @@ def syspath_or_exception(fs, path):
         return e
 
 
-def replace_with_instances(config):
+def replace_with_instances(fs: FS, config):
     warnings = []
 
     for rule in config["rules"]:
@@ -127,7 +149,11 @@ def replace_with_instances(config):
 
         for loc in ensure_list(rule["locations"]):
             try:
-                instance = instantiate_location(loc, default_max_depth=default_depth)
+                instance = instantiate_location(
+                    fs=fs,
+                    loc=loc,
+                    default_max_depth=default_depth,
+                )
                 _locations.append(instance)
             except Exception as e:
                 if isinstance(loc, dict) and loc.get("ignore_errors", False):
@@ -202,14 +228,14 @@ def action_pipeline(actions: Iterable[Action], args: dict, simulate: bool) -> bo
     return True
 
 
-def run(config, simulate: bool = True):
+def run_rules(rules: dict, simulate: bool = True):
     count = Counter(done=0, fail=0)  # type: Counter
 
     if simulate:
         console.simulation_banner()
 
     console.spinner(simulate=simulate)
-    for rule_nr, rule in enumerate(config["rules"], start=1):
+    for rule_nr, rule in enumerate(rules["rules"], start=1):
         target = rule.get("targets", "files")
         console.rule(rule.get("name", "Rule %s" % rule_nr))
         filter_mode = rule.get("filter_mode", "all")
@@ -219,7 +245,7 @@ def run(config, simulate: bool = True):
             walk = walker.files if target == "files" else walker.dirs
             for path in walk(fs=base_fs, path=base_path):
                 console.path(base_fs, path)
-                relative_path = fs.path.relativefrom(base_path, path)
+                relative_path = fspath.relativefrom(base_path, path)
                 args = {
                     "fs": base_fs,
                     "fs_path": path,
@@ -251,17 +277,23 @@ def run(config, simulate: bool = True):
     return count
 
 
-def run_file(config_file: str, working_dir: str, simulate: bool):
+def run(fs: FS, rules: str, simulate: bool):
+    # TODO! os.chdir(working_dir)
+    # console.info(config_path)
+
     try:
-        console.info(config_file, working_dir)
-        rules = config.load_from_file(config_file)
-        rules = config.cleanup(rules)
-        config.validate(rules)
-        warnings = replace_with_instances(rules)
+        # load and validate
+        conf = config.load_from_string(rules)
+        conf = config.cleanup(conf)
+        config.validate(conf)
+
+        # instantiate
+        warnings = replace_with_instances(fs, conf)
         for msg in warnings:
             console.warn(msg)
-        os.chdir(working_dir)
-        count = run(rules, simulate=simulate)
+
+        # run
+        count = run_rules(rules=conf, simulate=simulate)
         console.summary(count)
     except SchemaError as e:
         console.error("Invalid config file!")

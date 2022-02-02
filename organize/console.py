@@ -1,3 +1,4 @@
+from fs.base import FS
 from fs.path import basename, dirname, forcedir, relpath
 from rich.console import Console
 from rich.panel import Panel
@@ -95,11 +96,11 @@ def _highlight_path(path, base_style, main_style, relative=False):
     )
 
 
-def info(rule_file, working_dir):
+def info(config_path, working_dir):
     console.print("organize {}".format(__version__))
-    console.print('Config file: "{}"'.format(rule_file))
+    console.print('Config: "{}"'.format(config_path))
     if working_dir != ".":
-        console.print("Working dir: {}".format(working_dir))
+        console.print('Working dir: "{}"'.format(working_dir))
 
 
 def warn(msg, title="Warning"):
@@ -131,25 +132,25 @@ def rule(rule):
     with_newline.reset()
 
 
-def location(fs, path):
+def location(fs: FS, fs_path: str):
     result = Text()
-    if fs.hassyspath(path):
-        syspath = fs.getsyspath(path)
+    if fs.hassyspath(fs_path):
+        syspath = fs.getsyspath(fs_path)
         result = _highlight_path(syspath.rstrip("/"), "location.base", "location.main")
     else:
         result = Text.assemble(
             (str(fs), "location.fs"),
             " ",
-            _highlight_path(path.rstrip("/"), "location.base", "location.main"),
+            _highlight_path(fs_path.rstrip("/"), "location.base", "location.main"),
         )
     with_newline.print(result)
 
 
-def path(fs, path):
-    icon = ICON_DIR if fs.isdir(path) else ICON_FILE
+def path(fs: FS, fs_path: str):
+    icon = ICON_DIR if fs.isdir(fs_path) else ICON_FILE
     msg = Text.assemble(
         INDENT,
-        _highlight_path(path, "path.base", "path.main", relative=True),
+        _highlight_path(fs_path, "path.base", "path.main", relative=True),
         " ",
         (icon, "path.icon"),
     )

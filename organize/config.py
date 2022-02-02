@@ -64,14 +64,9 @@ def default_yaml_cnst(loader, tag_suffix, node):
 yaml.add_multi_constructor("", default_yaml_cnst, Loader=yaml.SafeLoader)
 
 
-def load_from_string(config):
+def load_from_string(config: str):
     dedented_config = textwrap.dedent(config)
     return yaml.load(dedented_config, Loader=yaml.SafeLoader)
-
-
-def load_from_file(path):
-    with open(path, "r", encoding="utf-8") as f:
-        return load_from_string(f.read())
 
 
 def cleanup(config: dict):

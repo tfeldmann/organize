@@ -7,7 +7,7 @@ import os
 import sys
 
 import click
-from fs import appfs, osfs
+from fs import appfs, osfs, open_fs
 
 from . import console
 from .__version__ import __version__
@@ -71,6 +71,14 @@ CLI_CONFIG_FILE_OPTION = click.option(
 )
 
 
+def run_local(config_path: str, working_dir: str, simulate: bool):
+    from . import core
+
+    console.info(config_path=config_path, working_dir=working_dir)
+    config = open_fs(".").readtext(config_path)
+    core.run(fs=open_fs(working_dir), rules=config, simulate=simulate)
+
+
 @click.group(
     help=__doc__,
     cls=NaturalOrderGroup,
@@ -87,14 +95,12 @@ def cli():
 @CLI_CONFIG_FILE_OPTION
 def run(config, working_dir, config_file):
     """Organizes your files according to your rules."""
-    from .core import run_file
-
     if config_file:
         config = config_file
         console.deprecated(
             "The --config-file option can now be omitted. See organize --help."
         )
-    run_file(config_file=config, working_dir=working_dir, simulate=False)
+    run_local(config_path=config, working_dir=working_dir, simulate=False)
 
 
 @cli.command()
@@ -103,14 +109,12 @@ def run(config, working_dir, config_file):
 @CLI_CONFIG_FILE_OPTION
 def sim(config, working_dir, config_file):
     """Simulates a run (does not touch your files)."""
-    from .core import run_file
-
     if config_file:
         config = config_file
         console.deprecated(
             "The --config-file option can now be omitted. See organize --help."
         )
-    run_file(config_file=config, working_dir=working_dir, simulate=True)
+    run_local(config_path=config, working_dir=working_dir, simulate=True)
 
 
 @cli.command()

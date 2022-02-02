@@ -1,64 +1,41 @@
-import os
-from unittest.mock import patch
+from typing import IO
+from fs.base import FS
+from fs.path import join
 
-import pytest
 
+def make_files(fs: FS, layout: dict, path="/"):
+    """
+    layout = {
+        "folder": {
+            "subfolder": {
+                "test.txt": "",
+                "other.pdf": b"binary",
+            },
+        },
+        "file.txt": "Hello world\nAnother line",
+    }
+    """
+    fs.makedirs(path, recreate=True)
+    for k, v in layout.items():
+        respath = join(path, k)
 
-# def create_filesystem(tmp_path, files, config):
-#     # create files
-#     for f in files:
-#         try:
-#             name, content = f
-#         except Exception:
-#             name = f
-#             content = ""
-#         p = tmp_path / "files" / Path(name)
-#         p.parent.mkdir(parents=True, exist_ok=True)
-#         with p.open("w") as ptr:
-#             ptr.write(content)
-#     # create config
-#     with (tmp_path / "config.yaml").open("w") as f:
-#         f.write(config)
-#     # change working directory
-#     os.chdir(str(tmp_path))
+        # folders are dicts
+        if isinstance(v, dict):
+            make_files(fs=fs, layout=v, path=respath)
+
+        # everything else is a file
+        elif v is None:
+            fs.touch(respath)
+        elif isinstance(v, bytes):
+            fs.writebytes(respath, v)
+        elif isinstance(v, str):
+            fs.writetext(respath, v)
+        elif isinstance(v, IO):
+            fs.writefile(respath, v)
+        else:
+            raise ValueError("Unknown file data %s" % v)
 
 
 # def assertdir(path, *files):
 #     os.chdir(str(path / "files"))
 #     assert set(files) == set(str(x) for x in Path(".").glob("**/*") if x.is_file())
-
-
-@pytest.fixture
-def mock_exists():
-    with patch.object(Path, "exists") as mck:
-        yield mck
-
-
-@pytest.fixture
-def mock_samefile():
-    with patch.object(Path, "samefile") as mck:
-        yield mck
-
-
-@pytest.fixture
-def mock_rename():
-    with patch.object(Path, "rename") as mck:
-        yield mck
-
-
-@pytest.fixture
-def mock_move():
-    with patch("shutil.move") as mck:
-        yield mck
-
-
-@pytest.fixture
-def mock_copy():
-    with patch("shutil.copy2") as mck:
-        yield mck
-
-
-@pytest.fixture
-def mock_remove():
-    with patch("os.remove") as mck:
-        yield mck
