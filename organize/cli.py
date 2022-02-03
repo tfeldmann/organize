@@ -73,10 +73,22 @@ CLI_CONFIG_FILE_OPTION = click.option(
 
 def run_local(config_path: str, working_dir: str, simulate: bool):
     from . import core
+    from schema import SchemaError
 
-    console.info(config_path=config_path, working_dir=working_dir)
-    config = open_fs(".").readtext(config_path)
-    core.run(fs=open_fs(working_dir), rules=config, simulate=simulate)
+    try:
+        console.info(config_path=config_path, working_dir=working_dir)
+        config = open_fs(".").readtext(config_path)
+        core.run(fs=open_fs(working_dir), rules=config, simulate=simulate)
+    except SchemaError as e:
+        console.error("Invalid config file!")
+        for err in e.autos:
+            if err and len(err) < 200:
+                core.highlighted_console.print(err)
+    except Exception as e:
+        core.highlighted_console.print_exception()
+    except (EOFError, KeyboardInterrupt):
+        console.status.stop()
+        console.warn("Aborted")
 
 
 @click.group(

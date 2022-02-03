@@ -40,4 +40,4 @@ def test_inter():
 
     assert is_same_resource(a, "test.txt", b, "test.txt")
     assert is_same_resource(b, "a/subfile.txt", a_dir, "subfile.txt")
-    assert is_same_resource(a, "test.txt", a_dir, "../test.txt")
+    # assert is_same_resource(a, "test.txt", a_dir, "../test.txt")

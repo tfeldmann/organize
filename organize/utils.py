@@ -112,13 +112,18 @@ def is_same_resource(fs1: FS, path1: str, fs2: FS, path2: str):
     from fs.tarfs import ReadTarFS, WriteTarFS
     from fs.zipfs import ReadZipFS, WriteZipFS
     from fs.wrapfs import WrapFS
-    from fs.path import normpath, join
+    from fs.path import abspath
+
+    # def unwrap(fs, path):
+    #     base = "/"
+    #     if isinstance(fs, WrapFS):
+    #         fs, base = fs.delegate_path("/")
+    #     return fs, normpath(join(base, path))  # to support ".." in path
 
     def unwrap(fs, path):
-        base = "/"
         if isinstance(fs, WrapFS):
-            fs, base = fs.delegate_path("/")
-        return fs, normpath(join(base, path))  # to support ".." in path
+            fs, path = fs.delegate_path(path)
+        return fs, abspath(path)
 
     # completely unwrap WrapFS instances
     fs1, path1 = unwrap(fs1, path1)

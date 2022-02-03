@@ -257,29 +257,21 @@ def run_rules(rules: dict, simulate: bool = True):
 
 
 def run(conf: Union[str, dict], simulate: bool):
-    try:
-        # load and validate
-        if isinstance(conf, str):
-            conf = config.load_from_string(conf)
+    # load and validate
+    if isinstance(conf, str):
+        conf = config.load_from_string(conf)
 
-        conf = config.cleanup(conf)
-        config.validate(conf)
+    conf = config.cleanup(conf)
+    config.validate(conf)
 
-        # instantiate
-        warnings = replace_with_instances(conf)
-        for msg in warnings:
-            console.warn(msg)
+    # instantiate
+    warnings = replace_with_instances(conf)
+    for msg in warnings:
+        console.warn(msg)
 
-        # run
-        count = run_rules(rules=conf, simulate=simulate)
-        console.summary(count)
-    except SchemaError as e:
-        console.error("Invalid config file!")
-        for err in e.autos:
-            if err and len(err) < 200:
-                highlighted_console.print(err)
-    except Exception as e:
-        highlighted_console.print_exception()
-    except (EOFError, KeyboardInterrupt):
-        console.status.stop()
-        console.warn("Aborted")
+    # run
+    count = run_rules(rules=conf, simulate=simulate)
+    console.summary(count)
+    print(count)
+    if count["fail"]:
+        raise ValueError("Some actions failed.")
