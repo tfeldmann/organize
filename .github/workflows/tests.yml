@@ -28,7 +28,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip
+          python3 -m pip install --upgrade pip setuptools
           python3 -m pip install poetry
           poetry run python -m install -U pip
           poetry install -E textract
