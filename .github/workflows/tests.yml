@@ -29,8 +29,8 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip setuptools
           python3 -m pip install poetry
-          poetry run python -m install -U pip
-          poetry install -E textract
+          poetry run python -m install -U pip setuptools
+          poetry install
 
       - name: Version info
         run: |
