@@ -19,7 +19,7 @@ class Echo(Action):
     def get_schema(cls):
         return {cls.name: str}
 
-    def __init__(self, msg) -> None:
+    def __init__(self, msg):
         self.msg = Template.from_string(msg)
 
     def pipeline(self, args: dict, simulate: bool) -> None:

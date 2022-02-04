@@ -1,3 +1,4 @@
+import logging
 import os
 from copy import deepcopy
 from datetime import datetime
@@ -8,7 +9,6 @@ from fs import open_fs
 from fs import path as fspath
 from fs.base import FS
 from fs.memoryfs import MemoryFS
-from fs.osfs import OSFS
 from jinja2 import nativetypes
 
 
@@ -74,17 +74,20 @@ def expand_user(fs_url: str):
     return fs_url
 
 
-def expand_with_args(fs_url: str, args=None):
+def expand_args(template: Union[str, jinja2.environment.Template], args=None):
     if not args:
         args = basic_args()
 
-    fs_url = expand_user(fs_url)
+    if isinstance(template, str):
+        text = Template.from_string(template).render(**args)
+    else:
+        text = template.render(**args)
 
-    # fill environment vars
-    fs_url = os.path.expandvars(fs_url)
-    fs_url = Template.from_string(fs_url).render()
+    # expand user and fill environment vars
+    text = expand_user(text)
+    text = os.path.expandvars(text)
 
-    return fs_url
+    return text
 
 
 def fs_path_from_options(path: str, filesystem: Union[FS, str] = ""):
@@ -104,7 +107,7 @@ def fs_path_from_options(path: str, filesystem: Union[FS, str] = ""):
         if isinstance(filesystem, str):
             filesystem = expand_user(filesystem) if filesystem else None
             return (open_fs(filesystem), path)
-        return (filesystem.opendir(path), "/")
+        return (filesystem, path)
 
 
 def is_same_resource(fs1: FS, path1: str, fs2: FS, path2: str):
@@ -156,14 +159,13 @@ def is_same_resource(fs1: FS, path1: str, fs2: FS, path2: str):
     return False
 
 
-def resource_description(fs, path):
-    if isinstance(fs, SimulationFS):
-        return "%s%s" % (str(fs), fspath.abspath(path))
-    elif isinstance(fs, OSFS):
+def safe_description(fs: FS, path):
+    try:
+        if isinstance(fs, SimulationFS):
+            return "%s%s" % (str(fs), fspath.abspath(path))
         return fs.getsyspath(path)
-    elif path == "/":
-        return str(fs)
-    return "{} on {}".format(path, fs)
+    except:
+        return "{} on {}".format(path, fs)
 
 
 def ensure_list(inp):
@@ -249,35 +251,3 @@ def deep_merge_inplace(base: dict, updates: dict) -> None:
             deep_merge_inplace(av, bv)
         else:
             base[bk] = bv
-
-
-def next_free_name(fs: FS, template: jinja2.Template, name: str, extension: str) -> str:
-    """
-    Increments {counter} in the template until the given resource does not exist.
-
-    Args:
-        fs (FS): the filesystem to work on
-        template (jinja2.Template):
-            A jinja2 template with placeholders for {name}, {extension} and {counter}
-        name (str): The wanted filename
-        extension (str): the wanted extension
-
-    Raises:
-        ValueError if no free name can be found with the given template.
-
-    Returns:
-        (str) A filename according to the given template that does not exist on **fs**.
-    """
-    counter = 1
-    prev_candidate = ""
-    while True:
-        candidate = template.render(name=name, extension=extension, counter=counter)
-        if not fs.exists(candidate):
-            return candidate
-        if prev_candidate == candidate:
-            raise ValueError(
-                "Could not find a free filename for the given template. "
-                'Maybe you forgot the "{counter}" placeholder?'
-            )
-        prev_candidate = candidate
-        counter += 1

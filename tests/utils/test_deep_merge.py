@@ -1,4 +1,3 @@
-from pytest import mark
 from organize.utils import deep_merge, deep_merge_inplace
 
 

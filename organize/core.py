@@ -68,6 +68,8 @@ def convert_options_to_walker_args(options: dict):
 
 
 def instantiate_location(options: Union[str, dict], default_max_depth=0) -> Location:
+    if isinstance(options, Location):
+        return options
     if isinstance(options, str):
         options = {"path": options}
 
@@ -89,6 +91,8 @@ def instantiate_location(options: Union[str, dict], default_max_depth=0) -> Loca
 
 
 def instantiate_filter(filter_config):
+    if isinstance(filter_config, Filter):
+        return filter_config
     spec = ensure_dict(filter_config)
     name, value = next(iter(spec.items()))
     parts = name.split(maxsplit=1)
@@ -103,6 +107,8 @@ def instantiate_filter(filter_config):
 
 
 def instantiate_action(action_config):
+    if isinstance(action_config, Action):
+        return action_config
     spec = ensure_dict(action_config)
     name, value = next(iter(spec.items()))
     args, kwargs = to_args(value)
@@ -197,7 +203,7 @@ def action_pipeline(actions: Iterable[Action], args: dict, simulate: bool) -> bo
             if updates is not None:
                 deep_merge_inplace(args, updates)
         except Exception as e:  # pylint: disable=broad-except
-            # logger.exception(e)
+            logger.exception(e)
             action.print_error(str(e))
             return False
     return True
@@ -256,22 +262,24 @@ def run_rules(rules: dict, simulate: bool = True):
     return count
 
 
-def run(conf: Union[str, dict], simulate: bool):
+def run(rules: Union[str, dict], simulate: bool, validate=True):
     # load and validate
-    if isinstance(conf, str):
-        conf = config.load_from_string(conf)
+    if isinstance(rules, str):
+        rules = config.load_from_string(rules)
 
-    conf = config.cleanup(conf)
-    config.validate(conf)
+    rules = config.cleanup(rules)
+
+    if validate:
+        config.validate(rules)
 
     # instantiate
-    warnings = replace_with_instances(conf)
+    warnings = replace_with_instances(rules)
     for msg in warnings:
         console.warn(msg)
 
     # run
-    count = run_rules(rules=conf, simulate=simulate)
+    count = run_rules(rules=rules, simulate=simulate)
     console.summary(count)
-    print(count)
+
     if count["fail"]:
-        raise ValueError("Some actions failed.")
+        raise RuntimeWarning("Some actions failed.")

@@ -1,9 +1,13 @@
-from typing import Any, Dict, Union
+import logging
+from typing import Any, Dict
 from typing import Optional as tyOptional
+from typing import Union
 
 from schema import Optional, Or, Schema
 
 from organize.console import pipeline_error, pipeline_message
+
+logger = logging.getLogger(__name__)
 
 
 class Error(Exception):
@@ -48,9 +52,10 @@ class Action:
     def pipeline(self, args: dict, simulate: bool) -> tyOptional[Dict[str, Any]]:
         raise NotImplementedError
 
-    def print(self, msg) -> None:
+    def print(self, *msg) -> None:
         """print a message for the user"""
-        for line in msg.splitlines():
+        text = " ".join(str(x) for x in msg)
+        for line in text.splitlines():
             pipeline_message(source=self.get_name(), msg=line)
 
     def print_error(self, msg: str):

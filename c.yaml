@@ -1,0 +1,7 @@
+rules:
+  - locations: ~/Desktop
+    filters:
+      - extension
+    actions:
+      - copy: ~/Desktop/sorted/{extension}/
+      - copy: ~/Desktop/sorted/{extension}/2/

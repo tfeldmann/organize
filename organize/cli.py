@@ -78,7 +78,8 @@ def run_local(config_path: str, working_dir: str, simulate: bool):
     try:
         console.info(config_path=config_path, working_dir=working_dir)
         config = open_fs(".").readtext(config_path)
-        core.run(fs=open_fs(working_dir), rules=config, simulate=simulate)
+        os.chdir(working_dir)
+        core.run(rules=config, simulate=simulate)
     except SchemaError as e:
         console.error("Invalid config file!")
         for err in e.autos:

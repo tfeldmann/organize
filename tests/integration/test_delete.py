@@ -9,7 +9,7 @@ def test_delete():
             "folder": {
                 "subfolder": {
                     "test.txt": "",
-                    "other.pdf": b"binary",
+                    "other.pdf": "binary",
                 },
                 "file.txt": "Hello world\nAnother line",
             },
@@ -30,9 +30,15 @@ def test_delete():
             ]
         }
         make_files(mem, files)
-        core.run(config, simulate=False)
-        result = read_files(mem)
 
+        # simulate
+        core.run(config, simulate=True)
+        result = read_files(mem)
+        assert result == files
+
+        # run
+        core.run(config, simulate=False, validate=False)
+        result = read_files(mem)
         assert result == {
             "files": {},
         }

@@ -45,15 +45,15 @@ or File Juggler (Windows).
 
 ## Features
 
-organize has too many features to list here. The highlights include:
+Some highlights include:
 
-- Safe moving, renaming, copying of files with conflict resolution options
+- Safe moving, renaming, copying of files and folders with conflict resolution options
 - Fast duplicate file detection
 - Exif tags extraction
 - Categorization via text extracted from PDF, DOCX and many more
-- Supports working on FTP, WebDAV, S3 Buckets, SSH and many more
+- Supports remote file locations like FTP, WebDAV, S3 Buckets, SSH and many more
 - Powerful template engine
-- Inline python and shell commands as filters and actions for maximum flexibility!
+- Inline python and shell commands as filters and actions for maximum flexibility
 - Everything can be simulated before touching your files.
 
 ## Getting started

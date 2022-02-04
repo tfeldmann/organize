@@ -60,7 +60,8 @@ class Filter:
 
     def print(self, msg: str) -> None:
         """print a message for the user"""
-        for line in msg.splitlines():
+        text = " ".join(str(x) for x in msg)
+        for line in text.splitlines():
             pipeline_message(self.get_name(), line)
 
     def print_error(self, msg: str):

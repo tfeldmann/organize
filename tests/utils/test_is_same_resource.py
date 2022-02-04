@@ -41,3 +41,17 @@ def test_inter():
     assert is_same_resource(a, "test.txt", b, "test.txt")
     assert is_same_resource(b, "a/subfile.txt", a_dir, "subfile.txt")
     # assert is_same_resource(a, "test.txt", a_dir, "../test.txt")
+
+
+def test_nested():
+    for protocol in ("mem://", "temp://"):
+        with open_fs(protocol) as mem:
+            x = mem.makedir("sub1")
+            x = x.makedir("sub2")
+            x = x.makedir("sub3")
+            x.touch("file")
+
+            y = mem.opendir("sub1")
+
+            assert is_same_resource(mem, "sub1/sub2/sub3/file", x, "file")
+            assert is_same_resource(y, "sub2/sub3/file", x, "file")

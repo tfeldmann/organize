@@ -68,7 +68,7 @@ class Duplicate(Filter):
 
         # we keep track of the files we already computed the hashes for so we only do
         # that once.
-        self.handled_files = set()  # type: Set[File]
+        self.seen_files = set()  # type: Set[File]
         self.first_chunk_known = set()  # type: Set[File]
         self.hash_known = set()  # type: Set[File]
 
@@ -77,13 +77,13 @@ class Duplicate(Filter):
         # the exact same path has already been handled. This happens if multiple
         # locations emit this file in a single rule or if we follow symlinks.
         # We skip these.
-        if file_ in self.handled_files or any(
+        if file_ in self.seen_files or any(
             is_same_resource(file_.fs, file_.path, x.fs, x.path)
-            for x in self.handled_files
+            for x in self.seen_files
         ):
             return False
 
-        self.handled_files.add(file_)
+        self.seen_files.add(file_)
 
         # check for files with equal size
         file_size = getsize(file_)
@@ -120,9 +120,10 @@ class Duplicate(Filter):
 
         # check full hash collisions with the current file
         hash_ = full_hash(file_)
+        self.hash_known.add(file_)
         original = self.file_for_hash.get(hash_)
         if original:
-            return {"duplicate": original}
+            return {"filesystem": original.fs, "path": original.path}
 
         return False
 
