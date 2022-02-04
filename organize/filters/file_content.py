@@ -30,7 +30,7 @@ class FileContent(Filter):
 
         - Show the content of all your PDF files:
 
-          .. code-block::yaml
+          .. code-block:: yaml
             :caption: config.yaml
 
             rules:
