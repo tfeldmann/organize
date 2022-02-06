@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="623" height="168" src="https://github.com/tfeldmann/organize/raw/master/docs/img/organize.svg?sanitize=true" alt="organize logo">
+  <img width="623" height="168" src="https://github.com/tfeldmann/organize/raw/gh-pages/img/organize.svg?sanitize=true" alt="organize logo">
 </p>
 
 <div align="center">
@@ -10,7 +10,7 @@
 <a href="https://organize.readthedocs.io/en/latest/?badge=latest">
   <img src="https://readthedocs.org/projects/organize/badge/?version=latest" title="Documentation Status">
 </a>
-<a href="https://github.com/tfeldmann/organize/blob/master/LICENSE.txt">
+<a href="https://github.com/tfeldmann/organize/blob/main/LICENSE.txt">
   <img src="https://img.shields.io/badge/license-MIT-blue.svg" title="License">
 </a>
 <a href="https://pypi.org/project/organize-tool/">
