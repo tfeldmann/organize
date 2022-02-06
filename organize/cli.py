@@ -8,6 +8,7 @@ import sys
 
 import click
 from fs import appfs, osfs, open_fs
+from fs.path import split
 
 from . import console
 from .__version__ import __version__
@@ -77,7 +78,8 @@ def run_local(config_path: str, working_dir: str, simulate: bool):
 
     try:
         console.info(config_path=config_path, working_dir=working_dir)
-        config = open_fs(".").readtext(config_path)
+        config_dir, config_name = split(config_path)
+        config = open_fs(config_dir).readtext(config_name)
         os.chdir(working_dir)
         core.run(rules=config, simulate=simulate)
     except SchemaError as e:
