@@ -16,7 +16,7 @@ def validate_and_convert(string: str):
 def test_basic():
     STR = """
     rules:
-    - locations: '~/Desktop'
+    - locations: '~/'
       filters:
       - extension:
         - jpg
@@ -24,7 +24,7 @@ def test_basic():
       - extension: txt
       actions:
       - move:
-          dest: '~/Desktop/New Folder'
+          dest: '~/New Folder'
       - echo: 'Moved {path}/{extension.upper()}'
     - locations:
       - path: '~/test1'
@@ -43,8 +43,8 @@ def test_yaml_ref():
       - png
 
     all_folders: &all
-      - ~/Desktop
-      - ~/Documents
+      - "~"
+      - "/"
 
     rules:
       - locations: *all

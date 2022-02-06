@@ -24,7 +24,7 @@ def test_mem2():
 
 
 def test_osfs():
-    a = open_fs("~/Desktop")
+    a = open_fs("~").makedir("Desktop", recreate=True)
     b = open_fs("~/")
     c = b.opendir("Desktop")
 
