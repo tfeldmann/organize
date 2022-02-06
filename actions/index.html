@@ -580,6 +580,20 @@ for loop. The <code>|</code> is yaml syntax for defining a string literal spanni
           print('Name: %s' % regex.name)
           print('Extension: %s' % regex.extension)
 </code></pre>
+<p>Running in simulation and yaml aliases:</p>
+<pre><code class="language-yaml">my_python_script: &amp;script |
+  print(&quot;Hello World!&quot;)
+  print(path)
+
+rules:
+  - name: &quot;Run in simulation and yaml alias&quot;
+    locations:
+      - ~/Desktop/
+    actions:
+      - python:
+          code: *script
+          run_in_simulation: yes
+</code></pre>
 <p>You have access to all the python magic -- do a google search for each
 filename starting with an underscore:</p>
 <pre><code class="language-yaml">rules:

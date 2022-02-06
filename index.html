@@ -136,7 +136,7 @@
                 <h1 id="welcome-to-organizes-documentation">Welcome to organize's documentation<a class="headerlink" href="#welcome-to-organizes-documentation" title="Permanent link">#</a></h1>
 <!-- BEGIN INCLUDE ../README.md   -->
 <p align="center">
-  <img width="623" height="168" src="https://github.com/tfeldmann/organize/raw/master/docs/img/organize.svg?sanitize=true" alt="organize logo">
+  <img width="623" height="168" src="https://github.com/tfeldmann/organize/raw/gh-pages/img/organize.svg?sanitize=true" alt="organize logo">
 </p>
 
 <div align="center">
@@ -147,7 +147,7 @@
 <a href="https://organize.readthedocs.io/en/latest/?badge=latest">
   <img src="https://readthedocs.org/projects/organize/badge/?version=latest" title="Documentation Status">
 </a>
-<a href="https://github.com/tfeldmann/organize/blob/master/LICENSE.txt">
+<a href="https://github.com/tfeldmann/organize/blob/main/LICENSE.txt">
   <img src="https://img.shields.io/badge/license-MIT-blue.svg" title="License">
 </a>
 <a href="https://pypi.org/project/organize-tool/">
@@ -178,15 +178,15 @@ Time to automate it once and benefit from it forever.</p>
 <p><strong>organize</strong> is a command line, open-source alternative to apps like Hazel (macOS)
 or File Juggler (Windows).</p>
 <h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">#</a></h2>
-<p>organize has too many features to list here. The highlights include:</p>
+<p>Some highlights include:</p>
 <ul>
-<li>Safe moving, renaming, copying of files with conflict resolution options</li>
+<li>Safe moving, renaming, copying of files and folders with conflict resolution options</li>
 <li>Fast duplicate file detection</li>
 <li>Exif tags extraction</li>
 <li>Categorization via text extracted from PDF, DOCX and many more</li>
-<li>Supports working on FTP, WebDAV, S3 Buckets, SSH and many more</li>
+<li>Supports remote file locations like FTP, WebDAV, S3 Buckets, SSH and many more</li>
 <li>Powerful template engine</li>
-<li>Inline python and shell commands as filters and actions for maximum flexibility!</li>
+<li>Inline python and shell commands as filters and actions for maximum flexibility</li>
 <li>Everything can be simulated before touching your files.</li>
 </ul>
 <h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">#</a></h2>
@@ -202,7 +202,9 @@ or File Juggler (Windows).</p>
 <h3 id="create-your-first-rule">Create your first rule<a class="headerlink" href="#create-your-first-rule" title="Permanent link">#</a></h3>
 <p>In your shell, run <code>organize edit</code> to edit the configuration:</p>
 <pre><code class="language-yaml">rules:
-  - locations: ~/Downloads
+  - name: &quot;Find PDFs&quot;
+    locations:
+      - ~/Downloads
     subfolders: true
     filters:
       - extension: pdf
@@ -382,5 +384,5 @@ Commands:
 
 <!--
 MkDocs version : 1.2.3
-Build Date UTC : 2022-02-01 23:01:36.922022+00:00
+Build Date UTC : 2022-02-06 14:58:18.855687+00:00
 -->

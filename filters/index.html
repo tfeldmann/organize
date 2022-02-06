@@ -202,8 +202,8 @@
             <li><p><strong>hours</strong> (<code>float</code>) – specify number of hours</p></li>
             <li><p><strong>minutes</strong> (<code>float</code>) – specify number of minutes</p></li>
             <li><p><strong>seconds</strong> (<code>float</code>) – specify number of seconds</p></li>
-            <li><p><strong>mode</strong> (<code>str</code>) – either 'older' or 'newer'. 'older' matches all files created before the given
-time, 'newer' matches all files created within the given time.
+            <li><p><strong>mode</strong> (<code>str</code>) – either 'older' or 'newer'. 'older' matches files / folders created before the given
+time, 'newer' matches files / folders created within the given time.
 (default = 'older')</p></li>
         </ul>
       </td>
@@ -220,7 +220,7 @@ time, 'newer' matches all files created within the given time.
     <th class="field-name">Returns:</th>
     <td class="field-body">
         <ul class="first simple">
-          <li><p><code>{created}</code> – The datetime the file / dir was created.</p></li>
+          <li><p><code>{created}</code> – The datetime the file / folder was created.</p></li>
         </ul>
     </td>
     </tr>
@@ -269,13 +269,39 @@ time, 'newer' matches all files created within the given time.
 
     <div class="doc doc-contents first">
 
-      <p>Finds duplicate files.</p>
+      <p>A fast duplicate file finder.</p>
 <p>This filter compares files byte by byte and finds identical files with potentially
 different filenames.</p>
-<p><strong>Returns:</strong></p>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li><p><strong>detect_original_by</strong> (<code>str</code>) – Detection method to distinguish between original and duplicate.
+Possible values are:</p>
 <ul>
-<li><code>{duplicate}</code> -- full path of the duplicate source</li>
-</ul>
+<li><code>"first_seen"</code>: Whatever file is visited first is the original. This
+  depends on the order of your location entries.</li>
+<li><code>"name"</code>: The first entry sorted by name is the original.</li>
+<li><code>"created"</code>: The first entry sorted by creation date is the original.</li>
+<li><code>"lastmodified"</code>: The first file sorted by date of last modification is the original.</li>
+</ul></li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>      <p>You can reverse the sorting method by prefixing a <code>-</code>.</p>
+<p>So with <code>detect_original_by: "-created"</code> the file with the older creation date is
+the original and the younger file is the duplicate. This works on all methods, for
+example <code>"-first_seen"</code>, <code>"-name"</code>, <code>"-created"</code>, <code>"-lastmodified"</code>.</p>
+<p><strong>Returns:</strong></p>
+<p><code>{duplicate.original}</code> - The path to the original</p>
 
 
 
@@ -289,10 +315,22 @@ different filenames.</p>
     locations:
       - ~/Desktop
       - ~/Downloads
+    subfolders: true
     filters:
       - duplicate
     actions:
-      - echo: &quot;{path} is a duplicate of {duplicate}&quot;
+      - echo: &quot;{path} is a duplicate of {duplicate.original}&quot;
+</code></pre>
+<pre><code class="language-yaml">rules:
+  - name: &quot;Check for duplicated files between Desktop and a Zip file, select original by creation date&quot;
+    locations:
+      - ~/Desktop
+      - zip://~/Desktop/backup.zip
+    filters:
+      - duplicate:
+          detect_original_by: &quot;created&quot;
+    actions:
+      - echo: &quot;Duplicate found!&quot;
 </code></pre>
 <h2 id="empty">empty<a class="headerlink" href="#empty" title="Permanent link">#</a></h2>
 
@@ -591,20 +629,32 @@ interpreter:</p>
     <div class="doc doc-contents first">
 
       <p>Matches files by last modified date</p>
-<pre><code>Args:
-years (int): specify number of years
-months (int): specify number of months
-weeks (float): specify number of weeks
-days (float): specify number of days
-hours (float): specify number of hours
-minutes (float): specify number of minutes
-seconds (float): specify number of seconds
-mode (str):
-    either 'older' or 'newer'. 'older' matches all files created before the given
-    time, 'newer' matches all files created within the given time.
-    (default = 'older')
-</code></pre>
 
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li><p><strong>years</strong> (<code>int</code>) – specify number of years</p></li>
+            <li><p><strong>months</strong> (<code>int</code>) – specify number of months</p></li>
+            <li><p><strong>weeks</strong> (<code>float</code>) – specify number of weeks</p></li>
+            <li><p><strong>days</strong> (<code>float</code>) – specify number of days</p></li>
+            <li><p><strong>hours</strong> (<code>float</code>) – specify number of hours</p></li>
+            <li><p><strong>minutes</strong> (<code>float</code>) – specify number of minutes</p></li>
+            <li><p><strong>seconds</strong> (<code>float</code>) – specify number of seconds</p></li>
+            <li><p><strong>mode</strong> (<code>str</code>) – either 'older' or 'newer'. 'older' matches files / folders last modified before
+the given time, 'newer' matches files / folders last modified within the given
+time. (default = 'older')</p></li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 <table class="field-list">
   <colgroup>
     <col class="field-name" />
@@ -615,7 +665,7 @@ mode (str):
     <th class="field-name">Returns:</th>
     <td class="field-body">
         <ul class="first simple">
-          <li><p><code>{lastmodified}</code> – The datetime the file / dir was created.</p></li>
+          <li><p><code>{lastmodified}</code> – The datetime the files / folders was lastmodified.</p></li>
         </ul>
     </td>
     </tr>
