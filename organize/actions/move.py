@@ -1,5 +1,4 @@
-import logging
-from typing import Callable
+from typing import Callable, Union
 
 from fs import open_fs
 from fs import errors
@@ -12,8 +11,6 @@ from organize.utils import Template, safe_description, SimulationFS
 
 from .action import Action
 from .copymove_utils import CONFLICT_OPTIONS, check_conflict, dst_from_options
-
-logger = logging.getLogger(__name__)
 
 
 class Move(Action):
@@ -64,7 +61,7 @@ class Move(Action):
         dest: str,
         on_conflict="rename_new",
         rename_template="{name} {counter}{extension}",
-        filesystem=None,
+        filesystem: Union[str, FS] = "",
     ) -> None:
         if on_conflict not in CONFLICT_OPTIONS:
             raise ValueError(

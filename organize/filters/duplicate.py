@@ -74,10 +74,27 @@ def detect_original(known: File, new: File, method: str, reverse: bool):
 
 
 class Duplicate(Filter):
-    """Finds duplicate files.
+    """A fast duplicate file finder.
 
     This filter compares files byte by byte and finds identical files with potentially
     different filenames.
+
+    Args:
+        detect_original_by (str):
+            Detection method to distinguish between original and duplicate.
+            Possible values are:
+
+            - `"first_seen"`: Whatever file is visited first is the original. This
+              depends on the order of your location entries.
+            - `"name"`: The first entry sorted by name is the original.
+            - `"created"`: The first entry sorted by creation date is the original.
+            - `"lastmodified"`: The first file sorted by date of last modification is the original.
+
+    You can reverse the sorting method by prefixing a `-`.
+
+    So with `detect_original_by: "-created"` the file with the older creation date is
+    the original and the younger file is the duplicate. This works on all methods, for
+    example `"-first_seen"`, `"-name"`, `"-created"`, `"-lastmodified"`.
 
     **Returns:**
 
@@ -105,7 +122,7 @@ class Duplicate(Filter):
         self.first_chunk_known = set()  # type: Set[File]
         self.hash_known = set()  # type: Set[File]
 
-    def matches(self, fs: FS, path: str, base_path: str) -> Union[bool, Dict[str, str]]:
+    def matches(self, fs: FS, path: str, base_path: str):
         file_ = File(fs=fs, path=path, base_path=base_path)
         # the exact same path has already been handled. This happens if multiple
         # locations emit this file in a single rule or if we follow symlinks.

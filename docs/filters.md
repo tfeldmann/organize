@@ -85,10 +85,24 @@ rules:
     locations:
       - ~/Desktop
       - ~/Downloads
+    subfolders: true
     filters:
       - duplicate
     actions:
-      - echo: "{path} is a duplicate of {duplicate}"
+      - echo: "{path} is a duplicate of {duplicate.original}"
+```
+
+```yaml
+rules:
+  - name: "Check for duplicated files between Desktop and a Zip file, select original by creation date"
+    locations:
+      - ~/Desktop
+      - zip://~/Desktop/backup.zip
+    filters:
+      - duplicate:
+          detect_original_by: "created"
+    actions:
+      - echo: "Duplicate found!"
 ```
 
 ## empty

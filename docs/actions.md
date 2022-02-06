@@ -301,6 +301,23 @@ rules:
           print('Extension: %s' % regex.extension)
 ```
 
+Running in simulation and yaml aliases:
+
+```yaml
+my_python_script: &script |
+  print("Hello World!")
+  print(path)
+
+rules:
+  - name: "Run in simulation and yaml alias"
+    locations:
+      - ~/Desktop/
+    actions:
+      - python:
+          code: *script
+          run_in_simulation: yes
+```
+
 You have access to all the python magic -- do a google search for each
 filename starting with an underscore:
 

@@ -10,7 +10,7 @@ from schema import Optional, Or
 from organize.utils import Template, safe_description
 
 from .action import Action
-from .copymove_utils import CONFLICT_OPTIONS, resolve_overwrite_conflict
+from .copymove_utils import CONFLICT_OPTIONS, check_conflict, resolve_overwrite_conflict
 
 logger = logging.getLogger(__name__)
 
@@ -71,9 +71,7 @@ class Rename(Action):
                 "To move files or folders use `move`."
             )
 
-        parents, full_name = path.split(src_path)
-        name, ext = path.splitext(full_name)
-        dst_path = path.join(parents, new_name)
+        dst_path = path.join(path.dirname(src_path), new_name)
 
         if dst_path == src_path:
             self.print("Name did not change")
@@ -84,28 +82,24 @@ class Rename(Action):
             elif fs.isfile(src_path):
                 move_action = move_file
 
-            skip = False
-            if fs.exists(dst_path):
-                self.print(
-                    '%s already exists (conflict mode is "%s").'
-                    % (safe_description(fs, dst_path), self.conflict_mode)
-                )
-                fs, dst_path, skip = resolve_overwrite_conflict(
-                    src_fs=fs,
-                    src_path=src_path,
-                    dst_fs=fs,
-                    dst_path=dst_path,
-                    conflict_mode=self.conflict_mode,
-                    rename_template=self.rename_template,
-                    simulate=simulate,
-                    print=self.print,
-                )
+            # check for conflicts
+            skip, dst_path = check_conflict(
+                src_fs=fs,
+                src_path=src_path,
+                dst_fs=fs,
+                dst_path=dst_path,
+                conflict_mode=self.conflict_mode,
+                rename_template=self.rename_template,
+                simulate=simulate,
+                print=self.print,
+            )
+
             if not skip:
+                self.print("Rename to %s" % safe_description(fs, dst_path))
                 if not simulate:
                     move_action(fs, src_path, fs, dst_path)
-                self.print("Renamed to %s" % safe_description(fs, dst_path))
 
-        # the next action should work with the newly created copy
+        # the next action should work with the renamed file
         return {
             "fs": fs,
             "fs_path": dst_path,

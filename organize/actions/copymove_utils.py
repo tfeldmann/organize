@@ -7,7 +7,7 @@ from fs.move import move_dir, move_file
 from fs.path import basename, dirname, join, splitext
 from jinja2 import Template
 
-from organize.utils import expand_args, is_same_resource
+from organize.utils import expand_args, is_same_resource, safe_description
 
 from .trash import Trash
 
@@ -71,7 +71,7 @@ def resolve_overwrite_conflict(
     """
     if is_same_resource(src_fs, src_path, dst_fs, dst_path):
         print("Same resource: Skipped.")
-        return
+        return None
 
     if conflict_mode == "trash":
         Trash().run(fs=dst_fs, fs_path=dst_path, simulate=simulate)
@@ -79,10 +79,10 @@ def resolve_overwrite_conflict(
 
     elif conflict_mode == "skip":
         print("Skipped.")
-        return
+        return None
 
     elif conflict_mode == "overwrite":
-        print("Overwrite %s." % dst_fs.desc(dst_path))
+        print("Overwrite %s." % safe_description(dst_fs, dst_path))
         return dst_path
 
     elif conflict_mode == "rename_new":
@@ -147,7 +147,7 @@ def check_conflict(
         if check_fs.exists(dst_path):
             print(
                 '%s already exists! (conflict mode is "%s").'
-                % (dst_fs.desc(dst_path), conflict_mode)
+                % (safe_description(dst_fs, dst_path), conflict_mode)
             )
             new_path = resolve_overwrite_conflict(
                 src_fs=src_fs,

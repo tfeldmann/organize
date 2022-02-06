@@ -32,7 +32,8 @@ class Regex(Filter):
         return self.expr.search(path)
 
     def pipeline(self, args: dict) -> FilterResult:
-        match = self.matches(basename(args["fs_path"]))
+        fs_path = args["fs_path"]
+        match = self.matches(basename(fs_path))
         return FilterResult(
             matches=bool(match),
             updates={

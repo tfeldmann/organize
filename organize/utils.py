@@ -2,7 +2,7 @@ import logging
 import os
 from copy import deepcopy
 from datetime import datetime
-from typing import Any, List, Sequence, Union
+from typing import Any, List, Sequence, Union, Tuple
 
 import jinja2
 from fs import open_fs
@@ -65,7 +65,7 @@ def open_fs_or_sim(fs_url, *args, simulate=False, **kwargs):
     return open_fs(fs_url, *args, **kwargs)
 
 
-def expand_user(fs_url: str):
+def expand_user(fs_url: str) -> str:
     fs_url = os.path.expanduser(fs_url)
     if fs_url.startswith("zip://~"):
         fs_url = fs_url.replace("zip://~", "zip://" + os.path.expanduser("~"))
@@ -90,7 +90,9 @@ def expand_args(template: Union[str, jinja2.environment.Template], args=None):
     return text
 
 
-def fs_path_from_options(path: str, filesystem: Union[FS, str] = ""):
+def fs_path_from_options(
+    path: str, filesystem: Union[FS, str, None] = ""
+) -> Tuple[FS, str]:
     """
     path can be a fs_url a normal fs_path
     filesystem is optional and may be a fs_url.
@@ -105,7 +107,7 @@ def fs_path_from_options(path: str, filesystem: Union[FS, str] = ""):
         return (open_fs(path), "/")
     else:
         if isinstance(filesystem, str):
-            filesystem = expand_user(filesystem) if filesystem else None
+            filesystem = expand_user(filesystem)
             return (open_fs(filesystem), path)
         return (filesystem, path)
 
@@ -164,8 +166,8 @@ def safe_description(fs: FS, path):
         if isinstance(fs, SimulationFS):
             return "%s%s" % (str(fs), fspath.abspath(path))
         return fs.getsyspath(path)
-    except:
-        return "{} on {}".format(path, fs)
+    except Exception as e:
+        return '{} in "{}"'.format(path, fs)
 
 
 def ensure_list(inp):

@@ -58,7 +58,7 @@ class Filter:
     def pipeline(self, args: dict) -> FilterResult:
         raise NotImplementedError
 
-    def print(self, msg: str) -> None:
+    def print(self, *msg: str) -> None:
         """print a message for the user"""
         text = " ".join(str(x) for x in msg)
         for line in text.splitlines():

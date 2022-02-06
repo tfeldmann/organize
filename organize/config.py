@@ -64,12 +64,12 @@ def default_yaml_cnst(loader, tag_suffix, node):
 yaml.add_multi_constructor("", default_yaml_cnst, Loader=yaml.SafeLoader)
 
 
-def load_from_string(config: str):
+def load_from_string(config: str) -> dict:
     dedented_config = textwrap.dedent(config)
     return yaml.load(dedented_config, Loader=yaml.SafeLoader)
 
 
-def cleanup(config: dict):
+def cleanup(config: dict) -> dict:
     result = defaultdict(list)
 
     # delete every root key except "rules"

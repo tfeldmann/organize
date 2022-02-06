@@ -49,10 +49,10 @@ class Python(Action):
 
     def pipeline(self, args: dict, simulate: bool) -> tyOptional[Dict[str, Any]]:
         if simulate and not self.run_in_simulation:
-            self.print("[yellow]Code not run in simulation.[/]")
+            self.print("** Code not run in simulation. **")
             return None
 
-        logger.info('Executing python:\n"""\n%s\n""", args=%s', self.code, args)
+        logger.info('Executing python:\n"""\n%s\n"""', self.code)
         self.create_method(name="usercode", argnames=args.keys(), code=self.code)
         self.print("Running python script.")
 

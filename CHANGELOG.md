@@ -1,6 +1,6 @@
 # Changelog
 
-## v2 - In Progress
+## v2.0.0 - WIP
 
 This is a huge update with lots of improvements.
 Please backup all your important stuff before running and use the simulate option!

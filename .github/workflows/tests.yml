@@ -42,4 +42,4 @@ jobs:
 
       - name: Check with MyPy
         run: |
-          poetry run mypy organize
+          poetry run mypy organize main.py

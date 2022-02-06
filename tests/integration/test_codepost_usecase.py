@@ -15,7 +15,7 @@ def test_codepost_usecase():
         }
     }
 
-    with fs.open_fs("mem://") as mem:
+    with fs.open_fs("temp://") as mem:
         make_files(mem, files)
 
         filters = config.load_from_string(
