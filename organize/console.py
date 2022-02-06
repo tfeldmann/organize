@@ -6,6 +6,7 @@ from rich.text import Text
 from rich.theme import Theme
 from rich.status import Status
 from rich.prompt import Confirm as RichConfirm, Prompt as RichPrompt
+from .utils import safe_description
 
 from organize.__version__ import __version__
 
@@ -150,6 +151,23 @@ def path(fs: FS, fs_path: str):
     icon = ICON_DIR if fs.isdir(fs_path) else ICON_FILE
     msg = Text.assemble(
         INDENT,
+        _highlight_path(fs_path, "path.base", "path.main", relative=True),
+        " ",
+        (icon, "path.icon"),
+    )
+    with_path.set_prefix(msg)
+
+
+def path_changed_during_pipeline(
+    fs: FS, fs_path: str, new_fs: FS, new_path: str, reason="deferred from"
+):
+    icon = ICON_DIR if new_fs.isdir(new_path) else ICON_FILE
+    msg = Text.assemble(
+        INDENT,
+        _highlight_path(
+            safe_description(new_fs, new_path), "path.base", "path.main", relative=True
+        ),
+        (" <- %s " % reason, "yellow"),
         _highlight_path(fs_path, "path.base", "path.main", relative=True),
         " ",
         (icon, "path.icon"),

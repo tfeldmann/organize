@@ -1,4 +1,7 @@
 import re
+
+from fs.path import basename
+
 from .filter import Filter, FilterResult
 
 
@@ -29,7 +32,7 @@ class Regex(Filter):
         return self.expr.search(path)
 
     def pipeline(self, args: dict) -> FilterResult:
-        match = self.matches(args["relative_path"])
+        match = self.matches(basename(args["fs_path"]))
         return FilterResult(
             matches=bool(match),
             updates={

@@ -9,20 +9,36 @@ Which I updated for python3 in:
 """
 import hashlib
 from collections import defaultdict
+from typing import Dict, NamedTuple, Set, Union
+
 from fs.base import FS
-from typing import Dict, Set, Union, NamedTuple
+from fs.path import basename
+
 from organize.utils import is_same_resource
 
 from .filter import Filter, FilterResult
 
 HASH_ALGORITHM = "sha1"
-ORDER_BY = ("location", "created", "lastmodified", "name")
-ORDER_BY_REGEX = r"(-?)\s*?({})".format("|".join(ORDER_BY))
+DETECTION_METHODS = ("first_seen", "name", "created", "lastmodified")
+DETECTION_METHOD_REGEX = r"(-?)\s*?({})".format("|".join(DETECTION_METHODS))
 
 
 class File(NamedTuple):
     fs: FS
     path: str
+    base_path: str
+
+    @property
+    def lastmodified(self):
+        return self.fs.getmodified(self.path)
+
+    @property
+    def created(self):
+        return self.fs.getinfo(self.path, namespaces=["details"]).created
+
+    @property
+    def name(self):
+        return basename(self.path)
 
 
 def getsize(f: File):
@@ -40,9 +56,21 @@ def first_chunk_hash(f: File):
     return hash_object.hexdigest()
 
 
-def original_duplicate(a: File, b: File, ordering, reverse):
-    if ordering == "location":
-        return (a, b) if not reverse else (b, a)
+def detect_original(known: File, new: File, method: str, reverse: bool):
+    """Returns a tuple (original file, duplicate)"""
+
+    if method == "first_seen":
+        return (known, new) if not reverse else (new, known)
+    elif method == "name":
+        return tuple(sorted((known, new), key=lambda x: x.name, reverse=reverse))
+    elif method == "created":
+        return tuple(sorted((known, new), key=lambda x: x.created, reverse=reverse))
+    elif method == "lastmodified":
+        return tuple(
+            sorted((known, new), key=lambda x: x.lastmodified, reverse=reverse)
+        )
+    else:
+        raise ValueError("Unknown original detection method: %s" % method)
 
 
 class Duplicate(Filter):
@@ -53,14 +81,19 @@ class Duplicate(Filter):
 
     **Returns:**
 
-    - `{duplicate}` -- full path of the duplicate source
+    `{duplicate.original}` - The path to the original
     """
 
     name = "duplicate"
     schema_support_instance_without_args = True
 
-    def __init__(self, select_original_by="location"):
-        self.select_original_by = select_original_by
+    def __init__(self, detect_original_by="first_seen"):
+        if detect_original_by.startswith("-"):
+            self.detect_original_by = detect_original_by[1:]
+            self.select_orignal_reverse = True
+        else:
+            self.detect_original_by = detect_original_by
+            self.select_orignal_reverse = False
 
         self.files_for_size = defaultdict(list)
         self.files_for_chunk = defaultdict(list)
@@ -72,8 +105,8 @@ class Duplicate(Filter):
         self.first_chunk_known = set()  # type: Set[File]
         self.hash_known = set()  # type: Set[File]
 
-    def matches(self, fs: FS, path: str) -> Union[bool, Dict[str, str]]:
-        file_ = File(fs=fs, path=path)
+    def matches(self, fs: FS, path: str, base_path: str) -> Union[bool, Dict[str, str]]:
+        file_ = File(fs=fs, path=path, base_path=base_path)
         # the exact same path has already been handled. This happens if multiple
         # locations emit this file in a single rule or if we follow symlinks.
         # We skip these.
@@ -121,21 +154,42 @@ class Duplicate(Filter):
         # check full hash collisions with the current file
         hash_ = full_hash(file_)
         self.hash_known.add(file_)
-        original = self.file_for_hash.get(hash_)
-        if original:
-            return {"filesystem": original.fs, "path": original.path}
+        known = self.file_for_hash.get(hash_)
+        if known:
+            original, duplicate = detect_original(
+                known=known,
+                new=file_,
+                method=self.detect_original_by,
+                reverse=self.select_orignal_reverse,
+            )
+            if known != original:
+                self.file_for_hash[hash_] = original
+
+            resource_changed_reason = "duplicate of" if known != original else None
+            from organize.core import syspath_or_exception
+
+            return {
+                "fs": duplicate.fs,
+                "fs_path": duplicate.path,
+                "fs_base_path": duplicate.base_path,
+                "resource_changed": resource_changed_reason,
+                self.get_name(): {
+                    "original": syspath_or_exception(original.fs, original.path)
+                },
+            }
 
         return False
 
     def pipeline(self, args):
         fs = args["fs"]
         fs_path = args["fs_path"]
+        fs_base_path = args["fs_base_path"]
         if fs.isdir(fs_path):
             raise EnvironmentError("Dirs are not supported")
-        result = self.matches(fs=fs, path=fs_path)
+        result = self.matches(fs=fs, path=fs_path, base_path=fs_base_path)
         if result is False:
             return FilterResult(matches=False, updates={})
-        return FilterResult(matches=True, updates={self.get_name(): result})
+        return FilterResult(matches=True, updates=result)
 
     def __str__(self) -> str:
         return "Duplicate()"

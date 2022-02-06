@@ -1,15 +1,17 @@
 import logging
 from typing import Callable
 
+from fs import open_fs
+from fs import errors
 from fs.base import FS
 from fs.move import move_dir, move_file
-from fs.path import basename, dirname, join
+from fs.path import dirname
 from schema import Optional, Or
 
-from organize.utils import Template, open_fs_or_sim, safe_description
+from organize.utils import Template, safe_description, SimulationFS
 
 from .action import Action
-from .copymove_utils import CONFLICT_OPTIONS, resolve_overwrite_conflict
+from .copymove_utils import CONFLICT_OPTIONS, check_conflict, dst_from_options
 
 logger = logging.getLogger(__name__)
 
@@ -78,59 +80,44 @@ class Move(Action):
         src_fs = args["fs"]  # type: FS
         src_path = args["fs_path"]
 
-        dst_path = self.dest.render(**args)
-        # if the destination ends with a slash we assume the name should not change
-        if dst_path.endswith(("\\", "/")):
-            dst_path = join(dst_path, basename(src_path))
-
-        if self.filesystem:
-            dst_fs_ = self.filesystem
-            # render if we have a template
-            if isinstance(dst_fs_, str):
-                dst_fs_ = Template.from_string(dst_fs_).render(**args)
-            dst_fs = open_fs_or_sim(
-                dst_fs_,
-                writeable=True,
-                create=True,
-                simulate=simulate,
-            )
-            dst_path = dst_path
-        else:
-            dst_fs = open_fs_or_sim(
-                dirname(dst_path),
-                writeable=True,
-                create=True,
-                simulate=simulate,
-            )
-            dst_path = basename(dst_path)
-
         move_action: Callable[[FS, str, FS, str], None]
         if src_fs.isdir(src_path):
             move_action = move_dir
         elif src_fs.isfile(src_path):
             move_action = move_file
 
-        skip = False
-        if dst_fs.exists(dst_path):
-            self.print(
-                '%s already exists (conflict mode is "%s").'
-                % (safe_description(dst_fs, dst_path), self.conflict_mode)
-            )
-            dst_fs, dst_path, skip = resolve_overwrite_conflict(
-                src_fs=src_fs,
-                src_path=src_path,
-                dst_fs=dst_fs,
-                dst_path=dst_path,
-                conflict_mode=self.conflict_mode,
-                rename_template=self.rename_template,
-                simulate=simulate,
-                print=self.print,
-            )
+        dst_fs, dst_path = dst_from_options(
+            src_path=src_path,
+            dest=self.dest,
+            filesystem=self.filesystem,
+            args=args,
+        )
+
+        # check for conflicts
+        skip, dst_path = check_conflict(
+            src_fs=src_fs,
+            src_path=src_path,
+            dst_fs=dst_fs,
+            dst_path=dst_path,
+            conflict_mode=self.conflict_mode,
+            rename_template=self.rename_template,
+            simulate=simulate,
+            print=self.print,
+        )
+
+        try:
+            dst_fs = open_fs(dst_fs, create=False, writeable=True)
+        except errors.CreateFailed:
+            if not simulate:
+                dst_fs = open_fs(dst_fs, create=True, writeable=True)
+            else:
+                dst_fs = SimulationFS(dst_fs)
+
         if not skip:
+            self.print("Move to %s" % safe_description(dst_fs, dst_path))
             if not simulate:
                 dst_fs.makedirs(dirname(dst_path), recreate=True)
                 move_action(src_fs, src_path, dst_fs, dst_path)
-            self.print("Moved to %s" % dst_fs.desc(dst_path))
 
         # the next action should work with the newly created copy
         return {

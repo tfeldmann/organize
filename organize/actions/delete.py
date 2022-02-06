@@ -1,6 +1,7 @@
 import logging
 from fs.base import FS
 from .action import Action
+from organize.utils import safe_description
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +24,10 @@ class Delete(Action):
     def pipeline(self, args: dict, simulate: bool):
         fs = args["fs"]  # type: FS
         fs_path = args["fs_path"]  # type: str
-        relative_path = args["relative_path"]
-        self.print('Deleting "%s"' % relative_path)
+        desc = safe_description(fs=fs, path=fs_path)
+        self.print('Deleting "%s"' % desc)
         if not simulate:
-            logger.info("Deleting %s.", relative_path)
+            logger.info("Deleting %s.", desc)
             if fs.isdir(fs_path):
                 fs.removetree(fs_path)
             elif fs.isfile(fs_path):

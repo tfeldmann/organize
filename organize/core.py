@@ -3,12 +3,11 @@ from collections import Counter
 from pathlib import Path
 from typing import Iterable, NamedTuple, Union
 
-from fs import path as fspath, open_fs
+from fs import path as fspath
 from fs.base import FS
 from fs.errors import NoSysPath
 from fs.walk import Walker
 from rich.console import Console
-from schema import SchemaError
 
 from . import config, console
 from .actions import ACTIONS
@@ -173,6 +172,12 @@ def filter_pipeline(filters: Iterable[Filter], args: dict, filter_mode: str) -> 
     results = []
     for filter_ in filters:
         try:
+            # update dynamic path args
+            args["path"] = syspath_or_exception(args["fs"], args["fs_path"])
+            args["relative_path"] = fspath.frombase(
+                args["fs_base_path"], args["fs_path"]
+            )
+
             match, updates = filter_.pipeline(args)
             result = match ^ filter_.inverted
             # we cannot exit early on "any".
@@ -196,8 +201,12 @@ def filter_pipeline(filters: Iterable[Filter], args: dict, filter_mode: str) -> 
 def action_pipeline(actions: Iterable[Action], args: dict, simulate: bool) -> bool:
     for action in actions:
         try:
-            # update path
+            # update dynamic path args
             args["path"] = syspath_or_exception(args["fs"], args["fs_path"])
+            args["relative_path"] = fspath.frombase(
+                args["fs_base_path"], args["fs_path"]
+            )
+
             updates = action.pipeline(args, simulate=simulate)
             # jobs may return a dict with updates that should be merged into args
             if updates is not None:
@@ -221,20 +230,21 @@ def run_rules(rules: dict, simulate: bool = True):
         console.rule(rule.get("name", "Rule %s" % rule_nr))
         filter_mode = rule.get("filter_mode", "all")
 
-        for walker, base_fs, base_path in rule["locations"]:
-            console.location(base_fs, base_path)
+        for walker, walker_fs, walker_path in rule["locations"]:
+            console.location(walker_fs, walker_path)
             walk = walker.files if target == "files" else walker.dirs
-            for path in walk(fs=base_fs, path=base_path):
-                console.path(base_fs, path)
-                relative_path = fspath.relativefrom(base_path, path)
+            for path in walk(fs=walker_fs, path=walker_path):
+                if walker_fs.islink(path):
+                    continue
+                # tell the user which resource we're handling
+                console.path(walker_fs, path)
 
                 # assemble the available args
                 args = basic_args()
                 args.update(
-                    fs=base_fs,
+                    fs=walker_fs,
                     fs_path=path,
-                    relative_path=relative_path,
-                    path=syspath_or_exception(base_fs, path),
+                    fs_base_path=walker_path,
                 )
 
                 # run resource through the filter pipeline
@@ -243,6 +253,17 @@ def run_rules(rules: dict, simulate: bool = True):
                     args=args,
                     filter_mode=filter_mode,
                 )
+
+                # if the currently handled resource changed we adjust the prefix message
+                if args.get("resource_changed"):
+                    console.path_changed_during_pipeline(
+                        fs=walker_fs,
+                        fs_path=path,
+                        new_fs=args["fs"],
+                        new_path=args["fs_path"],
+                        reason=args.get("resource_changed"),
+                    )
+                args.pop("resource_changed", None)
 
                 # run resource through the action pipeline
                 if match:
