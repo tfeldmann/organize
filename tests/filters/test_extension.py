@@ -27,17 +27,21 @@ def test_extension_empty():
 
 
 def test_extension_result():
-    path = "somefile.TxT"
-    extension = Extension("txt")
-    assert extension.matches(path)
-    result = extension.run(path=path)["extension"]
-    assert str(result) == "TxT"
-    assert result.lower == "txt"
-    assert result.upper == "TXT"
+    with open_fs("mem://") as mem:
 
-    extension = Extension(".txt")
-    assert extension.matches(path)
-    result = extension.run(path=path)["extension"]
-    assert str(result) == "TxT"
-    assert result.lower == "txt"
-    assert result.upper == "TXT"
+        path = "somefile.TxT"
+        mem.touch(path)
+
+        extension = Extension("txt")
+        assert extension.matches(".TxT")
+        result = extension.run(fs=mem, fs_path=path).updates["extension"]
+        assert str(result) == "TxT"
+        assert result.lower() == "txt"
+        assert result.upper() == "TXT"
+
+        extension = Extension(".txt")
+        assert extension.matches(".TXT")
+        result = extension.run(fs=mem, fs_path=path).updates["extension"]
+        assert str(result) == "TxT"
+        assert result.lower() == "txt"
+        assert result.upper() == "TXT"

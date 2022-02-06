@@ -70,19 +70,14 @@ module = [
     "exifread",
     "textract",
     "requests",
+    "macos_tags",
 ]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 addopts = "--doctest-modules"
 testpaths = ["tests", "organize"]
-norecursedirs = [
-    "tests/todo",
-    # "tests/integration",
-    "tests/filters",
-    "organize/filters",
-    ".configs",
-]
+norecursedirs = ["tests/todo", "organize/filters", ".configs"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
