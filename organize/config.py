@@ -69,6 +69,17 @@ def load_from_string(config: str) -> dict:
     return yaml.load(dedented_config, Loader=yaml.SafeLoader)
 
 
+def lowercase_keys(obj):
+    if isinstance(obj, dict):
+        obj = {key.lower(): value for key, value in obj.items()}
+        for key, value in obj.items():
+            if isinstance(value, list):
+                for i, item in enumerate(value):
+                    value[i] = lowercase_keys(item)
+            obj[key] = lowercase_keys(value)
+    return obj
+
+
 def cleanup(config: dict) -> dict:
     result = defaultdict(list)
 
@@ -80,6 +91,8 @@ def cleanup(config: dict) -> dict:
 
     if not result:
         raise ValueError("No rules defined.")
+
+    result = lowercase_keys(result)
 
     # flatten all lists everywhere
     return flatten_all_lists_in_dict(dict(result))

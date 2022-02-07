@@ -12,19 +12,21 @@ from fs.path import split
 
 from . import console
 from .__version__ import __version__
+from .migration import NeedsMigrationError
 
 DOCS_URL = "https://tfeldmann.github.io/organize/"  # "https://organize.readthedocs.io"
+MIGRATE_URL = DOCS_URL + "updating-from-v1/"
 DEFAULT_CONFIG = """\
 # organize configuration file
 # {docs}
 
 rules:
   - locations:
-      -
+      - # your locations here
     filters:
-      -
+      - # your filters here
     actions:
-      -
+      - # your actions here
 """.format(
     docs=DOCS_URL
 )
@@ -82,6 +84,14 @@ def run_local(config_path: str, working_dir: str, simulate: bool):
         config = open_fs(config_dir).readtext(config_name)
         os.chdir(working_dir)
         core.run(rules=config, simulate=simulate)
+    except NeedsMigrationError as e:
+        console.error(e, title="Config needs migration")
+        console.warn(
+            "Your config file needs some updates to work with organize v2.\n"
+            "Please see the migration guide at\n\n"
+            "%s" % MIGRATE_URL
+        )
+        sys.exit(1)
     except SchemaError as e:
         console.error("Invalid config file!")
         for err in e.autos:
@@ -154,12 +164,71 @@ def edit(config, editor):
 
 @cli.command()
 @CLI_CONFIG
-def check(config):
+@click.option("--debug", is_flag=True, help="Verbose output")
+def check(config, debug):
     """Checks whether a given config file is valid.
 
     If called without arguments it will check the default config file.
     """
-    print(config)
+    print("Checking: " + config)
+
+    from . import migration
+    from .config import load_from_string, cleanup, validate
+    from .core import highlighted_console as out, replace_with_instances
+
+    try:
+        config_dir, config_name = split(str(config))
+        config_str = open_fs(config_dir).readtext(config_name)
+
+        if debug:
+            out.rule("Raw", align="left")
+            out.print(config_str)
+
+        rules = load_from_string(config_str)
+
+        if debug:
+            out.print("\n\n")
+            out.rule("Loaded", align="left")
+            out.print(rules)
+
+        rules = cleanup(rules)
+
+        if debug:
+            out.print("\n\n")
+            out.rule("Cleaned", align="left")
+            out.print(rules)
+
+        if debug:
+            out.print("\n\n")
+            out.rule("Migration from v1", align="left")
+
+        migration.migrate_v1(rules)
+
+        if debug:
+            out.print("Not needed.")
+            out.print("\n\n")
+            out.rule("Schema validation", align="left")
+
+        validate(rules)
+
+        if debug:
+            out.print("Validtion ok.")
+            out.print("\n\n")
+            out.rule("Instantiation", align="left")
+
+        warnings = replace_with_instances(rules)
+        if debug:
+            out.print(rules)
+            for msg in warnings:
+                out.print("Warning: %s" % msg)
+
+        if debug:
+            out.print("\n\n")
+            out.rule("Result", align="left")
+        out.print("Config is valid.")
+
+    except Exception as e:
+        out.print_exception()
 
 
 @cli.command()

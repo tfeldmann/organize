@@ -3,13 +3,13 @@ repo_url: https://github.com/tfeldmann/organize/
 site_author: "Thomas Feldmann"
 nav:
   - Home: index.md
+  - Updating from organize v1.x: updating-from-v1.md
   - Configuration: configuration.md
   - Rules: rules.md
   - Locations: locations.md
   - Filters: filters.md
   - Actions: actions.md
   - Changelog: changelog.md
-  - Updating from organize v1.x: updating-from-v1.md
 plugins:
   - search
   - include-markdown
@@ -26,7 +26,6 @@ plugins:
             show_root_heading: false
             show_source: false
       watch:
-        - .
         - organize
 
 markdown_extensions:

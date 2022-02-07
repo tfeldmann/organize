@@ -4,9 +4,12 @@ This page shows the specifics of each filter.
 
 ## - How to exclude filters -
 
-- To exclude all filters, simply set the `filter_mode` of the rule to `none`.
-- To exclude a single filter, prefix the filter name with `not` (e.g. `not empty`,
-  `not extension: jpg`, etc).
+To exclude a filter, prefix the filter name with **not** (e.g. `"not empty"`,
+`"not extension": jpg`, etc).
+
+!!! note
+
+    If you want to exclude all filters you can set the rule's `filter_mode` to `none`.
 
 Example:
 
@@ -14,7 +17,7 @@ Example:
 rules:
   # using filter_mode
   - locations: ~/Desktop
-    filter_mode: "none"
+    filter_mode: "none" # <- excludes all
     filters:
       - empty
       - name:
@@ -25,10 +28,10 @@ rules:
   # Exclude a single filter
   - locations: ~/Desktop
     filters:
-      - not extension: jpg
+      - not extension: jpg # <- matches all non-jpgs
       - name:
           startswith: "Invoice"
-      - not empty
+      - not empty # <- matches files with content
     actions:
       - echo: "{name}"
 ```

@@ -8,7 +8,7 @@ from .filter import Filter, FilterResult
 
 
 class Name(Filter):
-    """Match files by filename
+    """Match files and folders by name
 
     Args:
         match (str):

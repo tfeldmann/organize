@@ -5,45 +5,49 @@
 This is a huge update with lots of improvements.
 Please backup all your important stuff before running and use the simulate option!
 
+[**Migration Guide**](docs/updating-from-v1.md)
+
 ### what's new
 
-- You can now target directories with your rules (copying, renaming, etc a whole folder)
-- Organize inside or between (S)FTP, S3 Buckets, Zip archives and many more.
-  [Available filesystems](https://www.pyfilesystem.org/page/index-of-filesystems/)
-- `max_depth` setting when recursing into subfolders
+- You can now [target directories](docs/rules.md#targeting-directories) with your rules
+  (copying, renaming, etc a whole folder)
+- [Organize inside or between (S)FTP, S3 Buckets, Zip archives and many more](docs/locations.md#remote-filesystems-and-archives)
+  (list of [available filesystems](https://www.pyfilesystem.org/page/index-of-filesystems/)).
+- [`max_depth`](docs/locations.md#location-options) setting when recursing into subfolders
 - Respects your rule order - safer, less magic, less surprises.
-  (v1 tried to be clever. v2 now works your config file from top to bottom)
-- Jinja2 template engine for placeholders.
+  - (organize v1 tried to be clever. v2 now works your config file from top to bottom)
+- [Jinja2 template engine for placeholders](docs/rules.md#templates-and-placeholders).
 - Instant start. (does not need to gather all the files before starting)
-- Filters can now be excluded.
-- Filter modes: `all`, `any` and `none`.
-- Nice terminal output.
-- Rule names.
-- new conflict resolution settings in `move`, `copy` and `rename` action:
+- [Filters can now be excluded](docs/filters.md#how-to-exclude-filters).
+- [Filter modes](docs/rules.md#rule-options): `all`, `any` and `none`.
+- [Rule names](docs/rules.md#rule-options).
+- new conflict resolution settings in [`move`](docs/actions.md#move),
+  [`copy`](docs/actions.md#copy) and [`rename`](docs/actions.md#rename) action:
   - Options are `skip`, `overwrite`, `trash`, `rename_new` or `rename_existing`
   - You can now define a custom `rename_template`.
-- The `python` action can now be run in simulation.
-- The `shell` action now returns stdout and errorcode.
-- Added filter `empty`.
-- Added filter `hash`.
-- Added action `symlink`.
-- Added action `confirm`.
-- Many small fixes and improvements.
+- The [`python`](docs/actions.md#python) action can now be run in simulation.
+- The [`shell`](docs/actions.md#shell) action now returns stdout and errorcode.
+- Added filter [`empty`](docs/filters.md#empty) - find empty files and folders
+- Added filter [`hash`](docs/filters.md#hash) - generate file hashes
+- Added action [`symlink`](docs/actions.md#symlink) - generate symlinks
+- Added action [`confirm`](docs/actions.md#confirm) - asks for confirmation
+- Many small fixes and improvements!
 
 ### changed
 
-- The `timezone` keyword for `lastmodified` and `created` was removed. The timezone is
+- The `timezone` keyword for [`lastmodified`](docs/filters.md#lastmodified) and
+  [`created`](docs/filters.md#created) was removed. The timezone is
   now the local timezone by default.
-- The `filesize` filter was renamed to `size` and can now be used to get directory sizes
-  as well.
-- The `filename` filter was renamed to `name` and can now be used to get directory names
-  as well.
-- The `size` filter now returns multiple formats
+- The `filesize` filter was renamed to [`size`](docs/filters.md#size) and can now be
+  used to get directory sizes as well.
+- The `filename` filter was renamed to [`name`](docs/filters.md#name) and can now be
+  used to get directory names as well.
+- The [`size`](docs/filters.md#size) filter now returns multiple formats
 
 ### removed
 
-- Glob syntax is gone from folders (no longer needed)
-- `"!"` folder exclude syntax is gone (no longer needed)
+- Glob syntax is gone from folders ([no longer needed](docs/locations.md))
+- `"!"` folder exclude syntax is gone ([no longer needed](docs/locations.md))
 
 ## v1.10.1 (2021-04-21)
 

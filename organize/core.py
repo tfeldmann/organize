@@ -14,6 +14,7 @@ from .actions import ACTIONS
 from .actions.action import Action
 from .filters import FILTERS
 from .filters.filter import Filter
+from .migration import migrate_v1
 from .utils import (
     basic_args,
     deep_merge_inplace,
@@ -289,6 +290,8 @@ def run(rules: Union[str, dict], simulate: bool, validate=True):
         rules = config.load_from_string(rules)
 
     rules = config.cleanup(rules)
+
+    migrate_v1(rules)
 
     if validate:
         config.validate(rules)
