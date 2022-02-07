@@ -61,7 +61,10 @@ Some highlights include:
 
 ### Installation
 
-Python 3.6+ is needed. Install it via your package manager or from [python.org](https://python.org).
+organize works on macOS, Windows and Linux.
+
+Only python 3.6+ is needed.
+Install it via your package manager or from [python.org](https://python.org).
 
 Installation is done via pip. Note that the package name is `organize-tool`:
 
