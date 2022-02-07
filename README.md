@@ -31,9 +31,9 @@
 This is a huge update with lots of improvements.
 Please backup all your important stuff before running and use the simulate option!
 
-- [See the changelog](https://organize.readthedocs.io/en/v2/changelog/) for all the new
+- [See the changelog](https://organize.readthedocs.io/en/latest/changelog/) for all the new
   features!
-- [Migration guide](docs/updating-from-v1.md) from organize v1
+- [Migration guide](https://organize.readthedocs.io/en/latest/updating-from-v1/)updating-from-v1.md) from organize v1
 
 ## About
 
