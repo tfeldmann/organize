@@ -51,10 +51,10 @@ textract = ["textract"]
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
 mypy = "^0.931"
-mkdocs = "^1.2.3"
-mkdocstrings = "^0.17.0"
-mkdocs-include-markdown-plugin = "^3.2.3"
-mkdocs-autorefs = "^0.3.1"
+mkdocs = { version = "^1.2.3", extras = ["docs"] }
+mkdocstrings = { version = "^0.17.0", extras = ["docs"] }
+mkdocs-include-markdown-plugin = { version = "^3.2.3", extras = ["docs"] }
+mkdocs-autorefs = { version = "^0.3.1", extras = ["docs"] }
 requests = "^2.27.1"
 types-PyYAML = "^6.0.3"
 
