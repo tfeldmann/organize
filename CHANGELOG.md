@@ -34,6 +34,8 @@ Please backup all your important stuff before running and use the simulate optio
   [`copy`](docs/actions.md#copy) and [`rename`](docs/actions.md#rename) action:
   - Options are `skip`, `overwrite`, `trash`, `rename_new` or `rename_existing`
   - You can now define a custom `rename_template`.
+- The [`duplicate`](docs/filters.md#duplicate) now supports several options on how to
+  distinguish between original and duplicate file.
 - The [`python`](docs/actions.md#python) action can now be run in simulation.
 - The [`shell`](docs/actions.md#shell) action now returns stdout and errorcode.
 - Added filter [`empty`](docs/filters.md#empty) - find empty files and folders
