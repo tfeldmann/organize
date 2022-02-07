@@ -229,6 +229,7 @@ def check(config, debug):
 
     except Exception as e:
         out.print_exception()
+        sys.exit(1)
 
 
 @cli.command()
