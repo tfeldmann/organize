@@ -33,10 +33,10 @@ organize = "organize.cli:cli"
 
 [tool.poetry.dependencies]
 python = "^3.6.2"
-fs = "^2.4.14"
+fs = "^2.4.15"
 rich = "^11.0.0"
 PyYAML = "^5.4.1"
-Send2Trash = "^1.8.0"
+Send2Trash = { version = "^1.8.0", extras = ["nativeLib"] }
 ExifRead = "^2.3.2"
 textract = { version = "^1.6.4", optional = true }
 simplematch = "^1.3"
