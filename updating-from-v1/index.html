@@ -51,6 +51,20 @@
                     <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
                     </li>
                 </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Updating from organize v1.x</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#folders">Folders</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#placeholders">Placeholders</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#filters">Filters</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#actions">Actions</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
                 <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
                     </li>
@@ -73,20 +87,6 @@
                 </ul>
                 <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
-                    </li>
-                </ul>
-                <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Updating from organize v1.x</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#config">Config</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#placeholders">Placeholders</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#filters">Filters</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#actions">Actions</a>
-    </li>
-    </ul>
                     </li>
                 </ul>
       </div>
@@ -130,27 +130,32 @@
 <p>I tried to keep the amount of breaking changes small but could not avoid them
 completely. Feel free to pin organize to v1.x, but then you're missing the party.</p>
 <p>Please open a issue on Github if you need help migrating your config file!</p>
-<h2 id="config">Config<a class="headerlink" href="#config" title="Permanent link">#</a></h2>
+<h2 id="folders">Folders<a class="headerlink" href="#folders" title="Permanent link">#</a></h2>
+<p>Folders have become <a href="../locations/">Locations</a> in organize v2.</p>
 <ul>
-<li><code>folders</code> must be renamed to <code>locations</code>.</li>
-<li>REMOVED: The glob syntax (<code>/Docs/**/*.png</code>)</li>
-<li>REMOVED: The exclamation mark exlucde syntax (<code>! ~/Desktop/exclude</code>)</li>
-</ul>
-<p>With <code>locations</code>, there are now much better options in place.
-Please change your <code>folders</code> definition to the <code>locations</code> definition: <a href="../locations/">Locations documentation</a>.</p>
-<ul>
+<li><code>folders</code> must be renamed to <code>locations</code> in your config.</li>
+<li>REMOVED: The glob syntax (<code>/Docs/**/*.png</code>).
+  See <a href="../locations/#location-options">Location options</a>.</li>
+<li>REMOVED: The exclamation mark exlucde syntax (<code>! ~/Desktop/exclude</code>).
+  See <a href="../locations/#location-options">Location options</a>.</li>
 <li>All keys (filter names, action names, option names) now must be lowercase.</li>
 </ul>
 <h2 id="placeholders">Placeholders<a class="headerlink" href="#placeholders" title="Permanent link">#</a></h2>
-<p>organize v2 uses the Jinja template engine. You may need to change some of your placeholders.</p>
+<p>organize v2 uses the Jinja template engine. You may need to change some of your
+placeholders.</p>
 <ul>
 <li><code>{basedir}</code> is no longer available.</li>
-<li>Replace undocumented placeholders like this:</li>
+<li>You have to replace undocumented placeholders like this:</li>
 </ul>
 <pre><code class="language-python">{created.year}-{created.month:02}-{created.day:02}
 </code></pre>
 <p>With this:</p>
 <pre><code class="language-python">{created.strftime('%Y-%m-%d')}
+</code></pre>
+<p>If you need to left pad other numbers you can now use the following syntax:</p>
+<pre><code class="language-python">{ &quot;{:02}&quot;.format(your_variable) }
+# or
+{ '%02d' % your_variable }
 </code></pre>
 <h2 id="filters">Filters<a class="headerlink" href="#filters" title="Permanent link">#</a></h2>
 <ul>
@@ -160,11 +165,39 @@ Please change your <code>folders</code> definition to the <code>locations</code>
 <li><a href="../filters/#lastmodified"><code>lastmodified</code></a> no longer accepts a timezone and uses the local timezone by default.</li>
 </ul>
 <h2 id="actions">Actions<a class="headerlink" href="#actions" title="Permanent link">#</a></h2>
+<p>The copy, move and rename actions got a whole lot more powerful. You now have several
+conflict options and can specify exactly how a file should be renamed in case of a
+conflict.</p>
+<p>This means you might need to change your config to use the new parameters.</p>
 <ul>
 <li><a href="../actions/#copy"><code>copy</code></a> arguments changed to support conflict resolution options.</li>
 <li><a href="../actions/#move"><code>move</code></a> arguments changed to support conflict resolution options.</li>
 <li><a href="../actions/#rename"><code>rename</code></a> arguments changed to support conflict resolution options.</li>
 </ul>
+<p>Example:</p>
+<pre><code class="language-yml">rules:
+  - folders: ~/Desktop
+    filters:
+      - extension: pdf
+    actions:
+      - move:
+          dest: ~/Documents/PDFs/
+          overwrite: false
+          counter_seperator: &quot;-&quot;
+</code></pre>
+<p>becomes (organize v2):</p>
+<pre><code class="language-yaml">rules:
+  - locations: ~/Desktop
+    filters:
+      - extension: pdf
+    actions:
+      - move:
+          dest: ~/Documents/PDFs/
+          on_conflict: rename_new
+          rename_template: &quot;{name}-{:02}.format(counter){extension}&quot;
+</code></pre>
+<p>If you used <code>move</code>, <code>copy</code> or <code>rename</code> without arguments, nothing changes for you.</p>
+<p>That's it. Again, feel free to open a issue if you have trouble migrating your config.</p>
               
             </div>
           </div>
@@ -172,8 +205,10 @@ Please change your <code>folders</code> definition to the <code>locations</code>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="../configuration/" class="btn btn-neutral float-right" title="Configuration">Next <span class="icon icon-circle-arrow-right"></span></a>
       
-        <a href="../changelog/" class="btn btn-neutral" title="Changelog"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -203,8 +238,10 @@ Please change your <code>folders</code> definition to the <code>locations</code>
         </span>
     
     
-      <span><a href="../changelog/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
     
+    
+      <span><a href="../configuration/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

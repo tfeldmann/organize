@@ -52,6 +52,10 @@
                     </li>
                 </ul>
                 <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../updating-from-v1/">Updating from organize v1.x</a>
+                    </li>
+                </ul>
+                <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
                     </li>
                 </ul>
@@ -105,10 +109,6 @@
                     <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
                     </li>
                 </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../updating-from-v1/">Updating from organize v1.x</a>
-                    </li>
-                </ul>
       </div>
     </div>
     </nav>
@@ -148,16 +148,17 @@
                 <h1 id="filters">Filters<a class="headerlink" href="#filters" title="Permanent link">#</a></h1>
 <p>This page shows the specifics of each filter.</p>
 <h2 id="-how-to-exclude-filters-">- How to exclude filters -<a class="headerlink" href="#-how-to-exclude-filters-" title="Permanent link">#</a></h2>
-<ul>
-<li>To exclude all filters, simply set the <code>filter_mode</code> of the rule to <code>none</code>.</li>
-<li>To exclude a single filter, prefix the filter name with <code>not</code> (e.g. <code>not empty</code>,
-  <code>not extension: jpg</code>, etc).</li>
-</ul>
+<p>To exclude a filter, prefix the filter name with <strong>not</strong> (e.g. <code>"not empty"</code>,
+<code>"not extension": jpg</code>, etc).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you want to exclude all filters you can set the rule's <code>filter_mode</code> to <code>none</code>.</p>
+</div>
 <p>Example:</p>
 <pre><code class="language-yaml">rules:
   # using filter_mode
   - locations: ~/Desktop
-    filter_mode: &quot;none&quot;
+    filter_mode: &quot;none&quot; # &lt;- excludes all
     filters:
       - empty
       - name:
@@ -168,10 +169,10 @@
   # Exclude a single filter
   - locations: ~/Desktop
     filters:
-      - not extension: jpg
+      - not extension: jpg # &lt;- matches all non-jpgs
       - name:
           startswith: &quot;Invoice&quot;
-      - not empty
+      - not empty # &lt;- matches files with content
     actions:
       - echo: &quot;{name}&quot;
 </code></pre>
@@ -233,6 +234,7 @@ time, 'newer' matches files / folders created within the given time.
   </div>
 
 <p><strong>Examples:</strong></p>
+<p>Show all files on your desktop created at least 10 days ago</p>
 <pre><code class="language-yaml">rules:
   - name: Show all files on your desktop created at least 10 days ago
     locations: &quot;~/Desktop&quot;
@@ -242,6 +244,7 @@ time, 'newer' matches files / folders created within the given time.
     actions:
       - echo: &quot;Was created at least 10 days ago&quot;
 </code></pre>
+<p>Show all files on your desktop which were created within the last 5 hours</p>
 <pre><code class="language-yaml">rules:
   - name: Show all files on your desktop which were created within the last 5 hours
     locations: &quot;~/Desktop&quot;
@@ -252,6 +255,7 @@ time, 'newer' matches files / folders created within the given time.
     actions:
       - echo: &quot;Was created within the last 5 hours&quot;
 </code></pre>
+<p>Sort pdfs by year of creation</p>
 <pre><code class="language-yaml">rules:
   - name: Sort pdfs by year of creation
     locations: &quot;~/Documents&quot;
@@ -260,6 +264,16 @@ time, 'newer' matches files / folders created within the given time.
       - created
     actions:
       - move: &quot;~/Documents/PDF/{created.year}/&quot;
+</code></pre>
+<p>Formatting the creation date</p>
+<pre><code class="language-yaml">rules:
+  - name: Display the creation date
+    locations: &quot;~/Documents&quot;
+    filters:
+      - extension: pdf
+      - created
+    actions:
+      - echo: &quot;{created.strftime('%Y-%m-%d')}&quot;
 </code></pre>
 <h2 id="duplicate">duplicate<a class="headerlink" href="#duplicate" title="Permanent link">#</a></h2>
 
@@ -310,6 +324,7 @@ example <code>"-first_seen"</code>, <code>"-name"</code>, <code>"-created"</code
   </div>
 
 <p><strong>Examples:</strong></p>
+<p>Show all duplicate files in your desktop and download folder (and their subfolders)</p>
 <pre><code class="language-yaml">rules:
   - name: Show all duplicate files in your desktop and download folder (and their subfolders)
     locations:
@@ -321,6 +336,7 @@ example <code>"-first_seen"</code>, <code>"-name"</code>, <code>"-created"</code
     actions:
       - echo: &quot;{path} is a duplicate of {duplicate.original}&quot;
 </code></pre>
+<p>Check for duplicated files between Desktop and a Zip file, select original by creation date</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Check for duplicated files between Desktop and a Zip file, select original by creation date&quot;
     locations:
@@ -349,9 +365,9 @@ example <code>"-first_seen"</code>, <code>"-name"</code>, <code>"-created"</code
   </div>
 
 <p><strong>Examples:</strong></p>
+<p>Recursively delete empty folders</p>
 <pre><code class="language-yaml">rules:
-  - name: &quot;Recursively delete empty folders&quot;
-    targets: dirs
+  - targets: dirs
     locations:
       - path: ~/Desktop
         max_depth: null
@@ -386,6 +402,7 @@ into your actions.</p>
 
   </div>
 
+<p>Show available EXIF data of your pictures</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Show available EXIF data of your pictures&quot;
     locations:
@@ -407,6 +424,7 @@ into your actions.</p>
     actions:
       - copy: ~/Pictures/with_gps/{relative_path}/
 </code></pre>
+<p>Filter by camera manufacturer</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Filter by camera manufacturer&quot;
     locations:
@@ -469,6 +487,7 @@ accordingly:</p>
   </div>
 
 <p><strong>Examples:</strong></p>
+<p>Match a single file extension</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Match a single file extension&quot;
     locations: &quot;~/Desktop&quot;
@@ -477,6 +496,7 @@ accordingly:</p>
     actions:
       - echo: &quot;Found PNG file: {path}&quot;
 </code></pre>
+<p>Match multiple file extensions</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Match multiple file extensions&quot;
     locations: &quot;~/Desktop&quot;
@@ -487,14 +507,16 @@ accordingly:</p>
     actions:
       - echo: &quot;Found JPG file: {path}&quot;
 </code></pre>
+<p>Make all file extensions lowercase</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Make all file extensions lowercase&quot;
     locations: &quot;~/Desktop&quot;
     filters:
       - extension
     actions:
-      - rename: &quot;{path.stem}.{extension.lower}&quot;
+      - rename: &quot;{path.stem}.{extension.lower()}&quot;
 </code></pre>
+<p>Using extension lists (<a href="../rules/#advanced-aliases">yaml aliases</a></p>
 <pre><code class="language-yaml">img_ext: &amp;img
   - png
   - jpg
@@ -555,15 +577,17 @@ be returned like this:</p>
   </div>
 
 <p><strong>Examples:</strong></p>
+<p>Show the content of all your PDF files</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Show the content of all your PDF files&quot;
     locations: ~/Documents
     filters:
       - extension: pdf
-      - filecontent: &quot;(?P&lt;all&gt;.*)&quot;
+      - filecontent
     actions:
-      - echo: &quot;{filecontent.all}&quot;
+      - echo: &quot;{filecontent}&quot;
 </code></pre>
+<p>Match an invoice with a regular expression and sort by customer</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Match an invoice with a regular expression and sort by customer&quot;
     locations: &quot;~/Desktop&quot;
@@ -620,6 +644,17 @@ interpreter:</p>
 
   </div>
 
+<p><strong>Examples:</strong></p>
+<p>Show the hashes of your files:</p>
+<pre><code class="language-yaml">rules:
+  - name: &quot;Show the hashes and size of your files&quot;
+    locations: &quot;~/Desktop&quot;
+    filters:
+      - hash
+      - size
+    actions:
+      - echo: &quot;{hash} {size.decimal}&quot;
+</code></pre>
 <h2 id="lastmodified">lastmodified<a class="headerlink" href="#lastmodified" title="Permanent link">#</a></h2>
 
 
@@ -697,6 +732,7 @@ time. (default = 'older')</p></li>
     actions:
       - echo: &quot;Was modified within the last 5 hours&quot;
 </code></pre>
+<p>Sort pdfs by year of last modification</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Sort pdfs by year of last modification&quot;
     locations: &quot;~/Documents&quot;
@@ -705,6 +741,16 @@ time. (default = 'older')</p></li>
       - lastmodified
     actions:
       - move: &quot;~/Documents/PDF/{lastmodified.year}/&quot;
+</code></pre>
+<p>Formatting the last modified date</p>
+<pre><code class="language-yaml">rules:
+  - name: Formatting the lastmodified date
+    locations: &quot;~/Documents&quot;
+    filters:
+      - extension: pdf
+      - lastmodified
+    actions:
+      - echo: &quot;{lastmodified.strftime('%Y-%m-%d')}&quot;
 </code></pre>
 <h2 id="mimetype">mimetype<a class="headerlink" href="#mimetype" title="Permanent link">#</a></h2>
 
@@ -749,6 +795,7 @@ from "audio/midi" to "audio/quicktime".</p>
   </div>
 
 <p><strong>Examples:</strong></p>
+<p>Show MIME types</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Show MIME types&quot;
     locations: &quot;~/Downloads&quot;
@@ -757,6 +804,7 @@ from "audio/midi" to "audio/quicktime".</p>
     actions:
       - echo: &quot;{mimetype}&quot;
 </code></pre>
+<p>Filter by 'image' mimetype</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Filter by 'image' mimetype&quot;
     locations: &quot;~/Downloads&quot;
@@ -765,6 +813,7 @@ from "audio/midi" to "audio/quicktime".</p>
     actions:
       - echo: &quot;This file is an image: {mimetype}&quot;
 </code></pre>
+<p>Filter by specific MIME type</p>
 <pre><code class="language-yaml">rules:
   - name: Filter by specific MIME type
     locations: &quot;~/Desktop&quot;
@@ -773,6 +822,7 @@ from "audio/midi" to "audio/quicktime".</p>
     actions:
       - echo: &quot;Found a PDF file&quot;
 </code></pre>
+<p>Filter by multiple specific MIME types</p>
 <pre><code class="language-yaml">rules:
   - name: Filter by multiple specific MIME types
     locations: &quot;~/Music&quot;
@@ -791,7 +841,7 @@ from "audio/midi" to "audio/quicktime".</p>
 
     <div class="doc doc-contents first">
 
-      <p>Match files by filename</p>
+      <p>Match files and folders by name</p>
 
 <table class="field-list">
   <colgroup>

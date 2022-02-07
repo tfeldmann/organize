@@ -52,6 +52,10 @@
                     </li>
                 </ul>
                 <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../updating-from-v1/">Updating from organize v1.x</a>
+                    </li>
+                </ul>
+                <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
                     </li>
                 </ul>
@@ -97,10 +101,6 @@
                 </ul>
                 <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../updating-from-v1/">Updating from organize v1.x</a>
                     </li>
                 </ul>
       </div>
@@ -161,7 +161,7 @@ look at the <a href="../rules/">Rules</a> section.</p>
 <p><strong>Examples</strong></p>
 <p>Confirm before deleting a duplicate</p>
 <pre><code class="language-yaml">rules:
-  - name: &quot;Delete duplicates&quot;
+  - name: &quot;Delete duplicates with confirmation&quot;
     locations:
       - ~/Downloads
       - ~/Documents
@@ -170,7 +170,7 @@ look at the <a href="../rules/">Rules</a> section.</p>
       - duplicate
       - name
     actions:
-      - confirm: &quot;Delete {duplicate}?&quot;
+      - confirm: &quot;Delete {name}?&quot;
       - trash
 </code></pre>
 <h2 id="copy">copy<a class="headerlink" href="#copy" title="Permanent link">#</a></h2>
@@ -234,7 +234,7 @@ If this is not given, the local filesystem is used.</p></li>
           - jpg
     actions:
       - copy:
-          dest: &quot;~/Desktop/{extension.upper}/&quot;
+          dest: &quot;~/Desktop/{extension.upper()}/&quot;
           on_conflict: overwrite
 </code></pre>
 <p>Copy into the folder <code>Invoices</code>. Keep the filename but do not overwrite existing files.
@@ -270,6 +270,7 @@ Using the <code>Trash</code> action is strongly advised for most use-cases!</p>
   </div>
 
 <p><strong>Examples:</strong></p>
+<p>Delete old downloads.</p>
 <pre><code class="language-yaml">rules:
   - locations: &quot;~/Downloads&quot;
     filters:
@@ -281,6 +282,7 @@ Using the <code>Trash</code> action is strongly advised for most use-cases!</p>
     actions:
       - delete
 </code></pre>
+<p>Delete all empty subfolders</p>
 <pre><code class="language-yaml">rules:
   - name: Delete all empty subfolders
     locations:
@@ -343,16 +345,17 @@ variables.</p>
     actions:
       - echo: &quot;Hello World! {path}&quot;
 </code></pre>
-<p>This will print something like <code>Found a PNG: "test.png"</code> for each file on your desktop</p>
+<p>This will print something like <code>Found a ZIP: "backup"</code> for each file on your desktop</p>
 <pre><code class="language-yaml">rules:
   - locations:
       - ~/Desktop
     filters:
       - extension
+      - name
     actions:
-      - echo: 'Found a {extension.upper}: &quot;{path.name}&quot;'
+      - echo: 'Found a {extension.upper()}: &quot;{name}&quot;'
 </code></pre>
-<p>Show the <code>{basedir}</code> and <code>{path}</code> of all files in '~/Downloads', '~/Desktop' and their subfolders:</p>
+<p>Show the <code>{relative_path}</code> and <code>{path}</code> of all files in '~/Downloads', '~/Desktop' and their subfolders:</p>
 <pre><code class="language-yaml">rules:
   - locations:
       - path: ~/Desktop
@@ -360,8 +363,8 @@ variables.</p>
       - path: ~/Downloads
         max_depth: null
     actions:
-      - echo: &quot;Basedir: {basedir}&quot;
-      - echo: &quot;Path:    {path}&quot;
+      - echo: &quot;Path:     {path}&quot;
+      - echo: &quot;Relative: {relative_path}&quot;
 </code></pre>
 <h2 id="macos_tags">macos_tags<a class="headerlink" href="#macos_tags" title="Permanent link">#</a></h2>
 
@@ -511,7 +514,7 @@ If this is not given, the local filesystem is used.</p></li>
           - jpg
     actions:
       - move:
-          dest: &quot;~/Desktop/{extension.upper}/&quot;
+          dest: &quot;~/Desktop/{extension.upper()}/&quot;
           on_conflict: &quot;overwrite&quot;
 </code></pre>
 <p>Move pdfs into the folder <code>Invoices</code>. Keep the filename but do not overwrite existing files. To prevent overwriting files, an index is added to the filename, so <code>somefile.jpg</code> becomes <code>somefile 2.jpg</code>.</p>
@@ -577,10 +580,10 @@ for loop. The <code>|</code> is yaml syntax for defining a string literal spanni
       - regex: '^(?P&lt;name&gt;.*)\.(?P&lt;extension&gt;.*)$'
     actions:
       - python: |
-          print('Name: %s' % regex.name)
-          print('Extension: %s' % regex.extension)
+          print('Name: %s' % regex[&quot;name&quot;])
+          print('Extension: %s' % regex[&quot;extension&quot;])
 </code></pre>
-<p>Running in simulation and yaml aliases:</p>
+<p>Running in simulation and <a href="../rules/#advanced-aliases">yaml aliases</a>:</p>
 <pre><code class="language-yaml">my_python_script: &amp;script |
   print(&quot;Hello World!&quot;)
   print(path)
@@ -604,7 +607,7 @@ filename starting with an underscore:</p>
     actions:
       - python: |
           import webbrowser
-          webbrowser.open('https://www.google.com/search?q=%s' % path.stem)
+          webbrowser.open('https://www.google.com/search?q=%s' % name)
 </code></pre>
 <h2 id="rename">rename<a class="headerlink" href="#rename" title="Permanent link">#</a></h2>
 
@@ -649,17 +652,19 @@ Defaults to <code>{name} {counter}{extension}</code>.</p></li>
   - name: &quot;Convert all .PDF file extensions to lowercase (.pdf)&quot;
     locations: &quot;~/Desktop&quot;
     filters:
+      - name
       - extension: PDF
     actions:
-      - rename: &quot;{path.stem}.pdf&quot;
+      - rename: &quot;{name}.pdf&quot;
 </code></pre>
 <pre><code class="language-yaml">rules:
   - name: &quot;Convert **all** file extensions to lowercase&quot;
     locations: &quot;~/Desktop&quot;
     filters:
+      - name
       - extension
     actions:
-      - rename: &quot;{path.stem}.{extension.lower}&quot;
+      - rename: &quot;{name}.{extension.lower()}&quot;
 </code></pre>
 <h2 id="shell">shell<a class="headerlink" href="#shell" title="Permanent link">#</a></h2>
 
