@@ -1,25 +1,24 @@
+from datetime import datetime
 from organize.actions import Echo
-from pathlib import Path
-
 from unittest.mock import patch
 
 
 def test_echo_basic():
     echo = Echo("Hello World")
     with patch.object(echo, "print") as m:
-        echo.run(path=Path("~"), simulate=False)
+        echo.run(simulate=False)
         m.assert_called_with("Hello World")
 
 
 def test_echo_args():
-    echo = Echo("This is the year {year}")
+    echo = Echo('Date formatting: {now.strftime("%Y-%m-%d")}')
     with patch.object(echo, "print") as m:
-        echo.run(path=Path("~"), simulate=False, year=2017)
-        m.assert_called_with("This is the year 2017")
+        echo.run(simulate=False, now=datetime(2019, 1, 5))
+        m.assert_called_with("Date formatting: 2019-01-05")
 
 
 def test_echo_path():
-    echo = Echo("{path.stem} for {year}")
+    echo = Echo("{year}")
     with patch.object(echo, "print") as m:
-        echo.run(simulate=False, path=Path("/this/isafile.txt"), year=2017)
-        m.assert_called_with("isafile for 2017")
+        echo.run(simulate=False, year=2017)
+        m.assert_called_with("2017")

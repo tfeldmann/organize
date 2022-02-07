@@ -1,120 +1,123 @@
-import logging
-import os
-import shutil
+from typing import Callable, Union
 
-from organize.utils import Mapping, find_unused_filename, fullpath
+from fs import open_fs
+from fs import errors
+from fs.base import FS
+from fs.copy import copy_dir, copy_file
+from fs.path import dirname
+from schema import Optional, Or
+
+from organize.utils import Template, safe_description, SimulationFS
 
 from .action import Action
-from .trash import Trash
-
-logger = logging.getLogger(__name__)
+from .copymove_utils import CONFLICT_OPTIONS, check_conflict, dst_from_options
 
 
 class Copy(Action):
 
-    """
-    Copy a file to a new location.
+    """Copy a file or dir to a new location.
+
     If the specified path does not exist it will be created.
 
-    :param str dest:
-        The destination where the file should be copied to.
-        If `dest` ends with a slash / backslash, the file will be copied into
-        this folder and keep its original name.
+    Args:
+        dest (str):
+            The destination where the file / dir should be copied to.
+            If `dest` ends with a slash, it is assumed to be a target directory
+            and the file / dir will be copied into `dest` and keep its name.
 
-    :param bool overwrite:
-        specifies whether existing files should be overwritten.
-        Otherwise it will start enumerating files (append a counter to the
-        filename) to resolve naming conflicts. [Default: False]
+        on_conflict (str):
+            What should happen in case **dest** already exists.
+            One of `skip`, `overwrite`, `trash`, `rename_new` and `rename_existing`.
+            Defaults to `rename_new`.
 
-    :param str counter_separator:
-        specifies the separator between filename and the appended counter.
-        Only relevant if **overwrite** is disabled. [Default: ``\' \'``]
+        rename_template (str):
+            A template for renaming the file / dir in case of a conflict.
+            Defaults to `{name} {counter}{extension}`.
 
-    Examples:
-        - Copy all pdfs into `~/Desktop/somefolder/` and keep filenames
+        filesystem (str):
+            (Optional) A pyfilesystem opener url of the filesystem you want to copy to.
+            If this is not given, the local filesystem is used.
 
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: ~/Desktop
-                filters:
-                  - extension: pdf
-                actions:
-                  - copy: '~/Desktop/somefolder/'
-
-        - Use a placeholder to copy all .pdf files into a "PDF" folder and all .jpg
-          files into a "JPG" folder. Existing files will be overwritten.
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: ~/Desktop
-                filters:
-                  - extension:
-                      - pdf
-                      - jpg
-                actions:
-                  - copy:
-                      dest: '~/Desktop/{extension.upper}/'
-                      overwrite: true
-
-        - Copy into the folder `Invoices`. Keep the filename but do not
-          overwrite existing files. To prevent overwriting files, an index is
-          added to the filename, so `somefile.jpg` becomes `somefile 2.jpg`.
-          The counter separator is `' '` by default, but can be changed using
-          the `counter_separator` property.
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: ~/Desktop/Invoices
-                filters:
-                  - extension:
-                      - pdf
-                actions:
-                  - copy:
-                      dest: '~/Documents/Invoices/'
-                      overwrite: false
-                      counter_separator: '_'
+    The next action will work with the created copy.
     """
 
-    def __init__(self, dest: str, overwrite=False, counter_separator=" ") -> None:
-        self.dest = dest
-        self.overwrite = overwrite
-        self.counter_separator = counter_separator
+    name = "copy"
+    arg_schema = Or(
+        str,
+        {
+            "dest": str,
+            Optional("on_conflict"): Or(*CONFLICT_OPTIONS),
+            Optional("rename_template"): str,
+            Optional("filesystem"): object,
+        },
+    )
 
-    def pipeline(self, args: Mapping) -> None:
-        path = args["path"]
-        simulate = args["simulate"]
+    def __init__(
+        self,
+        dest: str,
+        on_conflict="rename_new",
+        rename_template="{name} {counter}{extension}",
+        filesystem: Union[str, FS] = "",
+    ) -> None:
+        if on_conflict not in CONFLICT_OPTIONS:
+            raise ValueError(
+                "on_conflict must be one of %s" % ", ".join(CONFLICT_OPTIONS)
+            )
 
-        expanded_dest = self.fill_template_tags(self.dest, args)
-        # if only a folder path is given we append the filename to have the full
-        # path. We use os.path for that because pathlib removes trailing slashes
-        if expanded_dest.endswith(("\\", "/")):
-            expanded_dest = os.path.join(expanded_dest, path.name)
+        self.dest = Template.from_string(dest)
+        self.conflict_mode = on_conflict
+        self.rename_template = Template.from_string(rename_template)
+        self.filesystem = filesystem
 
-        new_path = fullpath(expanded_dest)
-        if new_path.exists() and not new_path.samefile(path):
-            if self.overwrite:
-                self.print("File already exists")
-                Trash().run(path=new_path, simulate=simulate)
+    def pipeline(self, args: dict, simulate: bool):
+        src_fs = args["fs"]  # type: FS
+        src_path = args["fs_path"]
+
+        # should we copy a dir or a file?
+        copy_action: Callable[[FS, str, FS, str], None]
+        if src_fs.isdir(src_path):
+            copy_action = copy_dir
+        elif src_fs.isfile(src_path):
+            copy_action = copy_file
+
+        dst_fs, dst_path = dst_from_options(
+            src_path=src_path,
+            dest=self.dest,
+            filesystem=self.filesystem,
+            args=args,
+        )
+
+        # check for conflicts
+        skip, dst_path = check_conflict(
+            src_fs=src_fs,
+            src_path=src_path,
+            dst_fs=dst_fs,
+            dst_path=dst_path,
+            conflict_mode=self.conflict_mode,
+            rename_template=self.rename_template,
+            simulate=simulate,
+            print=self.print,
+        )
+
+        try:
+            dst_fs = open_fs(dst_fs, create=False, writeable=True)
+        except errors.CreateFailed:
+            if not simulate:
+                dst_fs = open_fs(dst_fs, create=True, writeable=True)
             else:
-                new_path = find_unused_filename(
-                    path=new_path, separator=self.counter_separator
-                )
+                dst_fs = SimulationFS(dst_fs)
 
-        self.print('Copy to "%s"' % new_path)
-        if not simulate:
-            logger.info("Creating folder if not exists: %s", new_path.parent)
-            new_path.parent.mkdir(parents=True, exist_ok=True)
-            logger.info('Copying "%s" to "%s"', path, new_path)
-            shutil.copy2(src=str(path), dst=str(new_path))
+        if not skip:
+            self.print("Copy to %s" % safe_description(dst_fs, dst_path))
+            if not simulate:
+                dst_fs.makedirs(dirname(dst_path), recreate=True)
+                copy_action(src_fs, src_path, dst_fs, dst_path)
 
-        # the next actions should handle the original file
-        return None
+        # the next action should work with the newly created copy
+        return {
+            "fs": dst_fs,
+            "fs_path": dst_path,
+        }
 
     def __str__(self) -> str:
-        return "Copy(dest=%s, overwrite=%s)" % (self.dest, self.overwrite)
+        return "Copy(dest=%s, conflict_mode=%s)" % (self.dest, self.conflict_mode)

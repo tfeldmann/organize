@@ -1,103 +1,112 @@
 import logging
 import os
-from typing import Mapping
+from typing import Callable
 
-from pathlib import Path
-from organize.utils import find_unused_filename
+from fs import path
+from fs.base import FS
+from fs.move import move_dir, move_file
+from schema import Optional, Or
+
+from organize.utils import Template, safe_description
 
 from .action import Action
-from .trash import Trash
+from .copymove_utils import CONFLICT_OPTIONS, check_conflict, resolve_overwrite_conflict
 
 logger = logging.getLogger(__name__)
 
 
 class Rename(Action):
 
-    """
-    Renames a file.
+    """Renames a file.
 
-    :param str name:
-        The new filename.
-        Can be a format string which uses file attributes from a filter.
+    Args:
+        name (str):
+            The new name for the file / dir.
 
-    :param bool overwrite:
-        specifies whether existing files should be overwritten.
-        Otherwise it will start enumerating files (append a counter to the
-        filename) to resolve naming conflicts. [Default: False]
+        on_conflict (str):
+            What should happen in case **dest** already exists.
+            One of `skip`, `overwrite`, `trash`, `rename_new` and `rename_existing`.
+            Defaults to `rename_new`.
 
-    :param str counter_separator:
-        specifies the separator between filename and the appended counter.
-        Only relevant if **overwrite** is disabled. [Default: ``\' \'``]
+        rename_template (str):
+            A template for renaming the file / dir in case of a conflict.
+            Defaults to `{name} {counter}{extension}`.
 
-    Examples:
-        - Convert all .PDF file extensions to lowercase (.pdf):
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Desktop'
-                filters:
-                  - extension: PDF
-                actions:
-                  - rename: "{path.stem}.pdf"
-
-        - Convert **all** file extensions to lowercase:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Desktop'
-                filters:
-                  - Extension
-                actions:
-                  - rename: "{path.stem}.{extension.lower}"
+    The next action will work with the renamed file / dir.
     """
 
-    def __init__(self, name: str, overwrite=False, counter_separator=" ") -> None:
-        if os.path.sep in name:
-            ValueError(
-                "Rename only takes a filename as argument. To move files between "
-                "folders use the Move action."
+    name = "rename"
+    arg_schema = Or(
+        str,
+        {
+            "name": str,
+            Optional("on_conflict"): Or(*CONFLICT_OPTIONS),
+            Optional("rename_template"): str,
+        },
+    )
+
+    def __init__(
+        self,
+        name: str,
+        on_conflict="rename_new",
+        rename_template="{name} {counter}{extension}",
+    ) -> None:
+        if on_conflict not in CONFLICT_OPTIONS:
+            raise ValueError(
+                "on_conflict must be one of %s" % ", ".join(CONFLICT_OPTIONS)
             )
-        self.name = name
-        self.overwrite = overwrite
-        self.counter_separator = counter_separator
 
-    def pipeline(self, args: Mapping) -> Mapping[str, Path]:
-        path = args["path"]  # type: Path
-        simulate = args["simulate"]
-        expanded_name = self.fill_template_tags(self.name, args)
-        new_path = path.parent / expanded_name
+        self.new_name = Template.from_string(name)
+        self.conflict_mode = on_conflict
+        self.rename_template = Template.from_string(rename_template)
 
-        # handle filename collisions
-        new_path_exists = new_path.exists()
-        new_path_samefile = new_path_exists and new_path.samefile(path)
-        if new_path_exists and not new_path_samefile:
-            if self.overwrite:
-                self.print("File already exists")
-                Trash().run(path=new_path, simulate=simulate)
-            else:
-                new_path = find_unused_filename(
-                    path=new_path, separator=self.counter_separator
-                )
+    def pipeline(self, args: dict, simulate: bool):
+        fs = args["fs"]  # type: FS
+        src_path = args["fs_path"]
 
-        # do nothing if the new name is equal to the old name and the file is
-        # the same
-        if new_path_samefile and new_path == path:
-            self.print("Keep name")
+        new_name = self.new_name.render(**args)
+        if "/" in new_name:
+            raise ValueError(
+                "The new name cannot contain slashes. "
+                "To move files or folders use `move`."
+            )
+
+        dst_path = path.join(path.dirname(src_path), new_name)
+
+        if dst_path == src_path:
+            self.print("Name did not change")
         else:
-            self.print('New name: "%s"' % new_path.name)
-            if not simulate:
-                logger.info('Renaming "%s" to "%s".', path, new_path)
-                path.rename(new_path)
+            move_action: Callable[[FS, str, FS, str], None]
+            if fs.isdir(src_path):
+                move_action = move_dir
+            elif fs.isfile(src_path):
+                move_action = move_file
 
-        return {"path": new_path}
+            # check for conflicts
+            skip, dst_path = check_conflict(
+                src_fs=fs,
+                src_path=src_path,
+                dst_fs=fs,
+                dst_path=dst_path,
+                conflict_mode=self.conflict_mode,
+                rename_template=self.rename_template,
+                simulate=simulate,
+                print=self.print,
+            )
+
+            if not skip:
+                self.print("Rename to %s" % safe_description(fs, dst_path))
+                if not simulate:
+                    move_action(fs, src_path, fs, dst_path)
+
+        # the next action should work with the renamed file
+        return {
+            "fs": fs,
+            "fs_path": dst_path,
+        }
 
     def __str__(self) -> str:
-        return "Rename(name=%s, overwrite=%s, sep=%s)" % (
-            self.name,
-            self.overwrite,
-            self.counter_separator,
+        return "Rename(new_name=%s, conflict_mode=%s)" % (
+            self.new_name,
+            self.conflict_mode,
         )

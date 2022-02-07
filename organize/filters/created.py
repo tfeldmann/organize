@@ -1,110 +1,45 @@
-import sys
-from typing import Dict, Optional, SupportsFloat
+from datetime import datetime, timedelta
+from typing import Union
 
-import pendulum  # type: ignore
-from pathlib import Path
-from organize.utils import DotDict
+from fs.base import FS
+from schema import Optional, Or
 
-from .filter import Filter
+from .filter import Filter, FilterResult
+from .utils import age_condition_applies
 
 
 class Created(Filter):
+    """Matches files / folders by created date
 
+    Args:
+        years (int): specify number of years
+        months (int): specify number of months
+        weeks (float): specify number of weeks
+        days (float): specify number of days
+        hours (float): specify number of hours
+        minutes (float): specify number of minutes
+        seconds (float): specify number of seconds
+        mode (str):
+            either 'older' or 'newer'. 'older' matches files / folders created before the given
+            time, 'newer' matches files / folders created within the given time.
+            (default = 'older')
+
+    Returns:
+        {created}: The datetime the file / folder was created.
     """
-    Matches files by created date
 
-    :param int years:
-        specify number of years
-
-    :param int months:
-        specify number of months
-
-    :param float weeks:
-        specify number of weeks
-
-    :param float days:
-        specify number of days
-
-    :param float hours:
-        specify number of hours
-
-    :param float minutes:
-        specify number of minutes
-
-    :param float seconds:
-        specify number of seconds
-
-    :param str mode:
-        either 'older' or 'newer'. 'older' matches all files created before the given
-        time, 'newer' matches all files created within the given time.
-        (default = 'older')
-
-    :param str timezone:
-        specify timezone
-
-    :returns:
-        - ``{created.year}`` -- the year the file was created
-        - ``{created.month}`` -- the month the file was created
-        - ``{created.day}`` -- the day the file was created
-        - ``{created.hour}`` -- the hour the file was created
-        - ``{created.minute}`` -- the minute the file was created
-        - ``{created.second}`` -- the second the file was created
-
-    Examples:
-        - Show all files on your desktop created at least 10 days ago:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Desktop'
-                filters:
-                  - created:
-                      days: 10
-                actions:
-                  - echo: 'Was created at least 10 days ago'
-
-        - Show all files on your desktop which were created within the last 5 hours:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Desktop'
-                filters:
-                  - created:
-                      hours: 5
-                      mode: newer
-                actions:
-                  - echo: 'Was created within the last 5 hours'
-
-        - Sort pdfs by year of creation:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Documents'
-                filters:
-                  - extension: pdf
-                  - created
-                actions:
-                  - move: '~/Documents/PDF/{created.year}/'
-
-        - Use specific timezone when processing files
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Documents'
-                filters:
-                  - extension: pdf
-                  - created:
-                      timezone: "Europe/Moscow"
-                actions:
-                  - move: '~/Documents/PDF/{created.day}/{created.hour}/'
-    """
+    name = "created"
+    schema_support_instance_without_args = True
+    arg_schema = {
+        Optional("years"): int,
+        Optional("months"): int,
+        Optional("weeks"): int,
+        Optional("days"): int,
+        Optional("hours"): int,
+        Optional("minutes"): int,
+        Optional("seconds"): int,
+        Optional("mode"): Or("older", "newer"),
+    }
 
     def __init__(
         self,
@@ -116,54 +51,48 @@ class Created(Filter):
         minutes=0,
         seconds=0,
         mode="older",
-        timezone=pendulum.tz.local_timezone(),
-    ) -> None:
-        self._mode = mode.strip().lower()
-        if self._mode not in ("older", "newer"):
-            raise ValueError("Unknown option for 'mode': must be 'older' or 'newer'.")
-        self.is_older = self._mode == "older"
-        self.timezone = timezone
-        self.timedelta = pendulum.duration(
-            years=years,
-            months=months,
-            weeks=weeks,
+    ):
+        self.age = timedelta(
+            weeks=52 * years + 4 * months + weeks,  # quick and a bit dirty
             days=days,
             hours=hours,
             minutes=minutes,
             seconds=seconds,
         )
-        print(bool(self.timedelta))
+        self.mode = mode.strip().lower()
+        if self.mode not in ("older", "newer"):
+            raise ValueError("Unknown option for 'mode': must be 'older' or 'newer'.")
 
-    def pipeline(self, args: DotDict) -> Optional[Dict[str, pendulum.DateTime]]:
-        created_date = self._created(args.path)
-        # Pendulum bug: https://github.com/sdispater/pendulum/issues/387
-        # in_words() is a workaround: total_seconds() returns 0 if years are given
-        if self.timedelta.in_words():
-            is_past = (created_date + self.timedelta).is_past()
-            match = self.is_older == is_past
-        else:
-            match = True
-        if match:
-            return {"created": created_date}
-        return None
+    def matches_created_time(self, created: Union[None, datetime]):
+        match = True
+        if self.age.total_seconds():
+            if not created:
+                match = False
+            else:
+                match = age_condition_applies(
+                    dt=created,
+                    age=self.age,
+                    mode=self.mode,
+                    reference=datetime.now(),
+                )
+        return match
 
-    def _created(self, path: Path) -> pendulum.DateTime:
-        # see https://stackoverflow.com/a/39501288/300783
-        stat = path.stat()
-        time = 0  # type: SupportsFloat
-        if sys.platform.startswith("win"):
-            time = stat.st_ctime
-        else:
-            try:
-                time = stat.st_birthtime
-            except AttributeError:
-                # We're probably on Linux. No easy way to get creation dates here,
-                # so we'll settle for when its content was last modified.
-                time = stat.st_mtime
-        return pendulum.from_timestamp(float(time), tz=self.timezone)
+    def pipeline(self, args: dict) -> FilterResult:
+        fs = args["fs"]  # type: FS
+        fs_path = args["fs_path"]
+
+        created = fs.getinfo(fs_path, namespaces=["details"]).created
+        if created:
+            created = created.astimezone()
+
+        match = self.matches_created_time(created)
+        return FilterResult(
+            matches=match,
+            updates={self.get_name(): created},
+        )
 
     def __str__(self):
-        return "[Created] All files %s than %s" % (
+        return "[Created] All files / folders %s than %s" % (
             self._mode,
-            self.timedelta.in_words(),
+            self.timedelta,
         )

@@ -1,82 +1,29 @@
-import logging
-
+from ..utils import Template
 from .action import Action
-
-logger = logging.getLogger(__name__)
 
 
 class Echo(Action):
 
-    """
-    Prints the given (formatted) message. This can be useful to test your rules,
-    especially if you use formatted messages.
+    """Prints the given message.
 
-    :param str msg: The message to print (can be formatted)
+    This can be useful to test your rules, especially in combination with placeholder
+    variables.
 
-    Example:
-        - Prints "Found old file" for each file older than one year:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: ~/Desktop
-                filters:
-                  - lastmodified:
-                      days: 365
-                actions:
-                  - echo: 'Found old file'
-
-        - Prints "Hello World!" and filepath for each file on the desktop:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders:
-                  - ~/Desktop
-                actions:
-                  - echo: 'Hello World! {path}'
-
-        - This will print something like ``Found a PNG: "test.png"`` for each
-          file on your desktop:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders:
-                  - ~/Desktop
-                filters:
-                  - Extension
-                actions:
-                  - echo: 'Found a {extension.upper}: "{path.name}"'
-
-        - Show the ``{basedir}`` and ``{path}`` of all files in '~/Downloads',
-          '~/Desktop' and their subfolders:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders:
-                  - ~/Desktop
-                  - ~/Downloads
-                subfolders: true
-                actions:
-                  - echo: 'Basedir: {basedir}'
-                  - echo: 'Path:    {path}'
+    Args:
+        msg (str): The message to print. Accepts placeholder variables.
     """
 
-    def __init__(self, msg) -> None:
-        self.msg = msg
-        self.log = logging.getLogger(__name__)
+    name = "echo"
 
-    def pipeline(self, args) -> None:
-        path = args["path"]
-        logger.debug('Echo msg "%s", path: "%s", args: "%s"', self.msg, path, args)
-        full_msg = self.fill_template_tags(self.msg, args)
-        logger.info("Console output: %s", full_msg)
+    @classmethod
+    def get_schema(cls):
+        return {cls.name: str}
+
+    def __init__(self, msg):
+        self.msg = Template.from_string(msg)
+
+    def pipeline(self, args: dict, simulate: bool) -> None:
+        full_msg = self.msg.render(**args)
         self.print("%s" % full_msg)
 
     def __str__(self) -> str:

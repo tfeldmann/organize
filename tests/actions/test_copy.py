@@ -1,150 +1,67 @@
-import os
+from copy import deepcopy
+import fs
+from conftest import make_files, read_files
+from organize import core
 
-from organize.actions import Copy
-from pathlib import Path
-
-USER_DIR = os.path.expanduser("~")
-
-DEFAULT_ARGS = {
-    "basedir": Path.home(),
-    "path": Path.home() / "test.py",
-    "simulate": False,
+files = {
+    "files": {
+        "test.txt": "",
+        "file.txt": "Hello world\nAnother line",
+        "another.txt": "",
+        "folder": {
+            "x.txt": "",
+        },
+    }
 }
 
 
-def test_tilde_expansion(mock_exists, mock_samefile, mock_copy, mock_trash, mock_mkdir):
-    mock_exists.return_value = False
-    mock_samefile.return_value = False
-    copy = Copy(dest="~/newname.py", overwrite=False)
-    updates = copy.run(**DEFAULT_ARGS)
-    mock_mkdir.assert_called_with(exist_ok=True, parents=True)
-    mock_exists.assert_called_with()
-    mock_trash.assert_not_called()
-    mock_copy.assert_called_with(
-        src=os.path.join(USER_DIR, "test.py"), dst=os.path.join(USER_DIR, "newname.py")
-    )
-    # keep old file path
-    assert updates is None
+def test_copy_on_itself():
+    with fs.open_fs("mem://") as mem:
+        config = {
+            "rules": [
+                {
+                    "locations": [
+                        {"path": "files", "filesystem": mem},
+                    ],
+                    "actions": [
+                        {"copy": {"dest": "files/", "filesystem": mem}},
+                    ],
+                },
+            ]
+        }
+        make_files(mem, files)
+        core.run(config, simulate=False)
+        result = read_files(mem)
+        assert result == files
 
 
-def test_into_folder(mock_exists, mock_samefile, mock_copy, mock_trash, mock_mkdir):
-    mock_exists.return_value = False
-    mock_samefile.return_value = False
-    copy = Copy(dest="~/somefolder/", overwrite=False)
-    copy.run(**DEFAULT_ARGS)
-    mock_mkdir.assert_called_with(exist_ok=True, parents=True)
-    mock_exists.assert_called_with()
-    mock_trash.assert_not_called()
-    mock_copy.assert_called_with(
-        src=os.path.join(USER_DIR, "test.py"),
-        dst=os.path.join(USER_DIR, "somefolder", "test.py"),
-    )
+def test_does_not_create_folder_in_simulation():
+    with fs.open_fs("mem://") as mem:
+        config = {
+            "rules": [
+                {
+                    "locations": [
+                        {"path": "files", "filesystem": mem},
+                    ],
+                    "actions": [
+                        {"copy": {"dest": "files/new-subfolder/", "filesystem": mem}},
+                        {"copy": {"dest": "files/copyhere/", "filesystem": mem}},
+                    ],
+                },
+            ]
+        }
+        make_files(mem, files)
+        core.run(config, simulate=True)
+        result = read_files(mem)
+        assert result == files
 
+        core.run(config, simulate=False, validate=False)
+        result = read_files(mem)
 
-def test_overwrite(mock_exists, mock_samefile, mock_copy, mock_trash, mock_mkdir):
-    mock_exists.return_value = True
-    mock_samefile.return_value = False
-    copy = Copy(dest="~/somefolder/", overwrite=True)
-    copy.run(**DEFAULT_ARGS)
-    mock_mkdir.assert_called_with(exist_ok=True, parents=True)
-    mock_exists.assert_called_with()
-    mock_trash.assert_called_with(os.path.join(USER_DIR, "somefolder", "test.py"))
-    mock_copy.assert_called_with(
-        src=os.path.join(USER_DIR, "test.py"),
-        dst=os.path.join(USER_DIR, "somefolder", "test.py"),
-    )
+        expected = deepcopy(files)
+        expected["files"]["new-subfolder"] = deepcopy(files["files"])
+        expected["files"]["new-subfolder"].pop("folder")
+        expected["files"]["copyhere"] = deepcopy(files["files"])
+        expected["files"]["copyhere"].pop("folder")
 
-
-def test_already_exists(mock_exists, mock_samefile, mock_copy, mock_trash, mock_mkdir):
-    mock_exists.side_effect = [True, False]
-    mock_samefile.return_value = False
-    copy = Copy(dest="~/folder/", overwrite=False)
-    copy.run(**DEFAULT_ARGS)
-    mock_mkdir.assert_called_with(exist_ok=True, parents=True)
-    mock_exists.assert_called_with()
-    mock_trash.assert_not_called()
-    mock_copy.assert_called_with(
-        src=os.path.join(USER_DIR, "test.py"),
-        dst=os.path.join(USER_DIR, "folder", "test 2.py"),
-    )
-
-
-def test_already_exists_multiple(
-    mock_exists, mock_samefile, mock_copy, mock_trash, mock_mkdir
-):
-    mock_exists.side_effect = [True, True, True, False]
-    mock_samefile.return_value = False
-    copy = Copy(dest="~/folder/", overwrite=False)
-    copy.run(**DEFAULT_ARGS)
-    mock_mkdir.assert_called_with(exist_ok=True, parents=True)
-    mock_exists.assert_called_with()
-    mock_trash.assert_not_called()
-    mock_copy.assert_called_with(
-        src=os.path.join(USER_DIR, "test.py"),
-        dst=os.path.join(USER_DIR, "folder", "test 4.py"),
-    )
-
-
-def test_already_exists_multiple_with_separator(
-    mock_exists, mock_samefile, mock_copy, mock_trash, mock_mkdir
-):
-    args = {
-        "basedir": Path.home(),
-        "path": Path.home() / "test_2.py",
-        "simulate": False,
-    }
-    mock_exists.side_effect = [True, True, True, False]
-    mock_samefile.return_value = False
-    copy = Copy(dest="~/folder/", overwrite=False, counter_separator="_")
-    copy.run(**args)
-    mock_mkdir.assert_called_with(exist_ok=True, parents=True)
-    mock_exists.assert_called_with()
-    mock_trash.assert_not_called()
-    mock_copy.assert_called_with(
-        src=os.path.join(USER_DIR, "test_2.py"),
-        dst=os.path.join(USER_DIR, "folder", "test_5.py"),
-    )
-
-
-def test_makedirs(mock_parent, mock_copy, mock_trash):
-    copy = Copy(dest="~/some/new/folder/", overwrite=False)
-    copy.run(**DEFAULT_ARGS)
-    mock_parent.mkdir.assert_called_with(parents=True, exist_ok=True)
-    mock_trash.assert_not_called()
-    mock_copy.assert_called_with(
-        src=os.path.join(USER_DIR, "test.py"),
-        dst=os.path.join(USER_DIR, "some", "new", "folder", "test.py"),
-    )
-
-
-def test_args(mock_exists, mock_samefile, mock_copy, mock_trash, mock_mkdir):
-    args = {
-        "basedir": Path.home(),
-        "path": Path.home() / "test.py",
-        "simulate": False,
-        "nr": {"upper": 1},
-    }
-    mock_exists.return_value = False
-    mock_samefile.return_value = False
-    copy = Copy(dest="~/{nr.upper}-name.py", overwrite=False)
-    copy.run(**args)
-    mock_mkdir.assert_called_with(exist_ok=True, parents=True)
-    mock_exists.assert_called_with()
-    mock_trash.assert_not_called()
-    mock_copy.assert_called_with(
-        src=os.path.join(USER_DIR, "test.py"), dst=os.path.join(USER_DIR, "1-name.py")
-    )
-
-
-def test_path(mock_exists, mock_samefile, mock_copy, mock_trash, mock_mkdir):
-    mock_exists.return_value = False
-    mock_samefile.return_value = False
-    copy = Copy(dest="~/{path.stem}/{path.suffix}/{path.name}", overwrite=False)
-    copy.run(**DEFAULT_ARGS)
-    mock_mkdir.assert_called_with(exist_ok=True, parents=True)
-    mock_exists.assert_called_with()
-    mock_trash.assert_not_called()
-    mock_copy.assert_called_with(
-        src=os.path.join(USER_DIR, "test.py"),
-        dst=os.path.join(USER_DIR, "test", ".py", "test.py"),
-    )
+        assert result == expected

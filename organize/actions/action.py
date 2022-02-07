@@ -1,41 +1,66 @@
-from textwrap import indent
-from typing import Any, Mapping, Optional, Callable
+import logging
+from typing import Any, Dict
+from typing import Optional as tyOptional
+from typing import Union
 
-from organize.utils import DotDict
+from schema import Optional, Or, Schema
+
+from organize.console import pipeline_error, pipeline_message
+
+logger = logging.getLogger(__name__)
 
 
 class Error(Exception):
     pass
 
 
-class TemplateAttributeError(Error):
-    pass
-
-
 class Action:
-    pre_print_hook = None # type: Optional[Callable]
+    name = None  # type: Union[str, None]
+    arg_schema = None
+    schema_support_instance_without_args = False
 
-    def run(self, **kwargs) -> Optional[Mapping[str, Any]]:
-        return self.pipeline(DotDict(kwargs))
+    @classmethod
+    def get_name(cls):
+        if cls.name:
+            return cls.name
+        return cls.__name__.lower()
 
-    def pipeline(self, args: DotDict) -> Optional[Mapping[str, Any]]:
+    @classmethod
+    def get_schema(cls):
+        if cls.arg_schema:
+            arg_schema = cls.arg_schema
+        else:
+            arg_schema = Or(
+                str,
+                [str],
+                Schema({}, ignore_extra_keys=True),
+            )
+        if cls.schema_support_instance_without_args:
+            return Or(
+                cls.get_name(),
+                {
+                    cls.get_name(): arg_schema,
+                },
+            )
+        return {
+            cls.get_name(): arg_schema,
+        }
+
+    def run(self, simulate: bool, **kwargs) -> tyOptional[Dict[str, Any]]:
+        return self.pipeline(kwargs, simulate=simulate)
+
+    def pipeline(self, args: dict, simulate: bool) -> tyOptional[Dict[str, Any]]:
         raise NotImplementedError
 
-    def print(self, msg) -> None:
-        """ print a message for the user """
-        if callable(self.pre_print_hook):
-            self.pre_print_hook()  # pylint: disable=not-callable
-        print(indent("- [%s] %s" % (self.__class__.__name__, msg), " " * 4))
+    def print(self, *msg) -> None:
+        """print a message for the user"""
+        text = " ".join(str(x) for x in msg)
+        for line in text.splitlines():
+            pipeline_message(source=self.get_name(), msg=line)
 
-    @staticmethod
-    def fill_template_tags(msg: str, args) -> str:
-        try:
-            return msg.format(**args)
-        except AttributeError as exc:
-            cause = exc.args[0]
-            raise TemplateAttributeError(
-                'Missing template variable %s for "%s"' % (cause, msg)
-            )
+    def print_error(self, msg: str):
+        for line in msg.splitlines():
+            pipeline_error(source=self.get_name(), msg=line)
 
     def __str__(self) -> str:
         return self.__class__.__name__

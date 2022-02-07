@@ -1,9 +1,10 @@
 import logging
 import sys
-from pathlib import Path
-from typing import Mapping
 
-import simplematch as sm # type: ignore
+import simplematch as sm
+from schema import Or
+
+from organize.utils import Template
 
 from .action import Action
 
@@ -12,87 +13,45 @@ logger = logging.getLogger(__name__)
 
 class MacOSTags(Action):
 
+    """Add macOS tags.
+
+    Args:
+        *tags (str): A list of tags or a single tag.
+
+    The color can be specified in brackets after the tag name, for example:
+
+    ```yaml
+    macos_tags: "Invoices (red)"
+    ```
+
+    Available colors are `none`, `gray`, `green`, `purple`, `blue`, `yellow`, `red` and
+    `orange`.
     """
-    Add macOS tags.
 
-    Example:
-        - Add a single tag:
+    name = "macos_tags"
 
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Documents/Invoices'
-              - filters:
-                  - filename:
-                      startswith: "Invoice"
-                  - extension: pdf
-              - actions:
-                  - macos_tags: Invoice
-
-        - Adding multiple tags ("Invoice" and "Important"):
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Documents/Invoices'
-              - filters:
-                  - filename:
-                      startswith: "Invoice"
-                  - extension: pdf
-              - actions:
-                  - macos_tags:
-                    - Important
-                    - Invoice
-
-        - Specify tag colors. Available colors are `none`, `gray`, `green`, `purple`, `blue`, `yellow`, `red`, `orange`.
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Documents/Invoices'
-              - filters:
-                  - filename:
-                      startswith: "Invoice"
-                  - extension: pdf
-              - actions:
-                  - macos_tags:
-                    - Important (green)
-                    - Invoice (purple)
-
-        - Add a templated tag with color:
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: '~/Documents/Invoices'
-              - filters:
-                  - created
-              - actions:
-                  - macos_tags:
-                    - Year-{created.year} (red)
-    """
+    @classmethod
+    def get_schema(cls):
+        return {cls.name: Or(str, [str])}
 
     def __init__(self, *tags):
-        self.tags = tags
+        self.tags = [Template(tag) for tag in tags]
 
-    def pipeline(self, args: Mapping):
-        path = args["path"]  # type: Path
-        simulate = args["simulate"]  # type: bool
+    def pipeline(self, args: dict, simulate: bool):
+        fs = args["fs"]
+        fs_path = args["fs_path"]
+        path = fs.getsyspath(fs_path)
 
         if sys.platform != "darwin":
             self.print("The macos_tags action is only available on macOS")
             return
 
-        import macos_tags  # type: ignore
+        import macos_tags
 
         COLORS = [c.name.lower() for c in macos_tags.Color]
 
         for template in self.tags:
-            tag = self.fill_template_tags(template, args)
+            tag = template.render(**args)
             name, color = self._parse_tag(tag)
 
             if color not in COLORS:
@@ -105,11 +64,11 @@ class MacOSTags(Action):
                 _tag = macos_tags.Tag(
                     name=name,
                     color=macos_tags.Color[color.upper()],
-                )
+                )  # type: ignore
                 macos_tags.add(_tag, file=str(path))
 
     def _parse_tag(self, s):
-        """ parse a tag definition and return a tuple (name, color) """
+        """parse a tag definition and return a tuple (name, color)"""
         result = sm.match("{name} ({color})", s)
         if not result:
             return s, "none"

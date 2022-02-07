@@ -4,145 +4,209 @@ Duplicate detection filter.
 Based on this stackoverflow answer:
     https://stackoverflow.com/a/36113168/300783
 
-Which was updated for python3 in:
+Which I updated for python3 in:
     https://gist.github.com/tfeldmann/fc875e6630d11f2256e746f67a09c1ae
-
-The script on stackoverflow has a bug which could lead to false positives. This is fixed
-here by using a tuple (file_size, hash) as key in the comparison dictionaries.
 """
 import hashlib
-import os
 from collections import defaultdict
-from typing import DefaultDict as DDict
-from typing import Dict, List, Set, Tuple, Union
+from typing import Dict, NamedTuple, Set, Union
 
-from organize.utils import fullpath
+from fs.base import FS
+from fs.path import basename
 
-from .filter import Filter
+from organize.utils import is_same_resource
 
+from .filter import Filter, FilterResult
 
-def chunk_reader(fobj, chunk_size=1024):
-    """ Generator that reads a file in chunks of bytes """
-    while True:
-        chunk = fobj.read(chunk_size)
-        if not chunk:
-            return
-        yield chunk
+HASH_ALGORITHM = "sha1"
+DETECTION_METHODS = ("first_seen", "name", "created", "lastmodified")
+DETECTION_METHOD_REGEX = r"(-?)\s*?({})".format("|".join(DETECTION_METHODS))
 
 
-def get_hash(filename, first_chunk_only=False, hash_algo=hashlib.sha1):
-    hashobj = hash_algo()
-    with open(filename, "rb") as f:
-        if first_chunk_only:
-            hashobj.update(f.read(1024))
-        else:
-            for chunk in chunk_reader(f):
-                hashobj.update(chunk)
-    return hashobj.digest()
+class File(NamedTuple):
+    fs: FS
+    path: str
+    base_path: str
+
+    @property
+    def lastmodified(self):
+        return self.fs.getmodified(self.path)
+
+    @property
+    def created(self):
+        return self.fs.getinfo(self.path, namespaces=["details"]).created
+
+    @property
+    def name(self):
+        return basename(self.path)
+
+
+def getsize(f: File):
+    return f.fs.getsize(f.path)
+
+
+def full_hash(f: File):
+    return f.fs.hash(f.path, name=HASH_ALGORITHM)
+
+
+def first_chunk_hash(f: File):
+    hash_object = hashlib.new(HASH_ALGORITHM)
+    with f.fs.openbin(f.path) as file_:
+        hash_object.update(file_.read(1024))
+    return hash_object.hexdigest()
+
+
+def detect_original(known: File, new: File, method: str, reverse: bool):
+    """Returns a tuple (original file, duplicate)"""
+
+    if method == "first_seen":
+        return (known, new) if not reverse else (new, known)
+    elif method == "name":
+        return tuple(sorted((known, new), key=lambda x: x.name, reverse=reverse))
+    elif method == "created":
+        return tuple(sorted((known, new), key=lambda x: x.created, reverse=reverse))
+    elif method == "lastmodified":
+        return tuple(
+            sorted((known, new), key=lambda x: x.lastmodified, reverse=reverse)
+        )
+    else:
+        raise ValueError("Unknown original detection method: %s" % method)
 
 
 class Duplicate(Filter):
-
-    """
-    Finds duplicate files.
+    """A fast duplicate file finder.
 
     This filter compares files byte by byte and finds identical files with potentially
     different filenames.
 
-    :returns:
-        - ``{duplicate}`` -- path to the duplicate source
+    Args:
+        detect_original_by (str):
+            Detection method to distinguish between original and duplicate.
+            Possible values are:
 
-    Examples:
-        - Show all duplicate files in your desktop and download folder (and their
-          subfolders).
+            - `"first_seen"`: Whatever file is visited first is the original. This
+              depends on the order of your location entries.
+            - `"name"`: The first entry sorted by name is the original.
+            - `"created"`: The first entry sorted by creation date is the original.
+            - `"lastmodified"`: The first file sorted by date of last modification is the original.
 
-          .. code-block:: yaml
-            :caption: config.yaml
+    You can reverse the sorting method by prefixing a `-`.
 
-            rules:
-            - folders:
-                - ~/Desktop
-                - ~/Downloads
-                subfolders: true
-                filters:
-                - duplicate
-                actions:
-                - echo: "{path} is a duplicate of {duplicate}"
-    
-    Note: 
-        This filter uses the glob.glob() function to retrieve the list of files. Duplicate list could be returned in arbitrary order depending on the filesystem and the Python glob.glob() function itself. If you have several duplicates of the same file in a folder, you can get arbitrary sorting of results. For a detailed explanation and proposed fix check: https://github.com/tfeldmann/organize/issues/158
+    So with `detect_original_by: "-created"` the file with the older creation date is
+    the original and the younger file is the duplicate. This works on all methods, for
+    example `"-first_seen"`, `"-name"`, `"-created"`, `"-lastmodified"`.
+
+    **Returns:**
+
+    `{duplicate.original}` - The path to the original
     """
 
-    def __init__(self) -> None:
-        self.files_for_size = defaultdict(list)  # type: DDict[int, List[str]]
+    name = "duplicate"
+    schema_support_instance_without_args = True
 
-        # to prevent false positives the keys must be tuples of (file_size, hash).
-        self.files_for_small_hash = defaultdict(
-            list
-        )  # type: DDict[Tuple[int, bytes], List[str]]
-        self.file_for_full_hash = dict()  # type: Dict[Tuple[int, bytes], str]
+    def __init__(self, detect_original_by="first_seen"):
+        if detect_original_by.startswith("-"):
+            self.detect_original_by = detect_original_by[1:]
+            self.select_orignal_reverse = True
+        else:
+            self.detect_original_by = detect_original_by
+            self.select_orignal_reverse = False
 
-        # we keep track of which files we already computed the hashes for so we only do
+        self.files_for_size = defaultdict(list)
+        self.files_for_chunk = defaultdict(list)
+        self.file_for_hash = dict()
+
+        # we keep track of the files we already computed the hashes for so we only do
         # that once.
-        self.small_hash_known = set()  # type: Set[str]
-        self.full_hash_known = set()  # type: Set[str]
+        self.seen_files = set()  # type: Set[File]
+        self.first_chunk_known = set()  # type: Set[File]
+        self.hash_known = set()  # type: Set[File]
 
-    def matches(self, path: str) -> Union[bool, Dict[str, str]]:
-        # the exact same path has already been handled. This might happen if path is a
-        # symlink which resolves to file that is already known. We skip these.
-        if path in self.small_hash_known:
+    def matches(self, fs: FS, path: str, base_path: str):
+        file_ = File(fs=fs, path=path, base_path=base_path)
+        # the exact same path has already been handled. This happens if multiple
+        # locations emit this file in a single rule or if we follow symlinks.
+        # We skip these.
+        if file_ in self.seen_files or any(
+            is_same_resource(file_.fs, file_.path, x.fs, x.path)
+            for x in self.seen_files
+        ):
             return False
 
+        self.seen_files.add(file_)
+
         # check for files with equal size
-        file_size = os.path.getsize(path)  # type: int
+        file_size = getsize(file_)
         same_size = self.files_for_size[file_size]
-        candidates_fsize = same_size[:]
-        same_size.append(path)
-        if not candidates_fsize:
+        same_size.append(file_)
+        if len(same_size) == 1:
             # the file is unique in size and cannot be a duplicate
             return False
 
-        # for all other files with the same file size, get their hash of the first 1024
-        # bytes
-        for c in candidates_fsize:
-            if c not in self.small_hash_known:
-                try:
-                    c_small_hash = get_hash(c, first_chunk_only=True)
-                    self.files_for_small_hash[(file_size, c_small_hash)].append(c)
-                    self.small_hash_known.add(c)
-                except OSError:
-                    pass
+        # for all other files with the same file size:
+        # make sure we know their hash of their first 1024 byte chunk
+        for f in same_size[:-1]:
+            if f not in self.first_chunk_known:
+                chunk_hash = first_chunk_hash(f)
+                self.first_chunk_known.add(f)
+                self.files_for_chunk[chunk_hash].append(f)
 
-        # check small hash collisions with the current file
-        small_hash = get_hash(path, first_chunk_only=True)
-        same_small_hash = self.files_for_small_hash[(file_size, small_hash)]
-        candidates_shash = same_small_hash[:]
-        same_small_hash.append(path)
-        self.small_hash_known.add(path)
-        if not candidates_shash:
+        # check first chunk hash collisions with the current file
+        chunk_hash = first_chunk_hash(file_)
+        same_first_chunk = self.files_for_chunk[chunk_hash]
+        same_first_chunk.append(file_)
+        self.first_chunk_known.add(file_)
+        if len(same_first_chunk) == 1:
             # the file has a unique small hash and cannot be a duplicate
             return False
 
-        # For all other files with the same file size and small hash get the full hash
-        for c in candidates_shash:
-            if c not in self.full_hash_known:
-                try:
-                    c_full_hash = get_hash(c, first_chunk_only=False)
-                    self.file_for_full_hash[(file_size, c_full_hash)] = c
-                    self.full_hash_known.add(c)
-                except OSError:
-                    pass
+        # Ensure we know the full hashes of all files with the same first chunk as
+        # the investigated file
+        for f in same_first_chunk[:-1]:
+            if f not in self.hash_known:
+                hash_ = full_hash(f)
+                self.hash_known.add(f)
+                self.file_for_hash[hash_] = f
 
         # check full hash collisions with the current file
-        full_hash = get_hash(path, first_chunk_only=False)
-        duplicate = self.file_for_full_hash.get((file_size, full_hash))
-        if duplicate:
-            return {"duplicate": duplicate}
-        self.file_for_full_hash[(file_size, full_hash)] = path
+        hash_ = full_hash(file_)
+        self.hash_known.add(file_)
+        known = self.file_for_hash.get(hash_)
+        if known:
+            original, duplicate = detect_original(
+                known=known,
+                new=file_,
+                method=self.detect_original_by,
+                reverse=self.select_orignal_reverse,
+            )
+            if known != original:
+                self.file_for_hash[hash_] = original
+
+            resource_changed_reason = "duplicate of" if known != original else None
+            from organize.core import syspath_or_exception
+
+            return {
+                "fs": duplicate.fs,
+                "fs_path": duplicate.path,
+                "fs_base_path": duplicate.base_path,
+                "resource_changed": resource_changed_reason,
+                self.get_name(): {
+                    "original": syspath_or_exception(original.fs, original.path)
+                },
+            }
+
         return False
 
     def pipeline(self, args):
-        return self.matches(str(fullpath(args["path"])))
+        fs = args["fs"]
+        fs_path = args["fs_path"]
+        fs_base_path = args["fs_base_path"]
+        if fs.isdir(fs_path):
+            raise EnvironmentError("Dirs are not supported")
+        result = self.matches(fs=fs, path=fs_path, base_path=fs_base_path)
+        if result is False:
+            return FilterResult(matches=False, updates={})
+        return FilterResult(matches=True, updates=result)
 
     def __str__(self) -> str:
         return "Duplicate()"
