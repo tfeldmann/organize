@@ -78,6 +78,10 @@
                 <ul class="current">
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Changelog</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#v202-2022-02-07">v2.0.2 (2022-02-07)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v201-2022-02-07">v2.0.1 (2022-02-07)</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#v200-2022-02-07">v2.0.0 (2022-02-07)</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#whats-new">what's new</a>
@@ -179,6 +183,15 @@
               
                 <!-- BEGIN INCLUDE ../CHANGELOG.md   -->
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">#</a></h1>
+<h2 id="v202-2022-02-07">v2.0.2 (2022-02-07)<a class="headerlink" href="#v202-2022-02-07" title="Permanent link">#</a></h2>
+<ul>
+<li>Bugfix in env variable expansion in locations</li>
+</ul>
+<h2 id="v201-2022-02-07">v2.0.1 (2022-02-07)<a class="headerlink" href="#v201-2022-02-07" title="Permanent link">#</a></h2>
+<ul>
+<li>Small bugfix in <code>macos_tags</code> action.</li>
+<li>Bugfix in the migration detection.</li>
+</ul>
 <h2 id="v200-2022-02-07">v2.0.0 (2022-02-07)<a class="headerlink" href="#v200-2022-02-07" title="Permanent link">#</a></h2>
 <p>This is a huge update with lots of improvements.
 Please backup all your important stuff before running and use the simulate option!</p>
@@ -201,6 +214,8 @@ Please backup all your important stuff before running and use the simulate optio
   <a href="../actions/#copy"><code>copy</code></a> and <a href="../actions/#rename"><code>rename</code></a> action:</li>
 <li>Options are <code>skip</code>, <code>overwrite</code>, <code>trash</code>, <code>rename_new</code> or <code>rename_existing</code></li>
 <li>You can now define a custom <code>rename_template</code>.</li>
+<li>The <a href="../filters/#duplicate"><code>duplicate</code></a> now supports several options on how to
+  distinguish between original and duplicate file.</li>
 <li>The <a href="../actions/#python"><code>python</code></a> action can now be run in simulation.</li>
 <li>The <a href="../actions/#shell"><code>shell</code></a> action now returns stdout and errorcode.</li>
 <li>Added filter <a href="../filters/#empty"><code>empty</code></a> - find empty files and folders</li>
