@@ -33,7 +33,7 @@ Please backup all your important stuff before running and use the simulate optio
 
 - [See the changelog](https://organize.readthedocs.io/en/latest/changelog/) for all the new
   features!
-- [Migration guide](https://organize.readthedocs.io/en/latest/updating-from-v1/)updating-from-v1.md) from organize v1
+- [Migration guide](https://organize.readthedocs.io/en/latest/updating-from-v1/) from organize v1
 
 ## About
 
