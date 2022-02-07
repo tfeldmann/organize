@@ -2,5 +2,5 @@
 
 {%
   include-markdown "../README.md"
-  rewrite-relative-urls=false
+  rewrite-relative-urls=true
 %}
