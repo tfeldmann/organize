@@ -140,7 +140,7 @@ def replace_with_instances(config: dict):
                 if isinstance(options, dict) and options.get("ignore_errors", False):
                     warnings.append(str(e))
                 else:
-                    raise ValueError("Invalid location %s" % options) from e
+                    raise ValueError("Invalid location %s (%s)" % (options, e)) from e
 
         # filters are optional
         _filters = []

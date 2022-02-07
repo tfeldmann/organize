@@ -1,5 +1,9 @@
 # Changelog
 
+## WIP
+
+- Bugfix in env variable expansion in locations
+
 ## v2.0.1 (2022-02-07)
 
 - Small bugfix in `macos_tags` action.

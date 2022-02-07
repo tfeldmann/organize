@@ -101,13 +101,13 @@ def fs_path_from_options(
     - if a filesystem is given, we use that.
     - otherwise we treat the path as a filesystem.
     """
-    path = expand_user(path)
+    path = expand_args(path)
 
     if not filesystem:
         return (open_fs(path), "/")
     else:
         if isinstance(filesystem, str):
-            filesystem = expand_user(filesystem)
+            filesystem = expand_args(filesystem)
             return (open_fs(filesystem), path)
         return (filesystem, path)
 
