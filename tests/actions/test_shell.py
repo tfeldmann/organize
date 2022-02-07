@@ -10,7 +10,9 @@ def test_shell_basic():
     assert not result
 
     result = shell.run(simulate=False)
-    assert result["shell"] == {"output": "Hello World\n", "returncode": 0}
+    result = result["shell"]
+    assert result["output"].strip() == "Hello World"
+    assert result["returncode"] == 0
 
 
 def test_shell_template_simulation():
