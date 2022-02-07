@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.3 (2022-02-07)
+
+- Fixed typo: `system_exlude_files`
+
 ## v2.0.2 (2022-02-07)
 
 - Bugfix in env variable expansion in locations
