@@ -103,13 +103,12 @@ def fs_path_from_options(
     """
     path = expand_args(path)
 
-    if not filesystem:
-        return (open_fs(path), "/")
-    else:
+    if filesystem:
         if isinstance(filesystem, str):
             filesystem = expand_args(filesystem)
-            return (open_fs(filesystem), path)
+            return (open_fs(filesystem), path)  # type: ignore
         return (filesystem, path)
+    return (open_fs(path), "/")
 
 
 def is_same_resource(fs1: FS, path1: str, fs2: FS, path2: str):
