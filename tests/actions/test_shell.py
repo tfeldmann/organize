@@ -16,4 +16,6 @@ def test_shell_basic():
 def test_shell_template_simulation():
     shell = Shell("echo '{msg}'", run_in_simulation=True)
     result = shell.run(msg="Hello", simulate=True)
-    assert result["shell"] == {"output": "Hello\n", "returncode": 0}
+    result = result["shell"]
+    assert result["output"].strip() == "Hello"
+    assert result["returncode"] == 0
