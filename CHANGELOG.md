@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v2.0.2 (2022-02-07)
 
 - Bugfix in env variable expansion in locations
 
