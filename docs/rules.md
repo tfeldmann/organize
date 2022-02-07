@@ -76,6 +76,9 @@ All your environment variables. You can access individual env vars like this: `{
 The full path to the current file / folder on the local harddrive.
 This is not available for remote locations - in this case use `fs` and `fs_path`.
 
+`{relative_path}` (`str`)<br>
+the relative path of the current file in `{fs}`.
+
 `{now}` (`datetime`)<br>
 The current datetime in the local timezone.
 
@@ -83,13 +86,10 @@ The current datetime in the local timezone.
 The current UTC datetime.
 
 `{fs}` (`FS`)<br>
-The filesystem of the current location.
+The filesystem of the current location. Normally you should not need this.
 
 `{fs_path}` (`str`)<br>
-The path of the current file / folder in related to `fs`.
-
-`{relative_path}` (`str`)<br>
-the relative path of the current file in `{fs}`.
+The path of the current file / folder in related to `fs`. Normally you should not need this.
 
 In addition to that nearly all filters add new placeholders with information about
 the currently handled file / folder.
@@ -106,7 +106,9 @@ rules:
       - echo: "{size} {hash}"
 ```
 
-Note: In order to use a value returned by a filter it must be listed in the filters!
+!!! note
+
+    In order to use a value returned by a filter it must be listed in the filters!
 
 ## Advanced: Aliases
 

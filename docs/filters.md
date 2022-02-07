@@ -42,6 +42,8 @@ rules:
 
 **Examples:**
 
+Show all files on your desktop created at least 10 days ago
+
 ```yaml
 rules:
   - name: Show all files on your desktop created at least 10 days ago
@@ -52,6 +54,8 @@ rules:
     actions:
       - echo: "Was created at least 10 days ago"
 ```
+
+Show all files on your desktop which were created within the last 5 hours
 
 ```yaml
 rules:
@@ -65,6 +69,8 @@ rules:
       - echo: "Was created within the last 5 hours"
 ```
 
+Sort pdfs by year of creation
+
 ```yaml
 rules:
   - name: Sort pdfs by year of creation
@@ -76,11 +82,26 @@ rules:
       - move: "~/Documents/PDF/{created.year}/"
 ```
 
+Formatting the creation date
+
+```yaml
+rules:
+  - name: Display the creation date
+    locations: "~/Documents"
+    filters:
+      - extension: pdf
+      - created
+    actions:
+      - echo: "{created.strftime('%Y-%m-%d')}"
+```
+
 ## duplicate
 
 ::: organize.filters.Duplicate
 
 **Examples:**
+
+Show all duplicate files in your desktop and download folder (and their subfolders)
 
 ```yaml
 rules:
@@ -94,6 +115,8 @@ rules:
     actions:
       - echo: "{path} is a duplicate of {duplicate.original}"
 ```
+
+Check for duplicated files between Desktop and a Zip file, select original by creation date
 
 ```yaml
 rules:
@@ -114,10 +137,11 @@ rules:
 
 **Examples:**
 
+Recursively delete empty folders
+
 ```yaml
 rules:
-  - name: "Recursively delete empty folders"
-    targets: dirs
+  - targets: dirs
     locations:
       - path: ~/Desktop
         max_depth: null
@@ -130,6 +154,8 @@ rules:
 ## exif
 
 ::: organize.filters.Exif
+
+Show available EXIF data of your pictures
 
 ```yaml
 rules:
@@ -156,6 +182,8 @@ rules:
     actions:
       - copy: ~/Pictures/with_gps/{relative_path}/
 ```
+
+Filter by camera manufacturer
 
 ```yaml
 rules:
@@ -193,6 +221,8 @@ rules:
 
 **Examples:**
 
+Match a single file extension
+
 ```yaml
 rules:
   - name: "Match a single file extension"
@@ -202,6 +232,8 @@ rules:
     actions:
       - echo: "Found PNG file: {path}"
 ```
+
+Match multiple file extensions
 
 ```yaml
 rules:
@@ -215,6 +247,8 @@ rules:
       - echo: "Found JPG file: {path}"
 ```
 
+Make all file extensions lowercase
+
 ```yaml
 rules:
   - name: "Make all file extensions lowercase"
@@ -222,8 +256,10 @@ rules:
     filters:
       - extension
     actions:
-      - rename: "{path.stem}.{extension.lower}"
+      - rename: "{path.stem}.{extension.lower()}"
 ```
+
+Using extension lists ([yaml aliases](rules.md#advanced-aliases)
 
 ```yaml
 img_ext: &img
@@ -253,16 +289,20 @@ rules:
 
 **Examples:**
 
+Show the content of all your PDF files
+
 ```yaml
 rules:
   - name: "Show the content of all your PDF files"
     locations: ~/Documents
     filters:
       - extension: pdf
-      - filecontent: "(?P<all>.*)"
+      - filecontent
     actions:
-      - echo: "{filecontent.all}"
+      - echo: "{filecontent}"
 ```
+
+Match an invoice with a regular expression and sort by customer
 
 ```yaml
 rules:
@@ -277,6 +317,21 @@ rules:
 ## hash
 
 ::: organize.filters.Hash
+
+**Examples:**
+
+Show the hashes of your files:
+
+```yaml
+rules:
+  - name: "Show the hashes and size of your files"
+    locations: "~/Desktop"
+    filters:
+      - hash
+      - size
+    actions:
+      - echo: "{hash} {size.decimal}"
+```
 
 ## lastmodified
 
@@ -308,6 +363,8 @@ rules:
       - echo: "Was modified within the last 5 hours"
 ```
 
+Sort pdfs by year of last modification
+
 ```yaml
 rules:
   - name: "Sort pdfs by year of last modification"
@@ -319,11 +376,26 @@ rules:
       - move: "~/Documents/PDF/{lastmodified.year}/"
 ```
 
+Formatting the last modified date
+
+```yaml
+rules:
+  - name: Formatting the lastmodified date
+    locations: "~/Documents"
+    filters:
+      - extension: pdf
+      - lastmodified
+    actions:
+      - echo: "{lastmodified.strftime('%Y-%m-%d')}"
+```
+
 ## mimetype
 
 ::: organize.filters.MimeType
 
 **Examples:**
+
+Show MIME types
 
 ```yaml
 rules:
@@ -335,6 +407,8 @@ rules:
       - echo: "{mimetype}"
 ```
 
+Filter by 'image' mimetype
+
 ```yaml
 rules:
   - name: "Filter by 'image' mimetype"
@@ -345,6 +419,8 @@ rules:
       - echo: "This file is an image: {mimetype}"
 ```
 
+Filter by specific MIME type
+
 ```yaml
 rules:
   - name: Filter by specific MIME type
@@ -354,6 +430,8 @@ rules:
     actions:
       - echo: "Found a PDF file"
 ```
+
+Filter by multiple specific MIME types
 
 ```yaml
 rules:

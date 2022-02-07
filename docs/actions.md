@@ -13,7 +13,7 @@ Confirm before deleting a duplicate
 
 ```yaml
 rules:
-  - name: "Delete duplicates"
+  - name: "Delete duplicates with confirmation"
     locations:
       - ~/Downloads
       - ~/Documents
@@ -22,7 +22,7 @@ rules:
       - duplicate
       - name
     actions:
-      - confirm: "Delete {duplicate}?"
+      - confirm: "Delete {name}?"
       - trash
 ```
 
@@ -54,7 +54,7 @@ rules:
           - jpg
     actions:
       - copy:
-          dest: "~/Desktop/{extension.upper}/"
+          dest: "~/Desktop/{extension.upper()}/"
           on_conflict: overwrite
 ```
 
@@ -81,6 +81,8 @@ rules:
 
 **Examples:**
 
+Delete old downloads.
+
 ```yaml
 rules:
   - locations: "~/Downloads"
@@ -93,6 +95,8 @@ rules:
     actions:
       - delete
 ```
+
+Delete all empty subfolders
 
 ```yaml
 rules:
@@ -134,7 +138,7 @@ rules:
       - echo: "Hello World! {path}"
 ```
 
-This will print something like `Found a PNG: "test.png"` for each file on your desktop
+This will print something like `Found a ZIP: "backup"` for each file on your desktop
 
 ```yaml
 rules:
@@ -142,11 +146,12 @@ rules:
       - ~/Desktop
     filters:
       - extension
+      - name
     actions:
-      - echo: 'Found a {extension.upper}: "{path.name}"'
+      - echo: 'Found a {extension.upper()}: "{name}"'
 ```
 
-Show the `{basedir}` and `{path}` of all files in '~/Downloads', '~/Desktop' and their subfolders:
+Show the `{relative_path}` and `{path}` of all files in '~/Downloads', '~/Desktop' and their subfolders:
 
 ```yaml
 rules:
@@ -156,8 +161,8 @@ rules:
       - path: ~/Downloads
         max_depth: null
     actions:
-      - echo: "Basedir: {basedir}"
-      - echo: "Path:    {path}"
+      - echo: "Path:     {path}"
+      - echo: "Relative: {relative_path}"
 ```
 
 ## macos_tags
@@ -251,7 +256,7 @@ rules:
           - jpg
     actions:
       - move:
-          dest: "~/Desktop/{extension.upper}/"
+          dest: "~/Desktop/{extension.upper()}/"
           on_conflict: "overwrite"
 ```
 
@@ -297,11 +302,11 @@ rules:
       - regex: '^(?P<name>.*)\.(?P<extension>.*)$'
     actions:
       - python: |
-          print('Name: %s' % regex.name)
-          print('Extension: %s' % regex.extension)
+          print('Name: %s' % regex["name"])
+          print('Extension: %s' % regex["extension"])
 ```
 
-Running in simulation and yaml aliases:
+Running in simulation and [yaml aliases](rules.md#advanced-aliases):
 
 ```yaml
 my_python_script: &script |
@@ -330,7 +335,7 @@ rules:
     actions:
       - python: |
           import webbrowser
-          webbrowser.open('https://www.google.com/search?q=%s' % path.stem)
+          webbrowser.open('https://www.google.com/search?q=%s' % name)
 ```
 
 ## rename
@@ -344,9 +349,10 @@ rules:
   - name: "Convert all .PDF file extensions to lowercase (.pdf)"
     locations: "~/Desktop"
     filters:
+      - name
       - extension: PDF
     actions:
-      - rename: "{path.stem}.pdf"
+      - rename: "{name}.pdf"
 ```
 
 ```yaml
@@ -354,9 +360,10 @@ rules:
   - name: "Convert **all** file extensions to lowercase"
     locations: "~/Desktop"
     filters:
+      - name
       - extension
     actions:
-      - rename: "{path.stem}.{extension.lower}"
+      - rename: "{name}.{extension.lower()}"
 ```
 
 ## shell

@@ -7,7 +7,7 @@ def test_rename_issue52():
     # test for issue https://github.com/tfeldmann/organize/issues/51
     files = {
         "files": {
-            "19asd_WF_test2.pdf": "",
+            "19asd_WF_test2.PDF": "",
             "other.pdf": "",
             "18asd_WFX_test2.pdf": "",
         }
@@ -17,13 +17,14 @@ def test_rename_issue52():
         config = rules_shortcut(
             mem,
             filters="""
+            - extension
             - name:
                 startswith: "19"
                 contains:
                     - "_WF_"
             """,
             actions=[
-                {"rename": "{path.stem}_unread{path.suffix}"},
+                {"rename": "{path.stem}_unread.{extension.lower()}"},
                 {"copy": {"dest": "files/copy/", "filesystem": mem}},
             ],
         )
