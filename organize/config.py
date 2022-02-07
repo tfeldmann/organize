@@ -34,7 +34,7 @@ CONFIG_SCHEMA = Schema(
                                 Optional("search"): Or("depth", "breadth"),
                                 Optional("exclude_files"): [str],
                                 Optional("exclude_dirs"): [str],
-                                Optional("system_exlude_files"): [str],
+                                Optional("system_exclude_files"): [str],
                                 Optional("system_exclude_dirs"): [str],
                                 Optional("ignore_errors"): bool,
                                 Optional("filter"): [str],

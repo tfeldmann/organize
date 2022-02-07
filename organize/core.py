@@ -50,7 +50,7 @@ DEFAULT_SYSTEM_EXCLUDE_DIRS = [
 
 def convert_options_to_walker_args(options: dict):
     # combine system_exclude and exclude into a single list
-    excludes = options.get("system_exlude_files", DEFAULT_SYSTEM_EXCLUDE_FILES)
+    excludes = options.get("system_exclude_files", DEFAULT_SYSTEM_EXCLUDE_FILES)
     excludes.extend(options.get("exclude_files", []))
     exclude_dirs = options.get("system_exclude_dirs", DEFAULT_SYSTEM_EXCLUDE_DIRS)
     exclude_dirs.extend(options.get("exclude_dirs", []))

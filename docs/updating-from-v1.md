@@ -14,7 +14,7 @@ Folders have become [Locations](locations.md) in organize v2.
 - `folders` must be renamed to `locations` in your config.
 - REMOVED: The glob syntax (`/Docs/**/*.png`).
   See [Location options](locations.md#location-options).
-- REMOVED: The exclamation mark exlucde syntax (`! ~/Desktop/exclude`).
+- REMOVED: The exclamation mark exclude syntax (`! ~/Desktop/exclude`).
   See [Location options](locations.md#location-options).
 - All keys (filter names, action names, option names) now must be lowercase.
 
