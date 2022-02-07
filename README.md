@@ -26,6 +26,7 @@
 <a href="https://organize.readthedocs.io/" target="_blank">Full documentation at Read the docs</a>
 </p>
 
+- [**organize v2 is released!**](#organize-v2-is-released)
 - [About](#about)
 - [Features](#features)
 - [Getting started](#getting-started)
@@ -33,6 +34,18 @@
   - [Create your first rule](#create-your-first-rule)
 - [Example rules](#example-rules)
 - [Command line interface](#command-line-interface)
+
+## **organize v2 is released!**
+
+This is a huge update with lots of improvements.
+
+See [the changelog](https://organize.readthedocs.io/en/v2/changelog/) for all the new
+features!
+
+Unfortunately your configuration may need some small adjustments:
+[**Migration Guide**](docs/updating-from-v1.md)
+
+Please backup all your important stuff before running and use the simulate option!
 
 ## About
 

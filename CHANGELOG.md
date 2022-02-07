@@ -1,6 +1,6 @@
 # Changelog
 
-## v2.0.0 - WIP
+## v2.0.0 (2022-02-07)
 
 This is a huge update with lots of improvements.
 Please backup all your important stuff before running and use the simulate option!

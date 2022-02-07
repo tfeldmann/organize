@@ -6,10 +6,10 @@ on:
       - "docs/**"
       - "*.md"
     branches:
-      - v2
+      - main
   pull_request:
     branches:
-      - v2
+      - main
   workflow_dispatch:
 
 jobs:
