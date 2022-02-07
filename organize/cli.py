@@ -212,7 +212,7 @@ def check(config, debug):
         validate(rules)
 
         if debug:
-            out.print("Validtion ok.")
+            out.print("Validation ok.")
             out.print("\n\n")
             out.rule("Instantiation", align="left")
 

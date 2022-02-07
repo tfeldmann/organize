@@ -35,7 +35,7 @@ class MacOSTags(Action):
         return {cls.name: Or(str, [str])}
 
     def __init__(self, *tags):
-        self.tags = [Template(tag) for tag in tags]
+        self.tags = [Template.from_string(tag) for tag in tags]
 
     def pipeline(self, args: dict, simulate: bool):
         fs = args["fs"]
