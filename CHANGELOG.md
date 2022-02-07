@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.1 (2022-02-07)
+
+- Small bugfix in `macos_tags` action.
+- Bugfix in the migration detection.
+
 ## v2.0.0 (2022-02-07)
 
 This is a huge update with lots of improvements.
