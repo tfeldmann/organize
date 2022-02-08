@@ -33,8 +33,6 @@ rules:
     actions: ...
 ```
 
-Note that you can use environment variables in your locations.
-
 ## Location options
 
 ```yml
@@ -116,6 +114,29 @@ rules:
 - If `subfolders: true` is specified on the rule, all locations are set to `max_depth: null`
   by default.
 - A `max_depth` setting in a location is given precedence over the rule's `subfolders` setting.
+
+## Environment variables in locations
+
+You can use environment variables in your locations. You can access them via the `{env}`
+placeholder or prefix them with a dollar sign.
+
+Examples:
+
+```yaml
+rules:
+  - locations:
+      # via {env} - the "" are important here!
+      - "{env.MY_FOLDER}"
+
+      # via $ - equal to the one above.
+      - "$MY_FOLDER"
+
+      # with location options
+      - path: "{env.OTHER_FOLDER}/Inbox/Invoices"
+        max_depth: null
+    actions:
+      - echo: "{path}"
+```
 
 ## Remote filesystems and archives
 

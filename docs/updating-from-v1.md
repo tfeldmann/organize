@@ -88,9 +88,27 @@ rules:
       - move:
           dest: ~/Documents/PDFs/
           on_conflict: rename_new
-          rename_template: "{name}-{:02}.format(counter){extension}"
+          rename_template: "{name}-{counter}{extension}"
 ```
 
 If you used `move`, `copy` or `rename` without arguments, nothing changes for you.
+
+## Settings
+
+The `system_files` setting has been removed. In order to include system files in your
+search, overwrite the default [`system_exclude_files`](locations.md#location-options)
+with an empty list:
+
+```yaml
+rules:
+  - locations:
+      - path: ~/Desktop/
+        system_exclude_files: []
+        system_exclude_dirs: []
+    filters:
+      - name: .DS_Store
+    actions:
+      - trash
+```
 
 That's it. Again, feel free to open a issue if you have trouble migrating your config.
