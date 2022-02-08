@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v2.0.4 (2022-02-08)
 
 - exclude_dir, system_exclude_dirs, exclude_files, system_exclude_files, filter and
   filter_dirs now accept single strings.
