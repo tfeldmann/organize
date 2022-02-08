@@ -2,6 +2,7 @@ from typing import Callable, Union
 
 from fs import open_fs
 from fs import errors
+from fs.opener.errors import OpenerError
 from fs.base import FS
 from fs.copy import copy_dir, copy_file
 from fs.path import dirname
@@ -101,7 +102,7 @@ class Copy(Action):
 
         try:
             dst_fs = open_fs(dst_fs, create=False, writeable=True)
-        except errors.CreateFailed:
+        except (errors.CreateFailed, OpenerError):
             if not simulate:
                 dst_fs = open_fs(dst_fs, create=True, writeable=True)
             else:

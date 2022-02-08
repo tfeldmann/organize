@@ -1,5 +1,9 @@
 # Changelog
 
+## WIP
+
+- Speed up file moving
+
 ## v2.0.5 (2022-02-08)
 
 - Fixed the migration message and docs URL

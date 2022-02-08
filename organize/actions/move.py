@@ -1,16 +1,35 @@
+from os.path import commonpath
 from typing import Callable, Union
 
-from fs import open_fs
-from fs import errors
+from fs import errors, open_fs
 from fs.base import FS
+from fs.errors import NoSysPath
 from fs.move import move_dir, move_file
-from fs.path import dirname
+from fs.opener.errors import OpenerError
+from fs.osfs import OSFS
+from fs.path import dirname, frombase
 from schema import Optional, Or
 
-from organize.utils import Template, safe_description, SimulationFS
+from organize.utils import SimulationFS, Template, safe_description
 
 from .action import Action
 from .copymove_utils import CONFLICT_OPTIONS, check_conflict, dst_from_options
+
+
+def move_file_optimized(src_fs, src_path, dst_fs, dst_path):
+    try:
+        if isinstance(src_fs, OSFS) and isinstance(dst_fs, OSFS):
+            src_syspath = src_fs.getsyspath(src_path)
+            dst_syspath = dst_fs.getsyspath(dst_path)
+            common = commonpath([src_syspath, dst_syspath])
+            rel_src = frombase(common, src_syspath)
+            rel_dst = frombase(common, dst_syspath)
+            with open_fs(common, writeable=True) as base:
+                base.move(rel_src, rel_dst)
+            return
+    except (ValueError, NoSysPath):
+        pass
+    move_file(src_fs, src_path, dst_fs, dst_path)
 
 
 class Move(Action):
@@ -81,7 +100,7 @@ class Move(Action):
         if src_fs.isdir(src_path):
             move_action = move_dir
         elif src_fs.isfile(src_path):
-            move_action = move_file
+            move_action = move_file_optimized
 
         dst_fs, dst_path = dst_from_options(
             src_path=src_path,
@@ -104,7 +123,7 @@ class Move(Action):
 
         try:
             dst_fs = open_fs(dst_fs, create=False, writeable=True)
-        except errors.CreateFailed:
+        except (errors.CreateFailed, OpenerError):
             if not simulate:
                 dst_fs = open_fs(dst_fs, create=True, writeable=True)
             else:
