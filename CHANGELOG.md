@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.5 (2022-02-08)
+
+- Fixed the migration message and docs URL
+
 ## v2.0.4 (2022-02-08)
 
 - exclude_dir, system_exclude_dirs, exclude_files, system_exclude_files, filter and
