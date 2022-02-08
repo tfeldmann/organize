@@ -15,7 +15,7 @@ from .__version__ import __version__
 from .migration import NeedsMigrationError
 
 DOCS_URL = "https://organize.readthedocs.io"  # "https://tfeldmann.github.io/organize/"
-MIGRATE_URL = DOCS_URL + "updating-from-v1/"
+MIGRATE_URL = DOCS_URL + "/updating-from-v1/"
 DEFAULT_CONFIG = """\
 # organize configuration file
 # {docs}
