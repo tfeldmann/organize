@@ -74,6 +74,8 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#environment-variables-in-locations">Environment variables in locations</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#remote-filesystems-and-archives">Remote filesystems and archives</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#relative-locations">Relative locations</a>
@@ -153,7 +155,6 @@ You can set multiple locations for each rule if you want.</p>
         max_depth: 3
     actions: ...
 </code></pre>
-<p>Note that you can use environment variables in your locations.</p>
 <h2 id="location-options">Location options<a class="headerlink" href="#location-options" title="Permanent link">#</a></h2>
 <pre><code class="language-yml">rules:
   - locations:
@@ -215,6 +216,24 @@ A <a href="#filesystems">Filesystem URL</a>.</p>
   by default.</li>
 <li>A <code>max_depth</code> setting in a location is given precedence over the rule's <code>subfolders</code> setting.</li>
 </ul>
+<h2 id="environment-variables-in-locations">Environment variables in locations<a class="headerlink" href="#environment-variables-in-locations" title="Permanent link">#</a></h2>
+<p>You can use environment variables in your locations. You can access them via the <code>{env}</code>
+placeholder or prefix them with a dollar sign.</p>
+<p>Examples:</p>
+<pre><code class="language-yaml">rules:
+  - locations:
+      # via {env} - the &quot;&quot; are important here!
+      - &quot;{env.MY_FOLDER}&quot;
+
+      # via $ - equal to the one above.
+      - &quot;$MY_FOLDER&quot;
+
+      # with location options
+      - path: &quot;{env.OTHER_FOLDER}/Inbox/Invoices&quot;
+        max_depth: null
+    actions:
+      - echo: &quot;{path}&quot;
+</code></pre>
 <h2 id="remote-filesystems-and-archives">Remote filesystems and archives<a class="headerlink" href="#remote-filesystems-and-archives" title="Permanent link">#</a></h2>
 <p>Locations in organize can include:</p>
 <ul>

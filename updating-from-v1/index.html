@@ -62,6 +62,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#actions">Actions</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#settings">Settings</a>
+    </li>
     </ul>
                     </li>
                 </ul>
@@ -194,9 +196,23 @@ conflict.</p>
       - move:
           dest: ~/Documents/PDFs/
           on_conflict: rename_new
-          rename_template: &quot;{name}-{:02}.format(counter){extension}&quot;
+          rename_template: &quot;{name}-{counter}{extension}&quot;
 </code></pre>
 <p>If you used <code>move</code>, <code>copy</code> or <code>rename</code> without arguments, nothing changes for you.</p>
+<h2 id="settings">Settings<a class="headerlink" href="#settings" title="Permanent link">#</a></h2>
+<p>The <code>system_files</code> setting has been removed. In order to include system files in your
+search, overwrite the default <a href="../locations/#location-options"><code>system_exclude_files</code></a>
+with an empty list:</p>
+<pre><code class="language-yaml">rules:
+  - locations:
+      - path: ~/Desktop/
+        system_exclude_files: []
+        system_exclude_dirs: []
+    filters:
+      - name: .DS_Store
+    actions:
+      - trash
+</code></pre>
 <p>That's it. Again, feel free to open a issue if you have trouble migrating your config.</p>
               
             </div>
