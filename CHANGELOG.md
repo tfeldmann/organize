@@ -2,9 +2,9 @@
 
 ## WIP
 
-- exclude_dir, system_exclude_dirs, exclude_files, system_exclude_files now accept
-  single strings.
-- Fixed a bug 
+- exclude_dir, system_exclude_dirs, exclude_files, system_exclude_files, filter and
+  filter_dirs now accept single strings.
+- Fixed a bug in the name filter
 
 ## v2.0.3 (2022-02-07)
 
