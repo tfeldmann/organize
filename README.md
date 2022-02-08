@@ -48,6 +48,8 @@ or File Juggler (Windows).
 
 Some highlights include:
 
+- Free and open source
+- Works on macOS, Windows and Linux
 - Safe moving, renaming, copying of files and folders with conflict resolution options
 - Fast duplicate file detection
 - Exif tags extraction
