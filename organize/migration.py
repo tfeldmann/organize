@@ -37,4 +37,5 @@ def migrate_v1(config: dict):
                         raise NeedsMigrationError(
                             "`%s` does not support `overwrite` and "
                             "`counter_seperator` anymore. Please use the new arguments."
+                            % name
                         )
