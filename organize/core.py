@@ -50,21 +50,40 @@ DEFAULT_SYSTEM_EXCLUDE_DIRS = [
 
 def convert_options_to_walker_args(options: dict):
     # combine system_exclude and exclude into a single list
-    excludes = options.get("system_exclude_files", DEFAULT_SYSTEM_EXCLUDE_FILES)
-    excludes.extend(options.get("exclude_files", []))
-    exclude_dirs = options.get("system_exclude_dirs", DEFAULT_SYSTEM_EXCLUDE_DIRS)
-    exclude_dirs.extend(options.get("exclude_dirs", []))
+    excludes = ensure_list(
+        options.get("system_exclude_files", DEFAULT_SYSTEM_EXCLUDE_FILES)
+    )
+    excludes.extend(ensure_list(options.get("exclude_files", [])))
+    exclude_dirs = ensure_list(
+        options.get("system_exclude_dirs", DEFAULT_SYSTEM_EXCLUDE_DIRS)
+    )
+    exclude_dirs.extend(ensure_list(options.get("exclude_dirs", [])))
+
+    if not excludes:
+        excludes = None
+    if not exclude_dirs:
+        exclude_dirs = None
+
+    filter_ = ensure_list(options.get("filter", []))
+    filter_dirs = ensure_list(options.get("filter_dirs", []))
+
+    if not filter_:
+        filter_ = None
+    if not filter_dirs:
+        filter_dirs = None
+
     # return all the default options
-    return {
+    result = {
         "ignore_errors": options.get("ignore_errors", False),
         "on_error": options.get("on_error", None),
         "search": options.get("search", "depth"),
         "exclude": excludes,
         "exclude_dirs": exclude_dirs,
         "max_depth": options.get("max_depth", None),
-        "filter": None,
-        "filter_dirs": None,
+        "filter": filter_,
+        "filter_dirs": filter_dirs,
     }
+    return result
 
 
 def instantiate_location(options: Union[str, dict], default_max_depth=0) -> Location:

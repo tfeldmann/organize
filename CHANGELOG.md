@@ -1,5 +1,11 @@
 # Changelog
 
+## WIP
+
+- exclude_dir, system_exclude_dirs, exclude_files, system_exclude_files now accept
+  single strings.
+- Fixed a bug 
+
 ## v2.0.3 (2022-02-07)
 
 - Fixed typo: `system_exlude_files`

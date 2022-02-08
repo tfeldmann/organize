@@ -75,7 +75,9 @@ class Name(Filter):
         if fs.isdir(fs_path):
             name = path.basename(fs_path)
         else:
-            name, _ = path.splitext(path.basename(fs_path))
+            name, ext = path.splitext(path.basename(fs_path))
+            if not name:
+                name = ext
         result = self.matches(name)
         m = self.matcher.match(name)
         if m == {}:
