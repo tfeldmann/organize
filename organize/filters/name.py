@@ -1,8 +1,8 @@
-from schema import Or, Optional
-from typing import Any, List, Union, Dict
+from typing import Any, Dict, List, Union
 
 import simplematch
 from fs import path
+from schema import Optional, Or
 
 from .filter import Filter, FilterResult
 

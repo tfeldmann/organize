@@ -7,7 +7,7 @@ import os
 import sys
 
 import click
-from fs import appfs, osfs, open_fs
+from fs import appfs, open_fs, osfs
 from fs.path import split
 
 from . import console
@@ -76,8 +76,9 @@ CLI_CONFIG_FILE_OPTION = click.option(
 
 
 def run_local(config_path: str, working_dir: str, simulate: bool):
-    from . import core
     from schema import SchemaError
+
+    from . import core
 
     try:
         console.info(config_path=config_path, working_dir=working_dir)
@@ -174,8 +175,9 @@ def check(config, debug):
     print("Checking: " + config)
 
     from . import migration
-    from .config import load_from_string, cleanup, validate
-    from .core import highlighted_console as out, replace_with_instances
+    from .config import cleanup, load_from_string, validate
+    from .core import highlighted_console as out
+    from .core import replace_with_instances
 
     try:
         config_dir, config_name = split(str(config))

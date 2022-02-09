@@ -1,5 +1,6 @@
 import fs
-from conftest import make_files, rules_shortcut, read_files
+from conftest import make_files, read_files, rules_shortcut
+
 from organize import core
 
 CONTENT_SMALL = "COPY CONTENT"

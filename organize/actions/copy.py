@@ -1,14 +1,13 @@
 from typing import Callable, Union
 
-from fs import open_fs
-from fs import errors
-from fs.opener.errors import OpenerError
+from fs import errors, open_fs
 from fs.base import FS
 from fs.copy import copy_dir, copy_file
+from fs.opener.errors import OpenerError
 from fs.path import dirname
 from schema import Optional, Or
 
-from organize.utils import Template, safe_description, SimulationFS
+from organize.utils import SimulationFS, Template, safe_description
 
 from .action import Action
 from .copymove_utils import CONFLICT_OPTIONS, check_conflict, dst_from_options

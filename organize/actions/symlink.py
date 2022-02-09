@@ -1,10 +1,13 @@
-import os
 import logging
-from fs.base import FS
+import os
+
 from fs import path
+from fs.base import FS
 from fs.osfs import OSFS
-from .action import Action
+
 from organize.utils import Template
+
+from .action import Action
 
 logger = logging.getLogger(__name__)
 

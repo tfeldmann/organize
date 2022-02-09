@@ -1,8 +1,8 @@
-from fs import open_fs
 import pytest
+from fs import open_fs
+from schema import SchemaError
 
 from organize import config, core
-from schema import SchemaError
 
 
 def validate_and_convert(string: str):

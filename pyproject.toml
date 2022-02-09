@@ -87,6 +87,11 @@ addopts = "--doctest-modules"
 testpaths = ["tests", "organize"]
 norecursedirs = ["tests/todo", "organize/filters", ".configs"]
 
+[tool.isort]
+profile = "black"
+skip_gitignore = true
+line_length = 88
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

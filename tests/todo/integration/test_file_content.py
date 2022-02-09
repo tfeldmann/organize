@@ -1,6 +1,7 @@
 import os
 
-from conftest import create_filesystem, assertdir
+from conftest import assertdir, create_filesystem
+
 from organize.cli import main
 
 
@@ -9,9 +10,12 @@ def test_file_content(tmp_path):
     create_filesystem(
         tmp_path,
         files=[
-            ("Test1.txt", "Lorem MegaCorp Ltd. ipsum\nInvoice 12345\nMore text\nID: 98765"),
+            (
+                "Test1.txt",
+                "Lorem MegaCorp Ltd. ipsum\nInvoice 12345\nMore text\nID: 98765",
+            ),
             ("Test2.txt", "Tests"),
-            ("Test3.txt", "My Homework ...")
+            ("Test3.txt", "My Homework ..."),
         ],
         config=r"""
         rules:

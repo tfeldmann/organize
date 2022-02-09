@@ -1,4 +1,5 @@
-from conftest import create_filesystem, assertdir
+from conftest import assertdir, create_filesystem
+
 from organize.cli import main
 
 

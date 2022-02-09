@@ -1,5 +1,6 @@
 import fs
-from conftest import rules_shortcut, make_files, read_files
+from conftest import make_files, read_files, rules_shortcut
+
 from organize import core
 
 

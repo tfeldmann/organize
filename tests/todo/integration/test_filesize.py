@@ -1,7 +1,8 @@
-import pytest
 from unittest.mock import call
 
+import pytest
 from conftest import create_filesystem
+
 from organize.cli import main
 
 
@@ -49,7 +50,11 @@ def test_basic(tmp_path, mock_echo):
     )
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
     mock_echo.assert_has_calls(
-        [call("halffull 1010"), call("2/3 666"),], any_order=True,
+        [
+            call("halffull 1010"),
+            call("2/3 666"),
+        ],
+        any_order=True,
     )
 
 
@@ -76,5 +81,8 @@ def test_python_args(tmp_path, mock_echo):
     )
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
     mock_echo.assert_has_calls(
-        [call("full 2000"),], any_order=True,
+        [
+            call("full 2000"),
+        ],
+        any_order=True,
     )

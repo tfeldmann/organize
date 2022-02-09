@@ -1,4 +1,5 @@
-from conftest import create_filesystem, assertdir
+from conftest import assertdir, create_filesystem
+
 from organize.cli import main
 
 
@@ -6,7 +7,11 @@ def test_startswith_issue74(tmp_path):
     # test for issue https://github.com/tfeldmann/organize/issues/74
     create_filesystem(
         tmp_path,
-        files=["Cálculo_1.pdf", "Cálculo_2.pdf", "Calculo.pdf",],
+        files=[
+            "Cálculo_1.pdf",
+            "Cálculo_2.pdf",
+            "Calculo.pdf",
+        ],
         config=r"""
         # Cálculo PDF
         rules:

@@ -1,7 +1,7 @@
 import os
+from pathlib import Path
 
 from organize.actions import Move
-from pathlib import Path
 from organize.utils import DotDict
 
 USER_DIR = os.path.expanduser("~")

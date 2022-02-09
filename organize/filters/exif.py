@@ -1,9 +1,8 @@
 import collections
+from pathlib import Path
 from typing import Any, DefaultDict, Dict, Mapping, Optional, Union
 
 import exifread
-
-from pathlib import Path
 
 from .filter import Filter, FilterResult
 

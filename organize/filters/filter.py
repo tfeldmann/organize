@@ -1,7 +1,9 @@
-from schema import Schema, Optional, Or
 from textwrap import indent
-from typing import Any, Dict, Union, NamedTuple
-from organize.console import pipeline_message, pipeline_error
+from typing import Any, Dict, NamedTuple, Union
+
+from schema import Optional, Or, Schema
+
+from organize.console import pipeline_error, pipeline_message
 
 
 class FilterResult(NamedTuple):

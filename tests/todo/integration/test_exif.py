@@ -1,7 +1,8 @@
 import os
 import shutil
 
-from conftest import TESTS_FOLDER, create_filesystem, assertdir
+from conftest import TESTS_FOLDER, assertdir, create_filesystem
+
 from organize.cli import main
 
 
@@ -12,7 +13,7 @@ def copy_resources(tmp_path):
 
 
 def test_exif(tmp_path):
-    """ Sort photos by camera """
+    """Sort photos by camera"""
     copy_resources(tmp_path)
     create_filesystem(
         tmp_path,
@@ -41,7 +42,7 @@ def test_exif(tmp_path):
 
 
 def test_exif_filter_single(tmp_path):
-    """ Filter by camera """
+    """Filter by camera"""
     copy_resources(tmp_path)
     create_filesystem(
         tmp_path,
@@ -69,7 +70,7 @@ def test_exif_filter_single(tmp_path):
 
 
 def test_exif_filter_tag_exists(tmp_path):
-    """ Filter by GPS """
+    """Filter by GPS"""
     copy_resources(tmp_path)
     create_filesystem(
         tmp_path,
@@ -98,7 +99,7 @@ def test_exif_filter_tag_exists(tmp_path):
 
 
 def test_exif_filter_multiple(tmp_path):
-    """ Filter by camera """
+    """Filter by camera"""
     copy_resources(tmp_path)
     create_filesystem(
         tmp_path,

@@ -1,4 +1,5 @@
-from conftest import create_filesystem, assertdir
+from conftest import assertdir, create_filesystem
+
 from organize.cli import main
 
 
@@ -6,7 +7,11 @@ def test_rename_issue51(tmp_path):
     # test for issue https://github.com/tfeldmann/organize/issues/51
     create_filesystem(
         tmp_path,
-        files=["19asd_WF_test2.pdf", "other.pdf", "18asd_WFX_test2.pdf",],
+        files=[
+            "19asd_WF_test2.pdf",
+            "other.pdf",
+            "18asd_WFX_test2.pdf",
+        ],
         config=r"""
         rules:
             - folders: files

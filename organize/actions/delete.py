@@ -1,7 +1,10 @@
 import logging
+
 from fs.base import FS
-from .action import Action
+
 from organize.utils import safe_description
+
+from .action import Action
 
 logger = logging.getLogger(__name__)
 

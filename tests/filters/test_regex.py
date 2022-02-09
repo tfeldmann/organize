@@ -1,6 +1,6 @@
 from pathlib import Path
-from organize.filters import Regex
 
+from organize.filters import Regex
 
 TESTDATA = [
     ("RG123456123456-sig.pdf", True, "123456123456"),

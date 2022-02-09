@@ -1,7 +1,7 @@
 import logging
 import logging.config
-import yaml
 
+import yaml
 from fs import appfs
 
 with appfs.UserLogFS("organize") as log_fs:

@@ -1,4 +1,5 @@
 from typing import Dict, Type
+
 from .action import Action
 from .confirm import Confirm
 from .copy import Copy

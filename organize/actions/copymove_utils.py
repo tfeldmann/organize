@@ -2,9 +2,9 @@ from typing import Callable, Union
 
 import jinja2
 from fs import errors, open_fs
-from fs.opener.errors import OpenerError
 from fs.base import FS
 from fs.move import move_dir, move_file
+from fs.opener.errors import OpenerError
 from fs.path import basename, dirname, join, splitext
 from jinja2 import Template
 

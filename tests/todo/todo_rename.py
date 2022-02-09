@@ -1,7 +1,7 @@
 import os
+from pathlib import Path
 
 from organize.actions import Rename
-from pathlib import Path
 
 USER_DIR = os.path.expanduser("~")
 
@@ -17,7 +17,7 @@ def test_tilde_expansion(mock_exists, mock_samefile, mock_rename, mock_trash):
     mock_trash.assert_not_called()
     expected_path = (Path.home() / "newname.py").expanduser()
     mock_rename.assert_called_with(expected_path)
-    assert new_path == {'path': expected_path}
+    assert new_path == {"path": expected_path}
 
 
 def test_overwrite(mock_exists, mock_samefile, mock_rename, mock_trash):

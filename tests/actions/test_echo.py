@@ -1,6 +1,7 @@
 from datetime import datetime
-from organize.actions import Echo
 from unittest.mock import patch
+
+from organize.actions import Echo
 
 
 def test_echo_basic():

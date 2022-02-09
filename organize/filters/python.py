@@ -1,6 +1,9 @@
 import textwrap
+from typing import Any
+from typing import Optional as tyOpt
+from typing import Sequence
+
 from schema import Or
-from typing import Any, Optional as tyOpt, Sequence
 
 from .filter import Filter, FilterResult
 

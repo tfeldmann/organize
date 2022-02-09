@@ -1,4 +1,5 @@
-from conftest import create_filesystem, assertdir
+from conftest import assertdir, create_filesystem
+
 from organize.cli import main
 
 
@@ -119,7 +120,11 @@ def test_globstr_exclude(tmp_path):
     )
     main(["run", "--config-file=%s" % (tmp_path / "config.yaml")])
     assertdir(
-        tmp_path, "Test.pdf", "Invoice.pdf", "Start.txt", "exclude/test.pdf",
+        tmp_path,
+        "Test.pdf",
+        "Invoice.pdf",
+        "Start.txt",
+        "exclude/test.pdf",
     )
 
 

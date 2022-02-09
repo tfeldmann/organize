@@ -2,6 +2,7 @@ from unittest.mock import call
 
 import fs
 from conftest import make_files, rules_shortcut
+
 from organize import core
 
 

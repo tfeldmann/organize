@@ -2,7 +2,7 @@ import logging
 import os
 from copy import deepcopy
 from datetime import datetime
-from typing import Any, List, Sequence, Union, Tuple
+from typing import Any, List, Sequence, Tuple, Union
 
 import jinja2
 from fs import open_fs
@@ -113,10 +113,10 @@ def fs_path_from_options(
 
 def is_same_resource(fs1: FS, path1: str, fs2: FS, path2: str):
     from fs.errors import NoSysPath, NoURL
-    from fs.tarfs import ReadTarFS, WriteTarFS
-    from fs.zipfs import ReadZipFS, WriteZipFS
-    from fs.wrapfs import WrapFS
     from fs.path import abspath
+    from fs.tarfs import ReadTarFS, WriteTarFS
+    from fs.wrapfs import WrapFS
+    from fs.zipfs import ReadZipFS, WriteZipFS
 
     # def unwrap(fs, path):
     #     base = "/"

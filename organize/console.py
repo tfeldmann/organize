@@ -2,13 +2,15 @@ from fs.base import FS
 from fs.path import basename, dirname, forcedir, relpath
 from rich.console import Console
 from rich.panel import Panel
+from rich.prompt import Confirm as RichConfirm
+from rich.prompt import Prompt as RichPrompt
+from rich.status import Status
 from rich.text import Text
 from rich.theme import Theme
-from rich.status import Status
-from rich.prompt import Confirm as RichConfirm, Prompt as RichPrompt
-from .utils import safe_description
 
 from organize.__version__ import __version__
+
+from .utils import safe_description
 
 ICON_DIR = "🗁"
 ICON_FILE = ""

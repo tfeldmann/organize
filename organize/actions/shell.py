@@ -1,7 +1,8 @@
-from schema import Or, Optional
 import logging
 import subprocess
 from subprocess import PIPE
+
+from schema import Optional, Or
 
 from ..utils import Template
 from .action import Action
