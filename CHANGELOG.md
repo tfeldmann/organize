@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v2.0.6 (2022-02-09)
 
 - Speed up moving files.
 - `shell` action: Run command through the user's shell.
