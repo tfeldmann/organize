@@ -2,7 +2,8 @@
 
 ## WIP
 
-- Speed up file moving
+- Speed up moving files.
+- `shell` action: Run command through the user's shell.
 
 ## v2.0.5 (2022-02-08)
 

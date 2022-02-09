@@ -55,6 +55,7 @@ class Shell(Action):
                     check=True,
                     stdout=PIPE,
                     stderr=subprocess.STDOUT,
+                    shell=True,
                 )
                 return {
                     self.get_name(): {
