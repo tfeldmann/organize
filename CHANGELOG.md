@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.8 (2022-02-09)
+
+- Bugfix `shell` for real.
+
 ## v2.0.7 (2022-02-09)
 
 - Bugfix for `shell`.
