@@ -1,5 +1,9 @@
 # Changelog
 
+## WIP
+
+- `shell` shows a message when code is not run in simulation
+
 ## v2.0.8 (2022-02-09)
 
 - Bugfix `shell` for real.

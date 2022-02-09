@@ -11,7 +11,7 @@ def test_shell_basic():
 
     result = shell.run(simulate=False)
     result = result["shell"]
-    assert result["output"].strip() == "Hello World"
+    assert "Hello World" in result["output"]  # windows escapes the string
     assert result["returncode"] == 0
 
 
@@ -19,5 +19,5 @@ def test_shell_template_simulation():
     shell = Shell("echo '{msg}'", run_in_simulation=True)
     result = shell.run(msg="Hello", simulate=True)
     result = result["shell"]
-    assert result["output"].strip() == "Hello"
+    assert "Hello" in result["output"]
     assert result["returncode"] == 0
