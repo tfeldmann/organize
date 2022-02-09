@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.7 (2022-02-09)
+
+- Bugfix for `shell`.
+
 ## v2.0.6 (2022-02-09)
 
 - Speed up moving files.
