@@ -1,5 +1,4 @@
 from schema import Or, Optional
-import shlex
 import logging
 import subprocess
 from subprocess import PIPE
@@ -49,9 +48,8 @@ class Shell(Action):
             # we use call instead of run to be compatible with python < 3.5
             logger.info('Executing command "%s" in shell.', full_cmd)
             try:
-                lexed = shlex.split(full_cmd)
                 call = subprocess.run(
-                    lexed,
+                    full_cmd,
                     check=True,
                     stdout=PIPE,
                     stderr=subprocess.STDOUT,
