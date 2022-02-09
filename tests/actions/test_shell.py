@@ -5,9 +5,14 @@ from pathlib import Path
 
 
 def test_shell_basic():
-    shell = Shell("echo 'Hello World'")
+    shell = Shell(
+        "echo 'Hello World'",
+        simulation_output="-sim-",
+        simulation_returncode=127,
+    )
     result = shell.run(simulate=True)
-    assert not result
+    assert "-sim-" in result["shell"]["output"]
+    assert 127 == result["shell"]["returncode"]
 
     result = shell.run(simulate=False)
     result = result["shell"]

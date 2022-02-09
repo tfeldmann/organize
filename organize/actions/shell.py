@@ -19,6 +19,10 @@ class Shell(Action):
             Whether to execute in simulation mode (default = false)
         ignore_errors (bool):
             Whether to continue on returncodes != 0.
+        simulation_output (str):
+            The value of `{shell.output}` if run in simulation
+        simulation_returncode (int):
+            The value of `{shell.returncode}` if run in simulation
 
     Returns
 
@@ -33,13 +37,24 @@ class Shell(Action):
             "cmd": str,
             Optional("run_in_simulation"): bool,
             Optional("ignore_errors"): bool,
+            Optional("simulation_output"): str,
+            Optional("simulation_returncode"): int,
         },
     )
 
-    def __init__(self, cmd: str, run_in_simulation=False, ignore_errors=False):
+    def __init__(
+        self,
+        cmd: str,
+        run_in_simulation=False,
+        ignore_errors=False,
+        simulation_output="** simulation **",
+        simulation_returncode=0,
+    ):
         self.cmd = Template.from_string(cmd)
         self.run_in_simulation = run_in_simulation
         self.ignore_errors = ignore_errors
+        self.simulation_output = Template.from_string(simulation_output)
+        self.simulation_returncode = simulation_returncode
 
     def pipeline(self, args: dict, simulate: bool):
         full_cmd = self.cmd.render(**args)
@@ -75,8 +90,8 @@ class Shell(Action):
             self.print("** not run in simulation ** $ %s" % full_cmd)
             return {
                 self.get_name(): {
-                    "output": "**simulation**",
-                    "returncode": 0,
+                    "output": self.simulation_output.render(**args),
+                    "returncode": self.simulation_returncode,
                 }
             }
 
