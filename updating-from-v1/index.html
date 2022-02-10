@@ -165,6 +165,8 @@ placeholders.</p>
 <li><a href="../filters/#size"><code>filesize</code></a> is renamed to <code>size</code>.</li>
 <li><a href="../filters/#created"><code>created</code></a> no longer accepts a timezone and uses the local timezone by default.</li>
 <li><a href="../filters/#lastmodified"><code>lastmodified</code></a> no longer accepts a timezone and uses the local timezone by default.</li>
+<li><a href="../filters/#extension"><code>extension</code></a> <code>lower</code> and <code>upper</code> are now functions and must be called like this:
+  <code>"{extension.upper()}"</code> and <code>"{extension.lower()}"</code>.</li>
 </ul>
 <h2 id="actions">Actions<a class="headerlink" href="#actions" title="Permanent link">#</a></h2>
 <p>The copy, move and rename actions got a whole lot more powerful. You now have several

@@ -78,7 +78,7 @@
                 <ul class="current">
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Changelog</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#wip">WIP</a>
+    <li class="toctree-l2"><a class="reference internal" href="#v209-2022-02-10">v2.0.9 (2022-02-10)</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#v208-2022-02-09">v2.0.8 (2022-02-09)</a>
     </li>
@@ -197,10 +197,13 @@
               
                 <!-- BEGIN INCLUDE ../CHANGELOG.md   -->
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">#</a></h1>
-<h2 id="wip">WIP<a class="headerlink" href="#wip" title="Permanent link">#</a></h2>
+<h2 id="v209-2022-02-10">v2.0.9 (2022-02-10)<a class="headerlink" href="#v209-2022-02-10" title="Permanent link">#</a></h2>
 <ul>
 <li><code>shell</code> shows a message when code is not run in simulation</li>
 <li><code>shell</code> add options <code>simulation_output</code> and <code>simulation_returncode</code></li>
+<li>fixes a bug where location options are applied to other locations as well</li>
+<li><code>created</code> filter now falls back to using the stat utility on linux systems where the
+  birthtime is not included in <code>os.stat</code>.</li>
 </ul>
 <h2 id="v208-2022-02-09">v2.0.8 (2022-02-09)<a class="headerlink" href="#v208-2022-02-09" title="Permanent link">#</a></h2>
 <ul>

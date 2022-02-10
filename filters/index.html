@@ -273,7 +273,8 @@ time, 'newer' matches files / folders created within the given time.
       - extension: pdf
       - created
     actions:
-      - echo: &quot;{created.strftime('%Y-%m-%d')}&quot;
+      - echo: &quot;ISO Format:   {created.strftime('%Y-%m-%d')}&quot;
+      - echo: &quot;As timestamp: {created.timestamp() | int}&quot;
 </code></pre>
 <h2 id="duplicate">duplicate<a class="headerlink" href="#duplicate" title="Permanent link">#</a></h2>
 
@@ -767,7 +768,8 @@ time. (default = 'older')</p></li>
       - extension: pdf
       - lastmodified
     actions:
-      - echo: &quot;{lastmodified.strftime('%Y-%m-%d')}&quot;
+      - echo: &quot;ISO Format:   {lastmodified.strftime('%Y-%m-%d')}&quot;
+      - echo: &quot;As timestamp: {lastmodified.timestamp() | int}&quot;
 </code></pre>
 <h2 id="mimetype">mimetype<a class="headerlink" href="#mimetype" title="Permanent link">#</a></h2>
 
