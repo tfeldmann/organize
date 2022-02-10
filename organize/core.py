@@ -1,5 +1,6 @@
 import logging
 from collections import Counter
+from copy import copy
 from pathlib import Path
 from typing import Iterable, NamedTuple, Union
 
@@ -50,12 +51,12 @@ DEFAULT_SYSTEM_EXCLUDE_DIRS = [
 
 def convert_options_to_walker_args(options: dict):
     # combine system_exclude and exclude into a single list
-    excludes = ensure_list(
-        options.get("system_exclude_files", DEFAULT_SYSTEM_EXCLUDE_FILES)
+    excludes = copy(
+        ensure_list(options.get("system_exclude_files", DEFAULT_SYSTEM_EXCLUDE_FILES))
     )
     excludes.extend(ensure_list(options.get("exclude_files", [])))
-    exclude_dirs = ensure_list(
-        options.get("system_exclude_dirs", DEFAULT_SYSTEM_EXCLUDE_DIRS)
+    exclude_dirs = copy(
+        ensure_list(options.get("system_exclude_dirs", DEFAULT_SYSTEM_EXCLUDE_DIRS))
     )
     exclude_dirs.extend(ensure_list(options.get("exclude_dirs", [])))
 
@@ -64,8 +65,8 @@ def convert_options_to_walker_args(options: dict):
     if not exclude_dirs:
         exclude_dirs = None
 
-    filter_ = ensure_list(options.get("filter", []))
-    filter_dirs = ensure_list(options.get("filter_dirs", []))
+    filter_ = copy(ensure_list(options.get("filter", [])))
+    filter_dirs = copy(ensure_list(options.get("filter_dirs", [])))
 
     if not filter_:
         filter_ = None
