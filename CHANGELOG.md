@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v2.0.9 (2022-02-10)
 
 - `shell` shows a message when code is not run in simulation
 - `shell` add options `simulation_output` and `simulation_returncode`
