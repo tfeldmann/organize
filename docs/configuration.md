@@ -56,7 +56,7 @@ $ organize sim [FILE] --working-dir=~/Documents
 
 ## Parallelize jobs
 
-To speed up organizing you can run multiple organize processes simultaniously like this
+To speed up organizing you can run multiple organize processes simultaneously like this
 (linux / macOS):
 
 ```
