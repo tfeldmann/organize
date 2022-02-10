@@ -50,6 +50,8 @@ If you need to left pad other numbers you can now use the following syntax:
 - [`filesize`](filters.md#size) is renamed to `size`.
 - [`created`](filters.md#created) no longer accepts a timezone and uses the local timezone by default.
 - [`lastmodified`](filters.md#lastmodified) no longer accepts a timezone and uses the local timezone by default.
+- [`extension`](filters.md#extension) `lower` and `upper` are now functions and must be called like this:
+  `"{extension.upper()}"` and `"{extension.lower()}"`.
 
 ## Actions
 
