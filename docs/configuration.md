@@ -7,23 +7,23 @@ organize has a default config file if no other file is given.
 To edit the default configuration file:
 
 ```sh
-$ organize edit  # opens in $EDITOR
-$ organize edit --editor=vim
-$ EDITOR=code organize edit
+organize edit  # opens in $EDITOR
+organize edit --editor=vim
+EDITOR=code organize edit
 ```
 
 To open the folder containing the configuration file:
 
 ```sh
-$ organize reveal
-$ organize reveal --path  # show the full path to the default config
+organize reveal
+organize reveal --path  # show the full path to the default config
 ```
 
 To check your configuration run:
 
 ```sh
-$ organize check
-$ organize check --debug  # check with debug output
+organize check
+organize check --debug  # check with debug output
 ```
 
 ## Running and simulating
@@ -31,21 +31,21 @@ $ organize check --debug  # check with debug output
 To run / simulate the default config file:
 
 ```sh
-$ organize sim
-$ organize run
+organize sim
+organize run
 ```
 
 To run / simulate a specific config file:
 
-```sh
-$ organize sim [FILE]
-$ organize run [FILE]
+```shell
+organize sim [FILE]
+organize run [FILE]
 ```
 
 Optionally you can specify the working directory like this:
 
-```sh
-$ organize sim [FILE] --working-dir=~/Documents
+```shell
+organize sim [FILE] --working-dir=~/Documents
 ```
 
 ## Environment variables
@@ -59,7 +59,7 @@ $ organize sim [FILE] --working-dir=~/Documents
 To speed up organizing you can run multiple organize processes simultaneously like this
 (linux / macOS):
 
-```
+```shell
 organize run config_1.yaml & \
 organize run config_2.yaml & \
 organize run config_3.yaml &
