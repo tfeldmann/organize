@@ -92,7 +92,8 @@ rules:
       - extension: pdf
       - created
     actions:
-      - echo: "{created.strftime('%Y-%m-%d')}"
+      - echo: "ISO Format:   {created.strftime('%Y-%m-%d')}"
+      - echo: "As timestamp: {created.timestamp() | int}"
 ```
 
 ## duplicate
@@ -407,7 +408,8 @@ rules:
       - extension: pdf
       - lastmodified
     actions:
-      - echo: "{lastmodified.strftime('%Y-%m-%d')}"
+      - echo: "ISO Format:   {lastmodified.strftime('%Y-%m-%d')}"
+      - echo: "As timestamp: {lastmodified.timestamp() | int}"
 ```
 
 ## mimetype
