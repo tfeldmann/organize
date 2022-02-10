@@ -42,8 +42,28 @@ $ organize sim [FILE]
 $ organize run [FILE]
 ```
 
+Optionally you can specify the working directory like this:
+
+```sh
+$ organize sim [FILE] --working-dir=~/Documents
+```
+
 ## Environment variables
 
 - `ORGANIZE_CONFIG` - The path to the default config file.
 - `NO_COLOR` - if this is set, the output is not colored.
 - `EDITOR` - The editor used to edit the config file.
+
+## Parallelize jobs
+
+To speed up organizing you can run multiple organize processes simultaniously like this
+(linux / macOS):
+
+```
+organize run config_1.yaml & \
+organize run config_2.yaml & \
+organize run config_3.yaml &
+```
+
+Make sure that the config files are independent from each other, meaning that no rule
+depends on another rule in another config file.
