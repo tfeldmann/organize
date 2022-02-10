@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+import subprocess
+from datetime import datetime, timedelta, timezone
 from typing import Union
 
 from fs.base import FS
@@ -82,6 +83,11 @@ class Created(Filter):
         fs_path = args["fs_path"]
 
         created = fs.getinfo(fs_path, namespaces=["details"]).created
+        if not created:
+            # We're probably on Linux. No easy way to get creation dates here,
+            # so we try to use the stat utility.
+            created = self.fallback_method(fs, fs_path)
+
         if created:
             created = created.astimezone()
 
@@ -90,6 +96,17 @@ class Created(Filter):
             matches=match,
             updates={self.get_name(): created},
         )
+
+    def fallback_method(self, fs, fs_path):
+        try:
+            created_str = subprocess.run(
+                ["stat", "-f %B", fs.getsyspath(fs_path)],
+                capture_output=True,
+                encoding="utf-8",
+            ).stdout.strip()
+            return datetime.fromtimestamp(int(created_str), tz=timezone.utc)
+        except Exception:
+            return None
 
     def __str__(self):
         return "[Created] All files / folders %s than %s" % (

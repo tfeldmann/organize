@@ -5,6 +5,8 @@
 - `shell` shows a message when code is not run in simulation
 - `shell` add options `simulation_output` and `simulation_returncode`
 - fixes a bug where location options where applied to other locations as well
+- `created` filter now falls back to using the stat utility on linux systems where the
+  birthtime is not included in `os.stat`.
 
 ## v2.0.8 (2022-02-09)
 
