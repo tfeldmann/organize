@@ -16,6 +16,7 @@ from .python import Python
 from .regex import Regex
 from .size import Size
 
+FILTERS: Dict[str, Type[Filter]]
 FILTERS = {
     Created.name: Created,
     DateAdded.name: DateAdded,
@@ -32,4 +33,3 @@ FILTERS = {
     Python.name: Python,
     Regex.name: Regex,
 }
-FILTERS: Dict[str, Type[Filter]]

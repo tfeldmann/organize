@@ -1,7 +1,6 @@
 import subprocess
 import sys
 from datetime import datetime
-from typing import Union
 
 from fs.base import FS
 
@@ -33,19 +32,15 @@ class DateAdded(TimeFilter):
 
     name = "date_added"
 
-    def get_datetime(self, args) -> Union[None, datetime]:
+    def get_datetime(self, args: dict) -> datetime:
         if sys.platform != "darwin":
             raise EnvironmentError("date_added is only available on macOS")
 
         fs = args["fs"]  # type: FS
         fs_path = args["fs_path"]
 
-        out = subprocess.run(
-            ["mdls", "-name", "kMDItemDateAdded", "-raw", fs.getsyspath(fs_path)],
-            capture_output=True,
-            encoding="utf-8",
-            check=True,
-        ).stdout
+        cmd = ["mdls", "-name", "kMDItemDateAdded", "-raw", fs.getsyspath(fs_path)]
+        out = subprocess.check_output(cmd, encoding="utf-8").strip()
         dt = datetime.strptime(out, "%Y-%m-%d %H:%M:%S %z")
         return dt
 

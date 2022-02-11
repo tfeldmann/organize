@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Union
 
 from fs.base import FS
 
@@ -29,10 +28,12 @@ class LastModified(TimeFilter):
 
     name = "lastmodified"
 
-    def get_datetime(self, args) -> Union[None, datetime]:
+    def get_datetime(self, args: dict) -> datetime:
         fs = args["fs"]  # type: FS
         fs_path = args["fs_path"]
         modified = fs.getmodified(fs_path)
+        if not modified:
+            raise EnvironmentError("lastmodified date is not available")
         return modified
 
     def __str__(self):

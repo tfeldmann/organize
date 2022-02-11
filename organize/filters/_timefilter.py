@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from typing import Union
 
 from schema import Optional, Or
 
@@ -43,7 +42,7 @@ class TimeFilter(Filter):
         if self.mode not in ("older", "newer"):
             raise ValueError("Unknown option for 'mode': must be 'older' or 'newer'.")
 
-    def matches_datetime(self, dt: Union[None, datetime]):
+    def matches_datetime(self, dt: datetime) -> bool:
         match = True
         if self.age.total_seconds():
             if not dt:
@@ -67,5 +66,5 @@ class TimeFilter(Filter):
             updates={self.get_name(): dt},
         )
 
-    def get_datetime(self, args) -> Union[None, datetime]:
-        raise NotImplemented()
+    def get_datetime(self, args: dict) -> datetime:
+        raise NotImplemented
