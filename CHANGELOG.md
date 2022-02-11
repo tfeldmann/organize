@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v2.1.0 (2022-02-11)
 
 - Added filter `date_added` (macOS only)
 - `created` filter now supports gnu coreutils stat utility for birthtime detection
