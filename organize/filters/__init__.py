@@ -1,6 +1,7 @@
 from typing import Dict, Type
 
 from .created import Created
+from .date_added import DateAdded
 from .duplicate import Duplicate
 from .empty import Empty
 from .exif import Exif
@@ -17,6 +18,7 @@ from .size import Size
 
 FILTERS = {
     Created.name: Created,
+    DateAdded.name: DateAdded,
     Duplicate.name: Duplicate,
     Empty.name: Empty,
     Exif.name: Exif,
@@ -29,4 +31,5 @@ FILTERS = {
     MimeType.name: MimeType,
     Python.name: Python,
     Regex.name: Regex,
-}  # type: Dict[str, Type[Filter]]
+}
+FILTERS: Dict[str, Type[Filter]]

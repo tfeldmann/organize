@@ -1,5 +1,11 @@
 # Changelog
 
+## WIP
+
+- Added filter `date_added` (macOS only)
+- `created` filter now supports gnu coreutils stat utility for birthtime detection
+- refactored time based filters into a common class
+
 ## v2.0.9 (2022-02-10)
 
 - `shell` shows a message when code is not run in simulation
