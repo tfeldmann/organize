@@ -66,15 +66,15 @@ _(Default: `"depth"`)_
 A list of filename patterns that should be excluded in this location, e.g. `["~*"]`.
 
 **exclude_dirs** (`List[str]`)<br>
-A list of patterns that will filter be used to filter out directory names in this location.
-e.g. `['do-not-move', '*-Important']`
+A list of folder name patterns that will be used to filter out directory names in
+this location. e.g. `["do-not-move", "*-Important", "Backup*"]`
 
 **system_exclude_files** (`List[str]`)<br>
 The list of filename patterns that are excluded by default. Defaults to:
-`["thumbs.db", "desktop.ini", "~$*", ".DS_Store", ".localized"]`
+`["thumbs.db", "desktop.ini", "~$*", ".DS_Store", ".localized"]`. Override with `[]` to include system files.
 
 **system_exclude_dirs** (`List[str]`)<br>
-The list of dir names that are excluded by default (`['.git', '.svn']`)
+The list of folder name patterns that are excluded by default (`['.git', '.svn']`). Override with `[]` to include system dirs.
 
 **ignore_errors** (`bool`)<br>
 If `true`, any errors reading the location will be ignored.
