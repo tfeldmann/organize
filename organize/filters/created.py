@@ -88,9 +88,7 @@ class Created(Filter):
             # so we try to use the stat utility.
             created = self.fallback_method(fs, fs_path)
 
-        if created:
-            created = created.astimezone()
-
+        created = created.astimezone()
         match = self.matches_created_time(created)
         return FilterResult(
             matches=match,
@@ -98,15 +96,22 @@ class Created(Filter):
         )
 
     def fallback_method(self, fs, fs_path):
-        try:
-            created_str = subprocess.run(
-                ["stat", "-f %B", fs.getsyspath(fs_path)],
-                capture_output=True,
-                encoding="utf-8",
-            ).stdout.strip()
-            return datetime.fromtimestamp(int(created_str), tz=timezone.utc)
-        except Exception:
-            return None
+        if fs.hassyspath(fs_path):
+            syspath = fs.getsyspath(fs_path)
+            commands = (
+                ["stat", "--format=%W", syspath],  # GNU coreutils
+                ["stat", "-f %B", syspath],  # BSD
+            )
+            for cmd in commands:
+                try:
+                    created_str = subprocess.run(
+                        cmd, capture_output=True, check=True, encoding="utf-8"
+                    ).stdout.strip()
+                    timestamp = int(created_str)
+                    return datetime.fromtimestamp(timestamp, tz=timezone.utc)
+                except subprocess.CalledProcessError:
+                    pass
+        raise EnvironmentError("File creation time is not available.")
 
     def __str__(self):
         return "[Created] All files / folders %s than %s" % (
