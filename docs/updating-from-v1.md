@@ -26,22 +26,22 @@ placeholders.
 - `{basedir}` is no longer available.
 - You have to replace undocumented placeholders like this:
 
-```python
-{created.year}-{created.month:02}-{created.day:02}
+```yaml
+"{created.year}-{created.month:02}-{created.day:02}"
 ```
 
 With this:
 
-```python
-{created.strftime('%Y-%m-%d')}
+```yaml
+"{created.strftime('%Y-%m-%d')}"
 ```
 
 If you need to left pad other numbers you can now use the following syntax:
 
-```python
-{ "{:02}".format(your_variable) }
+```yaml
+"{'%02d' % your_variable}"
 # or
-{ '%02d' % your_variable }
+"{ '{:02}'.format(your_variable) }"
 ```
 
 ## Filters
