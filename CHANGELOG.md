@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v2.1.1 (2022-02-13)
 
 - `filecontent` filter: Fixes bug #188.
 - Bugfix for #185 and #184.
