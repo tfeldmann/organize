@@ -1,5 +1,10 @@
 # Changelog
 
+## WIP
+
+- `filecontent` filter: Fixes bug #188.
+- Bugfix for #185 and #184.
+
 ## v2.1.0 (2022-02-11)
 
 - Added filter `date_added` (macOS only)

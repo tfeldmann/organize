@@ -7,8 +7,8 @@ import os
 import sys
 
 import click
-from fs import appfs, open_fs, osfs
-from fs.path import split
+from fs import appfs
+from pathlib import Path
 
 from . import console
 from .__version__ import __version__
@@ -34,16 +34,19 @@ rules:
 
 try:
     config_filename = "config.yaml"
-    if os.getenv("ORGANIZE_CONFIG"):
-        dirname, config_filename = os.path.split(os.getenv("ORGANIZE_CONFIG", ""))
-        config_fs = osfs.OSFS(dirname, create=False)
+    envvar = os.getenv("ORGANIZE_CONFIG")
+    if envvar:
+        dirname, config_filename = os.path.split(envvar)
+        if not dirname or not config_filename:
+            raise ValueError("Invalid ORGANIZE_CONFIG: %s" % envvar)
+        CONFIG_PATH = Path(envvar)
     else:
-        config_fs = appfs.UserConfigFS("organize", create=True)
+        CONFIG_PATH = Path(appfs.UserConfigFS("organize").getsyspath(config_filename))
 
     # create default config file if it not exists
-    if not config_fs.exists(config_filename):
-        config_fs.writetext(config_filename, DEFAULT_CONFIG)
-    CONFIG_PATH = config_fs.getsyspath(config_filename)
+    CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    if not CONFIG_PATH.exists():
+        CONFIG_PATH.write_text(DEFAULT_CONFIG)
 except Exception as e:
     console.error(str(e), title="Config file")
     sys.exit(1)
@@ -58,12 +61,12 @@ CLI_CONFIG = click.argument(
     "config",
     required=False,
     default=CONFIG_PATH,
-    type=click.Path(exists=True),
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
 )
 CLI_WORKING_DIR_OPTION = click.option(
     "--working-dir",
     default=".",
-    type=click.Path(exists=True),
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
     help="The working directory",
 )
 # for CLI backwards compatibility with organize v1.x
@@ -71,19 +74,18 @@ CLI_CONFIG_FILE_OPTION = click.option(
     "--config-file",
     default=None,
     hidden=True,
-    type=click.Path(exists=True),
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
 )
 
 
-def run_local(config_path: str, working_dir: str, simulate: bool):
+def run_local(config_path: Path, working_dir: Path, simulate: bool):
     from schema import SchemaError
 
     from . import core
 
     try:
         console.info(config_path=config_path, working_dir=working_dir)
-        config_dir, config_name = split(config_path)
-        config = open_fs(config_dir).readtext(config_name)
+        config = config_path.read_text()
         os.chdir(working_dir)
         core.run(rules=config, simulate=simulate)
     except NeedsMigrationError as e:
@@ -120,7 +122,7 @@ def cli():
 @CLI_CONFIG
 @CLI_WORKING_DIR_OPTION
 @CLI_CONFIG_FILE_OPTION
-def run(config, working_dir, config_file):
+def run(config: Path, working_dir: Path, config_file):
     """Organizes your files according to your rules."""
     if config_file:
         config = config_file
@@ -134,7 +136,7 @@ def run(config, working_dir, config_file):
 @CLI_CONFIG
 @CLI_WORKING_DIR_OPTION
 @CLI_CONFIG_FILE_OPTION
-def sim(config, working_dir, config_file):
+def sim(config: Path, working_dir: Path, config_file):
     """Simulates a run (does not touch your files)."""
     if config_file:
         config = config_file
@@ -167,21 +169,19 @@ def edit(config, editor):
 @cli.command()
 @CLI_CONFIG
 @click.option("--debug", is_flag=True, help="Verbose output")
-def check(config, debug):
+def check(config: Path, debug):
     """Checks whether a given config file is valid.
 
     If called without arguments it will check the default config file.
     """
-    print("Checking: " + config)
-
     from . import migration
     from .config import cleanup, load_from_string, validate
     from .core import highlighted_console as out
     from .core import replace_with_instances
 
+    print("Checking: %s" % config)
     try:
-        config_dir, config_name = split(str(config))
-        config_str = open_fs(config_dir).readtext(config_name)
+        config_str = config.read_text()
 
         if debug:
             out.rule("Raw", align="left")
@@ -237,7 +237,7 @@ def check(config, debug):
 
 @cli.command()
 @click.option("--path", is_flag=True, help="Print the path instead of revealing it.")
-def reveal(path):
+def reveal(path: bool):
     """Reveals the default config file."""
     if path:
         click.echo(CONFIG_PATH)

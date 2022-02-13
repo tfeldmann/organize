@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fs.base import FS
 from fs.path import basename, dirname, forcedir, relpath
 from rich.console import Console
@@ -99,10 +101,10 @@ def _highlight_path(path, base_style, main_style, relative=False):
     )
 
 
-def info(config_path, working_dir):
+def info(config_path: Path, working_dir: Path):
     console.print("organize {}".format(__version__))
     console.print('Config: "{}"'.format(config_path))
-    if working_dir != ".":
+    if working_dir != Path("."):
         console.print('Working dir: "{}"'.format(working_dir))
 
 
