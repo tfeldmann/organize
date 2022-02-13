@@ -234,11 +234,13 @@ Commands:
 ## Other donation options:
 
 ETH:
+
 ```
 0x0C0EF9e121e105dbFEfd1CF1f6a0C1588c839B13
 ```
 
 BTC:
+
 ```
 3PfHR44kUUGXNV5pvRTEBpNgcKPx7byjop
 ```
