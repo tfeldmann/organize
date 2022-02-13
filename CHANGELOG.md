@@ -1,5 +1,9 @@
 # Changelog
 
+## WIP
+
+- Hotfix for `filecontent` filter.
+
 ## v2.1.1 (2022-02-13)
 
 - `filecontent` filter: Fixes bug #188.

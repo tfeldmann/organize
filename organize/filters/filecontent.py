@@ -47,7 +47,7 @@ class FileContent(Filter):
                 "Install with pip install organize-tool[textract]"
             ) from e
         except textract.exceptions.CommandLineError as e:
-            logger.warning("CommandLineError %", e)
+            pass
 
     def pipeline(self, args: dict) -> FilterResult:
         fs = args["fs"]  # type: FS
