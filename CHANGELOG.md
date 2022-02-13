@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v2.1.2 (2022-02-13)
 
 - Hotfix for `filecontent` filter.
 
