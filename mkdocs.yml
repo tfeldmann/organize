@@ -1,5 +1,6 @@
 site_name: organize
 repo_url: https://github.com/tfeldmann/organize/
+edit_uri: edit/main/docs/
 site_author: "Thomas Feldmann"
 nav:
   - Home: index.md
