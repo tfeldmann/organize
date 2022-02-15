@@ -74,6 +74,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#created">created</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#date_added">date_added</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#duplicate">duplicate</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#empty">empty</a>
@@ -133,7 +135,7 @@
     <li>Filters</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/tfeldmann/organize/edit/master/docs/filters.md"
+        <a href="https://github.com/tfeldmann/organize/edit/main/docs/filters.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -275,6 +277,74 @@ time, 'newer' matches files / folders created within the given time.
     actions:
       - echo: &quot;ISO Format:   {created.strftime('%Y-%m-%d')}&quot;
       - echo: &quot;As timestamp: {created.timestamp() | int}&quot;
+</code></pre>
+<h2 id="date_added">date_added<a class="headerlink" href="#date_added" title="Permanent link">#</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Matches files by the time the file was added to a folder.</p>
+<p><strong><code>date_added</code> is only available on macOS!</strong></p>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li><p><strong>years</strong> (<code>int</code>) – specify number of years</p></li>
+            <li><p><strong>months</strong> (<code>int</code>) – specify number of months</p></li>
+            <li><p><strong>weeks</strong> (<code>float</code>) – specify number of weeks</p></li>
+            <li><p><strong>days</strong> (<code>float</code>) – specify number of days</p></li>
+            <li><p><strong>hours</strong> (<code>float</code>) – specify number of hours</p></li>
+            <li><p><strong>minutes</strong> (<code>float</code>) – specify number of minutes</p></li>
+            <li><p><strong>seconds</strong> (<code>float</code>) – specify number of seconds</p></li>
+            <li><p><strong>mode</strong> (<code>str</code>) – either 'older' or 'newer'. 'older' matches files / folders last modified before
+the given time, 'newer' matches files / folders last modified within the given
+time. (default = 'older')</p></li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+    <th class="field-name">Returns:</th>
+    <td class="field-body">
+        <ul class="first simple">
+          <li><p><code>{date_added}</code> – The datetime the files / folders were added.</p></li>
+        </ul>
+    </td>
+    </tr>
+  </tbody>
+</table>
+
+
+    </div>
+
+  </div>
+
+<p>Works the same way as <a href="#created"><code>created</code></a> and <a href="#lastmodified"><code>lastmodified</code></a>.</p>
+<p><strong> Examples </strong></p>
+<pre><code class="language-yaml">rules:
+  - name: Show the date the file was added to the folder
+    locations: &quot;~/Desktop&quot;
+    filters:
+      - date_added
+    actions:
+      - echo: &quot;Date added: {date_added.strftime('%Y-%m-%d')}&quot;
 </code></pre>
 <h2 id="duplicate">duplicate<a class="headerlink" href="#duplicate" title="Permanent link">#</a></h2>
 

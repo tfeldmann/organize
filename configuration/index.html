@@ -113,7 +113,7 @@
     <li>Configuration</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/tfeldmann/organize/edit/master/docs/configuration.md"
+        <a href="https://github.com/tfeldmann/organize/edit/main/docs/configuration.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -129,29 +129,29 @@
 <h2 id="editing-the-configuration">Editing the configuration<a class="headerlink" href="#editing-the-configuration" title="Permanent link">#</a></h2>
 <p>organize has a default config file if no other file is given.</p>
 <p>To edit the default configuration file:</p>
-<pre><code class="language-sh">$ organize edit  # opens in $EDITOR
-$ organize edit --editor=vim
-$ EDITOR=code organize edit
+<pre><code class="language-sh">organize edit  # opens in $EDITOR
+organize edit --editor=vim
+EDITOR=code organize edit
 </code></pre>
 <p>To open the folder containing the configuration file:</p>
-<pre><code class="language-sh">$ organize reveal
-$ organize reveal --path  # show the full path to the default config
+<pre><code class="language-sh">organize reveal
+organize reveal --path  # show the full path to the default config
 </code></pre>
 <p>To check your configuration run:</p>
-<pre><code class="language-sh">$ organize check
-$ organize check --debug  # check with debug output
+<pre><code class="language-sh">organize check
+organize check --debug  # check with debug output
 </code></pre>
 <h2 id="running-and-simulating">Running and simulating<a class="headerlink" href="#running-and-simulating" title="Permanent link">#</a></h2>
 <p>To run / simulate the default config file:</p>
-<pre><code class="language-sh">$ organize sim
-$ organize run
+<pre><code class="language-sh">organize sim
+organize run
 </code></pre>
 <p>To run / simulate a specific config file:</p>
-<pre><code class="language-sh">$ organize sim [FILE]
-$ organize run [FILE]
+<pre><code class="language-shell">organize sim [FILE]
+organize run [FILE]
 </code></pre>
 <p>Optionally you can specify the working directory like this:</p>
-<pre><code class="language-sh">$ organize sim [FILE] --working-dir=~/Documents
+<pre><code class="language-shell">organize sim [FILE] --working-dir=~/Documents
 </code></pre>
 <h2 id="environment-variables">Environment variables<a class="headerlink" href="#environment-variables" title="Permanent link">#</a></h2>
 <ul>
@@ -160,9 +160,9 @@ $ organize run [FILE]
 <li><code>EDITOR</code> - The editor used to edit the config file.</li>
 </ul>
 <h2 id="parallelize-jobs">Parallelize jobs<a class="headerlink" href="#parallelize-jobs" title="Permanent link">#</a></h2>
-<p>To speed up organizing you can run multiple organize processes simultaniously like this
+<p>To speed up organizing you can run multiple organize processes simultaneously like this
 (linux / macOS):</p>
-<pre><code>organize run config_1.yaml &amp; \
+<pre><code class="language-shell">organize run config_1.yaml &amp; \
 organize run config_2.yaml &amp; \
 organize run config_3.yaml &amp;
 </code></pre>

@@ -119,7 +119,7 @@
     <li>Locations</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/tfeldmann/organize/edit/master/docs/locations.md"
+        <a href="https://github.com/tfeldmann/organize/edit/main/docs/locations.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -181,13 +181,13 @@ want to move or delete files from this location, this has to be set to <code>"de
 <p><strong>exclude_files</strong> (<code>List[str]</code>)<br>
 A list of filename patterns that should be excluded in this location, e.g. <code>["~*"]</code>.</p>
 <p><strong>exclude_dirs</strong> (<code>List[str]</code>)<br>
-A list of patterns that will filter be used to filter out directory names in this location.
-e.g. <code>['do-not-move', '*-Important']</code></p>
+A list of folder name patterns that will be used to filter out directory names in
+this location. e.g. <code>["do-not-move", "*-Important", "Backup*"]</code></p>
 <p><strong>system_exclude_files</strong> (<code>List[str]</code>)<br>
 The list of filename patterns that are excluded by default. Defaults to:
-<code>["thumbs.db", "desktop.ini", "~$*", ".DS_Store", ".localized"]</code></p>
+<code>["thumbs.db", "desktop.ini", "~$*", ".DS_Store", ".localized"]</code>. Override with <code>[]</code> to include system files.</p>
 <p><strong>system_exclude_dirs</strong> (<code>List[str]</code>)<br>
-The list of dir names that are excluded by default (<code>['.git', '.svn']</code>)</p>
+The list of folder name patterns that are excluded by default (<code>['.git', '.svn']</code>). Override with <code>[]</code> to include system dirs.</p>
 <p><strong>ignore_errors</strong> (<code>bool</code>)<br>
 If <code>true</code>, any errors reading the location will be ignored.</p>
 <p><strong>filter</strong> (<code>List[str]</code>)<br>

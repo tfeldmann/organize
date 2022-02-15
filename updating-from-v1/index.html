@@ -115,7 +115,7 @@
     <li>Updating from organize v1.x</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/tfeldmann/organize/edit/master/docs/updating-from-v1.md"
+        <a href="https://github.com/tfeldmann/organize/edit/main/docs/updating-from-v1.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -149,15 +149,15 @@ placeholders.</p>
 <li><code>{basedir}</code> is no longer available.</li>
 <li>You have to replace undocumented placeholders like this:</li>
 </ul>
-<pre><code class="language-python">{created.year}-{created.month:02}-{created.day:02}
+<pre><code class="language-yaml">&quot;{created.year}-{created.month:02}-{created.day:02}&quot;
 </code></pre>
 <p>With this:</p>
-<pre><code class="language-python">{created.strftime('%Y-%m-%d')}
+<pre><code class="language-yaml">&quot;{created.strftime('%Y-%m-%d')}&quot;
 </code></pre>
 <p>If you need to left pad other numbers you can now use the following syntax:</p>
-<pre><code class="language-python">{ &quot;{:02}&quot;.format(your_variable) }
+<pre><code class="language-yaml">&quot;{'%02d' % your_variable}&quot;
 # or
-{ '%02d' % your_variable }
+&quot;{ '{:02}'.format(your_variable) }&quot;
 </code></pre>
 <h2 id="filters">Filters<a class="headerlink" href="#filters" title="Permanent link">#</a></h2>
 <ul>
