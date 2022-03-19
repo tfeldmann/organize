@@ -12,6 +12,7 @@ from collections import defaultdict
 from typing import Dict, NamedTuple, Set, Union
 
 from fs.base import FS
+from fs.errors import NoSysPath, NoURL
 from fs.path import basename
 
 from organize.utils import is_same_resource
@@ -39,6 +40,18 @@ class File(NamedTuple):
     @property
     def name(self):
         return basename(self.path)
+
+    @property
+    def ident(self):
+        try:
+            return self.fs.getsyspath(self.path)
+        except NoSysPath:
+            pass
+        try:
+            return self.fs.geturl(self.path)
+        except NoURL:
+            pass
+        return "%s,%s" % (self.path, id(self.fs))
 
 
 def getsize(f: File):
@@ -124,6 +137,11 @@ class Duplicate(Filter):
 
     def matches(self, fs: FS, path: str, base_path: str):
         file_ = File(fs=fs, path=path, base_path=base_path)
+
+        # skip symlinks
+        if fs.islink(path):
+            return False
+
         # the exact same path has already been handled. This happens if multiple
         # locations emit this file in a single rule or if we follow symlinks.
         # We skip these.
