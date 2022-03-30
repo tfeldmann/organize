@@ -239,7 +239,21 @@ def action_pipeline(actions: Iterable[Action], args: dict, simulate: bool) -> bo
     return True
 
 
-def run_rules(rules: dict, simulate: bool = True):
+def should_execute(rule_tags, tags, skip_tags):
+    if "always" in rule_tags and "always" not in skip_tags:
+        return True
+    if "never" in rule_tags and "never" not in tags:
+        return False
+    if not tags and not skip_tags:
+        return True
+    if not rule_tags and tags:
+        return False
+    should_run = any(tag in tags for tag in rule_tags)
+    should_skip = any(tag in skip_tags for tag in rule_tags)
+    return should_run and not should_skip
+
+
+def run_rules(rules: dict, tags, skip_tags, simulate: bool = True):
     count = Counter(done=0, fail=0)  # type: Counter
 
     if simulate:
@@ -247,6 +261,13 @@ def run_rules(rules: dict, simulate: bool = True):
 
     console.spinner(simulate=simulate)
     for rule_nr, rule in enumerate(rules["rules"], start=1):
+        should_run = should_execute(
+            rule_tags=rule.get("tags", []),
+            tags=tags,
+            skip_tags=skip_tags,
+        )
+        if not should_run:
+            continue
         target = rule.get("targets", "files")
         console.rule(rule.get("name", "Rule %s" % rule_nr))
         filter_mode = rule.get("filter_mode", "all")
@@ -304,7 +325,13 @@ def run_rules(rules: dict, simulate: bool = True):
     return count
 
 
-def run(rules: Union[str, dict], simulate: bool, validate=True):
+def run(
+    rules: Union[str, dict],
+    simulate: bool,
+    tags,
+    skip_tags,
+    validate=True,
+):
     # load and validate
     if isinstance(rules, str):
         rules = config.load_from_string(rules)
@@ -322,7 +349,7 @@ def run(rules: Union[str, dict], simulate: bool, validate=True):
         console.warn(msg)
 
     # run
-    count = run_rules(rules=rules, simulate=simulate)
+    count = run_rules(rules=rules, tags=tags, skip_tags=skip_tags, simulate=simulate)
     console.summary(count)
 
     if count["fail"]:

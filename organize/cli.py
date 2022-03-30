@@ -76,18 +76,27 @@ CLI_CONFIG_FILE_OPTION = click.option(
     hidden=True,
     type=click.Path(exists=True, dir_okay=False, path_type=Path),
 )
+CLI_TAGS = click.option("--tags", default="")
+CLI_SKIP_TAGS = click.option("--skip-tags", default="")
 
 
-def run_local(config_path: Path, working_dir: Path, simulate: bool):
+def run_local(config_path: Path, working_dir: Path, simulate: bool, tags, skip_tags):
     from schema import SchemaError
 
     from . import core
 
     try:
+        tag_list = [tag.strip() for tag in tags.split(",") if tag]
+        skip_tag_list = [tag.strip() for tag in skip_tags.split(",") if tag]
         console.info(config_path=config_path, working_dir=working_dir)
         config = config_path.read_text()
         os.chdir(working_dir)
-        core.run(rules=config, simulate=simulate)
+        core.run(
+            rules=config,
+            simulate=simulate,
+            tags=tag_list,
+            skip_tags=skip_tag_list,
+        )
     except NeedsMigrationError as e:
         console.error(e, title="Config needs migration")
         console.warn(
@@ -122,28 +131,44 @@ def cli():
 @CLI_CONFIG
 @CLI_WORKING_DIR_OPTION
 @CLI_CONFIG_FILE_OPTION
-def run(config: Path, working_dir: Path, config_file):
+@CLI_TAGS
+@CLI_SKIP_TAGS
+def run(config: Path, working_dir: Path, config_file, tags, skip_tags):
     """Organizes your files according to your rules."""
     if config_file:
         config = config_file
         console.deprecated(
             "The --config-file option can now be omitted. See organize --help."
         )
-    run_local(config_path=config, working_dir=working_dir, simulate=False)
+    run_local(
+        config_path=config,
+        working_dir=working_dir,
+        simulate=False,
+        tags=tags,
+        skip_tags=skip_tags,
+    )
 
 
 @cli.command()
 @CLI_CONFIG
 @CLI_WORKING_DIR_OPTION
 @CLI_CONFIG_FILE_OPTION
-def sim(config: Path, working_dir: Path, config_file):
+@CLI_TAGS
+@CLI_SKIP_TAGS
+def sim(config: Path, working_dir: Path, config_file, tags, skip_tags):
     """Simulates a run (does not touch your files)."""
     if config_file:
         config = config_file
         console.deprecated(
             "The --config-file option can now be omitted. See organize --help."
         )
-    run_local(config_path=config, working_dir=working_dir, simulate=True)
+    run_local(
+        config_path=config,
+        working_dir=working_dir,
+        simulate=True,
+        tags=tags,
+        skip_tags=skip_tags,
+    )
 
 
 @cli.command()
