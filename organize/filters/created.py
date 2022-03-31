@@ -56,7 +56,4 @@ class Created(TimeFilter):
                     pass
 
     def __str__(self):
-        return "[Created] All files / folders %s than %s" % (
-            self._mode,
-            self.timedelta,
-        )
+        return "<Created>"

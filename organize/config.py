@@ -19,6 +19,7 @@ CONFIG_SCHEMA = Schema(
                 Optional("filter_mode", description="The filter mode."): Or(
                     "all", "any", "none", error="Invalid filter mode"
                 ),
+                Optional("tags"): Or(str, [str]),
                 Optional(
                     "targets",
                     description="Whether the rule should apply to directories or folders.",

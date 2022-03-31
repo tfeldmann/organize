@@ -5,10 +5,11 @@ The file management automation tool.
 """
 import os
 import sys
+from pathlib import Path
+from typing import Tuple
 
 import click
 from fs import appfs
-from pathlib import Path
 
 from . import console
 from .__version__ import __version__
@@ -57,6 +58,15 @@ class NaturalOrderGroup(click.Group):
         return self.commands.keys()
 
 
+class TagType(click.ParamType):
+    name = "tag"
+
+    def convert(self, value, param, ctx):
+        if not value:
+            return tuple()
+        return tuple(tag.strip() for tag in value.split(","))
+
+
 CLI_CONFIG = click.argument(
     "config",
     required=False,
@@ -76,9 +86,17 @@ CLI_CONFIG_FILE_OPTION = click.option(
     hidden=True,
     type=click.Path(exists=True, dir_okay=False, path_type=Path),
 )
+CLI_TAGS = click.option("--tags", type=TagType(), default="")
+CLI_SKIP_TAGS = click.option("--skip-tags", type=TagType(), default="")
 
 
-def run_local(config_path: Path, working_dir: Path, simulate: bool):
+def run_local(
+    config_path: Path,
+    working_dir: Path,
+    simulate: bool,
+    tags: Tuple[str] = tuple(),
+    skip_tags: Tuple[str] = tuple(),
+):
     from schema import SchemaError
 
     from . import core
@@ -87,7 +105,12 @@ def run_local(config_path: Path, working_dir: Path, simulate: bool):
         console.info(config_path=config_path, working_dir=working_dir)
         config = config_path.read_text()
         os.chdir(working_dir)
-        core.run(rules=config, simulate=simulate)
+        core.run(
+            rules=config,
+            simulate=simulate,
+            tags=tags,
+            skip_tags=skip_tags,
+        )
     except NeedsMigrationError as e:
         console.error(e, title="Config needs migration")
         console.warn(
@@ -122,28 +145,44 @@ def cli():
 @CLI_CONFIG
 @CLI_WORKING_DIR_OPTION
 @CLI_CONFIG_FILE_OPTION
-def run(config: Path, working_dir: Path, config_file):
+@CLI_TAGS
+@CLI_SKIP_TAGS
+def run(config: Path, working_dir: Path, config_file, tags, skip_tags):
     """Organizes your files according to your rules."""
     if config_file:
         config = config_file
         console.deprecated(
             "The --config-file option can now be omitted. See organize --help."
         )
-    run_local(config_path=config, working_dir=working_dir, simulate=False)
+    run_local(
+        config_path=config,
+        working_dir=working_dir,
+        simulate=False,
+        tags=tags,
+        skip_tags=skip_tags,
+    )
 
 
 @cli.command()
 @CLI_CONFIG
 @CLI_WORKING_DIR_OPTION
 @CLI_CONFIG_FILE_OPTION
-def sim(config: Path, working_dir: Path, config_file):
+@CLI_TAGS
+@CLI_SKIP_TAGS
+def sim(config: Path, working_dir: Path, config_file, tags, skip_tags):
     """Simulates a run (does not touch your files)."""
     if config_file:
         config = config_file
         console.deprecated(
             "The --config-file option can now be omitted. See organize --help."
         )
-    run_local(config_path=config, working_dir=working_dir, simulate=True)
+    run_local(
+        config_path=config,
+        working_dir=working_dir,
+        simulate=True,
+        tags=tags,
+        skip_tags=skip_tags,
+    )
 
 
 @cli.command()
