@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v2.2.0 (2022-03-31)
 
 - Tag support (#199) to run subsets of rules in your config.
 
