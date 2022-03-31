@@ -5,10 +5,11 @@ The file management automation tool.
 """
 import os
 import sys
+from pathlib import Path
+from typing import Tuple
 
 import click
 from fs import appfs
-from pathlib import Path
 
 from . import console
 from .__version__ import __version__
@@ -57,6 +58,15 @@ class NaturalOrderGroup(click.Group):
         return self.commands.keys()
 
 
+class TagType(click.ParamType):
+    name = "tag"
+
+    def convert(self, value, param, ctx):
+        if not value:
+            return tuple()
+        return tuple(value.split(","))
+
+
 CLI_CONFIG = click.argument(
     "config",
     required=False,
@@ -76,26 +86,30 @@ CLI_CONFIG_FILE_OPTION = click.option(
     hidden=True,
     type=click.Path(exists=True, dir_okay=False, path_type=Path),
 )
-CLI_TAGS = click.option("--tags", default="")
-CLI_SKIP_TAGS = click.option("--skip-tags", default="")
+CLI_TAGS = click.option("--tags", type=TagType(), default="")
+CLI_SKIP_TAGS = click.option("--skip-tags", type=TagType(), default="")
 
 
-def run_local(config_path: Path, working_dir: Path, simulate: bool, tags, skip_tags):
+def run_local(
+    config_path: Path,
+    working_dir: Path,
+    simulate: bool,
+    tags: Tuple[str] = tuple(),
+    skip_tags: Tuple[str] = tuple(),
+):
     from schema import SchemaError
 
     from . import core
 
     try:
-        tag_list = [tag.strip() for tag in tags.split(",") if tag]
-        skip_tag_list = [tag.strip() for tag in skip_tags.split(",") if tag]
         console.info(config_path=config_path, working_dir=working_dir)
         config = config_path.read_text()
         os.chdir(working_dir)
         core.run(
             rules=config,
             simulate=simulate,
-            tags=tag_list,
-            skip_tags=skip_tag_list,
+            tags=tags,
+            skip_tags=skip_tags,
         )
     except NeedsMigrationError as e:
         console.error(e, title="Config needs migration")

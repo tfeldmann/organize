@@ -240,6 +240,13 @@ def action_pipeline(actions: Iterable[Action], args: dict, simulate: bool) -> bo
 
 
 def should_execute(rule_tags, tags, skip_tags):
+    if not rule_tags:
+        rule_tags = set()
+    if not tags:
+        tags = set()
+    if not skip_tags:
+        skip_tags = set()
+
     if "always" in rule_tags and "always" not in skip_tags:
         return True
     if "never" in rule_tags and "never" not in tags:
@@ -248,7 +255,7 @@ def should_execute(rule_tags, tags, skip_tags):
         return True
     if not rule_tags and tags:
         return False
-    should_run = any(tag in tags for tag in rule_tags)
+    should_run = any(tag in tags for tag in rule_tags) or not rule_tags
     should_skip = any(tag in skip_tags for tag in rule_tags)
     return should_run and not should_skip
 
