@@ -255,7 +255,7 @@ def should_execute(rule_tags, tags, skip_tags):
         return True
     if not rule_tags and tags:
         return False
-    should_run = any(tag in tags for tag in rule_tags) or not rule_tags
+    should_run = any(tag in tags for tag in rule_tags) or not tags or not rule_tags
     should_skip = any(tag in skip_tags for tag in rule_tags)
     return should_run and not should_skip
 
@@ -335,9 +335,9 @@ def run_rules(rules: dict, tags, skip_tags, simulate: bool = True):
 def run(
     rules: Union[str, dict],
     simulate: bool,
-    tags,
-    skip_tags,
     validate=True,
+    tags=None,
+    skip_tags=None,
 ):
     # load and validate
     if isinstance(rules, str):

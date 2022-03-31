@@ -17,6 +17,7 @@ def test_run_tagged():
 
 def test_skip():
     assert should_execute(rule_tags=None, tags=None, skip_tags=["tag"])
+    assert should_execute(rule_tags=["tag"], tags=None, skip_tags=["asd"])
     assert not should_execute(rule_tags=["tag"], tags=None, skip_tags=["tag"])
     assert not should_execute(rule_tags=["tag", "tag2"], tags=None, skip_tags=["tag"])
 
