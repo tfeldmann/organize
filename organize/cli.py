@@ -6,7 +6,7 @@ The file management automation tool.
 import os
 import sys
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Optional
 
 import click
 from fs import appfs
@@ -94,8 +94,8 @@ def run_local(
     config_path: Path,
     working_dir: Path,
     simulate: bool,
-    tags: Tuple[str] = tuple(),
-    skip_tags: Tuple[str] = tuple(),
+    tags: Optional[Tuple[str]] = None,
+    skip_tags: Optional[Tuple[str]] = None,
 ):
     from schema import SchemaError
 
