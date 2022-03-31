@@ -64,7 +64,7 @@ class TagType(click.ParamType):
     def convert(self, value, param, ctx):
         if not value:
             return tuple()
-        return tuple(value.split(","))
+        return tuple(tag.strip() for tag in value.split(","))
 
 
 CLI_CONFIG = click.argument(

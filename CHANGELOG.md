@@ -1,5 +1,9 @@
 # Changelog
 
+## WIP
+
+- Tag support (#199) to run subsets of rules in your config.
+
 ## v2.1.2 (2022-02-13)
 
 - Hotfix for `filecontent` filter.

@@ -268,8 +268,11 @@ def run_rules(rules: dict, tags, skip_tags, simulate: bool = True):
 
     console.spinner(simulate=simulate)
     for rule_nr, rule in enumerate(rules["rules"], start=1):
+        rule_tags = rule.get("tags")
+        if isinstance(rule_tags, str):
+            rule_tags = [tag.strip() for tag in rule_tags.split(",")]
         should_run = should_execute(
-            rule_tags=rule.get("tags", []),
+            rule_tags=rule_tags,
             tags=tags,
             skip_tags=skip_tags,
         )
