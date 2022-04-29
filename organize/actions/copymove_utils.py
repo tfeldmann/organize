@@ -84,6 +84,11 @@ def resolve_overwrite_conflict(
 
     elif conflict_mode == "overwrite":
         print("Overwrite %s." % safe_description(dst_fs, dst_path))
+        if not simulate:
+            if dst_fs.isdir(dst_path):
+                dst_fs.removedir(dst_path)
+            elif dst_fs.isfile(dst_path):
+                dst_fs.remove(dst_path)
         return dst_path
 
     elif conflict_mode == "rename_new":
