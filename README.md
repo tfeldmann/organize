@@ -150,11 +150,11 @@ rules:
       - move: ~/Documents/Shopping/
 ```
 
-Recursively delete all empty directories:
+Recursively delete all empty directories and files:
 
 ```yaml
 rules:
-  - name: "Recursively delete all empty directories"
+  - name: "Recursively delete all empty directories and files"
     locations:
       - path: ~/Downloads
     subfolders: true
