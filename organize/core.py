@@ -6,7 +6,7 @@ from typing import Iterable, NamedTuple, Union
 
 from fs import path as fspath
 from fs.base import FS
-from fs.errors import NoSysPath
+from fs.errors import NoSysPath, ResourceNotFound
 from fs.walk import Walker
 from rich.console import Console
 
@@ -286,8 +286,13 @@ def run_rules(rules: dict, tags, skip_tags, simulate: bool = True):
             console.location(walker_fs, walker_path)
             walk = walker.files if target == "files" else walker.dirs
             for path in walk(fs=walker_fs, path=walker_path):
-                if walker_fs.islink(path):
+                try:
+                    if walker_fs.islink(path):
+                        continue
+                except ResourceNotFound:
+                    console.warn("Ignoring " + walker_fs.getsyspath(path) + " (may be a broken symlink)")
                     continue
+
                 # tell the user which resource we're handling
                 console.path(walker_fs, path)
 
