@@ -13,8 +13,37 @@ files = {
         "folder": {
             "x.txt": "",
         },
-    }
+    },
+    "min": {},
+    "max": {},
 }
+
+def test_depth_options():
+    with fs.open_fs("mem://") as mem:
+        config = {
+            "rules": [{
+                "locations": [
+                    {"path": "files", "filesystem": mem, "min_depth": 1},
+                ],
+                "actions": [
+                    {"copy": {"dest": "min/", "filesystem": mem}},
+                ],
+                "subfolders": True
+            },{
+                "locations": [
+                    {"path": "files", "filesystem": mem, "max_depth": 1},
+                ],
+                "actions": [
+                    {"copy": {"dest": "max/", "filesystem": mem}},
+                ],
+                "subfolders": True
+            }]
+        }
+        make_files(mem, files)
+        core.run(config, simulate=False)
+        result = read_files(mem)
+        assert len(result["min"].keys()) == 1
+        assert len(result["max"].keys()) == 3
 
 
 def test_copy_on_itself():

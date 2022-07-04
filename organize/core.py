@@ -9,6 +9,7 @@ from fs.base import FS
 from fs.errors import NoSysPath, ResourceNotFound
 from fs.walk import Walker
 from rich.console import Console
+from fs.path import dirname
 
 from . import config, console
 from .actions import ACTIONS
@@ -87,7 +88,11 @@ def convert_options_to_walker_args(options: dict):
     return result
 
 
-def instantiate_location(options: Union[str, dict], default_max_depth=0) -> Location:
+def instantiate_location(
+    options: Union[str, dict],
+    default_max_depth: int = 0,
+    default_min_depth: int = 0,
+) -> (Location, dict):
     if isinstance(options, Location):
         return options
     if isinstance(options, str):
@@ -96,6 +101,17 @@ def instantiate_location(options: Union[str, dict], default_max_depth=0) -> Loca
     # set default max depth from rule
     if not "max_depth" in options:
         options["max_depth"] = default_max_depth
+
+    # set default min depth from rule
+    if not "min_depth" in options:
+        options["min_depth"] = default_min_depth
+
+    # separate out non-walker options
+    non_walker_options = {}
+    non_walker_option_keys = ["min_depth"]
+    for nwok in non_walker_option_keys:
+        non_walker_options[nwok] = options[nwok]
+        del options[nwok]
 
     if "walker" not in options:
         args = convert_options_to_walker_args(options)
@@ -107,7 +123,7 @@ def instantiate_location(options: Union[str, dict], default_max_depth=0) -> Loca
         path=options.get("path", "/"),
         filesystem=options.get("filesystem"),
     )
-    return Location(walker=walker, fs=fs, fs_path=fs_path)
+    return Location(walker=walker, fs=fs, fs_path=fs_path), non_walker_options
 
 
 def instantiate_filter(filter_config):
@@ -151,11 +167,15 @@ def replace_with_instances(config: dict):
         _locations = []
         for options in ensure_list(rule["locations"]):
             try:
-                instance = instantiate_location(
+                instance, non_walker_options = instantiate_location(
                     options=options,
                     default_max_depth=default_depth,
+                    default_min_depth=0,
                 )
-                _locations.append(instance)
+                _locations.append({
+                    "instance": instance, 
+                    "non_walker_options": non_walker_options,
+                })
             except Exception as e:
                 if isinstance(options, dict) and options.get("ignore_errors", False):
                     warnings.append(str(e))
@@ -281,8 +301,10 @@ def run_rules(rules: dict, tags, skip_tags, simulate: bool = True):
         target = rule.get("targets", "files")
         console.rule(rule.get("name", "Rule %s" % rule_nr))
         filter_mode = rule.get("filter_mode", "all")
-
-        for walker, walker_fs, walker_path in rule["locations"]:
+        for location in rule["locations"]:
+            instance = location["instance"]
+            non_walker_options = location["non_walker_options"]
+            walker, walker_fs, walker_path = instance
             console.location(walker_fs, walker_path)
             walk = walker.files if target == "files" else walker.dirs
             for path in walk(fs=walker_fs, path=walker_path):
@@ -291,6 +313,11 @@ def run_rules(rules: dict, tags, skip_tags, simulate: bool = True):
                         continue
                 except ResourceNotFound:
                     console.warn("Ignoring " + walker_fs.getsyspath(path) + " (may be a broken symlink)")
+                    continue
+
+                # skip if len of path < min_path
+                path_len = len(dirname(path).strip().split('/')) - 1
+                if path_len < non_walker_options["min_depth"]:
                     continue
 
                 # tell the user which resource we're handling
