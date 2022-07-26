@@ -430,6 +430,54 @@ rules:
       - echo: "As timestamp: {lastmodified.timestamp() | int}"
 ```
 
+## macos_tags
+
+::: organize.filters.MacOSTags
+
+**Examples:**
+
+```yaml
+rules:
+  - name: "Only files with a red macOS tag"
+    locations: "~/Downloads"
+    filters:
+      - macos_tags: "* (red)"
+    actions:
+      - echo: "File with red tag"
+```
+
+```yaml
+rules:
+  - name: "All files tagged 'Invoice' (any color)"
+    locations: "~/Downloads"
+    filters:
+      - macos_tags: "Invoice (*)"
+    actions:
+      - echo: "Invoice found"
+```
+
+```yaml
+rules:
+  - name: "All files with a tag 'Invoice' (any color) or with a green tag"
+    locations: "~/Downloads"
+    filters:
+      - macos_tags:
+          - "Invoice (*)"
+          - "* (green)"
+    actions:
+      - echo: "Match found!"
+```
+
+```yaml
+rules:
+  - name: "Listing file tags"
+    locations: "~/Downloads"
+    filters:
+      - macos_tags
+    actions:
+      - echo: "{macos_tags}"
+```
+
 ## mimetype
 
 ::: organize.filters.MimeType

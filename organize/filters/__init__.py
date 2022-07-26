@@ -10,6 +10,7 @@ from .filecontent import FileContent
 from .filter import Filter
 from .hash import Hash
 from .lastmodified import LastModified
+from .macos_tags import MacOSTags
 from .mimetype import MimeType
 from .name import Name
 from .python import Python
@@ -29,6 +30,7 @@ FILTERS = {
     Name.name: Name,
     Size.name: Size,
     LastModified.name: LastModified,
+    MacOSTags.name: MacOSTags,
     MimeType.name: MimeType,
     Python.name: Python,
     Regex.name: Regex,
