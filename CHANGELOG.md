@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v2.3.0 (2022-07-26)
 
 - New filter: `macos_tags` (macOS only).
 - Ignore broken symlinks (Issue #202)
