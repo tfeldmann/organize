@@ -430,6 +430,22 @@ rules:
       - echo: "As timestamp: {lastmodified.timestamp() | int}"
 ```
 
+## macos_tags
+
+::: organize.filters.MacOSTags
+
+**Examples:**
+
+```yaml
+rules:
+  - name: "Only files with a red macOS tag"
+    locations: "~/Downloads"
+    filters:
+      - macos_tags: "* (red)"
+    actions:
+      - echo: "File with red tag"
+```
+
 ## mimetype
 
 ::: organize.filters.MimeType
