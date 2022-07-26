@@ -1,19 +1,11 @@
 import sys
-from typing import Union
+from typing import Union, Iterable
 
 import simplematch as sm
 
 from organize.utils import flatten
 
 from .filter import Filter, FilterResult
-
-
-def parse_tag(s):
-    """parse a tag definition and return a tuple (name, color)"""
-    result = sm.match("{name} ({color})", s)
-    if not result:
-        return s, "none"
-    return result["name"], result["color"].lower()
 
 
 def list_tags(path):
@@ -37,7 +29,7 @@ class MacOSTags(Filter):
     def __init__(self, *tags) -> None:
         self.filter_tags = list(flatten(list(tags)))
 
-    def matches(self, tags: str) -> Union[bool, str]:
+    def matches(self, tags: Iterable[str]) -> Union[bool, str]:
         if not self.filter_tags:
             return True
         if not tags:

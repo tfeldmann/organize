@@ -29,5 +29,10 @@ def test_macos_filter():
 
 
 def test_macos_tags_matching():
-    tags = MacOSTags("Invoice * ", "* (red)", "Test (green)")
+    tags = MacOSTags("Invoice (*)", "* (red)", "Test (green)")
     assert tags.matches(["Invoice (none)"])
+    assert tags.matches(["Invoice (green)"])
+    assert not tags.matches(["Voice (green)"])
+    assert tags.matches(["Voice (red)"])
+    assert not tags.matches(["Test (blue)"])
+    assert tags.matches(["Test (green)"])
