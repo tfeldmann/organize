@@ -40,7 +40,7 @@ class MacOSTags(Filter):
         return False
 
     def pipeline(self, args: dict) -> FilterResult:
-        fs = args["fs"]  # type: FS
+        fs = args["fs"]
         fs_path = args["fs_path"]
         path = fs.getsyspath(fs_path)
 

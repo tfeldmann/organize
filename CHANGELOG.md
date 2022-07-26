@@ -1,5 +1,10 @@
 # Changelog
 
+## WIP
+
+- New filter: `macos_tags` (macOS only).
+- Ignore broken symlinks (Issue #202)
+
 ## v2.2.0 (2022-03-31)
 
 - Tag support (#199) to run subsets of rules in your config.
