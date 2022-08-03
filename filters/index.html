@@ -76,6 +76,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#date_added">date_added</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#date_lastused">date_lastused</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#duplicate">duplicate</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#empty">empty</a>
@@ -89,6 +91,8 @@
     <li class="toctree-l2"><a class="reference internal" href="#hash">hash</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#lastmodified">lastmodified</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#macos_tags">macos_tags</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#mimetype">mimetype</a>
     </li>
@@ -345,6 +349,74 @@ time. (default = 'older')</p></li>
       - date_added
     actions:
       - echo: &quot;Date added: {date_added.strftime('%Y-%m-%d')}&quot;
+</code></pre>
+<h2 id="date_lastused">date_lastused<a class="headerlink" href="#date_lastused" title="Permanent link">#</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Matches files by the time the file was last used.</p>
+<p><strong><code>date_lastused</code> is only available on macOS!</strong></p>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li><p><strong>years</strong> (<code>int</code>) – specify number of years</p></li>
+            <li><p><strong>months</strong> (<code>int</code>) – specify number of months</p></li>
+            <li><p><strong>weeks</strong> (<code>float</code>) – specify number of weeks</p></li>
+            <li><p><strong>days</strong> (<code>float</code>) – specify number of days</p></li>
+            <li><p><strong>hours</strong> (<code>float</code>) – specify number of hours</p></li>
+            <li><p><strong>minutes</strong> (<code>float</code>) – specify number of minutes</p></li>
+            <li><p><strong>seconds</strong> (<code>float</code>) – specify number of seconds</p></li>
+            <li><p><strong>mode</strong> (<code>str</code>) – either 'older' or 'newer'. 'older' matches files / folders last used before
+the given time, 'newer' matches files / folders last used within the given
+time. (default = 'older')</p></li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+    <th class="field-name">Returns:</th>
+    <td class="field-body">
+        <ul class="first simple">
+          <li><p><code>{date_lastused}</code> – The datetime the files / folders were added.</p></li>
+        </ul>
+    </td>
+    </tr>
+  </tbody>
+</table>
+
+
+    </div>
+
+  </div>
+
+<p>Works the same way as <a href="#created"><code>created</code></a> and <a href="#lastmodified"><code>lastmodified</code></a>.</p>
+<p><strong> Examples </strong></p>
+<pre><code class="language-yaml">rules:
+  - name: Show the date the file was added to the folder
+    locations: &quot;~/Desktop&quot;
+    filters:
+      - date_lastused
+    actions:
+      - echo: &quot;Date last used: {date_lastused.strftime('%Y-%m-%d')}&quot;
 </code></pre>
 <h2 id="duplicate">duplicate<a class="headerlink" href="#duplicate" title="Permanent link">#</a></h2>
 
@@ -840,6 +912,73 @@ time. (default = 'older')</p></li>
     actions:
       - echo: &quot;ISO Format:   {lastmodified.strftime('%Y-%m-%d')}&quot;
       - echo: &quot;As timestamp: {lastmodified.timestamp() | int}&quot;
+</code></pre>
+<h2 id="macos_tags">macos_tags<a class="headerlink" href="#macos_tags" title="Permanent link">#</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Filter by macOS tags</p>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li><p><strong>*tags</strong> (<code>list(str) or str</code>) – The tags to filter by</p></li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+    </div>
+
+  </div>
+
+<p><strong>Examples:</strong></p>
+<pre><code class="language-yaml">rules:
+  - name: &quot;Only files with a red macOS tag&quot;
+    locations: &quot;~/Downloads&quot;
+    filters:
+      - macos_tags: &quot;* (red)&quot;
+    actions:
+      - echo: &quot;File with red tag&quot;
+</code></pre>
+<pre><code class="language-yaml">rules:
+  - name: &quot;All files tagged 'Invoice' (any color)&quot;
+    locations: &quot;~/Downloads&quot;
+    filters:
+      - macos_tags: &quot;Invoice (*)&quot;
+    actions:
+      - echo: &quot;Invoice found&quot;
+</code></pre>
+<pre><code class="language-yaml">rules:
+  - name: &quot;All files with a tag 'Invoice' (any color) or with a green tag&quot;
+    locations: &quot;~/Downloads&quot;
+    filters:
+      - macos_tags:
+          - &quot;Invoice (*)&quot;
+          - &quot;* (green)&quot;
+    actions:
+      - echo: &quot;Match found!&quot;
+</code></pre>
+<pre><code class="language-yaml">rules:
+  - name: &quot;Listing file tags&quot;
+    locations: &quot;~/Downloads&quot;
+    filters:
+      - macos_tags
+    actions:
+      - echo: &quot;{macos_tags}&quot;
 </code></pre>
 <h2 id="mimetype">mimetype<a class="headerlink" href="#mimetype" title="Permanent link">#</a></h2>
 

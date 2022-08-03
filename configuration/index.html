@@ -62,6 +62,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#running-and-simulating">Running and simulating</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#running-specific-rules-of-your-config">Running specific rules of your config</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#environment-variables">Environment variables</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#parallelize-jobs">Parallelize jobs</a>
@@ -153,6 +155,27 @@ organize run [FILE]
 <p>Optionally you can specify the working directory like this:</p>
 <pre><code class="language-shell">organize sim [FILE] --working-dir=~/Documents
 </code></pre>
+<h2 id="running-specific-rules-of-your-config">Running specific rules of your config<a class="headerlink" href="#running-specific-rules-of-your-config" title="Permanent link">#</a></h2>
+<p>You can tag your rules like this:</p>
+<pre><code class="language-yml">rules:
+  - name: My first rule
+    actions:
+      - echo: &quot;Hello world&quot;
+    tags:
+      - debug
+      - fast
+</code></pre>
+<p>Then use the command line options <code>--tags</code> and <code>--skip-tags</code> so select the rules you
+want to run. The options take a comma-separated list of tags:</p>
+<pre><code>organize sim --tags=debug,foo --skip-tags=slow
+</code></pre>
+<p>Special tags:</p>
+<ul>
+<li>Rules tagged with the special tag <code>always</code> will always run
+  (except if <code>--skip-tags=always</code> is specified)</li>
+<li>Rules tagged with the special tag <code>never</code> will never run
+  (except if ' <code>--tags=never</code> is specified)</li>
+</ul>
 <h2 id="environment-variables">Environment variables<a class="headerlink" href="#environment-variables" title="Permanent link">#</a></h2>
 <ul>
 <li><code>ORGANIZE_CONFIG</code> - The path to the default config file.</li>
