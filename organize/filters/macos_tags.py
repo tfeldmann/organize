@@ -45,8 +45,7 @@ class MacOSTags(Filter):
         path = fs.getsyspath(fs_path)
 
         if sys.platform != "darwin":
-            self.print("The macos_tags filter is only available on macOS")
-            return
+            raise EnvironmentError("The macos_tags filter is only available on macOS")
 
         tags = list_tags(path)
 
