@@ -1,6 +1,7 @@
 from typing import Dict, Type
 
 from .action import Action
+from .append_text import AppendText
 from .confirm import Confirm
 from .copy import Copy
 from .delete import Delete
@@ -14,6 +15,7 @@ from .symlink import Symlink
 from .trash import Trash
 
 ACTIONS = {
+    AppendText.name: AppendText,
     Confirm.name: Confirm,
     Copy.name: Copy,
     Delete.name: Delete,
