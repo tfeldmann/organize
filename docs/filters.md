@@ -114,6 +114,24 @@ rules:
       - echo: "Date added: {date_added.strftime('%Y-%m-%d')}"
 ```
 
+## date_lastused
+
+::: organize.filters.DateLastUsed
+
+Works the same way as [`created`](#created) and [`lastmodified`](#lastmodified).
+
+** Examples **
+
+```yaml
+rules:
+  - name: Show the date the file was added to the folder
+    locations: "~/Desktop"
+    filters:
+      - date_lastused
+    actions:
+      - echo: "Date last used: {date_lastused.strftime('%Y-%m-%d')}"
+```
+
 ## duplicate
 
 ::: organize.filters.Duplicate

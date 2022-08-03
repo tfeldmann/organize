@@ -2,6 +2,7 @@ from typing import Dict, Type
 
 from .created import Created
 from .date_added import DateAdded
+from .date_lastused import DateLastUsed
 from .duplicate import Duplicate
 from .empty import Empty
 from .exif import Exif
@@ -21,6 +22,7 @@ FILTERS: Dict[str, Type[Filter]]
 FILTERS = {
     Created.name: Created,
     DateAdded.name: DateAdded,
+    DateLastUsed.name: DateLastUsed,
     Duplicate.name: Duplicate,
     Empty.name: Empty,
     Exif.name: Exif,

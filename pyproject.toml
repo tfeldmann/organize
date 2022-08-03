@@ -62,7 +62,7 @@ docs = [
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
-mypy = "^0.931"
+mypy = "^0.971"
 requests = "^2.27.1"
 types-PyYAML = "^6.0.3"
 
