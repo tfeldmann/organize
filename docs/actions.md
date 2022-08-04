@@ -423,6 +423,8 @@ rules:
       - write_text:
           text: "{size.traditional} -- {relative_path}"
           textfile: "./sizes.txt"
+          mode: "append"
+          clear_before_first_write: true
 ```
 
 This will create a file `sizes.txt` in the current working folder which contains the
@@ -451,6 +453,8 @@ rules:
       - write_text:
           text: "{size.traditional} -- {relative_path}"
           textfile: "./sizes.{extension}.txt"
+          mode: "prepend"
+          clear_before_first_write: true
 ```
 
 This will separate the filesizes by extension.

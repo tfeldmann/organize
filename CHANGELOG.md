@@ -2,6 +2,7 @@
 
 ## WIP
 
+- New action: `write_text`.
 - New filter: `date_lastused` (macOS only).
 
 ## v2.3.0 (2022-07-26)

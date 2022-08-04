@@ -1,14 +1,16 @@
 import logging
 from typing import Union
 
+from fs import errors, open_fs
 from fs.base import FS
-from fs import open_fs
+from fs.opener import manage_fs
+from fs.opener.errors import OpenerError
 from schema import Optional, Or
 
-from .copymove_utils import expand_args, dirname, basename
-from organize.utils import Template
+from organize.utils import SimulationFS, Template
 
 from .action import Action
+from .copymove_utils import basename, dirname, expand_args
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +88,8 @@ class WriteText(Action):
             raise ValueError("mode must be one of %s" % ", ".join(MODES))
 
     def pipeline(self, args: dict, simulate: bool):
-        dst_path = self.textfile.render(args)
+        textfile = self.textfile.render(args)
+        dst_path = textfile
 
         # TODO: Create helper function for this (maybe `sandboxed_fs_path(fs, path)`?)
         if self.filesystem:
@@ -97,26 +100,35 @@ class WriteText(Action):
         else:
             dst_fs = dirname(dst_path)
             dst_path = basename(dst_path)
+        try:
+            dst_fs = open_fs(dst_fs, create=False, writeable=True)
+        except (errors.CreateFailed, OpenerError):
+            if not simulate:
+                dst_fs = open_fs(dst_fs, create=True, writeable=True)
+            else:
+                dst_fs = SimulationFS(dst_fs)
 
         text = self.text.render(args)
 
-        with open_fs(dst_fs) as loc:
-            if self._is_first_write and self.clear_before_first_write:
-                self.print(f"Clearing file {dst_path}")
-                if not simulate:
-                    loc.writetext(dst_path, "")
-
-            self.print(f'{dst_path}: {self.mode} "{text}"')
-            if self.newline:
-                text += "\n"
-
+        if self._is_first_write and self.clear_before_first_write:
+            self.print(f"Clearing file {dst_path}")
             if not simulate:
-                if self.mode == "append":
-                    loc.appendtext(dst_path, text)
-                elif self.mode == "prepend":
-                    content = loc.readtext(dst_path)
-                    loc.writetext(dst_path, text + content)
-                elif self.mode == "overwrite":
-                    loc.writetext(dst_path, text)
+                dst_fs.create(dst_path, wipe=True)
 
-            self._is_first_write = False
+        self.print(f'{textfile}: {self.mode} "{text}"')
+        if self.newline:
+            text += "\n"
+
+        if not simulate:
+            with manage_fs(dst_fs):
+                if self.mode == "append":
+                    dst_fs.appendtext(dst_path, text)
+                elif self.mode == "prepend":
+                    content = ""
+                    if dst_fs.exists(dst_path):
+                        content = dst_fs.readtext(dst_path)
+                    dst_fs.writetext(dst_path, text + content)
+                elif self.mode == "overwrite":
+                    dst_fs.writetext(dst_path, text)
+
+        self._is_first_write = False
