@@ -3,6 +3,37 @@
 This page shows the specifics of each action. For basic action usage and options have a
 look at the [Rules](rules.md) section.
 
+## append_text
+
+::: organize.actions.AppendText
+
+**Examples**
+
+```yaml
+rules:
+  - name: "Record file sizes"
+    locations: ~/Downloads
+    filters:
+      - size
+    actions:
+      - append_text:
+          text: "{size.traditional} -- {relative_path}"
+          textfile: "./sizes.txt"
+```
+
+This will create a file `sizes.txt` in the current working folder which contains the 
+filesizes of everything in the `~/Downloads` folder:
+
+```
+2.9 MB -- SIM7600.pdf
+1.0 MB -- Bildschirmfoto 2022-07-05 um 10.43.16.png
+5.9 MB -- Albumcover.png
+51.2 KB -- Urlaubsantrag 2022-04-19.pdf
+1.8 MB -- ETH_USB_HUB_HAT.pdf
+2.1 MB -- ArduinoDUE_V02g_sch.pdf
+...
+```
+
 ## confirm
 
 ::: organize.actions.Confirm
