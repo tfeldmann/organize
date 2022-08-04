@@ -74,6 +74,8 @@
                 <ul class="current">
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Actions</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#append_text">append_text</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#confirm">confirm</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#copy">copy</a>
@@ -142,6 +144,43 @@
                 <h1 id="actions">Actions<a class="headerlink" href="#actions" title="Permanent link">#</a></h1>
 <p>This page shows the specifics of each action. For basic action usage and options have a
 look at the <a href="../rules/">Rules</a> section.</p>
+<h2 id="append_text">append_text<a class="headerlink" href="#append_text" title="Permanent link">#</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+    <div class="doc doc-contents first">
+
+      <p>Append text to a file.</p>
+
+
+
+    </div>
+
+  </div>
+
+<p><strong>Examples</strong></p>
+<pre><code class="language-yaml">rules:
+  - name: &quot;Record file sizes&quot;
+    locations: ~/Downloads
+    filters:
+      - size
+    actions:
+      - append_text:
+          text: &quot;{size.traditional} -- {relative_path}&quot;
+          textfile: &quot;./sizes.txt&quot;
+</code></pre>
+<p>This will create a file <code>sizes.txt</code> in the current working folder which contains the 
+filesizes of everything in the <code>~/Downloads</code> folder:</p>
+<pre><code>2.9 MB -- SIM7600.pdf
+1.0 MB -- Bildschirmfoto 2022-07-05 um 10.43.16.png
+5.9 MB -- Albumcover.png
+51.2 KB -- Urlaubsantrag 2022-04-19.pdf
+1.8 MB -- ETH_USB_HUB_HAT.pdf
+2.1 MB -- ArduinoDUE_V02g_sch.pdf
+...
+</code></pre>
 <h2 id="confirm">confirm<a class="headerlink" href="#confirm" title="Permanent link">#</a></h2>
 
 
