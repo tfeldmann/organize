@@ -65,6 +65,7 @@ pytest = "^6.2.5"
 mypy = "^0.971"
 requests = "^2.27.1"
 types-PyYAML = "^6.0.3"
+click-man = { git = "https://github.com/sirosen/click-man", branch = "handle-hidden-opts" }
 
 [tool.mypy]
 python_version = "3.6"
