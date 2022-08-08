@@ -13,6 +13,18 @@ def expand_location(x: Union[str, list]):
     return x
 
 
+def convert_to_list(cls, v):
+    if not v:
+        return []
+    if isinstance(v, str):
+        return v.split()
+    return v
+
+
+def normalize_to_list(field_name: str):
+    return validator(field_name, allow_reuse=True, pre=True)(convert_to_list)
+
+
 class FilterModeEnum(str, Enum):
     all = "all"
     any = "any"
@@ -43,25 +55,39 @@ class Location(BaseModel):
     filesystem: Optional[Union[str, object]]
 
 
+class NameFilterArgs(BaseModel):
+    match: str = "*"
+    startswith: Union[str, List[str]] = ""
+    contains: Union[str, List[str]] = ""
+    endswith: Union[str, List[str]] = ""
+    case_sensitive: bool = True
+
+
+class NameFilter(BaseModel):
+    name: NameFilterArgs
+
+    @validator("name", pre=True)
+    def create_args(cls, v):
+        if isinstance(v, str):
+            return {"match": v}
+        return v
+
+
+class FilterSchema(BaseModel):
+    name: NameFilterArgs
+
+
 class ExtensionSchema(BaseModel):
     extension: List[str]
-
-    @validator("extension", pre=True)
-    def convert_to_list(cls, v):
-        if not v:
-            return []
-        if isinstance(v, str):
-            return v.split()
-        return v
+    _normalize_extension = normalize_to_list("extension")
 
 
 class SizeSchema(BaseModel):
     size: int
 
 
-x = (ExtensionSchema, SizeSchema)
-FILTER_NAMES = ["size", "extension"]
-Filters = Union[x]
+FILTER_NAMES = ["size", "extension", "name"]
+Filters = Union[ExtensionSchema, SizeSchema, NameFilter]
 Actions = None
 
 
@@ -79,27 +105,29 @@ class Rule(BaseModel):
     class Config:
         extra = "forbid"
 
-    @validator("filters", pre=True, each_item=True)
-    def validate_filters(cls, v):
-        if isinstance(v, str):
-            v = {v: None}
-        if not isinstance(v, dict):
-            raise ValueError("Filter cannot be None")
-        if len(v.keys()) != 1:
-            keys = ", ".join(list(v.keys()))
-            raise ValueError(
-                "Filter definitions must have the filter name as the only key. (Keys: %s)"
-                % keys
-            )
-        if list(v.keys())[0] not in FILTER_NAMES:
-            raise ValueError('Unknown filter: "%s"' % list(v.keys())[0])
-        return v
-
     @validator("locations", pre=True)
     def validate_locations(cls, v):
+        if not v:
+            raise ValueError("Location cannot be empty")
         if not isinstance(v, list):
             v = [v]
         v = [expand_location(x) for x in v]
+        return v
+
+    @validator("filters", pre=True, each_item=True)
+    def validate_filters(cls, v):
+        if not v:
+            raise ValueError("Filter cannot be empty")
+        if isinstance(v, str):
+            v = {v: None}
+        if len(v.keys()) != 1:
+            keys = ", ".join(list(v.keys()))
+            raise ValueError(
+                "Filter definitions must have a filter name as the only key. "
+                "Found keys: %s" % keys
+            )
+        if list(v.keys())[0] not in FILTER_NAMES:
+            raise ValueError('Unknown filter: "%s"' % list(v.keys())[0])
         return v
 
 
@@ -124,8 +152,11 @@ config = {
                 "extension",
                 {"extension": "asd"},
                 {"extension": "asd asd"},
+                {"extension": ["png", "jpg"]},
+                # {"extension": {"extensions": ["png", "jpg"]}},
                 {"size": 100},
-                None,
+                {"name": "Test*"},
+                {"name": {"startswith": "Test*"}},
             ],
             "filter_mode": "all",
             "locations": [
