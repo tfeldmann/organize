@@ -12,6 +12,8 @@ from organize.utils import SimulationFS, Template
 from .action import Action
 from .copymove_utils import basename, dirname, expand_args
 
+from ._utils import open_create_fs_path
+
 logger = logging.getLogger(__name__)
 
 MODES = (
@@ -89,26 +91,14 @@ class WriteText(Action):
 
     def pipeline(self, args: dict, simulate: bool):
         textfile = self.textfile.render(args)
-        dst_path = textfile
-
-        # TODO: Create helper function for this (maybe `sandboxed_fs_path(fs, path)`?)
-        if self.filesystem:
-            if isinstance(self.filesystem, str):
-                dst_fs = expand_args(self.filesystem, args)
-            else:
-                dst_fs = self.filesystem
-        else:
-            dst_fs = dirname(dst_path)
-            dst_path = basename(dst_path)
-        try:
-            dst_fs = open_fs(dst_fs, create=False, writeable=True)
-        except (errors.CreateFailed, OpenerError):
-            if not simulate:
-                dst_fs = open_fs(dst_fs, create=True, writeable=True)
-            else:
-                dst_fs = SimulationFS(dst_fs)
-
         text = self.text.render(args)
+
+        dst_fs, dst_path = open_create_fs_path(
+            fs=self.filesystem,
+            path=textfile,
+            args=args,
+            simulate=simulate,
+        )
 
         if self._is_first_write and self.clear_before_first_write:
             self.print(f"Clearing file {dst_path}")
