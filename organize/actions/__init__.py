@@ -12,6 +12,7 @@ from .rename import Rename
 from .shell import Shell
 from .symlink import Symlink
 from .trash import Trash
+from .write_text import WriteText
 
 ACTIONS = {
     Confirm.name: Confirm,
@@ -25,4 +26,5 @@ ACTIONS = {
     Shell.name: Shell,
     Symlink.name: Symlink,
     Trash.name: Trash,
+    WriteText.name: WriteText,
 }  # type: Dict[str, Type[Action]]
