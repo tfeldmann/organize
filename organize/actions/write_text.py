@@ -1,18 +1,14 @@
 import logging
 from typing import Union
 
-from fs import errors, open_fs
 from fs.base import FS
 from fs.opener import manage_fs
-from fs.opener.errors import OpenerError
 from schema import Optional, Or
 
-from organize.utils import SimulationFS, Template
-
-from .action import Action
-from .copymove_utils import basename, dirname, expand_args
+from organize.utils import Template
 
 from ._utils import open_create_fs_path
+from .action import Action
 
 logger = logging.getLogger(__name__)
 
