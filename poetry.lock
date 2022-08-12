@@ -138,24 +138,6 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 importlib-metadata = {version = "*", markers = "python_version < \"3.8\""}
 
 [[package]]
-name = "click-man"
-version = "0.4.1"
-description = ""
-category = "dev"
-optional = true
-python-versions = "*"
-develop = false
-
-[package.dependencies]
-click = "*"
-
-[package.source]
-type = "git"
-url = "https://github.com/sirosen/click-man"
-reference = "handle-hidden-opts"
-resolved_reference = "dd17df4860b02d6412d2227929191d5f47519d9c"
-
-[[package]]
 name = "colorama"
 version = "0.4.5"
 description = "Cross-platform colored terminal text."
@@ -961,13 +943,12 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 
 [extras]
 docs = ["mkdocs", "mkdocstrings", "mkdocs-include-markdown-plugin", "mkdocs-autorefs"]
-manpages = []
 textract = ["textract"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "76bc1c182e908ad3d68ae486286e7f8280da9a71ca3ab7aba75397e949c8280f"
+content-hash = "a28a98151a3dd97506f138a1b42cd9dc29c4fa95363a45d7c458f7b60a9d1573"
 
 [metadata.files]
 appdirs = [
@@ -1095,7 +1076,6 @@ click = [
     {file = "click-8.0.4-py3-none-any.whl", hash = "sha256:6a7a62563bbfabfda3a38f3023a1db4a35978c0abd76f6c9605ecd6554d6d9b1"},
     {file = "click-8.0.4.tar.gz", hash = "sha256:8458d7b1287c5fb128c90e23381cf99dcde74beaf6c7ff6384ce84d6fe090adb"},
 ]
-click-man = []
 colorama = [
     {file = "colorama-0.4.5-py2.py3-none-any.whl", hash = "sha256:854bf444933e37f5824ae7bfc1e98d5bce2ebe4160d46b5edf346a89358e99da"},
     {file = "colorama-0.4.5.tar.gz", hash = "sha256:e6c6b4334fc50988a639d9b98aa429a0b57da6e17b9a44f0451f930b6967b7a4"},
