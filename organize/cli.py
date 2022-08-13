@@ -15,7 +15,7 @@ from . import console
 from .__version__ import __version__
 from .migration import NeedsMigrationError
 
-# Alternative: "https://tfeldmann.github.io/organize/"
+# alternative docs url: "https://tfeldmann.github.io/organize/"
 DOCS_URL = "https://organize.readthedocs.io"
 MIGRATE_URL = "https://organize.readthedocs.io/en/latest/updating-from-v1/"
 DEFAULT_CONFIG = """\
