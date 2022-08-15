@@ -17,7 +17,7 @@ def open_create_fs_path(fs: Union[str, FS], path: str, args: Dict, simulate: boo
             dst_fs = fs
     else:
         dst_fs = dirname(path)
-        dst_path = basename(path)
+    dst_path = basename(path)
     try:
         dst_fs = open_fs(dst_fs, create=False, writeable=True)
     except (errors.CreateFailed, OpenerError):

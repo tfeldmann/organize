@@ -1,10 +1,21 @@
 from unittest.mock import patch
 
+import fs
+from fs.base import FS
 import pytest
 from fs.base import FS
 from fs.path import basename, join
 
-from organize import config
+
+@pytest.fixture(
+    params=[
+        "mem://",
+        # pytest.param("temp://", marks=pytest.mark.skip),
+    ],
+)
+def tempfs(request) -> FS:
+    with fs.open_fs(request.param) as tmp:
+        yield tmp
 
 
 @pytest.fixture
@@ -51,31 +62,3 @@ def read_files(fs: FS, path="/"):
     for x in fs.walk.dirs(path, max_depth=0):
         result[basename(x)] = read_files(fs, path=join(path, x))
     return result
-
-
-def rules_shortcut(fs: FS, filters, actions, location="files", max_depth=0):
-    if isinstance(filters, str):
-        filters = config.load_from_string(filters)
-    if isinstance(actions, str):
-        actions = config.load_from_string(actions)
-
-    # for action in actions:
-    #     for opts in action.values():
-    #         if "filesystem" in opts and opts["filesystem"] == "mem":
-    #             opts["filesystem"] = fs
-
-    return {
-        "rules": [
-            {
-                "locations": [
-                    {
-                        "path": location,
-                        "filesystem": fs,
-                        "max_depth": max_depth,
-                    }
-                ],
-                "actions": actions,
-                "filters": filters,
-            }
-        ]
-    }

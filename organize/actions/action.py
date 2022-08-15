@@ -19,6 +19,9 @@ class Action:
     arg_schema = None
     schema_support_instance_without_args = False
 
+    class Meta:
+        default_filesystem = "."
+
     @classmethod
     def get_name(cls):
         if cls.name:

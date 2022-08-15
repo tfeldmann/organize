@@ -71,14 +71,14 @@ class WriteText(Action):
         mode: str = "append",
         newline: bool = True,
         clear_before_first_write: bool = False,
-        filesystem: Union[str, FS] = "",
+        filesystem: Union[FS, str, None] = None,
     ) -> None:
         self.text = Template.from_string(text)
         self.textfile = Template.from_string(textfile)
         self.mode = mode.lower()
         self.clear_before_first_write = clear_before_first_write
         self.newline = newline
-        self.filesystem = filesystem
+        self.filesystem = filesystem or self.Meta.default_filesystem
 
         self._is_first_write = True
 
