@@ -55,6 +55,14 @@ class Location(BaseModel):
     filesystem: Optional[Union[str, object]]
 
 
+class AcceptSingleStringMixin:
+    @validator("name", pre=True)
+    def create_args(cls, v):
+        if isinstance(v, str):
+            return {"match": v}
+        return v
+
+
 class NameFilterArgs(BaseModel):
     match: str = "*"
     startswith: Union[str, List[str]] = ""
@@ -99,8 +107,8 @@ class Rule(BaseModel):
     targets: RuleTarget = RuleTarget.files
 
     locations: List[Location]
-    actions: Actions
     filters: Optional[List[Filters]]
+    actions: Actions
 
     class Config:
         extra = "forbid"
