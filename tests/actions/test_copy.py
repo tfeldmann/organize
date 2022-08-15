@@ -15,9 +15,9 @@ files = {
 
 
 @pytest.fixture
-def testfiles(tempfs) -> FS:
-    make_files(tempfs, files)
-    yield tempfs
+def testfiles(testfs) -> FS:
+    make_files(testfs, files)
+    yield testfs
 
 
 def test_copy_on_itself(testfiles):
@@ -99,7 +99,7 @@ def test_copy_into_dir_subfolders(testfiles):
         ("rename_existing", ["file.txt", "test.txt", "test 1.txt"], "new"),
     ],
 )
-def test_copy_conflict(tempfs: FS, mode, files, test_txt_content):
+def test_copy_conflict(testfs: FS, mode, files, test_txt_content):
     config = """
     rules:
       - locations: "/"
@@ -112,12 +112,12 @@ def test_copy_conflict(tempfs: FS, mode, files, test_txt_content):
     """.format(
         mode
     )
-    tempfs.writetext("file.txt", "new")
-    tempfs.writetext("test.txt", "old")
-    core.run(config, simulate=False, working_dir=tempfs)
-    assert set(tempfs.listdir("/")) == set(files)
-    assert tempfs.readtext("file.txt") == "new"
-    assert tempfs.readtext("test.txt") == test_txt_content
+    testfs.writetext("file.txt", "new")
+    testfs.writetext("test.txt", "old")
+    core.run(config, simulate=False, working_dir=testfs)
+    assert set(testfs.listdir("/")) == set(files)
+    assert testfs.readtext("file.txt") == "new"
+    assert testfs.readtext("test.txt") == test_txt_content
 
 
 # def test_does_not_create_folder_in_simulation():

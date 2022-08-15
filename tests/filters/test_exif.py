@@ -5,9 +5,9 @@ from organize.core import run
 
 
 @pytest.fixture
-def images_folder(tempfs):
-    copy.copy_dir(".", "tests/resources/images-with-exif", tempfs, "/")
-    yield tempfs
+def images_folder(testfs):
+    copy.copy_dir(".", "tests/resources/images-with-exif", testfs, "/")
+    yield testfs
 
 
 def test_exif_read_camera(images_folder):

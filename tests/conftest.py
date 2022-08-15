@@ -7,13 +7,25 @@ from fs.base import FS
 from fs.path import basename, join
 
 
+@pytest.fixture
+def tempfs():
+    with fs.open_fs("temp://") as tmp:
+        yield tmp
+
+
+@pytest.fixture
+def memfs():
+    with fs.open_fs("mem://") as mem:
+        yield mem
+
+
 @pytest.fixture(
     params=[
         "mem://",
         # pytest.param("temp://", marks=pytest.mark.skip),
     ],
 )
-def tempfs(request) -> FS:
+def testfs(request) -> FS:
     with fs.open_fs(request.param) as tmp:
         yield tmp
 

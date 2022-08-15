@@ -16,7 +16,7 @@ rules:
 """
 
 
-def test_duplicate_smallfiles(tempfs):
+def test_duplicate_smallfiles(testfs):
     files = {
         "unique.txt": "I'm unique.",
         "unique_too.txt": "I'm unique: too.",
@@ -30,10 +30,10 @@ def test_duplicate_smallfiles(tempfs):
         "large_unique.txt": CONTENT_LARGE,
     }
 
-    make_files(tempfs, files)
-    core.run(DEEP_DUP_DELETE, simulate=False, working_dir=tempfs)
-    result = read_files(tempfs)
-    tempfs.tree()
+    make_files(testfs, files)
+    core.run(DEEP_DUP_DELETE, simulate=False, working_dir=testfs)
+    result = read_files(testfs)
+    testfs.tree()
     assert result == {
         "unique.txt": "I'm unique.",
         "unique_too.txt": "I'm unique: too.",
@@ -44,7 +44,7 @@ def test_duplicate_smallfiles(tempfs):
     }
 
 
-def test_duplicate_largefiles(tempfs):
+def test_duplicate_largefiles(testfs):
     files = {
         "unique.txt": CONTENT_LARGE + "1",
         "unique_too.txt": CONTENT_LARGE + "2",
@@ -57,10 +57,10 @@ def test_duplicate_largefiles(tempfs):
         },
     }
 
-    make_files(tempfs, files)
-    core.run(DEEP_DUP_DELETE, simulate=False, working_dir=tempfs)
-    result = read_files(tempfs)
-    tempfs.tree()
+    make_files(testfs, files)
+    core.run(DEEP_DUP_DELETE, simulate=False, working_dir=testfs)
+    result = read_files(testfs)
+    testfs.tree()
     assert result == {
         "unique.txt": CONTENT_LARGE + "1",
         "unique_too.txt": CONTENT_LARGE + "2",

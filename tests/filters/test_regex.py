@@ -42,7 +42,7 @@ def test_regex_umlaut():
     assert result.matches
 
 
-def test_multiple_regex_placeholders(tempfs):
+def test_multiple_regex_placeholders(testfs):
     config = """
     rules:
       - locations: "."
@@ -55,9 +55,9 @@ def test_multiple_regex_placeholders(tempfs):
                text: '{regex.word} {regex.number} {regex.all} {extension}'
                textfile: out.txt
     """
-    tempfs.touch("test-123.jpg")
-    tempfs.touch("other-456.pdf")
-    core.run(config, simulate=False, working_dir=tempfs)
-    out = tempfs.readtext("out.txt")
+    testfs.touch("test-123.jpg")
+    testfs.touch("other-456.pdf")
+    core.run(config, simulate=False, working_dir=testfs)
+    out = testfs.readtext("out.txt")
     assert "test 123 test-123 jpg" in out
     assert "other 456 other-456 pdf" in out
