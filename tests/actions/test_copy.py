@@ -27,9 +27,67 @@ def test_copy_on_itself(testfiles):
         actions:
           - copy: "/"
     """
-    core.run(config, simulate=True, working_dir=testfiles)
+    core.run(config, simulate=False, working_dir=testfiles)
     result = read_files(testfiles)
     assert result == files
+
+
+def test_copy_into_dir(testfiles):
+    config = """
+    rules:
+      - locations: "/"
+        actions:
+          - copy: "a brand/new/folder/"
+    """
+    core.run(config, simulate=False, working_dir=testfiles)
+    result = read_files(testfiles)
+    assert result == {
+        "test.txt": "",
+        "file.txt": "Hello world\nAnother line",
+        "another.txt": "",
+        "folder": {
+            "x.txt": "",
+        },
+        "a brand": {
+            "new": {
+                "folder": {
+                    "test.txt": "",
+                    "file.txt": "Hello world\nAnother line",
+                    "another.txt": "",
+                }
+            }
+        },
+    }
+
+
+def test_copy_into_dir_subfolders(testfiles):
+    config = """
+    rules:
+      - locations: "/"
+        subfolders: true
+        actions:
+          - copy: "a brand/new/folder/"
+    """
+    core.run(config, simulate=False, working_dir=testfiles)
+    result = read_files(testfiles)
+    assert result == {
+        "test.txt": "",
+        "file.txt": "Hello world\nAnother line",
+        "another.txt": "",
+        "folder": {
+            "x.txt": "",
+        },
+        "a brand": {
+            "new": {
+                "folder": {
+                    "test.txt": "",
+                    "file.txt": "Hello world\nAnother line",
+                    "another.txt": "",
+                    "x.txt": "",
+                }
+            }
+        },
+    }
 
 
 @pytest.mark.parametrize(
@@ -41,7 +99,7 @@ def test_copy_on_itself(testfiles):
         ("rename_existing", ["file.txt", "test.txt", "test 1.txt"], "new"),
     ],
 )
-def test_copy_on_conflict(tempfs: FS, mode, files, test_txt_content):
+def test_copy_conflict(tempfs: FS, mode, files, test_txt_content):
     config = """
     rules:
       - locations: "/"
