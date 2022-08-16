@@ -92,7 +92,7 @@ CLI_SKIP_TAGS = click.option("--skip-tags", type=TagType(), default="")
 
 def run_local(
     config_path: Path,
-    working_dir: Path,
+    working_dir: str,
     simulate: bool,
     tags: Optional[Tuple[str]] = None,
     skip_tags: Optional[Tuple[str]] = None,
@@ -104,10 +104,10 @@ def run_local(
     try:
         console.info(config_path=config_path, working_dir=working_dir)
         config = config_path.read_text()
-        os.chdir(working_dir)
         core.run(
             rules=config,
             simulate=simulate,
+            working_dir=working_dir,
             tags=tags,
             skip_tags=skip_tags,
         )
@@ -258,11 +258,11 @@ def check(config: Path, debug):
             out.print("\n\n")
             out.rule("Instantiation", align="left")
 
-        warnings = replace_with_instances(rules)
-        if debug:
-            out.print(rules)
-            for msg in warnings:
-                out.print("Warning: %s" % msg)
+        # warnings = replace_with_instances(rules)
+        # if debug:
+        #     out.print(rules)
+        #     for msg in warnings:
+        #         out.print("Warning: %s" % msg)
 
         if debug:
             out.print("\n\n")
