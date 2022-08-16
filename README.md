@@ -158,6 +158,7 @@ rules:
     locations:
       - path: ~/Downloads
     subfolders: true
+    targets: dirs
     filters:
       - empty
     actions:
