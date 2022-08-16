@@ -1,6 +1,4 @@
-import pytest
 from conftest import make_files, read_files
-from fs.base import FS
 
 from organize import core
 
@@ -16,13 +14,7 @@ FILES = {
 }
 
 
-@pytest.fixture
-def testfiles(testfs) -> FS:
-    make_files(testfs, FILES)
-    yield testfs
-
-
-def test_delete_empty_files(testfiles):
+def test_delete_empty_files(testfs):
     config = """
     rules:
       - name: "Recursively delete all empty files"
@@ -34,8 +26,9 @@ def test_delete_empty_files(testfiles):
         actions:
           - delete
     """
-    core.run(config, simulate=False, working_dir=testfiles)
-    result = read_files(testfiles)
+    make_files(testfs, FILES)
+    core.run(config, simulate=False, working_dir=testfs)
+    result = read_files(testfs)
     assert result == {
         "file.txt": "Hello world\nAnother line",
         "folder": {
@@ -45,7 +38,7 @@ def test_delete_empty_files(testfiles):
     }
 
 
-def test_delete_empty_dirs(testfiles):
+def test_delete_empty_dirs(testfs):
     config = """
     rules:
     - name: "Recursively delete all empty directories"
@@ -57,8 +50,9 @@ def test_delete_empty_dirs(testfiles):
       actions:
         - delete
     """
-    core.run(config, simulate=False, working_dir=testfiles)
-    result = read_files(testfiles)
+    make_files(testfs, FILES)
+    core.run(config, simulate=False, working_dir=testfs)
+    result = read_files(testfs)
     assert result == {
         "test.txt": "",
         "file.txt": "Hello world\nAnother line",
@@ -67,3 +61,37 @@ def test_delete_empty_dirs(testfiles):
             "x.txt": "",
         },
     }
+
+
+def test_delete_deep(testfs):
+    files = {
+        "files": {
+            "folder": {
+                "subfolder": {
+                    "test.txt": "",
+                    "other.pdf": "binary",
+                },
+                "file.txt": "Hello world\nAnother line",
+            },
+        }
+    }
+    make_files(testfs, files)
+    config = """
+    rules:
+      - locations: "."
+        actions:
+          - delete
+      - locations: "."
+        targets: dirs
+        actions:
+          - delete
+    """
+    # sim
+    core.run(config, simulate=True, working_dir=testfs)
+    result = read_files(testfs)
+    assert result == files
+
+    # run
+    core.run(config, simulate=False, working_dir=testfs)
+    result = read_files(testfs)
+    assert result == {}
