@@ -157,6 +157,7 @@ rules:
   - name: "Recursively delete all empty directories"
     locations:
       - path: ~/Downloads
+    targets: dirs
     subfolders: true
     filters:
       - empty
