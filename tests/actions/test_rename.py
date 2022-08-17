@@ -39,28 +39,78 @@ def test_rename_issue51(testfs):
     }
 
 
-def test_rename_folders():
+def test_rename_folders(testfs):
     config = """
-rules:
-  - name: "Renaming DVD folders"
-    locations: "/"
-    targets: dirs
-    filters:
-      - name:
-          contains: DVD
-    actions:
-      - rename:
-          name: "{name.replace('[DVD] ','').replace(' [1080p]','').replace(' ', '_')}"
-"""
-    with fs.open_fs("mem://") as mem:
-        dir_a = mem.makedir("[DVD] Best Of Video 1080 [1080p]")
-        dir_a.touch("[DVD] Best Of Video 1080 [1080p]")
-        dir_a.touch("Metadata")
-        dir_b = mem.makedir("[DVD] This Is A Title [1080p]")
-        dir_b.touch("[DVD] This Is A Title [1080p]")
-        dir_b.touch("Metadata")
-        run(rules=config, simulate=False, working_dir=mem)
-        assert mem.exists("Best_Of_Video_1080")
-        assert mem.getinfo("Best_Of_Video_1080").is_dir
-        assert mem.exists("This_Is_A_Title")
-        assert mem.getinfo("This_Is_A_Title").is_dir
+    rules:
+      - name: "Renaming DVD folders"
+        locations: "/"
+        targets: dirs
+        filters:
+          - name:
+              contains: DVD
+        actions:
+          - rename:
+              name: "{name.replace('[DVD] ','').replace(' [1080p]','').replace(' ', '_')}"
+    """
+    files = {
+        "[DVD] Best Of Video 1080 [1080p]": {
+            "[DVD] Best Of Video 1080 [1080p]": "",
+            "Metadata": "",
+        },
+        "[DVD] This Is A Title [1080p]": {
+            "[DVD] This Is A Title [1080p]": "",
+            "Metadata": "",
+        },
+    }
+    make_files(testfs, files)
+    run(rules=config, simulate=False, working_dir=testfs)
+    assert read_files(testfs) == {
+        "Best_Of_Video_1080": {
+            "[DVD] Best Of Video 1080 [1080p]": "",
+            "Metadata": "",
+        },
+        "This_Is_A_Title": {
+            "[DVD] This Is A Title [1080p]": "",
+            "Metadata": "",
+        },
+    }
+
+
+def test_rename_in_subfolders(testfs):
+    config = """
+    rules:
+      - locations: "/"
+        subfolders: true
+        filters:
+          - name:
+              contains: RENAME
+          - extension
+        actions:
+          - rename: "DONE.{extension}"
+    """
+    files = {
+        "folder": {
+            "FIRST-RENAME.pdf": "",
+            "Other": "",
+        },
+        "Another folder": {
+            "Subfolder": {
+                "RENAME-ME_TOO.txt": "",
+            },
+            "Metadata": "",
+        },
+    }
+    make_files(testfs, files)
+    run(rules=config, simulate=False, working_dir=testfs)
+    assert read_files(testfs) == {
+        "folder": {
+            "DONE.pdf": "",
+            "Other": "",
+        },
+        "Another folder": {
+            "Subfolder": {
+                "DONE.txt": "",
+            },
+            "Metadata": "",
+        },
+    }
