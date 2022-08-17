@@ -1,5 +1,4 @@
 import fs
-import pytest
 from click.testing import CliRunner
 from conftest import make_files, read_files
 from fs.base import FS
@@ -23,7 +22,6 @@ def test_config_file(tempfs: FS):
     with fs.open_fs("temp://") as configfs:
         configfs.writetext("config.yaml", config % tempfs.getsyspath("/"))
         args = [configfs.getsyspath("config.yaml")]
-        print(args)
         result = runner.invoke(cli.sim, args)
         print(result.output)
         assert result.exit_code == 0
@@ -34,7 +32,6 @@ def test_config_file(tempfs: FS):
         assert set(tempfs.listdir("/")) == set(["other-file.txt"])
 
 
-@pytest.mark.skip(reason="TODO")
 def test_working_dir(tempfs: FS):
     files = ["my-test-file-name.txt", "my-test-file-name.jpg", "other-file.txt"]
     make_files(tempfs, files)

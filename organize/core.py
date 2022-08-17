@@ -106,7 +106,7 @@ def instantiate_location(
         walker = options["walker"]
 
     fs, fs_path = fs_path_from_options(
-        path=options.get("path", "/"),
+        path=options.get("path", "."),
         filesystem=options.get("filesystem", default_filesystem),
     )
     return Location(walker=walker, fs=fs, fs_path=fs_path)

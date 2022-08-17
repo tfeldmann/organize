@@ -50,16 +50,20 @@ def ensure_default_config():
             confdir.writetext(filename, DEFAULT_CONFIG_TEXT)
 
 
-def read_config(fs_url: str):
+def read_config(fs_url: str) -> Tuple[str, str]:
     """
     Read the config at the given fs_url.
     """
     dirname, filename = path.split(fs_url)
     with fs.open_fs(dirname) as confdir:
-        return confdir.readtext(filename)
+        try:
+            config_path = confdir.getsyspath(filename)
+        except fs.errors.NoSysPath:
+            config_path = fs_url
+        return (config_path, confdir.readtext(filename))
 
 
-def read_default_config():
+def read_default_config() -> Tuple[str, str]:
     """
     Read the config file set in $ORGANIZE_CONFIG and fall back to the default
     config folder if this env is not set.
@@ -96,7 +100,7 @@ CLI_CONFIG = click.argument(
 )
 CLI_WORKING_DIR_OPTION = click.option(
     "--working-dir",
-    default=".",
+    default="",
     type=str,
     help="The working directory",
 )
@@ -125,12 +129,12 @@ def execute(
     from . import core
 
     if config:
-        config_text = read_config(config)
+        config_path, config_text = read_config(config)
     else:
-        config_text = read_default_config()
+        config_path, config_text = read_default_config()
 
     try:
-        console.info(config=config, working_dir=working_dir)
+        console.info(config=config_path, working_dir=working_dir)
         core.run(
             rules=config_text,
             simulate=simulate,
@@ -203,11 +207,7 @@ def sim(config: Optional[str], working_dir: str, tags, skip_tags):
 
 
 @cli.command()
-@click.argument(
-    "config",
-    required=False,
-    type=click.Path(),
-)
+@click.argument("config", required=False, type=str)
 @click.option(
     "--editor",
     envvar="EDITOR",
@@ -234,9 +234,12 @@ def check(config: str, debug):
     from .core import highlighted_console as out
     from .core import replace_with_instances
 
-    print("Checking: %s" % config)
     try:
-        config_str = config.read_text()
+        if config:
+            config_path, config_str = read_config(config)
+        else:
+            config_path, config_str = read_default_config()
+        print("Checking: %s" % config_path)
 
         if debug:
             out.rule("Raw", align="left")
@@ -294,10 +297,29 @@ def check(config: str, debug):
 @click.option("--path", is_flag=True, help="Print the path instead of revealing it.")
 def reveal(path: bool):
     """Reveals the default config file."""
+    fs_url = os.getenv("ORGANIZE_CONFIG", DEFAULT_CONFIG_FS_URL)
+
+    dirname, filename = fs.path.split(fs_url)
+    try:
+        with fs.open_fs(dirname) as dirfs:
+            syspath = dirfs.getsyspath(filename)
+    except Exception:
+        syspath = None
+
     if path:
-        click.echo(CONFIG_PATH)
+        if syspath:
+            click.echo(syspath)
+        else:
+            click.echo(fs_url)
+        return
+
+    if syspath:
+        import webbrowser
+
+        webbrowser.open("file://%s" % fs.path.dirname(syspath))
     else:
-        click.launch(str(CONFIG_PATH), locate=True)
+        click.echo("Revealing this fs_url is not possible.")
+        click.echo(fs_url)
 
 
 @cli.command()
@@ -319,7 +341,9 @@ def schema():
 @cli.command()
 def docs():
     """Opens the documentation."""
-    click.launch(DOCS_RTD)
+    import webbrowser
+
+    webbrowser.open(DOCS_RTD)
 
 
 # deprecated - only here for backwards compatibility
