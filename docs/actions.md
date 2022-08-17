@@ -409,7 +409,7 @@ rules:
 
 ## write
 
-::: organize.actions.WriteText
+::: organize.actions.Write
 
 **Examples**
 
