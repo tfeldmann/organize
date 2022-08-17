@@ -43,8 +43,7 @@ class MacOSTags(Action):
         path = fs.getsyspath(fs_path)
 
         if sys.platform != "darwin":
-            self.print("The macos_tags action is only available on macOS")
-            return
+            raise EnvironmentError("The macos_tags action is only available on macOS")
 
         import macos_tags
 

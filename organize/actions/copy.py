@@ -57,7 +57,7 @@ class Copy(Action):
         dest: str,
         on_conflict="rename_new",
         rename_template="{name} {counter}{extension}",
-        filesystem: Union[str, FS] = "",
+        filesystem: Union[FS, str, None] = None,
     ) -> None:
         if on_conflict not in CONFLICT_OPTIONS:
             raise ValueError(
@@ -67,7 +67,7 @@ class Copy(Action):
         self.dest = Template.from_string(dest)
         self.conflict_mode = on_conflict
         self.rename_template = Template.from_string(rename_template)
-        self.filesystem = filesystem
+        self.filesystem = filesystem or self.Meta.default_filesystem
 
     def pipeline(self, args: dict, simulate: bool):
         src_fs = args["fs"]  # type: FS

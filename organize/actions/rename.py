@@ -102,7 +102,7 @@ class Rename(Action):
         # the next action should work with the renamed file
         return {
             "fs": fs,
-            "fs_path": dst_path,
+            "fs_path": "./" + dst_path,
         }
 
     def __str__(self) -> str:

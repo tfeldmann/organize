@@ -406,3 +406,55 @@ rules:
     actions:
       - trash
 ```
+
+## write
+
+::: organize.actions.Write
+
+**Examples**
+
+```yaml
+rules:
+  - name: "Record file sizes"
+    locations: ~/Downloads
+    filters:
+      - size
+    actions:
+      - write:
+          text: "{size.traditional} -- {relative_path}"
+          path: "./sizes.txt"
+          mode: "append"
+          clear_before_first_write: true
+```
+
+This will create a file `sizes.txt` in the current working folder which contains the
+filesizes of everything in the `~/Downloads` folder:
+
+```
+2.9 MB -- SIM7600.pdf
+1.0 MB -- Bildschirmfoto 2022-07-05 um 10.43.16.png
+5.9 MB -- Albumcover.png
+51.2 KB -- Urlaubsantrag 2022-04-19.pdf
+1.8 MB -- ETH_USB_HUB_HAT.pdf
+2.1 MB -- ArduinoDUE_V02g_sch.pdf
+...
+```
+
+You can use templates both in the text as well as in the textfile parameter:
+
+```yaml
+rules:
+  - name: "File sizes by extension"
+    locations: ~/Downloads
+    filters:
+      - size
+      - extension
+    actions:
+      - write:
+          text: "{size.traditional} -- {relative_path}"
+          path: "./sizes.{extension}.txt"
+          mode: "prepend"
+          clear_before_first_write: true
+```
+
+This will separate the filesizes by extension.

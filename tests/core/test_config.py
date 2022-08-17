@@ -5,11 +5,10 @@ from schema import SchemaError
 from organize import config, core
 
 
-def validate_and_convert(string: str):
+def validate_config(string: str):
     conf = config.load_from_string(string)
     conf = config.cleanup(conf)
     config.validate(conf)
-    core.replace_with_instances(conf)
     return conf
 
 
@@ -33,7 +32,7 @@ def test_basic():
       - shell:
           cmd: 'say {path.stem}'
     """
-    validate_and_convert(STR)
+    validate_config(STR)
 
 
 def test_yaml_ref():
@@ -64,7 +63,7 @@ def test_yaml_ref():
         actions:
           - trash
     """
-    validate_and_convert(STR)
+    validate_config(STR)
 
 
 def test_error_filter_dict():
@@ -77,7 +76,7 @@ def test_error_filter_dict():
       - trash
     """
     with pytest.raises(SchemaError):
-        validate_and_convert(STR)
+        validate_config(STR)
 
 
 # def test_error_action_dict():

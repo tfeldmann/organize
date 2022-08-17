@@ -1,5 +1,19 @@
 # Changelog
 
+## WIP
+
+- New action: `write`.
+- New filter: `date_lastused` (macOS only).
+- Add support for FS urls as path to the config file and working dir
+  (both in the CLI and ORGANIZE_CONFIG environment variable).
+- Removed hidden (deprecated) CLI option `--config-file`.
+- Lots of new tests and some bugfixes.
+
+## v2.3.0 (2022-07-26)
+
+- New filter: `macos_tags` (macOS only).
+- Ignore broken symlinks (Issue #202)
+
 ## v2.2.0 (2022-03-31)
 
 - Tag support (#199) to run subsets of rules in your config.

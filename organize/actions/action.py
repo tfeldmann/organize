@@ -3,6 +3,7 @@ from typing import Any, Dict
 from typing import Optional as tyOptional
 from typing import Union
 
+from fs.base import FS
 from schema import Optional, Or, Schema
 
 from organize.console import pipeline_error, pipeline_message
@@ -18,6 +19,9 @@ class Action:
     name = None  # type: Union[str, None]
     arg_schema = None
     schema_support_instance_without_args = False
+
+    class Meta:
+        default_filesystem = "." # type: Union[FS, str]
 
     @classmethod
     def get_name(cls):

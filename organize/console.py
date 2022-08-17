@@ -101,9 +101,9 @@ def _highlight_path(path, base_style, main_style, relative=False):
     )
 
 
-def info(config_path: Path, working_dir: Path):
+def info(config: str, working_dir: str):
     console.print("organize {}".format(__version__))
-    console.print('Config: "{}"'.format(config_path))
+    console.print('Config: "{}"'.format(config))
     if working_dir != Path("."):
         console.print('Working dir: "{}"'.format(working_dir))
 
