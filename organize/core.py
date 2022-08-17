@@ -4,6 +4,7 @@ from copy import copy
 from pathlib import Path
 from typing import Iterable, NamedTuple, Union
 
+import fs
 from fs import path as fspath
 from fs.base import FS
 from fs.errors import NoSysPath, ResourceNotFound
@@ -87,7 +88,9 @@ def convert_options_to_walker_args(options: dict):
     return result
 
 
-def instantiate_location(options: Union[str, dict], default_max_depth=0) -> Location:
+def instantiate_location(
+    options: Union[str, dict], default_filesystem, default_max_depth=0
+) -> Location:
     if isinstance(options, Location):
         return options
     if isinstance(options, str):
@@ -104,8 +107,8 @@ def instantiate_location(options: Union[str, dict], default_max_depth=0) -> Loca
         walker = options["walker"]
 
     fs, fs_path = fs_path_from_options(
-        path=options.get("path", "/"),
-        filesystem=options.get("filesystem"),
+        path=options.get("path", "."),
+        filesystem=options.get("filesystem", default_filesystem),
     )
     return Location(walker=walker, fs=fs, fs_path=fs_path)
 
@@ -142,7 +145,7 @@ def syspath_or_exception(fs, path):
         return e
 
 
-def replace_with_instances(config: dict):
+def replace_with_instances(config: dict, default_filesystem):
     warnings = []
 
     for rule in config["rules"]:
@@ -154,6 +157,7 @@ def replace_with_instances(config: dict):
                 instance = instantiate_location(
                     options=options,
                     default_max_depth=default_depth,
+                    default_filesystem=default_filesystem,
                 )
                 _locations.append(instance)
             except Exception as e:
@@ -194,6 +198,10 @@ def filter_pipeline(filters: Iterable[Filter], args: dict, filter_mode: str) -> 
     for filter_ in filters:
         try:
             # update dynamic path args
+            args["fs_base_path"] = fs.path.abspath(
+                fs.path.normpath(args["fs_base_path"])
+            )
+            args["fs_path"] = fs.path.abspath(fs.path.normpath(args["fs_path"]))
             args["path"] = syspath_or_exception(args["fs"], args["fs_path"])
             args["relative_path"] = fspath.frombase(
                 args["fs_base_path"], args["fs_path"]
@@ -223,6 +231,10 @@ def action_pipeline(actions: Iterable[Action], args: dict, simulate: bool) -> bo
     for action in actions:
         try:
             # update dynamic path args
+            args["fs_base_path"] = fs.path.abspath(
+                fs.path.normpath(args["fs_base_path"])
+            )
+            args["fs_path"] = fs.path.abspath(fs.path.normpath(args["fs_path"]))
             args["path"] = syspath_or_exception(args["fs"], args["fs_path"])
             args["relative_path"] = fspath.frombase(
                 args["fs_base_path"], args["fs_path"]
@@ -290,7 +302,11 @@ def run_rules(rules: dict, tags, skip_tags, simulate: bool = True):
                     if walker_fs.islink(path):
                         continue
                 except ResourceNotFound:
-                    console.warn("Ignoring " + walker_fs.getsyspath(path) + " (may be a broken symlink)")
+                    console.warn(
+                        "Ignoring "
+                        + walker_fs.getsyspath(path)
+                        + " (may be a broken symlink)"
+                    )
                     continue
 
                 # tell the user which resource we're handling
@@ -343,6 +359,7 @@ def run_rules(rules: dict, tags, skip_tags, simulate: bool = True):
 def run(
     rules: Union[str, dict],
     simulate: bool,
+    working_dir: Union[FS, str] = ".",
     validate=True,
     tags=None,
     skip_tags=None,
@@ -352,6 +369,7 @@ def run(
         rules = config.load_from_string(rules)
 
     rules = config.cleanup(rules)
+    Action.Meta.default_filesystem = working_dir
 
     migrate_v1(rules)
 
@@ -359,7 +377,7 @@ def run(
         config.validate(rules)
 
     # instantiate
-    warnings = replace_with_instances(rules)
+    warnings = replace_with_instances(rules, default_filesystem=working_dir)
     for msg in warnings:
         console.warn(msg)
 

@@ -1,6 +1,10 @@
+from unittest.mock import call
+
+from conftest import make_files
 from fs import open_fs
 from fs.path import dirname
 
+from organize import core
 from organize.filters import Extension
 
 
@@ -46,3 +50,33 @@ def test_extension_result():
         assert str(result) == "TxT"
         assert result.lower() == "txt"
         assert result.upper() == "TXT"
+
+
+def test_filename_move(testfs, mock_echo):
+    files = {
+        "test.jpg": "",
+        "asd.JPG": "",
+        "nomatch.jpg.zip": "",
+        "camel.jPeG": "",
+    }
+    make_files(testfs, files)
+    config = """
+        rules:
+        - locations: "."
+          filters:
+            - name
+            - extension:
+              - .jpg
+              - jpeg
+          actions:
+            - echo: 'Found JPG file: {name}'
+        """
+    core.run(config, simulate=False, working_dir=testfs)
+    mock_echo.assert_has_calls(
+        (
+            call("Found JPG file: test"),
+            call("Found JPG file: asd"),
+            call("Found JPG file: camel"),
+        ),
+        any_order=True,
+    )

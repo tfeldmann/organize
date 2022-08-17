@@ -4,6 +4,9 @@
 
 - New action: `write_text`.
 - New filter: `date_lastused` (macOS only).
+- Add support for FS urls as path to the config file and working dir
+  (both in the CLI and ORGANIZE_CONFIG environment variable).
+- Removed hidden (deprecated) CLI option `--config-file`.
 
 ## v2.3.0 (2022-07-26)
 
