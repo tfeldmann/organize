@@ -5,53 +5,74 @@ The file management automation tool.
 """
 import os
 import sys
-from pathlib import Path
-from typing import Tuple, Optional
+import textwrap
+from typing import Optional, Tuple
 
 import click
-from fs import appfs
+import fs
+from fs import path
 
 from . import console
 from .__version__ import __version__
 from .migration import NeedsMigrationError
 
-# alternative docs url: "https://tfeldmann.github.io/organize/"
-DOCS_URL = "https://organize.readthedocs.io"
-MIGRATE_URL = "https://organize.readthedocs.io/en/latest/updating-from-v1/"
-DEFAULT_CONFIG = """\
-# organize configuration file
-# {docs}
+DOCS_RTD = "https://organize.readthedocs.io"
+DOCS_GHPAGES = "https://tfeldmann.github.io/organize/"
 
-rules:
-  - name: "The name of this rule"
-    locations:
-      - # your locations here
-    filters:
-      - # your filters here
-    actions:
-      - # your actions here
-""".format(
-    docs=DOCS_URL
-)
+DEFAULT_CONFIG_FS_URL = "userconf://organize::/config.yaml"
 
-try:
-    config_filename = "config.yaml"
-    envvar = os.getenv("ORGANIZE_CONFIG")
-    if envvar:
-        dirname, config_filename = os.path.split(envvar)
-        if not dirname or not config_filename:
-            raise ValueError("Invalid ORGANIZE_CONFIG: %s" % envvar)
-        CONFIG_PATH = Path(envvar)
-    else:
-        CONFIG_PATH = Path(appfs.UserConfigFS("organize").getsyspath(config_filename))
 
-    # create default config file if it not exists
-    CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    if not CONFIG_PATH.exists():
-        CONFIG_PATH.write_text(DEFAULT_CONFIG)
-except Exception as e:
-    console.error(str(e), title="Config file")
-    sys.exit(1)
+def ensure_default_config():
+    """
+    Ensures a configuration file exists in the default location.
+    """
+    DEFAULT_CONFIG_TEXT = textwrap.dedent(
+        """\
+        # organize configuration file
+        # {docs}
+
+        rules:
+          - name: "The name of this rule"
+            locations:
+              - # your locations here
+            filters:
+              - # your filters here
+            actions:
+              - # your actions here
+        """
+    ).format(docs=DOCS_RTD)
+
+    dirname, filename = path.split(DEFAULT_CONFIG_FS_URL)
+    if not filename:
+        raise ValueError("invalid config path, missing filename")
+    with fs.open_fs(dirname, create=True, writeable=True) as confdir:
+        if not confdir.exists(filename):
+            confdir.writetext(filename, DEFAULT_CONFIG_TEXT)
+
+
+def read_config(fs_url: str):
+    """
+    Read the config at the given fs_url.
+    """
+    dirname, filename = path.split(fs_url)
+    with fs.open_fs(dirname) as confdir:
+        return confdir.readtext(filename)
+
+
+def read_default_config():
+    """
+    Read the config file set in $ORGANIZE_CONFIG and fall back to the default
+    config folder if this env is not set.
+    """
+    # first check whether the user set a env var
+    env_fs_url = os.getenv("ORGANIZE_CONFIG")
+
+    # if no env variable is given we make sure that there is a config file in the
+    # default location
+    if not env_fs_url:
+        ensure_default_config()
+
+    return read_config(env_fs_url or DEFAULT_CONFIG_FS_URL)
 
 
 class NaturalOrderGroup(click.Group):
@@ -71,53 +92,60 @@ class TagType(click.ParamType):
 CLI_CONFIG = click.argument(
     "config",
     required=False,
-    default=CONFIG_PATH,
-    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    type=str,
 )
 CLI_WORKING_DIR_OPTION = click.option(
     "--working-dir",
     default=".",
-    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+    type=str,
     help="The working directory",
 )
-# for CLI backwards compatibility with organize v1.x
-CLI_CONFIG_FILE_OPTION = click.option(
-    "--config-file",
-    default=None,
-    hidden=True,
-    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+CLI_TAGS = click.option(
+    "--tags",
+    type=TagType(),
+    default="",
+    help="tags to run",
 )
-CLI_TAGS = click.option("--tags", type=TagType(), default="")
-CLI_SKIP_TAGS = click.option("--skip-tags", type=TagType(), default="")
+CLI_SKIP_TAGS = click.option(
+    "--skip-tags",
+    type=TagType(),
+    default="",
+    help="tags to skip",
+)
 
 
-def run_local(
-    config_path: Path,
+def execute(
+    config: Optional[str],
     working_dir: str,
     simulate: bool,
     tags: Optional[Tuple[str]] = None,
     skip_tags: Optional[Tuple[str]] = None,
 ):
     from schema import SchemaError
-
     from . import core
 
+    if config:
+        config_text = read_config(config)
+    else:
+        config_text = read_default_config()
+
     try:
-        console.info(config_path=config_path, working_dir=working_dir)
-        config = config_path.read_text()
+        console.info(config=config, working_dir=working_dir)
         core.run(
-            rules=config,
+            rules=config_text,
             simulate=simulate,
             working_dir=working_dir,
             tags=tags,
             skip_tags=skip_tags,
         )
     except NeedsMigrationError as e:
+        from .migration import MIGRATION_DOCS_URL
+
         console.error(e, title="Config needs migration")
         console.warn(
             "Your config file needs some updates to work with organize v2.\n"
             "Please see the migration guide at\n\n"
-            "%s" % MIGRATE_URL
+            "%s" % MIGRATION_DOCS_URL
         )
         sys.exit(1)
     except SchemaError as e:
@@ -145,18 +173,12 @@ def cli():
 @cli.command()
 @CLI_CONFIG
 @CLI_WORKING_DIR_OPTION
-@CLI_CONFIG_FILE_OPTION
 @CLI_TAGS
 @CLI_SKIP_TAGS
-def run(config: Path, working_dir: Path, config_file, tags, skip_tags):
+def run(config: Optional[str], working_dir: str, tags, skip_tags):
     """Organizes your files according to your rules."""
-    if config_file:
-        config = config_file
-        console.deprecated(
-            "The --config-file option can now be omitted. See organize --help."
-        )
-    run_local(
-        config_path=config,
+    execute(
+        config=config,
         working_dir=working_dir,
         simulate=False,
         tags=tags,
@@ -167,18 +189,12 @@ def run(config: Path, working_dir: Path, config_file, tags, skip_tags):
 @cli.command()
 @CLI_CONFIG
 @CLI_WORKING_DIR_OPTION
-@CLI_CONFIG_FILE_OPTION
 @CLI_TAGS
 @CLI_SKIP_TAGS
-def sim(config: Path, working_dir: Path, config_file, tags, skip_tags):
+def sim(config: Optional[str], working_dir: str, tags, skip_tags):
     """Simulates a run (does not touch your files)."""
-    if config_file:
-        config = config_file
-        console.deprecated(
-            "The --config-file option can now be omitted. See organize --help."
-        )
-    run_local(
-        config_path=config,
+    execute(
+        config=config,
         working_dir=working_dir,
         simulate=True,
         tags=tags,
@@ -190,7 +206,6 @@ def sim(config: Path, working_dir: Path, config_file, tags, skip_tags):
 @click.argument(
     "config",
     required=False,
-    default=CONFIG_PATH,
     type=click.Path(),
 )
 @click.option(
@@ -209,7 +224,7 @@ def edit(config, editor):
 @cli.command()
 @CLI_CONFIG
 @click.option("--debug", is_flag=True, help="Verbose output")
-def check(config: Path, debug):
+def check(config: str, debug):
     """Checks whether a given config file is valid.
 
     If called without arguments it will check the default config file.
@@ -304,7 +319,7 @@ def schema():
 @cli.command()
 def docs():
     """Opens the documentation."""
-    click.launch(DOCS_URL)
+    click.launch(DOCS_RTD)
 
 
 # deprecated - only here for backwards compatibility
