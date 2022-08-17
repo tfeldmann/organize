@@ -26,11 +26,11 @@ class Write(Action):
     If the specified path does not exist it will be created.
 
     Args:
-        msg (str):
+        text (str):
             The text that should be written. Supports templates.
 
         file (str):
-            The file `msg` should be written into. Supports templates.
+            The file `text` should be written into. Supports templates.
 
         mode (str):
             Can be either `append` (append text to the file), `prepend` (insert text as
@@ -55,7 +55,7 @@ class Write(Action):
     name = "write"
     arg_schema = Or(
         {
-            "msg": str,
+            "text": str,
             "path": str,
             Optional("mode"): Or(*MODES),
             Optional("newline"): bool,
@@ -66,14 +66,14 @@ class Write(Action):
 
     def __init__(
         self,
-        msg: str,
+        text: str,
         path: str,
         mode: str = "append",
         newline: bool = True,
         clear_before_first_write: bool = False,
         filesystem: Union[FS, str, None] = None,
     ) -> None:
-        self.msg = Template.from_string(msg)
+        self.text = Template.from_string(text)
         self.path = Template.from_string(path)
         self.mode = mode.lower()
         self.clear_before_first_write = clear_before_first_write
@@ -86,8 +86,8 @@ class Write(Action):
             raise ValueError("mode must be one of %s" % ", ".join(MODES))
 
     def pipeline(self, args: dict, simulate: bool):
+        text = self.text.render(args)
         path = self.path.render(args)
-        msg = self.msg.render(args)
 
         dst_fs, dst_path = open_create_fs_path(
             fs=self.filesystem,
@@ -101,20 +101,20 @@ class Write(Action):
             if not simulate:
                 dst_fs.create(dst_path, wipe=True)
 
-        self.print(f'{path}: {self.mode} "{msg}"')
+        self.print(f'{path}: {self.mode} "{text}"')
         if self.newline:
-            msg += "\n"
+            text += "\n"
 
         if not simulate:
             with manage_fs(dst_fs):
                 if self.mode == "append":
-                    dst_fs.appendtext(dst_path, msg)
+                    dst_fs.appendtext(dst_path, text)
                 elif self.mode == "prepend":
                     content = ""
                     if dst_fs.exists(dst_path):
                         content = dst_fs.readtext(dst_path)
-                    dst_fs.writetext(dst_path, msg + content)
+                    dst_fs.writetext(dst_path, text + content)
                 elif self.mode == "overwrite":
-                    dst_fs.writetext(dst_path, msg)
+                    dst_fs.writetext(dst_path, text)
 
         self._is_first_write = False

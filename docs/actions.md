@@ -407,7 +407,7 @@ rules:
       - trash
 ```
 
-## write_text
+## write
 
 ::: organize.actions.WriteText
 
@@ -420,9 +420,9 @@ rules:
     filters:
       - size
     actions:
-      - write_text:
+      - write:
           text: "{size.traditional} -- {relative_path}"
-          textfile: "./sizes.txt"
+          path: "./sizes.txt"
           mode: "append"
           clear_before_first_write: true
 ```
@@ -450,9 +450,9 @@ rules:
       - size
       - extension
     actions:
-      - write_text:
+      - write:
           text: "{size.traditional} -- {relative_path}"
-          textfile: "./sizes.{extension}.txt"
+          path: "./sizes.{extension}.txt"
           mode: "prepend"
           clear_before_first_write: true
 ```

@@ -18,9 +18,9 @@ def test_exif_read_camera(images_folder):
             - name
             - exif
           actions:
-            - write_text:
+            - write:
                 text: '{name}: {exif.image.model}'
-                textfile: "out.txt"
+                path: "out.txt"
                 mode: append
     """
     run(config, simulate=False, working_dir=images_folder)
@@ -41,9 +41,9 @@ def test_exif_filter_by_cam(images_folder):
             - exif:
                 image.model: Nikon D3200
           actions:
-            - write_text:
+            - write:
                 text: '{name}: {exif.image.model}'
-                textfile: "out.txt"
+                path: "out.txt"
                 mode: append
     """
     run(config, simulate=False, working_dir=images_folder)
@@ -60,9 +60,9 @@ def test_exif_filter_tag_exists(images_folder):
             - exif:
                 gps.gpsdate
           actions:
-            - write_text:
+            - write:
                 text: '{name}: {exif.gps.gpsdate}'
-                textfile: "out.txt"
+                path: "out.txt"
     """
     run(config, simulate=False, working_dir=images_folder)
     out = images_folder.readtext("out.txt")

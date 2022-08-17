@@ -51,9 +51,9 @@ def test_multiple_regex_placeholders(testfs):
           - regex: (?P<all>.+?)\.\w{3}
           - extension
         actions:
-          - write_text:
+          - write:
                text: '{regex.word} {regex.number} {regex.all} {extension}'
-               textfile: out.txt
+               path: out.txt
     """
     testfs.touch("test-123.jpg")
     testfs.touch("other-456.pdf")
