@@ -1,7 +1,7 @@
+from typing import Union
 from unittest.mock import patch
 
 import fs
-from fs.base import FS
 import pytest
 from fs.base import FS
 from fs.path import basename, join
@@ -36,7 +36,7 @@ def mock_echo():
         yield mck
 
 
-def make_files(fs: FS, layout: dict, path="/"):
+def make_files(fs: FS, layout: Union[dict, list], path="/"):
     """
     layout = {
         "folder": {
@@ -49,6 +49,10 @@ def make_files(fs: FS, layout: dict, path="/"):
     }
     """
     fs.makedirs(path, recreate=True)
+    if isinstance(layout, list):
+        for f in layout:
+            fs.touch(f)
+        return
     for k, v in layout.items():
         respath = join(path, k)
 
