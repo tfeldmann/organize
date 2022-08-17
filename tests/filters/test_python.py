@@ -164,7 +164,7 @@ def test_folder_instructions(testfs):
                 - name:
                     contains: "_"
                 - python: |
-                    import os
+                    import fs
                     parts = []
                     instructions = dict()
                     for part in name.split("_"):
@@ -177,7 +177,7 @@ def test_folder_instructions(testfs):
                         else:
                             parts.append(part)
                     return {
-                        "new_path": os.path.join(*parts),
+                        "new_path": fs.path.join(*parts),
                         "instructions": instructions,
                     }
               actions:
