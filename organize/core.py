@@ -231,6 +231,10 @@ def action_pipeline(actions: Iterable[Action], args: dict, simulate: bool) -> bo
     for action in actions:
         try:
             # update dynamic path args
+            args["fs_base_path"] = fs.path.abspath(
+                fs.path.normpath(args["fs_base_path"])
+            )
+            args["fs_path"] = fs.path.abspath(fs.path.normpath(args["fs_path"]))
             args["path"] = syspath_or_exception(args["fs"], args["fs_path"])
             args["relative_path"] = fspath.frombase(
                 args["fs_base_path"], args["fs_path"]
