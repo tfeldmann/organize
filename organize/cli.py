@@ -23,7 +23,8 @@ DEFAULT_CONFIG = """\
 # {docs}
 
 rules:
-  - locations:
+  - name: "The name of this rule"
+    locations:
       - # your locations here
     filters:
       - # your filters here
