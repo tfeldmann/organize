@@ -26,11 +26,9 @@ def test_config_file(tempfs: FS):
         args = [configfs.getsyspath("config.yaml")]
         result = runner.invoke(cli.sim, args)
         print(result.output)
-        assert result.exit_code == 0
         assert set(tempfs.listdir("/")) == set(files)
         result = runner.invoke(cli.run, args)
         print(result.output)
-        assert result.exit_code == 0
         assert set(tempfs.listdir("/")) == set(["other-file.txt"])
 
 

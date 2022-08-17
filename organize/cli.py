@@ -10,7 +10,6 @@ from typing import Optional, Tuple
 
 import click
 import fs
-from fs import path
 
 from . import console
 from .__version__ import __version__
@@ -20,6 +19,13 @@ DOCS_RTD = "https://organize.readthedocs.io"
 DOCS_GHPAGES = "https://tfeldmann.github.io/organize/"
 
 DEFAULT_CONFIG_FS_URL = "userconf://organize::/config.yaml"
+
+
+def path_split(path_or_url: str) -> Tuple[str, str]:
+    if sys.platform.startswith("win"):
+        path_or_url = path_or_url.replace("\\", "/")
+    dirname, filename = fs.path.split(path_or_url)
+    return dirname, filename
 
 
 def ensure_default_config():
@@ -42,7 +48,7 @@ def ensure_default_config():
         """
     ).format(docs=DOCS_RTD)
 
-    dirname, filename = path.split(DEFAULT_CONFIG_FS_URL)
+    dirname, filename = path_split(DEFAULT_CONFIG_FS_URL)
     if not filename:
         raise ValueError("invalid config path, missing filename")
     with fs.open_fs(dirname, create=True, writeable=True) as confdir:
@@ -54,7 +60,7 @@ def read_config(fs_url: str) -> Tuple[str, str]:
     """
     Read the config at the given fs_url.
     """
-    dirname, filename = path.split(fs_url)
+    dirname, filename = path_split(fs_url)
     with fs.open_fs(dirname) as confdir:
         try:
             config_path = confdir.getsyspath(filename)
