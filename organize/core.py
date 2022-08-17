@@ -4,6 +4,7 @@ from copy import copy
 from pathlib import Path
 from typing import Iterable, NamedTuple, Union
 
+import fs
 from fs import path as fspath
 from fs.base import FS
 from fs.errors import NoSysPath, ResourceNotFound
@@ -197,6 +198,10 @@ def filter_pipeline(filters: Iterable[Filter], args: dict, filter_mode: str) -> 
     for filter_ in filters:
         try:
             # update dynamic path args
+            args["fs_base_path"] = fs.path.abspath(
+                fs.path.normpath(args["fs_base_path"])
+            )
+            args["fs_path"] = fs.path.abspath(fs.path.normpath(args["fs_path"]))
             args["path"] = syspath_or_exception(args["fs"], args["fs_path"])
             args["relative_path"] = fspath.frombase(
                 args["fs_base_path"], args["fs_path"]
