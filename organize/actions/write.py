@@ -21,7 +21,8 @@ MODES = (
 
 class Write(Action):
 
-    """Write text to a file.
+    """
+    Write text to a file.
 
     If the specified path does not exist it will be created.
 

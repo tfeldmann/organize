@@ -10,7 +10,7 @@ from schema import Optional, Or
 from organize.utils import Template, safe_description
 
 from .action import Action
-from .copymove_utils import CONFLICT_OPTIONS, check_conflict, resolve_overwrite_conflict
+from ._conflict import CONFLICT_OPTIONS, check_conflict, resolve_overwrite_conflict
 
 logger = logging.getLogger(__name__)
 

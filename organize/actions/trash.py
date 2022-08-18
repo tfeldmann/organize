@@ -7,7 +7,10 @@ logger = logging.getLogger(__name__)
 
 class Trash(Action):
 
-    """Move a file or dir into the trash."""
+    """Move a file or dir into the trash.
+
+    Only the local filesystem is supported.
+    """
 
     name = "trash"
 
