@@ -58,9 +58,9 @@ class Location(BaseModel):
         "system_exclude_dirs",
         pre=True,
     )
-    def ensure_set(cls, value):
+    def ensure_list(cls, value):
         if isinstance(value, str):
-            return set([value])
+            return [value]
         return value
 
 
@@ -73,7 +73,7 @@ FilterType = str
 
 class Action(BaseModel):
     class Meta:
-        accepts_positional_arg = None
+        accepts_positional_arg: Union[str, None] = None
 
     def __init__(self, *args, **kwargs) -> None:
         if self.Meta.accepts_positional_arg and len(args) == 1:
@@ -84,11 +84,11 @@ class Action(BaseModel):
 
     @root_validator(pre=True)
     def handle_single_str(cls, value):
-        if "__non_dict_arg__" in value:
+        if "__positional_arg__" in value:
             param = cls.Meta.accepts_positional_arg
             if not param:
                 raise ValueError("Non-dict arguments are not accepted")
-            param_val = value.pop("__non_dict_arg__")
+            param_val = value.pop("__positional_arg__")
             return {param: param_val, **value}
         return value
 
@@ -114,7 +114,7 @@ class Copy(Action):
     name: Literal["copy"] = "copy"
 
     dest: str
-    on_conflict: str = "rename_new"
+    on_conflict: ConflictOptions = ConflictOptions.rename_new
     rename_template: str = "{name} {counter}{extension}"
     filesystem: Union[None, str] = None
 
@@ -142,13 +142,6 @@ def normalize_to_list(field_name: str):
     return validator(field_name, allow_reuse=True, pre=True)(convert_to_list)
 
 
-def expand_location(x: Union[str, list]):
-    if isinstance(x, str):
-        # location is given as single string
-        x = {"path": x}
-    return x
-
-
 class Rule(BaseModel):
     name: str = "Rule"
     enabled: bool = Field(True, repr=False)
@@ -165,7 +158,6 @@ class Rule(BaseModel):
             raise ValueError("Location cannot be empty")
         if not isinstance(v, list):
             v = [v]
-        v = [expand_location(x) for x in v]
         return v
 
     @validator("actions", pre=True, each_item=True)
@@ -176,7 +168,7 @@ class Rule(BaseModel):
             # if a single str is given as argument we handle this in the specific
             # action class
             if not isinstance(args, dict):
-                return {"name": name, "__non_dict_arg__": args}
+                return {"name": name, "__positional_arg__": args}
             return {"name": name, **args}
         return value
 
