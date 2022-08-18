@@ -56,7 +56,7 @@ def ensure_default_config():
             confdir.writetext(filename, DEFAULT_CONFIG_TEXT)
 
 
-def config_path(fs_url: Optional[str] = None) -> str:
+def config_path(fs_url: Optional[str] = None) -> Tuple[bool, str]:
     """
     Return the config path, resolved into a syspath if possible.
     If no fs_url is given, the default locations are checked.
