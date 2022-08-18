@@ -10,6 +10,7 @@ class Action(BaseModel):
         accepts_positional_arg: Union[str, None] = None
 
     def __init__(self, *args, **kwargs) -> None:
+        # handle positional arguments when calling the class directly
         if self.Settings.accepts_positional_arg and len(args) == 1:
             kwargs[self.Settings.accepts_positional_arg] = args[0]
             super().__init__(**kwargs)
@@ -18,6 +19,8 @@ class Action(BaseModel):
 
     @root_validator(pre=True)
     def handle_single_str(cls, value):
+        # handle positional arguments when parsing a config file.
+        # "__positional_arg__" is a special key
         if "__positional_arg__" in value:
             param = cls.Settings.accepts_positional_arg
             if not param:

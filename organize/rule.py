@@ -30,7 +30,7 @@ ActionType = Union[
 FilterType = str
 
 
-class RuleFilterMode(str, Enum):
+class FilterMode(str, Enum):
     all = "all"
     any = "any"
     none = "none"
@@ -42,10 +42,10 @@ class RuleTarget(str, Enum):
 
 
 class Rule(BaseModel):
-    name: str = "Rule"
+    name: Union[str, None] = None
     enabled: bool = Field(True, repr=False)
     subfolders: bool = False
-    filter_mode: RuleFilterMode = RuleFilterMode.all
+    filter_mode: FilterMode = FilterMode.all
     targets: RuleTarget = RuleTarget.files
     locations: List[Location]
     actions: List[ActionType]
@@ -58,6 +58,8 @@ class Rule(BaseModel):
     def validate_locations(cls, v):
         if not v:
             raise ValueError("Location cannot be empty")
+        if isinstance(v, str):
+            v = {"path": v}
         if not isinstance(v, list):
             v = [v]
         return v

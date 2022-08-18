@@ -35,8 +35,7 @@ if __name__ == "__main__":
     obj = load_from_string(
         """
         rules:
-          - locations:
-              - path: "."
+          - locations: "."
             subfolders: true
             actions:
               - move: "somewhere"
