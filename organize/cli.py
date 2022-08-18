@@ -28,6 +28,23 @@ def path_split(path_or_url: str) -> Tuple[str, str]:
     return dirname, filename
 
 
+def read_config(fs_url: Optional[str] = None) -> Tuple[str, str]:
+    """
+    Read the config at the given fs_url.
+    If no fs_url is given, try the default locations.
+    """
+    if not fs_url:
+        return read_default_config()
+
+    dirname, filename = path_split(fs_url)
+    with fs.open_fs(dirname) as confdir:
+        try:
+            config_path = confdir.getsyspath(filename)
+        except fs.errors.NoSysPath:
+            config_path = fs_url
+        return (config_path, confdir.readtext(filename))
+
+
 def ensure_default_config():
     """
     Ensures a configuration file exists in the default location.
@@ -54,19 +71,6 @@ def ensure_default_config():
     with fs.open_fs(dirname, create=True, writeable=True) as confdir:
         if not confdir.exists(filename):
             confdir.writetext(filename, DEFAULT_CONFIG_TEXT)
-
-
-def read_config(fs_url: str) -> Tuple[str, str]:
-    """
-    Read the config at the given fs_url.
-    """
-    dirname, filename = path_split(fs_url)
-    with fs.open_fs(dirname) as confdir:
-        try:
-            config_path = confdir.getsyspath(filename)
-        except fs.errors.NoSysPath:
-            config_path = fs_url
-        return (config_path, confdir.readtext(filename))
 
 
 def read_default_config() -> Tuple[str, str]:
@@ -134,10 +138,7 @@ def execute(
     from schema import SchemaError
     from . import core
 
-    if config:
-        config_path, config_text = read_config(config)
-    else:
-        config_path, config_text = read_default_config()
+    config_path, config_text = read_config(config)
 
     try:
         console.info(config=config_path, working_dir=working_dir)
@@ -241,10 +242,7 @@ def check(config: str, debug):
     from .core import replace_with_instances
 
     try:
-        if config:
-            config_path, config_str = read_config(config)
-        else:
-            config_path, config_str = read_default_config()
+        config_path, config_str = read_config(config)
         print("Checking: %s" % config_path)
 
         if debug:
@@ -303,26 +301,33 @@ def check(config: str, debug):
 @click.option("--path", is_flag=True, help="Print the path instead of revealing it.")
 def reveal(path: bool):
     """Reveals the default config file."""
-    fs_url = os.getenv("ORGANIZE_CONFIG", DEFAULT_CONFIG_FS_URL)
+    # first check whether the user set a env var
+    fs_url = os.getenv("ORGANIZE_CONFIG")
+
+    # if no env variable is given we make sure that there is a config file in the
+    # default location
+    if not fs_url:
+        ensure_default_config()
+        fs_url = DEFAULT_CONFIG_FS_URL
 
     dirname, filename = fs.path.split(fs_url)
+    dir_url = None
+    file_url = None
     try:
         with fs.open_fs(dirname) as dirfs:
-            syspath = dirfs.getsyspath(filename)
+            dir_url = dirfs.geturl("/")
+            file_url = dirfs.geturl(filename)
     except Exception:
-        syspath = None
+        pass
 
     if path:
-        if syspath:
-            click.echo(syspath)
-        else:
-            click.echo(fs_url)
+        click.echo(file_url or fs_url)
         return
 
-    if syspath:
+    if dir_url:
         import webbrowser
 
-        webbrowser.open("file://%s" % fs.path.dirname(syspath))
+        webbrowser.open(dir_url)
     else:
         click.echo("Revealing this fs_url is not possible.")
         click.echo(fs_url)
@@ -331,6 +336,7 @@ def reveal(path: bool):
 @cli.command()
 def schema():
     """Prints the json schema for config files."""
+    # ORGANIZE SCHEMA IS DEPRECATED AND WILL BE REMOVED IN THE FUTURE
     import json
 
     from .config import CONFIG_SCHEMA
@@ -350,27 +356,6 @@ def docs():
     import webbrowser
 
     webbrowser.open(DOCS_RTD)
-
-
-# deprecated - only here for backwards compatibility
-@cli.command(hidden=True)
-@click.option("--path", is_flag=True, help="Print the default config file path")
-@click.option("--debug", is_flag=True, help="Debug the default config file")
-@click.option("--open-folder", is_flag=True)
-@click.pass_context
-def config(ctx, path, debug, open_folder):
-    """Edit the default configuration file."""
-    if open_folder:
-        ctx.invoke(reveal)
-    elif path:
-        ctx.invoke(reveal, path=True)
-        return
-    elif debug:
-        ctx.invoke(check)
-    else:
-        ctx.invoke(edit)
-    console.deprecated("`organize config` is deprecated.")
-    console.deprecated("Please see `organize --help` for all available commands.")
 
 
 if __name__ == "__main__":
