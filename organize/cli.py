@@ -28,23 +28,6 @@ def path_split(path_or_url: str) -> Tuple[str, str]:
     return dirname, filename
 
 
-def read_config(fs_url: Optional[str] = None) -> Tuple[str, str]:
-    """
-    Read the config at the given fs_url.
-    If no fs_url is given, try the default locations.
-    """
-    if not fs_url:
-        return read_default_config()
-
-    dirname, filename = path_split(fs_url)
-    with fs.open_fs(dirname) as confdir:
-        try:
-            config_path = confdir.getsyspath(filename)
-        except fs.errors.NoSysPath:
-            config_path = fs_url
-        return (config_path, confdir.readtext(filename))
-
-
 def ensure_default_config():
     """
     Ensures a configuration file exists in the default location.
@@ -73,20 +56,41 @@ def ensure_default_config():
             confdir.writetext(filename, DEFAULT_CONFIG_TEXT)
 
 
-def read_default_config() -> Tuple[str, str]:
+def config_path(fs_url: Optional[str] = None) -> str:
     """
-    Read the config file set in $ORGANIZE_CONFIG and fall back to the default
-    config folder if this env is not set.
+    Return the config path, resolved into a syspath if possible.
+    If no fs_url is given, the default locations are checked.
+    As last resort, a config is created in the default location.
     """
-    # first check whether the user set a env var
-    env_fs_url = os.getenv("ORGANIZE_CONFIG")
+    if not fs_url:
+        # first check whether the user set a env var
+        env_fs_url = os.getenv("ORGANIZE_CONFIG")
+        if env_fs_url:
+            fs_url = env_fs_url
+        else:
+            # if no env variable is given we make sure that there is a config file in
+            # the default location
+            ensure_default_config()
+            fs_url = DEFAULT_CONFIG_FS_URL
 
-    # if no env variable is given we make sure that there is a config file in the
-    # default location
-    if not env_fs_url:
-        ensure_default_config()
+    dirname, filename = path_split(fs_url)
+    try:
+        with fs.open_fs(dirname) as confdir:
+            config_path = confdir.getsyspath(filename)
+    except Exception:
+        config_path = fs_url
+    return config_path
 
-    return read_config(env_fs_url or DEFAULT_CONFIG_FS_URL)
+
+def read_config(fs_url: Optional[str] = None) -> Tuple[str, str]:
+    """
+    Read the config at the given fs_url.
+    If no fs_url is given, try the default locations.
+    """
+    fs_url = config_path(fs_url)
+    dirname, filename = path_split(fs_url)
+    with fs.open_fs(dirname) as confdir:
+        return (fs_url, confdir.readtext(filename))
 
 
 class NaturalOrderGroup(click.Group):
@@ -298,39 +302,25 @@ def check(config: str, debug):
 
 
 @cli.command()
+@CLI_CONFIG
 @click.option("--path", is_flag=True, help="Print the path instead of revealing it.")
-def reveal(path: bool):
+def reveal(config: Optional[str], path: bool):
     """Reveals the default config file."""
-    # first check whether the user set a env var
-    fs_url = os.getenv("ORGANIZE_CONFIG")
-
-    # if no env variable is given we make sure that there is a config file in the
-    # default location
-    if not fs_url:
-        ensure_default_config()
-        fs_url = DEFAULT_CONFIG_FS_URL
-
-    dirname, filename = fs.path.split(fs_url)
-    dir_url = None
-    file_url = None
-    try:
-        with fs.open_fs(dirname) as dirfs:
-            dir_url = dirfs.geturl("/")
-            file_url = dirfs.geturl(filename)
-    except Exception:
-        pass
-
+    confpath = config_path(config)
     if path:
-        click.echo(file_url or fs_url)
+        click.echo(confpath)
         return
-
-    if dir_url:
+    try:
+        # convert the url
+        dirname, _ = path_split(confpath)
         import webbrowser
 
-        webbrowser.open(dir_url)
-    else:
-        click.echo("Revealing this fs_url is not possible.")
-        click.echo(fs_url)
+        with fs.open_fs(dirname) as dirfs:
+            dir_url = dirfs.geturl("/")
+            webbrowser.open(dir_url)
+    except Exception as e:
+        click.echo("Cannot reveal this config (%s)" % e)
+        click.echo(confpath)
 
 
 @cli.command()
