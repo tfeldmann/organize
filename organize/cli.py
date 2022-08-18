@@ -62,6 +62,7 @@ def config_path(fs_url: Optional[str] = None) -> str:
     If no fs_url is given, the default locations are checked.
     As last resort, a config is created in the default location.
     """
+    is_syspath = False
     if not fs_url:
         # first check whether the user set a env var
         env_fs_url = os.getenv("ORGANIZE_CONFIG")
@@ -77,9 +78,10 @@ def config_path(fs_url: Optional[str] = None) -> str:
     try:
         with fs.open_fs(dirname) as confdir:
             config_path = confdir.getsyspath(filename)
+            is_syspath = True
     except Exception:
         config_path = fs_url
-    return config_path
+    return is_syspath, config_path
 
 
 def read_config(fs_url: Optional[str] = None) -> Tuple[str, str]:
@@ -87,7 +89,7 @@ def read_config(fs_url: Optional[str] = None) -> Tuple[str, str]:
     Read the config at the given fs_url.
     If no fs_url is given, try the default locations.
     """
-    fs_url = config_path(fs_url)
+    _, fs_url = config_path(fs_url)
     dirname, filename = path_split(fs_url)
     with fs.open_fs(dirname) as confdir:
         return (fs_url, confdir.readtext(filename))
@@ -224,12 +226,16 @@ def sim(config: Optional[str], working_dir: str, tags, skip_tags):
     envvar="EDITOR",
     help="The editor to use. (Default: $EDITOR)",
 )
-def edit(config, editor):
+def edit(config: Optional[str], editor):
     """Edit the rules.
 
     If called without arguments it will open the default config file in $EDITOR.
     """
-    click.edit(filename=config, editor=editor)
+    is_syspath, confpath = config_path(config)
+    if is_syspath:
+        click.edit(filename=confpath, editor=editor)
+    else:
+        click.echo("Not a local config path: %s" % confpath)
 
 
 @cli.command()
@@ -306,7 +312,7 @@ def check(config: str, debug):
 @click.option("--path", is_flag=True, help="Print the path instead of revealing it.")
 def reveal(config: Optional[str], path: bool):
     """Reveals the default config file."""
-    confpath = config_path(config)
+    is_syspath, confpath = config_path(config)
     if path:
         click.echo(confpath)
         return
@@ -317,6 +323,8 @@ def reveal(config: Optional[str], path: bool):
 
         with fs.open_fs(dirname) as dirfs:
             dir_url = dirfs.geturl("/")
+            if not is_syspath:
+                raise ValueError("not a local path")
             webbrowser.open(dir_url)
     except Exception as e:
         click.echo("Cannot reveal this config (%s)" % e)
