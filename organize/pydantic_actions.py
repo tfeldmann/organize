@@ -20,7 +20,6 @@ class Action(BaseModel):
     @root_validator(pre=True)
     def handle_single_str(cls, value):
         # handle positional arguments when parsing a config file.
-        # "__positional_arg__" is a special key
         if "__positional_arg__" in value:
             param = cls.Settings.accepts_positional_arg
             if not param:

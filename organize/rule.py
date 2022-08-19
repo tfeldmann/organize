@@ -89,3 +89,7 @@ class Rule(BaseModel):
                 "Found keys: %s" % keys
             )
         return v
+
+
+if __name__ == "__main__":
+    print(Rule(name="Test", locations=".", actions=[Move(dest="tst")]))

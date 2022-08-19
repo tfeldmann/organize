@@ -3,6 +3,7 @@ from typing import List, Union
 
 from fs.base import FS
 from pydantic import BaseModel, Field, validator
+from typing_extensions import Literal
 
 DEFAULT_SYSTEM_EXCLUDE_FILES = [
     "thumbs.db",
@@ -25,7 +26,7 @@ class SearchMethod(str, Enum):
 
 class Location(BaseModel):
     path: str
-    max_depth: Union[int, None] = None
+    max_depth: Union[Literal["rule_setting"], int, None] = "rule_setting"
     search: SearchMethod = SearchMethod.depth
     exclude_files: List[str] = Field(default_factory=list)
     exclude_dirs: List[str] = Field(default_factory=list)
@@ -38,7 +39,7 @@ class Location(BaseModel):
     filter: List[str] = Field(default_factory=list)
     filter_dirs: List[str] = Field(default_factory=list)
     ignore_errors: bool = False
-    filesystem: Union[str, FS] = "."
+    filesystem: Union[str, FS] = ""
 
     class Config:
         extra = "forbid"
