@@ -135,15 +135,21 @@ class Rule(BaseModel):
                 _filesystem = location.filesystem
 
             _filesystem, _path = fs_path_expand(path=location.path, fs=_filesystem)
+            fs_base_path = fs.path.forcedir(fs.path.relpath(fs.path.normpath(_path)))
             with fs.open_fs(_filesystem) as filesystem:
-                for result in walk_func(fs=filesystem, path=_path):
-                    fs_path = fs.path.relpath(result)
-                    fs_base_path = fs.path.relpath(fs.path.normpath(_path))
+                for resource in walk_func(fs=filesystem, path=_path):
+                    fs_path = fs.path.relpath(resource)
                     yield {
                         "fs": filesystem,
                         "fs_path": fs_path,
                         "fs_base_path": fs_base_path,
                     }
+
+    def execute(self, simulate=True):
+        for resource in self.walk():
+            # filter_pipeline(self.filters, resource)
+            # action_pipeline(self.actions, resource)
+            print(resource)
 
 
 if __name__ == "__main__":
@@ -158,5 +164,4 @@ if __name__ == "__main__":
         targets="files",
         actions=[Move(dest="tst")],
     )
-    for result in rule.walk():
-        print(result)
+    rule.execute()
