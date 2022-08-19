@@ -3,6 +3,24 @@ from fs import open_fs
 from schema import SchemaError
 
 from organize import config, core
+from organize.rule import normalize_config_object
+
+
+@pytest.mark.parametrize(
+    "inp,result",
+    (
+        ({"name": {"match": "test"}}, {"name": "name", "match": "test"}),
+        ("empty", {"name": "empty"}),
+        ("name", {"name": "name"}),
+        ({"name": "test"}, {"name": "name", "__positional_arg__": "test"}),
+        (
+            {"ext": ["pdf", "txt"]},
+            {"name": "ext", "__positional_arg__": ["pdf", "txt"]},
+        ),
+    ),
+)
+def test_normalize_config(inp, result):
+    assert normalize_config_object(inp) == result
 
 
 def validate_config(string: str):

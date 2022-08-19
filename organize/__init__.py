@@ -3,6 +3,15 @@ import logging.config
 
 import yaml
 from fs import appfs
+from pydantic import BaseModel
+
+
+class ParseModel(BaseModel):
+    class Config:
+        extra = "forbid"
+        arbitrary_types_allowed = True
+        underscore_attrs_are_private = True
+
 
 with appfs.UserLogFS("organize") as log_fs:
     LOG_PATH = log_fs.getsyspath("organize.log")

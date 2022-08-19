@@ -9,13 +9,13 @@ class Action(BaseModel):
     class Settings:
         accepts_positional_arg: Union[str, None] = None
 
-    def __init__(self, *args, **kwargs) -> None:
-        # handle positional arguments when calling the class directly
-        if self.Settings.accepts_positional_arg and len(args) == 1:
-            kwargs[self.Settings.accepts_positional_arg] = args[0]
-            super().__init__(**kwargs)
-            return
-        super().__init__(*args, **kwargs)
+    # def __init__(self, *args, **kwargs) -> None:
+    #     # handle positional arguments when calling the class directly
+    #     if self.Settings.accepts_positional_arg and len(args) == 1:
+    #         kwargs[self.Settings.accepts_positional_arg] = args[0]
+    #         super().__init__(**kwargs)
+    #         return
+    #     super().__init__(*args, **kwargs)
 
     @root_validator(pre=True)
     def handle_single_str(cls, value):

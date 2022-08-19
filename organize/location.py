@@ -26,7 +26,7 @@ class SearchMethod(str, Enum):
 
 class Location(BaseModel):
     path: str
-    max_depth: Union[Literal["rule_setting"], int, None] = "rule_setting"
+    max_depth: Union[Literal["inherit"], int, None] = "inherit"
     search: SearchMethod = SearchMethod.depth
     exclude_files: List[str] = Field(default_factory=list)
     exclude_dirs: List[str] = Field(default_factory=list)
@@ -36,10 +36,10 @@ class Location(BaseModel):
     system_exclude_dirs: List[str] = Field(
         default_factory=lambda: DEFAULT_SYSTEM_EXCLUDE_DIRS
     )
-    filter: List[str] = Field(default_factory=list)
-    filter_dirs: List[str] = Field(default_factory=list)
+    filter: Union[List[str], None] = None
+    filter_dirs: Union[List[str], None] = None
     ignore_errors: bool = False
-    filesystem: Union[str, FS] = ""
+    filesystem: Union[str, FS] = "inherit"
 
     class Config:
         extra = "forbid"

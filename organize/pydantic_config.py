@@ -12,6 +12,8 @@ class Config(BaseModel):
 
     class Config:
         title = "organize config file"
+        arbitrary_types_allowed = True
+        extra = "forbid"
 
 
 def default_yaml_cnst(loader, tag_suffix, node):
@@ -37,13 +39,18 @@ if __name__ == "__main__":
         rules:
           - locations: "."
             subfolders: true
+            filters:
+              - not name:
+                  match: "something"
+              - empty
             actions:
               - move: "somewhere"
         """
     )
     x = Config.parse_obj(obj)
-    print(x)
+    print(x.dict())
 
+    sys.exit()
     from .location import Location
     from .pydantic_actions import Move
 

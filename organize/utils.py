@@ -75,19 +75,26 @@ def expand_user(fs_url: str) -> str:
 
 
 def expand_args(template: Union[str, jinja2.environment.Template], args=None):
-    if not args:
-        args = basic_args()
-
+    _args = deep_merge(basic_args(), args or {})
     if isinstance(template, str):
-        text = Template.from_string(template).render(**args)
+        text = Template.from_string(template).render(**_args)
     else:
-        text = template.render(**args)
+        text = template.render(**_args)
 
     # expand user and fill environment vars
     text = expand_user(text)
     text = os.path.expandvars(text)
-
     return text
+
+
+def fs_path_expand(*, fs=None, path: str = "/", args=None):
+    if fs is None:
+        fs = path
+        path = "/"
+    if isinstance(fs, str):
+        fs = expand_args(fs, args=args)
+        path = expand_args(path, args=args)
+    return (fs, path)
 
 
 def fs_path_from_options(
