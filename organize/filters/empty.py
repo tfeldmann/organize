@@ -10,7 +10,7 @@ class Empty(Filter):
 
     name: Literal["empty"] = "empty"
 
-    class Config:
+    class ParseConfig:
         accepts_positional_arg = "match"
 
     def pipeline(self, args: dict) -> FilterResult:

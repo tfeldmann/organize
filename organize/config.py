@@ -120,9 +120,10 @@ if __name__ == "__main__":
               - size:
                  - < 1 Mb
                  - < 2MB
+              - hash: md5
             actions:
               - confirm
-              - echo: "Test {name} {extension} {size}"
+              - echo: "Test {name} {extension} {size} {hash}"
         """
     )
     x = Config.parse_obj(obj)

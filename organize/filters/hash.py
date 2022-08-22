@@ -1,6 +1,8 @@
+from pydantic import Field
 import logging
 
 from fs.base import FS
+from typing_extensions import Literal
 
 from organize.utils import Template
 
@@ -38,21 +40,24 @@ class Hash(Filter):
     - `{hash}`:  The hash of the file.
     """
 
-    name = "hash"
-    schema_support_instance_without_args = True
+    name: Literal["hash"] = Field("hash", repr=False)
+    algorithm: str = "md5"
 
-    def __init__(self, algorithm="md5"):
-        self.algorithm = Template.from_string(algorithm)
+    _algorithm: Template
+
+    class ParseConfig:
+        accepts_positional_arg = "algorithm"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._algorithm = Template.from_string(self.algorithm)
 
     def pipeline(self, args: dict):
         fs = args["fs"]  # type: FS
         fs_path = args["fs_path"]  # type: str
-        algo = self.algorithm.render(**args)
+        algo = self._algorithm.render(**args)
         hash_ = fs.hash(fs_path, name=algo)
         return FilterResult(
             matches=True,
             updates={self.name: hash_},
         )
-
-    def __str__(self) -> str:
-        return "Hash(algorithm={})".format(self.algorithm)

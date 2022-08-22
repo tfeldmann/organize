@@ -1,6 +1,7 @@
 import re
 
 from fs.path import basename
+from typing_extensions import Literal
 
 from .filter import Filter, FilterResult
 
@@ -21,15 +22,21 @@ class Regex(Filter):
 
     """
 
-    name = "regex"
+    name: Literal["regex"] = "regex"
+    expr: str
 
-    arg_schema = str
+    _expr: re.Pattern
 
-    def __init__(self, expr) -> None:
-        self.expr = re.compile(expr, flags=re.UNICODE)
+    class ParseConfig:
+        accepts_positional_arg = "expr"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._expr = re.compile(self.expr, flags=re.UNICODE)
+        print(self.Config.
 
     def matches(self, path: str):
-        return self.expr.search(path)
+        return self._expr.search(path)
 
     def pipeline(self, args: dict) -> FilterResult:
         fs_path = args["fs_path"]

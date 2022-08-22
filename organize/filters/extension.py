@@ -38,7 +38,7 @@ class Extension(Filter):
 
     _validate_extensions = ensure_list("extensions")
 
-    class Config:
+    class ParseConfig:
         accepts_positional_arg = "extensions"
 
     def __init__(self, *args, **kwargs):

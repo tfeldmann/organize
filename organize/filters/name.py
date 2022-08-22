@@ -38,7 +38,7 @@ class Name(Filter):
 
     _matcher: simplematch.Matcher
 
-    class Config:
+    class ParseConfig:
         accepts_positional_arg = "match"
 
     def __init__(self, *args, **kwargs):

@@ -87,7 +87,7 @@ class Size(Filter):
 
     _constraints: Set[Tuple[Callable[[int, int], bool], int]]
 
-    class Config:
+    class ParseConfig:
         accepts_positional_arg = "conditions"
 
     @validator("conditions", pre=True)

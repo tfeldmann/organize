@@ -15,8 +15,7 @@ from .extension import Extension
 
 # from .filecontent import FileContent
 from .filter import Filter
-
-# from .hash import Hash
+from .hash import Hash
 from .lastmodified import LastModified
 
 # from .macos_tags import MacOSTags
@@ -31,13 +30,14 @@ FilterType = Union[
     Filter,
     Annotated[
         Union[
-            Name,
-            Empty,
             Created,
             DateAdded,
             DateLastUsed,
-            LastModified,
+            Empty,
             Extension,
+            Hash,
+            LastModified,
+            Name,
             Size,
         ],
         pydantic.Field(discriminator="name"),
