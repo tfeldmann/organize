@@ -1,11 +1,10 @@
+from pydantic import validator
 import operator
 import re
-from typing import Callable, Dict
-from typing import Optional as Opt
-from typing import Sequence, Set, Tuple
+from typing import Callable, List, Set, Tuple, Union
 
 from fs.filesize import binary, decimal, traditional
-from schema import Optional, Or
+from typing_extensions import Literal
 
 from organize.utils import flattened_string_list
 
@@ -83,18 +82,28 @@ class Size(Filter):
     - `{size.decimal}`: (str) Size with unit (powers of 1000, SI prefixes)
     """
 
-    name = "size"
-    arg_schema = Or(object, [object])
-    schema_support_instance_without_args = True
+    name: Literal["size"] = "size"
+    conditions: Union[List[str], str] = ""
 
-    def __init__(self, *conditions: Sequence[str]) -> None:
-        self.conditions = ", ".join(flattened_string_list(list(conditions)))
-        self.constraints = create_constraints(self.conditions)
+    _constraints: Set[Tuple[Callable[[int, int], bool], int]]
+
+    class Config:
+        accepts_positional_arg = "conditions"
+
+    @validator("conditions", pre=True)
+    def ensure_joined_str(cls, value):
+        if isinstance(value, str):
+            value = [value]
+        return ", ".join(flattened_string_list(list(value)))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._constraints = create_constraints(self.conditions)
 
     def matches(self, filesize: int) -> bool:
-        if not self.constraints:
+        if not self._constraints:
             return True
-        return all(op(filesize, c_size) for op, c_size in self.constraints)
+        return all(op(filesize, c_size) for op, c_size in self._constraints)
 
     def pipeline(self, args: dict) -> FilterResult:
         fs = args["fs"]
@@ -111,7 +120,7 @@ class Size(Filter):
         return FilterResult(
             matches=self.matches(size),
             updates={
-                self.get_name(): {
+                self.name: {
                     "bytes": size,
                     "traditional": traditional(size),
                     "binary": binary(size),
@@ -119,6 +128,3 @@ class Size(Filter):
                 },
             },
         )
-
-    def __str__(self) -> str:
-        return "FileSize({})".format(" ".join(self.conditions))

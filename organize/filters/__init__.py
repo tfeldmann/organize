@@ -12,6 +12,7 @@ from .empty import Empty
 
 # from .exif import Exif
 from .extension import Extension
+
 # from .filecontent import FileContent
 from .filter import Filter
 
@@ -24,7 +25,7 @@ from .name import Name
 
 # from .python import Python
 # from .regex import Regex
-# from .size import Size
+from .size import Size
 
 FilterType = Union[
     Filter,
@@ -37,6 +38,7 @@ FilterType = Union[
             DateLastUsed,
             LastModified,
             Extension,
+            Size,
         ],
         pydantic.Field(discriminator="name"),
     ],

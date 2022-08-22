@@ -37,6 +37,6 @@ class Regex(Filter):
         return FilterResult(
             matches=bool(match),
             updates={
-                self.get_name(): match.groupdict() if match else "",
+                self.name: match.groupdict() if match else "",
             },
         )

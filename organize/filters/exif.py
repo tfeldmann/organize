@@ -72,7 +72,7 @@ class Exif(Filter):
 
         return FilterResult(
             matches=matches,
-            updates={self.get_name(): exif_result},
+            updates={self.name: exif_result},
         )
 
     def __str__(self) -> str:

@@ -153,19 +153,3 @@ class Rule(BaseModel):
                         "fs_path": fs_path,
                         "fs_base_path": fs_base_path,
                     }
-
-
-if __name__ == "__main__":
-    rule = Rule(
-        locations={
-            "exclude_dirs": [".venv", ".mypy_cache"],
-            "path": "/Desktop/usbhub/",
-            "filesystem": "~",
-        },
-        subfolders=True,
-        targets="files",
-        filters=[Empty(filter_is_inverted=True)],
-        actions=[Move(dest="tst")],
-    )
-
-    print(rule)

@@ -55,5 +55,5 @@ class Python(Filter):
         self.create_method(name="usercode", argnames=args.keys(), code=self.code)
         result = self.usercode(**args)  # pylint: disable=assignment-from-no-return
         if result not in (False, None):
-            return FilterResult(matches=True, updates={self.get_name(): result})
+            return FilterResult(matches=True, updates={self.name: result})
         return FilterResult(matches=False, updates={})

@@ -5,7 +5,6 @@ from typing_extensions import Annotated
 
 from .action import Action
 from .confirm import Confirm
-
 from .copy import Copy
 from .delete import Delete
 from .echo import Echo
@@ -18,8 +17,7 @@ from .python import Python
 # from .shell import Shell
 # from .symlink import Symlink
 from .trash import Trash
-
-# from .write import Write
+from .write import Write
 
 ActionType = Union[
     Action,
@@ -32,6 +30,7 @@ ActionType = Union[
             Move,
             Python,
             Trash,
+            Write,
         ],
         Field(discriminator="name"),
     ],

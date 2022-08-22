@@ -208,7 +208,7 @@ class Duplicate(Filter):
                 "fs_path": duplicate.path,
                 "fs_base_path": duplicate.base_path,
                 "resource_changed": resource_changed_reason,
-                self.get_name(): {
+                self.name: {
                     "original": syspath_or_exception(original.fs, original.path)
                 },
             }

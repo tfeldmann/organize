@@ -53,7 +53,7 @@ class MimeType(Filter):
         mimetype = self.mimetype(fs_path)
         return FilterResult(
             matches=self.matches(mimetype),
-            updates={self.get_name(): mimetype},
+            updates={self.name: mimetype},
         )
 
     def __str__(self):

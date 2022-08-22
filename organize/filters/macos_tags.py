@@ -51,7 +51,7 @@ class MacOSTags(Filter):
 
         return FilterResult(
             matches=bool(self.matches(tags)),
-            updates={self.get_name(): tags},
+            updates={self.name: tags},
         )
 
     def __str__(self):

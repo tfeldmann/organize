@@ -8,6 +8,7 @@ from . import console
 from .actions import Action
 from .filters import Filter
 from .utils import deep_merge_inplace
+from .rule import FilterMode
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ def syspath_or_exception(fs, path):
         return e
 
 
-def filter_pipeline(filters: List[Filter], args: dict, filter_mode: str) -> bool:
+def filter_pipeline(filters: List[Filter], args: dict, filter_mode: FilterMode) -> bool:
     """
     run the filter pipeline.
     Returns True on a match, False otherwise and updates `args` in the process.
@@ -40,8 +41,8 @@ def filter_pipeline(filters: List[Filter], args: dict, filter_mode: str) -> bool
             match, updates = filter_.pipeline(args)
             result = match ^ filter_.filter_is_inverted
             # we cannot exit early on "any".
-            if (filter_mode == "none" and result) or (
-                filter_mode == "all" and not result
+            if (filter_mode == FilterMode.none and result) or (
+                filter_mode == FilterMode.all and not result
             ):
                 return False
             results.append(result)

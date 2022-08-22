@@ -51,7 +51,7 @@ class Hash(Filter):
         hash_ = fs.hash(fs_path, name=algo)
         return FilterResult(
             matches=True,
-            updates={self.get_name(): hash_},
+            updates={self.name: hash_},
         )
 
     def __str__(self) -> str:

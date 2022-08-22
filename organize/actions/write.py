@@ -1,9 +1,10 @@
+from typing_extensions import Literal
 import logging
+from enum import Enum
 from typing import Union
 
 from fs.base import FS
 from fs.opener import manage_fs
-from schema import Optional, Or
 
 from organize.utils import Template
 
@@ -12,11 +13,11 @@ from .action import Action
 
 logger = logging.getLogger(__name__)
 
-MODES = (
-    "prepend",
-    "append",
-    "overwrite",
-)
+
+class Mode(str, Enum):
+    prepend = "prepend"
+    append = "append"
+    overwrite = "overwrite"
 
 
 class Write(Action):
@@ -53,42 +54,28 @@ class Write(Action):
             If this is not given, the local filesystem is used.
     """
 
-    name = "write"
-    arg_schema = Or(
-        {
-            "text": str,
-            "path": str,
-            Optional("mode"): Or(*MODES),
-            Optional("newline"): bool,
-            Optional("clear_before_first_write"): bool,
-            Optional("filesystem"): object,
-        },
-    )
+    name: Literal["write"] = "write"
+    text: str
+    path: str
+    mode: Mode = Mode.append
+    newline: bool = True
+    clear_before_first_write: bool = False
+    filesystem: Union[FS, str, None] = None
 
-    def __init__(
-        self,
-        text: str,
-        path: str,
-        mode: str = "append",
-        newline: bool = True,
-        clear_before_first_write: bool = False,
-        filesystem: Union[FS, str, None] = None,
-    ) -> None:
-        self.text = Template.from_string(text)
-        self.path = Template.from_string(path)
-        self.mode = mode.lower()
-        self.clear_before_first_write = clear_before_first_write
-        self.newline = newline
-        self.filesystem = filesystem or self.Meta.default_filesystem
+    _text: Template
+    _path: Template
+    _is_first_write: bool
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._text = Template.from_string(self.text)
+        self._path = Template.from_string(self.path)
         self._is_first_write = True
-
-        if self.mode not in MODES:
-            raise ValueError("mode must be one of %s" % ", ".join(MODES))
+        # self.filesystem = filesystem or self.Meta.default_filesystem
 
     def pipeline(self, args: dict, simulate: bool):
-        text = self.text.render(args)
-        path = self.path.render(args)
+        text = self._text.render(args)
+        path = self._path.render(args)
 
         dst_fs, dst_path = open_create_fs_path(
             fs=self.filesystem,
@@ -108,14 +95,14 @@ class Write(Action):
 
         if not simulate:
             with manage_fs(dst_fs):
-                if self.mode == "append":
+                if self.mode == Mode.append:
                     dst_fs.appendtext(dst_path, text)
-                elif self.mode == "prepend":
+                elif self.mode == Mode.prepend:
                     content = ""
                     if dst_fs.exists(dst_path):
                         content = dst_fs.readtext(dst_path)
                     dst_fs.writetext(dst_path, text + content)
-                elif self.mode == "overwrite":
+                elif self.mode == Mode.overwrite:
                     dst_fs.writetext(dst_path, text)
 
         self._is_first_write = False

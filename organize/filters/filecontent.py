@@ -62,7 +62,7 @@ class FileContent(Filter):
             ) from e
         match = self.matches(path=syspath)
         if match:
-            updates = {self.get_name(): match.groupdict()}
+            updates = {self.name: match.groupdict()}
         else:
             updates = {}
         return FilterResult(

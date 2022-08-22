@@ -73,7 +73,7 @@ class Shell(Action):
                     shell=True,
                 )
                 return {
-                    self.get_name(): {
+                    self.name: {
                         "output": call.stdout.decode("utf-8"),
                         "returncode": 0,
                     }
@@ -82,7 +82,7 @@ class Shell(Action):
                 if not self.ignore_errors:
                     raise e
                 return {
-                    self.get_name(): {
+                    self.name: {
                         "output": e.stdout.decode("utf-8"),
                         "returncode": e.returncode,
                     }
@@ -90,7 +90,7 @@ class Shell(Action):
         else:
             self.print("** not run in simulation ** $ %s" % full_cmd)
             return {
-                self.get_name(): {
+                self.name: {
                     "output": self.simulation_output.render(**args),
                     "returncode": self.simulation_returncode,
                 }

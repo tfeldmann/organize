@@ -117,25 +117,15 @@ if __name__ == "__main__":
             filters:
               - name: "*cache*"
               - extension: json
+              - size:
+                 - < 1 Mb
+                 - < 2MB
             actions:
               - confirm
-              - echo: "Test {name} {extension}"
+              - echo: "Test {name} {extension} {size}"
         """
     )
     x = Config.parse_obj(obj)
     print(x)
     x.execute(simulate=True)
-
-    sys.exit()
-    from .location import Location
-    from .pydantic_actions import Move
-
-    print(
-        Rule(
-            locations=Location(path="asd", exclude_dirs="asd"),
-            actions=[Move(dest="asd"), {"move": "test"}],
-            filters=[],
-            targets="dirs",
-        ).dict()
-    )
     sys.exit()
