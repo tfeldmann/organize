@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Callable, Union
 
 import jinja2
@@ -12,15 +13,14 @@ from organize.utils import expand_args, is_same_resource, safe_description
 
 from .trash import Trash
 
-CONFLICT_OPTIONS = (
-    "skip",
-    "overwrite",
-    "trash",
-    "rename_new",
-    "rename_existing",
-    # "keep_newer",
-    # "keep_older",
-)
+
+class ConflictOption(str, Enum):
+    skip = "skip"
+    overwrite = "overwrite"
+    trash = "trash"
+    rename_new = "rename_new"
+    rename_existing = "rename_existing"
+    # TODO keep_newer, keep_older
 
 
 def next_free_name(fs: FS, template: jinja2.Template, name: str, extension: str) -> str:

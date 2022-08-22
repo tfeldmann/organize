@@ -1,5 +1,5 @@
 import logging
-
+from typing_extensions import Literal
 from .action import Action
 
 logger = logging.getLogger(__name__)
@@ -12,11 +12,7 @@ class Trash(Action):
     Only the local filesystem is supported.
     """
 
-    name = "trash"
-
-    @classmethod
-    def get_schema(cls):
-        return cls.name
+    name: Literal["trash"] = "trash"
 
     def trash(self, path: str, simulate: bool):
         from send2trash import send2trash

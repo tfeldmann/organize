@@ -1,5 +1,4 @@
-from rich.prompt import Prompt
-from schema import Optional, Or
+from typing_extensions import Literal
 
 from organize import console
 from organize.utils import Template
@@ -11,30 +10,21 @@ class Confirm(Action):
 
     """Ask for confirmation before continuing."""
 
-    name = "confirm"
-    schema_support_instance_without_args = True
+    name: Literal["confirm"] = "confirm"
+    msg: str = "Continue?"
+    default: bool = True
 
-    arg_schema = Or(
-        str,
-        {
-            Optional("msg"): str,
-            Optional("default"): bool,
-        },
-    )
+    _msg: Template
 
-    def __init__(self, msg="Continue?", default=True):
-        self.msg = Template.from_string(msg)
-        self.default = default
+    class Config:
+        accepts_positional_arg = "msg"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._msg = Template.from_string(self.msg)
 
     def pipeline(self, args: dict, simulate: bool):
-        msg = self.msg.render(**args)
-        result = console.pipeline_confirm(
-            self.get_name(),
-            msg,
-            default=self.default,
-        )
+        msg = self._msg.render(**args)
+        result = console.pipeline_confirm(self.name, msg, default=self.default)
         if not result:
             raise StopIteration("Aborted")
-
-    def __str__(self) -> str:
-        return 'Confirm(msg="%s")' % self.msg

@@ -1,12 +1,11 @@
 import logging
 from typing import Any, Dict
-from typing import Optional as tyOptional
+from typing import Optional
 from typing import Union
 
-from fs.base import FS
-from schema import Optional, Or, Schema
+from pydantic import BaseModel, root_validator
 
-from organize.console import pipeline_error, pipeline_message
+from organize import console
 
 logger = logging.getLogger(__name__)
 
@@ -15,62 +14,47 @@ class Error(Exception):
     pass
 
 
-class Action:
-    name = None  # type: Union[str, None]
-    arg_schema = None
-    schema_support_instance_without_args = False
+class Action(BaseModel):
+    class Config:
+        # organize
+        accepts_positional_arg: Union[str, None] = None
 
-    class Meta:
-        default_filesystem = "." # type: Union[FS, str]
+        # pydantic
+        extra = "forbid"
+        arbitrary_types_allowed = True
+        underscore_attrs_are_private = True
 
-    @classmethod
-    def get_name(cls):
-        if cls.name:
-            return cls.name
-        return cls.__name__.lower()
+    # def __init__(self, *args, **kwargs) -> None:
+    #     # handle positional arguments when calling the class directly
+    #     if self.Settings.accepts_positional_arg and len(args) == 1:
+    #         kwargs[self.Settings.accepts_positional_arg] = args[0]
+    #         super().__init__(**kwargs)
+    #         return
+    #     super().__init__(*args, **kwargs)
 
-    @classmethod
-    def get_schema(cls):
-        if cls.arg_schema:
-            arg_schema = cls.arg_schema
-        else:
-            arg_schema = Or(
-                str,
-                [str],
-                Schema({}, ignore_extra_keys=True),
-            )
-        if cls.schema_support_instance_without_args:
-            return Or(
-                cls.get_name(),
-                {
-                    cls.get_name(): arg_schema,
-                },
-            )
-        return {
-            cls.get_name(): arg_schema,
-        }
+    @root_validator(pre=True)
+    def handle_single_str(cls, value):
+        # handle positional arguments when parsing a config file.
+        if "__positional_arg__" in value:
+            param = cls.Config.accepts_positional_arg
+            if not param:
+                raise ValueError("Non-dict arguments are not accepted")
+            param_val = value.pop("__positional_arg__")
+            return {param: param_val, **value}
+        return value
 
-    def run(self, simulate: bool, **kwargs) -> tyOptional[Dict[str, Any]]:
+    def run(self, simulate: bool, **kwargs) -> Optional[Dict[str, Any]]:
         return self.pipeline(kwargs, simulate=simulate)
 
-    def pipeline(self, args: dict, simulate: bool) -> tyOptional[Dict[str, Any]]:
+    def pipeline(self, args: dict, simulate: bool) -> Optional[Dict[str, Any]]:
         raise NotImplementedError
 
     def print(self, *msg) -> None:
         """print a message for the user"""
         text = " ".join(str(x) for x in msg)
         for line in text.splitlines():
-            pipeline_message(source=self.get_name(), msg=line)
+            console.pipeline_message(source=self.name, msg=line)
 
     def print_error(self, msg: str):
         for line in msg.splitlines():
-            pipeline_error(source=self.get_name(), msg=line)
-
-    def __str__(self) -> str:
-        return self.__class__.__name__
-
-    def __repr__(self) -> str:
-        return "<%s>" % str(self)
-
-    def __eq__(self, other) -> bool:
-        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+            console.pipeline_error(source=self.name, msg=line)

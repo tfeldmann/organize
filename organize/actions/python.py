@@ -3,7 +3,7 @@ import textwrap
 from typing import Any, Dict, Iterable
 from typing import Optional as tyOptional
 
-from schema import Optional, Or
+from typing_extensions import Literal
 
 from .action import Action
 
@@ -20,18 +20,14 @@ class Python(Action):
             Whether to execute this code in simulation mode (Default false).
     """
 
-    name = "python"
-    arg_schema = Or(
-        str,
-        {
-            "code": str,
-            Optional("run_in_simulation"): bool,
-        },
-    )
+    name: Literal["python"] = "python"
 
-    def __init__(self, code, run_in_simulation=False) -> None:
-        self.code = textwrap.dedent(code)
-        self.run_in_simulation = run_in_simulation
+    code: str
+    run_in_simulation: bool = False
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.code = textwrap.dedent(self.code)
 
     def usercode(self, *args, **kwargs):
         pass  # will be overwritten by `create_method`

@@ -1,6 +1,7 @@
 import logging
 
 from fs.base import FS
+from typing_extensions import Literal
 
 from organize.utils import safe_description
 
@@ -18,11 +19,7 @@ class Delete(Action):
     Using the `Trash` action is strongly advised for most use-cases!
     """
 
-    name = "delete"
-
-    @classmethod
-    def get_schema(cls):
-        return cls.name
+    name: Literal["delete"] = "delete"
 
     def pipeline(self, args: dict, simulate: bool):
         fs = args["fs"]  # type: FS

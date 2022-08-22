@@ -1,3 +1,5 @@
+from typing_extensions import Literal
+
 from ..utils import Template
 from .action import Action
 
@@ -13,18 +15,18 @@ class Echo(Action):
         msg (str): The message to print. Accepts placeholder variables.
     """
 
-    name = "echo"
+    name: Literal["echo"] = "echo"
+    msg: str
 
-    @classmethod
-    def get_schema(cls):
-        return {cls.name: str}
+    _msg_templ: Template
 
-    def __init__(self, msg):
-        self.msg = Template.from_string(msg)
+    class Config:
+        accepts_positional_arg = "msg"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._msg_templ = Template.from_string(self.msg)
 
     def pipeline(self, args: dict, simulate: bool) -> None:
-        full_msg = self.msg.render(**args)
+        full_msg = self._msg_templ.render(**args)
         self.print("%s" % full_msg)
-
-    def __str__(self) -> str:
-        return 'Echo(msg="%s")' % self.msg
