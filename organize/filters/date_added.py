@@ -3,6 +3,7 @@ import sys
 from datetime import datetime
 
 from fs.base import FS
+from typing_extensions import Literal
 
 from ._timefilter import TimeFilter
 
@@ -30,7 +31,7 @@ class DateAdded(TimeFilter):
         {date_added}: The datetime the files / folders were added.
     """
 
-    name = "date_added"
+    name: Literal["date_added"] = "date_added"
 
     def get_datetime(self, args: dict) -> datetime:
         if sys.platform != "darwin":
@@ -43,9 +44,3 @@ class DateAdded(TimeFilter):
         out = subprocess.check_output(cmd, encoding="utf-8").strip()
         dt = datetime.strptime(out, "%Y-%m-%d %H:%M:%S %z")
         return dt
-
-    def __str__(self):
-        return "[DateAdded] All files / folders added %s than %s" % (
-            self._mode,
-            self.timedelta,
-        )

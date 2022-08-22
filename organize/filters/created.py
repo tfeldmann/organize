@@ -2,6 +2,7 @@ import subprocess
 from datetime import datetime, timezone
 
 from fs.base import FS
+from typing_extensions import Literal
 
 from ._timefilter import TimeFilter
 
@@ -26,7 +27,7 @@ class Created(TimeFilter):
         {created}: The datetime the file / folder was created.
     """
 
-    name = "created"
+    name: Literal["created"] = "created"
 
     def get_datetime(self, args) -> datetime:
         fs = args["fs"]  # type: FS
@@ -54,6 +55,3 @@ class Created(TimeFilter):
                     return datetime.fromtimestamp(timestamp, tz=timezone.utc)
                 except subprocess.CalledProcessError:
                     pass
-
-    def __str__(self):
-        return "<Created>"

@@ -6,12 +6,12 @@ from typing_extensions import Annotated
 from .action import Action
 from .confirm import Confirm
 
-# from .copy import Copy
+from .copy import Copy
 from .delete import Delete
 from .echo import Echo
 
 # from .macos_tags import MacOSTags
-# from .move import Move
+from .move import Move
 from .python import Python
 
 # from .rename import Rename
@@ -26,8 +26,10 @@ ActionType = Union[
     Annotated[
         Union[
             Confirm,
+            Copy,
             Delete,
             Echo,
+            Move,
             Python,
             Trash,
         ],

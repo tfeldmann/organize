@@ -1,7 +1,6 @@
+from enum import Enum
 from datetime import datetime, timedelta
 from typing import Union
-
-from schema import Optional, Or
 
 from .filter import Filter, FilterResult
 
@@ -17,52 +16,46 @@ def age_condition_applies(dt: datetime, age: timedelta, mode: str, reference: da
     return (mode == "older") == is_past
 
 
+class Mode(str, Enum):
+    older = "older"
+    newer = "newer"
+
+
 class TimeFilter(Filter):
 
-    schema_support_instance_without_args = True
-    arg_schema = {
-        Optional("mode"): Or("older", "newer"),
-        Optional("years"): int,
-        Optional("months"): int,
-        Optional("weeks"): int,
-        Optional("days"): int,
-        Optional("hours"): int,
-        Optional("minutes"): int,
-        Optional("seconds"): int,
-    }
+    years: int = 0
+    months: int = 0
+    weeks: int = 0
+    days: int = 0
+    hours: int = 0
+    minutes: int = 0
+    seconds: int = 0
+    mode: Mode = Mode.older
 
-    def __init__(
-        self,
-        years=0,
-        months=0,
-        weeks=0,
-        days=0,
-        hours=0,
-        minutes=0,
-        seconds=0,
-        mode="older",
-    ):
-        self.age = timedelta(
-            weeks=52 * years + 4 * months + weeks,  # quick and a bit dirty
-            days=days,
-            hours=hours,
-            minutes=minutes,
-            seconds=seconds,
+    _age: timedelta
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._age = timedelta(
+            weeks=52 * self.years
+            + 4 * self.months
+            + self.weeks,  # quick and a bit dirty
+            days=self.days,
+            hours=self.hours,
+            minutes=self.minutes,
+            seconds=self.seconds,
         )
-        self.mode = mode.strip().lower()
-        if self.mode not in ("older", "newer"):
-            raise ValueError("Unknown option for 'mode': must be 'older' or 'newer'.")
 
     def matches_datetime(self, dt: datetime) -> bool:
         match = True
-        if self.age.total_seconds():
+        if self._age.total_seconds():
             if not dt:
                 match = False
             else:
                 match = age_condition_applies(
                     dt=dt,
-                    age=self.age,
-                    mode=self.mode,
+                    age=self._age,
+                    mode=str(self.mode),
                     reference=datetime.now(),
                 )
         return match
@@ -76,7 +69,7 @@ class TimeFilter(Filter):
         match = self.matches_datetime(dt)
         return FilterResult(
             matches=match,
-            updates={self.get_name(): dt},
+            updates={self.name: dt},
         )
 
     def get_datetime(self, args: dict) -> Union[datetime, None]:

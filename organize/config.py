@@ -55,8 +55,8 @@ class Config(BaseModel):
 
     class Config:
         title = "organize config file"
-        arbitrary_types_allowed = True
         extra = "forbid"
+        arbitrary_types_allowed = True
 
     def execute(
         self,
@@ -114,9 +114,12 @@ if __name__ == "__main__":
         rules:
           - locations: "."
             subfolders: true
+            filters:
+              - name: "*cache*"
+              - extension: json
             actions:
-              - confirms
-              - echo: "Test"
+              - confirm
+              - echo: "Test {name} {extension}"
         """
     )
     x = Config.parse_obj(obj)

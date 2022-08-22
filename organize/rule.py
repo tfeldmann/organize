@@ -1,18 +1,15 @@
+import logging
 from enum import Enum
 from typing import List, Union
 
 import fs
 from fs.base import FS
 from pydantic import BaseModel, Field, validator
-from typing_extensions import Annotated
 
-from .location import Location
 from .actions import ActionType
-from .pydantic_filters import Empty, Filter, Name
+from .filters import FilterType
+from .location import Location
 from .utils import fs_path_expand
-from .pipeline import filter_pipeline, action_pipeline
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -47,15 +44,6 @@ def normalize_filter_or_action_definition(value):
     return value
 
 
-FilterType = Union[
-    Filter,
-    Annotated[
-        Union[Name, Empty],
-        Field(discriminator="name"),
-    ],
-]
-
-
 class FilterMode(str, Enum):
     all = "all"
     any = "any"
@@ -80,6 +68,7 @@ class Rule(BaseModel):
     actions: List[ActionType] = Field(..., min_items=1)
 
     class Config:
+        title = "A rule definition"
         extra = "forbid"
         arbitrary_types_allowed = True
 

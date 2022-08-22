@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Union
 
 from fs.base import FS
+from typing_extensions import Literal
 
 from ._timefilter import TimeFilter
 
@@ -31,7 +32,7 @@ class DateLastUsed(TimeFilter):
         {date_lastused}: The datetime the files / folders were added.
     """
 
-    name = "date_lastused"
+    name: Literal["date_lastused"] = "date_lastused"
 
     def get_datetime(self, args: dict) -> Union[datetime, None]:
         if sys.platform != "darwin":
@@ -46,9 +47,3 @@ class DateLastUsed(TimeFilter):
             return None
         dt = datetime.strptime(out, "%Y-%m-%d %H:%M:%S %z")
         return dt
-
-    def __str__(self):
-        return "[DateLastUsed] All files / folders added %s than %s" % (
-            self._mode,
-            self.timedelta,
-        )

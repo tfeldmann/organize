@@ -1,10 +1,24 @@
-from typing import Union
+from typing import List, Union
 
 from fs.base import FS
+from pydantic import Field, validator
+from typing_extensions import Literal
 
 from organize.utils import flatten
 
 from .filter import Filter, FilterResult
+
+
+def convert_to_list(cls, v):
+    if not v:
+        return []
+    if isinstance(v, str):
+        return v.split()
+    return v
+
+
+def ensure_list(field_name: str):
+    return validator(field_name, allow_reuse=True, pre=True)(convert_to_list)
 
 
 class Extension(Filter):
@@ -19,11 +33,19 @@ class Extension(Filter):
     - `{extension}`: the original file extension (without colon)
     """
 
-    name = "extension"
-    schema_support_instance_without_args = True
+    name: Literal["extension"] = "extension"
+    extensions: Union[List[str], str] = Field(default_factory=list)
 
-    def __init__(self, *extensions) -> None:
-        self.extensions = list(map(self.normalize_extension, flatten(list(extensions))))
+    _validate_extensions = ensure_list("extensions")
+
+    class Config:
+        accepts_positional_arg = "extensions"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.extensions = list(
+            map(self.normalize_extension, flatten(list(self.extensions)))
+        )
 
     @staticmethod
     def normalize_extension(ext: str) -> str:
@@ -51,8 +73,5 @@ class Extension(Filter):
         ext = suffix[1:]
         return FilterResult(
             matches=bool(self.matches(ext)),
-            updates={self.get_name(): ext},
+            updates={self.name: ext},
         )
-
-    def __str__(self):
-        return "Extension(%s)" % ", ".join(self.extensions)

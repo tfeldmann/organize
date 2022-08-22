@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from fs.base import FS
+from typing_extensions import Literal
 
 from ._timefilter import TimeFilter
 
@@ -26,7 +27,7 @@ class LastModified(TimeFilter):
         {lastmodified}: The datetime the files / folders was lastmodified.
     """
 
-    name = "lastmodified"
+    name: Literal["lastmodified"] = "lastmodified"
 
     def get_datetime(self, args: dict) -> datetime:
         fs = args["fs"]  # type: FS
@@ -35,9 +36,3 @@ class LastModified(TimeFilter):
         if not modified:
             raise EnvironmentError("lastmodified date is not available")
         return modified
-
-    def __str__(self):
-        return "[LastModified] All files / folders last modified %s than %s" % (
-            self._mode,
-            self.timedelta,
-        )

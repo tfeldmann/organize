@@ -5,11 +5,11 @@ from fs.base import FS
 from fs.copy import copy_dir, copy_file
 from fs.opener.errors import OpenerError
 from fs.path import dirname
-from schema import Optional, Or
+from typing_extensions import Literal
 
 from organize.utils import SimulationFS, Template, safe_description
 
-from ._conflict import CONFLICT_OPTIONS, check_conflict, dst_from_options
+from ._conflict import ConflictOption, check_conflict, dst_from_options
 from .action import Action
 
 
@@ -41,33 +41,24 @@ class Copy(Action):
     The next action will work with the created copy.
     """
 
-    name = "copy"
-    arg_schema = Or(
-        str,
-        {
-            "dest": str,
-            Optional("on_conflict"): Or(*CONFLICT_OPTIONS),
-            Optional("rename_template"): str,
-            Optional("filesystem"): object,
-        },
-    )
+    name: Literal["copy"] = "copy"
 
-    def __init__(
-        self,
-        dest: str,
-        on_conflict="rename_new",
-        rename_template="{name} {counter}{extension}",
-        filesystem: Union[FS, str, None] = None,
-    ) -> None:
-        if on_conflict not in CONFLICT_OPTIONS:
-            raise ValueError(
-                "on_conflict must be one of %s" % ", ".join(CONFLICT_OPTIONS)
-            )
+    dest: str
+    on_conflict: ConflictOption = ConflictOption.rename_new
+    rename_template: str = "{name} {counter}{extension}"
+    filesystem: Union[None, str] = None
 
-        self.dest = Template.from_string(dest)
-        self.conflict_mode = on_conflict
-        self.rename_template = Template.from_string(rename_template)
-        self.filesystem = filesystem or self.Meta.default_filesystem
+    _dest: Template
+    _rename_template = Template
+
+    class Config:
+        accepts_positional_arg = "dest"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._dest = Template.from_string(sefl.dest)
+        self._rename_template = Template.from_string(self.rename_template)
+        # self.filesystem = filesystem or self.Meta.default_filesystem
 
     def pipeline(self, args: dict, simulate: bool):
         src_fs = args["fs"]  # type: FS
@@ -118,6 +109,3 @@ class Copy(Action):
             "fs": dst_fs,
             "fs_path": dst_path,
         }
-
-    def __str__(self) -> str:
-        return "Copy(dest=%s, conflict_mode=%s)" % (self.dest, self.conflict_mode)

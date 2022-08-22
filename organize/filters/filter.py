@@ -1,9 +1,8 @@
-from textwrap import indent
-from typing import Any, Dict, NamedTuple, Union
+from typing import Dict, NamedTuple, Union
 
-from schema import Optional, Or, Schema
+from pydantic import BaseModel, root_validator
 
-from organize.console import pipeline_error, pipeline_message
+from organize import console
 
 
 class FilterResult(NamedTuple):
@@ -11,48 +10,25 @@ class FilterResult(NamedTuple):
     updates: dict
 
 
-class Filter:
-    name = None  # type: Union[str, None]
-    arg_schema = None  # type: Union[Schema, None]
-    schema_support_instance_without_args = False
+class Filter(BaseModel):
+    filter_is_inverted: bool = False
 
-    @classmethod
-    def get_name(cls):
-        if cls.name:
-            return cls.name
-        return cls.__name__.lower()
+    class Config:
+        # organize
+        accepts_positional_arg: Union[str, None] = None
 
-    @classmethod
-    def get_name_schema(cls):
-        return Schema(
-            Or("not " + cls.get_name(), cls.get_name()),
-            name=cls.get_name(),
-            description=cls.get_description(),
-        )
+        # pydantic
+        arbitrary_types_allowed = True
+        extra = "forbid"
+        underscore_attrs_are_private = True
 
-    @classmethod
-    def get_schema(cls):
-        name = cls.get_name_schema()
-
-        if cls.arg_schema:
-            arg_schema = cls.arg_schema
-        else:
-            arg_schema = Or(
-                str,
-                [str],
-                Schema({}, ignore_extra_keys=True),
-            )
-
-        if cls.schema_support_instance_without_args:
-            return Or(name, {name: arg_schema})
-        return {
-            name: arg_schema,
-        }
-
-    @classmethod
-    def get_description(cls):
-        """the first line of the class docstring"""
-        return cls.__doc__.splitlines()[0]
+    # def __init__(self, *args, **kwargs) -> None:
+    #     # handle positional arguments when calling the class directly
+    #     if self.Settings.accepts_positional_arg and len(args) == 1:
+    #         kwargs[self.Settings.accepts_positional_arg] = args[0]
+    #         super().__init__(**kwargs)
+    #         return
+    #     super().__init__(*args, **kwargs)
 
     def run(self, **kwargs: Dict) -> FilterResult:
         return self.pipeline(dict(kwargs))
@@ -64,21 +40,19 @@ class Filter:
         """print a message for the user"""
         text = " ".join(str(x) for x in msg)
         for line in text.splitlines():
-            pipeline_message(self.get_name(), line)
+            console.pipeline_message(self.name, line)
 
     def print_error(self, msg: str):
         for line in msg.splitlines():
-            pipeline_error(self.get_name(), line)
+            console.pipeline_error(self.name, line)
 
-    def set_logic(self, inverted=False):
-        self.inverted = inverted
-
-    def __str__(self) -> str:
-        """Return filter name and properties"""
-        return self.get_name()
-
-    def __repr__(self) -> str:
-        return "<%s>" % str(self)
-
-    def __eq__(self, other) -> bool:
-        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+    @root_validator(pre=True)
+    def handle_single_str(cls, value):
+        # handle positional arguments when parsing a config file.
+        if "__positional_arg__" in value:
+            param = cls.Config.accepts_positional_arg
+            if not param:
+                raise ValueError("Non-dict arguments are not accepted")
+            param_val = value.pop("__positional_arg__")
+            return {param: param_val, **value}
+        return value
