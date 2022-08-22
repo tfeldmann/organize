@@ -3,17 +3,29 @@ from typing import List, Union
 
 import fs
 from fs.base import FS
-from fs.walk import Walker
 from pydantic import BaseModel, Field, validator
 from typing_extensions import Annotated
 
 from .location import Location
-from .pydantic_actions import Action, Copy, Move
+from .actions import ActionType
 from .pydantic_filters import Empty, Filter, Name
 from .utils import fs_path_expand
+from .pipeline import filter_pipeline, action_pipeline
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+rule_count = 0
 
 
-def normalize_config_object(value):
+def rule_name():
+    global rule_count
+    rule_count += 1
+    return "Unnamed rule %s" % rule_count
+
+
+def normalize_filter_or_action_definition(value):
     """
     Transform input like {"extension": {**args}} to {"name": "extension", **args}
     """
@@ -35,13 +47,6 @@ def normalize_config_object(value):
     return value
 
 
-ActionType = Union[
-    Action,
-    Annotated[
-        Union[Move, Copy],
-        Field(discriminator="name"),
-    ],
-]
 FilterType = Union[
     Filter,
     Annotated[
@@ -63,11 +68,12 @@ class RuleTarget(str, Enum):
 
 
 class Rule(BaseModel):
-    name: Union[str, None] = None
-    enabled: bool = Field(True, repr=False)
+    name: Union[str, None] = Field(default_factory=rule_name)
+    enabled: bool = Field(True)
     targets: RuleTarget = RuleTarget.files
     locations: List[Location]
     subfolders: bool = False
+    tags: List[str] = Field(default_factory=list)
     filesystem: Union[FS, str, None] = None
     filters: List[FilterType] = Field(default_factory=list)
     filter_mode: FilterMode = FilterMode.all
@@ -89,11 +95,11 @@ class Rule(BaseModel):
 
     @validator("actions", pre=True, each_item=True)
     def action_rewriter(cls, value):
-        return normalize_config_object(value)
+        return normalize_filter_or_action_definition(value)
 
     @validator("filters", pre=True, each_item=True)
     def validate_filters(cls, value):
-        normalized = normalize_config_object(value)
+        normalized = normalize_filter_or_action_definition(value)
         # handle inverting filters by prepending `not`
         if isinstance(normalized, dict):
             if normalized["name"].startswith("not "):
@@ -108,13 +114,15 @@ class Rule(BaseModel):
         Walk all given locations and yield the pathes
         """
         for location in self.locations:
+
+            # instantiate the fs walker
             exclude = location.system_exclude_files + location.exclude_files
             exclude_dirs = location.system_exclude_dirs + location.exclude_dirs
             if location.max_depth == "inherit":
                 max_depth = None if self.subfolders else 0
             else:
                 max_depth = location.max_depth
-            walker = Walker(
+            walker = fs.walk.Walker(
                 ignore_errors=location.ignore_errors,
                 on_error=None,
                 search=location.search,
@@ -124,6 +132,8 @@ class Rule(BaseModel):
                 filter=location.filter,
                 filter_dirs=location.filter_dirs,
             )
+
+            # whether to walk dirs or files
             _walk_funcs = {
                 RuleTarget.files: walker.files,
                 RuleTarget.dirs: walker.dirs,
@@ -138,23 +148,26 @@ class Rule(BaseModel):
             fs_base_path = fs.path.forcedir(fs.path.relpath(fs.path.normpath(_path)))
             with fs.open_fs(_filesystem) as filesystem:
                 for resource in walk_func(fs=filesystem, path=_path):
+                    # fs_path: no starting "./", no ending "/"
+                    # fs_base_path: no starting "./", ends with "/"
                     fs_path = fs.path.relpath(resource)
+
+                    # skip broken symlinks
+                    try:
+                        if filesystem.islink(fs_path):
+                            continue
+                    except fs.errors.ResourceNotFound:
+                        continue
+
                     yield {
                         "fs": filesystem,
                         "fs_path": fs_path,
                         "fs_base_path": fs_base_path,
                     }
 
-    def execute(self, simulate=True):
-        for resource in self.walk():
-            # filter_pipeline(self.filters, resource)
-            # action_pipeline(self.actions, resource)
-            print(resource)
-
 
 if __name__ == "__main__":
     rule = Rule(
-        name="Test",
         locations={
             "exclude_dirs": [".venv", ".mypy_cache"],
             "path": "/Desktop/usbhub/",
@@ -162,6 +175,8 @@ if __name__ == "__main__":
         },
         subfolders=True,
         targets="files",
+        filters=[Empty(filter_is_inverted=True)],
         actions=[Move(dest="tst")],
     )
-    rule.execute()
+
+    print(rule)

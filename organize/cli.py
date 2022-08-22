@@ -91,6 +91,8 @@ class NaturalOrderGroup(click.Group):
 
 
 class TagType(click.ParamType):
+    """Support comma separated tags"""
+
     name = "tag"
 
     def convert(self, value, param, ctx):

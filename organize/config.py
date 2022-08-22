@@ -1,59 +1,14 @@
 import textwrap
-from collections import defaultdict
+from typing import List, Union
 
 import yaml
-from schema import And, Literal, Optional, Or, Schema
+from fs.base import FS
+from pydantic import BaseModel
 
-from organize.actions import ACTIONS
-from organize.filters import FILTERS
-
-from .utils import flatten_all_lists_in_dict
-
-CONFIG_SCHEMA = Schema(
-    {
-        Literal("rules", description="All rules are defined here."): [
-            {
-                Optional("name", description="The name of the rule."): str,
-                Optional("enabled"): bool,
-                Optional("subfolders"): bool,
-                Optional("filter_mode", description="The filter mode."): Or(
-                    "all", "any", "none", error="Invalid filter mode"
-                ),
-                Optional("tags"): Or(str, [str]),
-                Optional(
-                    "targets",
-                    description="Whether the rule should apply to directories or folders.",
-                ): Or("dirs", "files"),
-                "locations": Or(
-                    str,
-                    [
-                        Or(
-                            str,
-                            {
-                                "path": And(str, len),
-                                Optional("max_depth"): Or(int, None),
-                                Optional("search"): Or("depth", "breadth"),
-                                Optional("exclude_files"): Or(str, [str]),
-                                Optional("exclude_dirs"): Or(str, [str]),
-                                Optional("system_exclude_files"): Or(str, [str]),
-                                Optional("system_exclude_dirs"): Or(str, [str]),
-                                Optional("filter"): Or(str, [str]),
-                                Optional("filter_dirs"): Or(str, [str]),
-                                Optional("ignore_errors"): bool,
-                                Optional("filesystem"): object,
-                            },
-                        ),
-                    ],
-                ),
-                Optional("filters"): [
-                    Optional(x.get_schema()) for x in FILTERS.values()
-                ],
-                "actions": [Optional(x.get_schema()) for x in ACTIONS.values()],
-            },
-        ],
-    },
-    name="organize rule configuration",
-)
+from . import console
+from .pipeline import action_pipeline, filter_pipeline
+from .rule import Rule
+from .utils import basic_args
 
 
 def default_yaml_cnst(loader, tag_suffix, node):
@@ -70,34 +25,114 @@ def load_from_string(config: str) -> dict:
     return yaml.load(dedented_config, Loader=yaml.SafeLoader)
 
 
-def lowercase_keys(obj):
-    if isinstance(obj, dict):
-        obj = {key.lower(): value for key, value in obj.items()}
-        for key, value in obj.items():
-            if isinstance(value, list):
-                for i, item in enumerate(value):
-                    value[i] = lowercase_keys(item)
-            obj[key] = lowercase_keys(value)
-    return obj
+def should_execute(rule_tags, tags, skip_tags):
+    """
+    returns whether the rule with `rule_tags` should be executed,
+    given `tags` and `skip_tags`
+    """
+    if not rule_tags:
+        rule_tags = set()
+    if not tags:
+        tags = set()
+    if not skip_tags:
+        skip_tags = set()
+
+    if "always" in rule_tags and "always" not in skip_tags:
+        return True
+    if "never" in rule_tags and "never" not in tags:
+        return False
+    if not tags and not skip_tags:
+        return True
+    if not rule_tags and tags:
+        return False
+    should_run = any(tag in tags for tag in rule_tags) or not tags or not rule_tags
+    should_skip = any(tag in skip_tags for tag in rule_tags)
+    return should_run and not should_skip
 
 
-def cleanup(config: dict) -> dict:
-    result = defaultdict(list)
+class Config(BaseModel):
+    rules: List[Rule]
 
-    # delete every root key except "rules"
-    for rule in config.get("rules", []):
-        # delete disabled rules
-        if rule.get("enabled", True):
-            result["rules"].append(rule)
+    class Config:
+        title = "organize config file"
+        arbitrary_types_allowed = True
+        extra = "forbid"
 
-    if not result:
-        raise ValueError("No rules defined.")
+    def execute(
+        self,
+        simulate: bool = True,
+        tags=set(),
+        skip_tags=set(),
+        working_dir: Union[FS, str] = "",
+    ):
+        args = basic_args()
+        for rule in self.rules:
 
-    result = lowercase_keys(result)
+            # exclude rules by tags
+            if not should_execute(rule_tags=rule.tags, tags=tags, skip_tags=skip_tags):
+                continue
 
-    # flatten all lists everywhere
-    return flatten_all_lists_in_dict(dict(result))
+            for walk_args in rule.walk():
+                filesystem = walk_args["fs"]
+                fs_path = walk_args["fs_path"]
+
+                console.path(filesystem, fs_path)
+
+                args.update(walk_args)
+                match = filter_pipeline(
+                    rule.filters, args=args, filter_mode=rule.filter_mode
+                )
+
+                if not match:
+                    continue
+
+                # # if the currently handled resource changed we adjust the prefix message
+                # if args.get("resource_changed"):
+                #     console.path_changed_during_pipeline(
+                #         fs=filesystem,
+                #         fs_path=fs_path,
+                #         new_fs=args["fs"],
+                #         new_path=args["fs_path"],
+                #         reason=args.get("resource_changed"),
+                #     )
+                # args.pop("resource_changed", None)
+
+                is_success = action_pipeline(
+                    actions=rule.actions,
+                    args=args,
+                    simulate=simulate,
+                )
 
 
-def validate(config: dict):
-    return CONFIG_SCHEMA.validate(config)
+if __name__ == "__main__":
+    import sys
+
+    from rich import print
+
+    obj = load_from_string(
+        """
+        rules:
+          - locations: "."
+            subfolders: true
+            actions:
+              - confirms
+              - echo: "Test"
+        """
+    )
+    x = Config.parse_obj(obj)
+    print(x)
+    x.execute(simulate=True)
+
+    sys.exit()
+    from .location import Location
+    from .pydantic_actions import Move
+
+    print(
+        Rule(
+            locations=Location(path="asd", exclude_dirs="asd"),
+            actions=[Move(dest="asd"), {"move": "test"}],
+            filters=[],
+            targets="dirs",
+        ).dict()
+    )
+    sys.exit()
