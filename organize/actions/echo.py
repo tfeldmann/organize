@@ -20,7 +20,7 @@ class Echo(Action):
 
     _msg_templ: Template
 
-    class Config:
+    class ParseConfig:
         accepts_positional_arg = "msg"
 
     def __init__(self, *args, **kwargs):

@@ -51,7 +51,7 @@ class Copy(Action):
     _dest: Template
     _rename_template = Template
 
-    class Config:
+    class ParseConfig:
         accepts_positional_arg = "dest"
 
     def __init__(self, *args, **kwargs):

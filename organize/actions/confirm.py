@@ -16,7 +16,7 @@ class Confirm(Action):
 
     _msg: Template
 
-    class Config:
+    class ParseConfig:
         accepts_positional_arg = "msg"
 
     def __init__(self, *args, **kwargs):

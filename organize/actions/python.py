@@ -25,6 +25,9 @@ class Python(Action):
     code: str
     run_in_simulation: bool = False
 
+    class ParseConfig:
+        accepts_positional_arg = "code"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.code = textwrap.dedent(self.code)

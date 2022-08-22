@@ -4,6 +4,7 @@ import os
 from fs import path
 from fs.base import FS
 from fs.osfs import OSFS
+from typing_extensions import Literal
 
 from organize.utils import Template
 
@@ -24,10 +25,17 @@ class Symlink(Action):
     Only the local filesystem is supported.
     """
 
-    name = "symlink"
+    name: Literal["symlink"] = "symlink"
+    dest: str
 
-    def __init__(self, dest):
-        self._dest = Template.from_string(dest)
+    _dest: Template
+
+    class ParseConfig:
+        accepts_positional_arg = "dest"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._dest = Template.from_string(self.dest)
 
     def pipeline(self, args: dict, simulate: bool):
         fs = args["fs"]  # type: FS
