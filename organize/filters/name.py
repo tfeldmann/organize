@@ -30,7 +30,7 @@ class Name(Filter):
 
     name: Literal["name"] = "name"
 
-    match: str
+    match: str = "*"
     startswith: Union[str, List[str]] = ""
     contains: Union[str, List[str]] = ""
     endswith: Union[str, List[str]] = ""

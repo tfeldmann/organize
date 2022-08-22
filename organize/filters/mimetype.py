@@ -1,8 +1,18 @@
+from pydantic import Field
 import mimetypes
+from typing import List, Union
+
+from typing_extensions import Literal
 
 from organize.utils import flatten
+from organize.validators import ensure_list
 
 from .filter import Filter, FilterResult
+
+
+def guess_mimetype(path):
+    type_, _ = mimetypes.guess_type(path, strict=False)
+    return type_
 
 
 class MimeType(Filter):
@@ -27,16 +37,16 @@ class MimeType(Filter):
     - `{mimetype}`: The MIME type of the file.
     """
 
-    name = "mimetype"
-    schema_support_instance_without_args = True
+    name: Literal["mimetype"] = Field("mimetype", repr=False)
+    mimetypes: Union[List[str], str] = Field(default_factory=list)
 
-    def __init__(self, *mimetypes):
-        self.mimetypes = list(map(str.lower, flatten(list(mimetypes))))
+    class Config:
+        anystr_lower = True
 
-    @staticmethod
-    def mimetype(path):
-        type_, _ = mimetypes.guess_type(path, strict=False)
-        return type_
+    class ParseConfig:
+        accepts_positional_arg = "mimetypes"
+
+    _validate_mimetypes = ensure_list("mimetypes")
 
     def matches(self, mimetype) -> bool:
         if mimetype is None:
@@ -50,11 +60,8 @@ class MimeType(Filter):
         fs_path = args["fs_path"]
         if fs.isdir(fs_path):
             raise ValueError("Dirs not supported.")
-        mimetype = self.mimetype(fs_path)
+        mimetype = guess_mimetype(fs_path)
         return FilterResult(
             matches=self.matches(mimetype),
             updates={self.name: mimetype},
         )
-
-    def __str__(self):
-        return "MimeType(%s)" % ", ".join(self.mimetypes)

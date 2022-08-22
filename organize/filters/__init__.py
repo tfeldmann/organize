@@ -19,7 +19,7 @@ from .hash import Hash
 from .lastmodified import LastModified
 
 # from .macos_tags import MacOSTags
-# from .mimetype import MimeType
+from .mimetype import MimeType
 from .name import Name
 
 # from .python import Python
@@ -40,6 +40,7 @@ FilterType = Union[
             LastModified,
             Name,
             Size,
+            MimeType,
         ],
         pydantic.Field(discriminator="name"),
     ],

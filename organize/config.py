@@ -115,16 +115,18 @@ if __name__ == "__main__":
           - locations: "."
             subfolders: true
             filters:
-              - duplicate: "-created"
-              - name: "*cache*"
-              - extension: json
+              - name
+              - extension: json csv
               - size:
                  - < 1 Mb
                  - < 2MB
               - hash: md5
+              - mimetype:
+                 - application/json
             actions:
               - confirm
               - echo: "Test {name} {extension} {size} {hash}"
+              - echo: "{mimetype}"
         """
     )
     x = Config.parse_obj(obj)
