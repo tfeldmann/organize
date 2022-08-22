@@ -1,8 +1,8 @@
 import logging
 import subprocess
-from subprocess import PIPE
 
-from schema import Optional, Or
+from pydantic import Field
+from typing_extensions import Literal
 
 from ..utils import Template
 from .action import Action
@@ -31,34 +31,27 @@ class Shell(Action):
     - `{shell.returncode}` (`int`): The returncode of the executed process.
     """
 
-    name = "shell"
-    arg_schema = Or(
-        str,
-        {
-            "cmd": str,
-            Optional("run_in_simulation"): bool,
-            Optional("ignore_errors"): bool,
-            Optional("simulation_output"): str,
-            Optional("simulation_returncode"): int,
-        },
-    )
+    name: Literal["shell"] = Field("shell", repr=False)
 
-    def __init__(
-        self,
-        cmd: str,
-        run_in_simulation=False,
-        ignore_errors=False,
-        simulation_output="** simulation **",
-        simulation_returncode=0,
-    ):
-        self.cmd = Template.from_string(cmd)
-        self.run_in_simulation = run_in_simulation
-        self.ignore_errors = ignore_errors
-        self.simulation_output = Template.from_string(simulation_output)
-        self.simulation_returncode = simulation_returncode
+    cmd: str
+    run_in_simulation: bool = False
+    ignore_errors: bool = False
+    _simulation_output: str = "** simulation **"
+    simulation_returncode: int = 0
+
+    _cmd: Template
+    _simulation_output: Template
+
+    class ParseConfig:
+        accepts_positional_arg = "cmd"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._cmd = Template.from_string(self.cmd)
+        self._simulation_output = Template.from_string(self._simulation_output)
 
     def pipeline(self, args: dict, simulate: bool):
-        full_cmd = self.cmd.render(**args)
+        full_cmd = self._cmd.render(**args)
 
         if not simulate or self.run_in_simulation:
             # we use call instead of run to be compatible with python < 3.5
@@ -68,7 +61,7 @@ class Shell(Action):
                 call = subprocess.run(
                     full_cmd,
                     check=True,
-                    stdout=PIPE,
+                    stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
                     shell=True,
                 )
@@ -91,10 +84,7 @@ class Shell(Action):
             self.print("** not run in simulation ** $ %s" % full_cmd)
             return {
                 self.name: {
-                    "output": self.simulation_output.render(**args),
+                    "output": self._simulation_output.render(**args),
                     "returncode": self.simulation_returncode,
                 }
             }
-
-    def __str__(self) -> str:
-        return 'Shell(cmd="%s")' % self.cmd
