@@ -115,6 +115,7 @@ if __name__ == "__main__":
           - locations: "."
             subfolders: true
             filters:
+              - duplicate: "-created"
               - name: "*cache*"
               - extension: json
               - size:
