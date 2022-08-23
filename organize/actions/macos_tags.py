@@ -1,10 +1,13 @@
 import logging
 import sys
+from typing import List, Union
 
 import simplematch as sm
-from schema import Or
+from pydantic import Field
+from typing_extensions import Literal
 
 from organize.utils import Template
+from organize.validators import ensure_list
 
 from .action import Action
 
@@ -28,14 +31,18 @@ class MacOSTags(Action):
     `orange`.
     """
 
-    name = "macos_tags"
+    name: Literal["macos_tags"] = Field("macos_tags", repr=False)
+    tags: Union[List[str], str]
 
-    @classmethod
-    def get_schema(cls):
-        return {cls.name: Or(str, [str])}
+    _tags: list
+    _validate_tags = ensure_list("tags")
 
-    def __init__(self, *tags):
-        self.tags = [Template.from_string(tag) for tag in tags]
+    class ParseConfig:
+        accepts_positional_arg = "tags"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._tags = [Template.from_string(tag) for tag in self.tags]
 
     def pipeline(self, args: dict, simulate: bool):
         fs = args["fs"]
@@ -72,6 +79,3 @@ class MacOSTags(Action):
         if not result:
             return s, "none"
         return result["name"], result["color"].lower()
-
-    def __str__(self) -> str:
-        return "MacOSTags(tags=%s)" % self.tags

@@ -1,16 +1,16 @@
 import logging
-import os
 from typing import Callable
 
 from fs import path
 from fs.base import FS
 from fs.move import move_dir, move_file
-from schema import Optional, Or
+from pydantic import Field
+from typing_extensions import Literal
 
 from organize.utils import Template, safe_description
 
+from ._conflict import ConflictOption, check_conflict
 from .action import Action
-from ._conflict import CONFLICT_OPTIONS, check_conflict, resolve_overwrite_conflict
 
 logger = logging.getLogger(__name__)
 
@@ -35,36 +35,25 @@ class Rename(Action):
     The next action will work with the renamed file / dir.
     """
 
-    name = "rename"
-    arg_schema = Or(
-        str,
-        {
-            "name": str,
-            Optional("on_conflict"): Or(*CONFLICT_OPTIONS),
-            Optional("rename_template"): str,
-        },
-    )
+    name: Literal["rename"] = Field("rename", repr=False)
 
-    def __init__(
-        self,
-        name: str,
-        on_conflict="rename_new",
-        rename_template="{name} {counter}{extension}",
-    ) -> None:
-        if on_conflict not in CONFLICT_OPTIONS:
-            raise ValueError(
-                "on_conflict must be one of %s" % ", ".join(CONFLICT_OPTIONS)
-            )
+    new_name: str
+    on_conflict: ConflictOption = ConflictOption.rename_new
+    rename_template: str = "{name} {counter}{extension}"
 
-        self.new_name = Template.from_string(name)
-        self.conflict_mode = on_conflict
-        self.rename_template = Template.from_string(rename_template)
+    class ParseConfig:
+        accepts_positional_arg = "new_name"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._new_name = Template.from_string(self.new_name)
+        self._rename_template = Template.from_string(self.rename_template)
 
     def pipeline(self, args: dict, simulate: bool):
         fs = args["fs"]  # type: FS
         src_path = args["fs_path"]
 
-        new_name = self.new_name.render(**args)
+        new_name = self._new_name.render(**args)
         if "/" in new_name:
             raise ValueError(
                 "The new name cannot contain slashes. "
@@ -89,7 +78,7 @@ class Rename(Action):
                 dst_fs=fs,
                 dst_path=dst_path,
                 conflict_mode=self.conflict_mode,
-                rename_template=self.rename_template,
+                rename_template=self._rename_template,
                 simulate=simulate,
                 print=self.print,
             )
@@ -104,9 +93,3 @@ class Rename(Action):
             "fs": fs,
             "fs_path": "./" + dst_path,
         }
-
-    def __str__(self) -> str:
-        return "Rename(new_name=%s, conflict_mode=%s)" % (
-            self.new_name,
-            self.conflict_mode,
-        )

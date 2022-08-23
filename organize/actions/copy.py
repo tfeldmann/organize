@@ -5,6 +5,7 @@ from fs.base import FS
 from fs.copy import copy_dir, copy_file
 from fs.opener.errors import OpenerError
 from fs.path import dirname
+from pydantic import Field
 from typing_extensions import Literal
 
 from organize.utils import SimulationFS, Template, safe_description
@@ -41,7 +42,7 @@ class Copy(Action):
     The next action will work with the created copy.
     """
 
-    name: Literal["copy"] = "copy"
+    name: Literal["copy"] = Field("copy", repr=False)
 
     dest: str
     on_conflict: ConflictOption = ConflictOption.rename_new
@@ -56,7 +57,7 @@ class Copy(Action):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._dest = Template.from_string(sefl.dest)
+        self._dest = Template.from_string(self.dest)
         self._rename_template = Template.from_string(self.rename_template)
         # self.filesystem = filesystem or self.Meta.default_filesystem
 
