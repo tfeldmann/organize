@@ -98,7 +98,7 @@ class Rule(BaseModel):
                 return normalized
         return normalized
 
-    def walk(self):
+    def walk(self, working_dir):
         """
         Walk all given locations and yield the pathes
         """

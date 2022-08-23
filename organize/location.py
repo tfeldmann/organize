@@ -56,7 +56,3 @@ class Location(BaseModel):
         if isinstance(value, str):
             return [value]
         return value
-
-
-if __name__ == "__main__":
-    print(Location(path="."))

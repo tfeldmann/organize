@@ -118,8 +118,6 @@ if __name__ == "__main__":
             subfolders: true
             filters:
               - name
-              - exif:
-                  image.model: "test"
             actions:
               - confirm
               - echo: "Test {name} {extension} {size} {hash}"
