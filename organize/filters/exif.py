@@ -1,8 +1,10 @@
 import collections
-from pathlib import Path
-from typing import Any, DefaultDict, Dict, Mapping, Optional, Union
+from typing import Any, DefaultDict, Dict, Mapping, Union
 
 import exifread
+import simplematch as sm
+from pydantic import Field, root_validator
+from typing_extensions import Literal
 
 from .filter import Filter, FilterResult
 
@@ -25,13 +27,21 @@ class Exif(Filter):
         - ``{exif.interoperability}`` -- Interoperability information
     """
 
-    name = "exif"
-    arg_schema = None
-    schema_support_instance_without_args = True
+    name: Literal["exif"] = Field("exif", repr=False)
+    tags: Dict[str, Any]
 
-    def __init__(self, *required_tags: str, **tag_filters: str) -> None:
-        self.args = required_tags  # expected exif keys
-        self.kwargs = tag_filters  # exif keys with expected values
+    class Config:
+        extra = "allow"
+
+    @root_validator(pre=True)
+    def build_extra(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        # assemble all given extra kwargs into the self.tags dict
+        extra: Dict[str, Any] = {}
+        for field_name in list(values):
+            if field_name != "name":
+                extra[field_name] = values.pop(field_name)
+        values["tags"] = extra
+        return values
 
     def category_dict(self, tags: Mapping[str, str]) -> ExifDict:
         result = collections.defaultdict(dict)  # type: DefaultDict
@@ -48,15 +58,11 @@ class Exif(Filter):
             return False
         tags = {k.lower(): v for k, v in exiftags.items()}
 
-        # no match if expected tag is not found
-        normkey = lambda k: k.replace(".", " ").lower()
-        for key in self.args:
-            if normkey(key) not in tags:
-                return False
         # no match if tag has not expected value
-        for key, value in self.kwargs.items():
+        normkey = lambda k: k.replace(".", " ").lower()
+        for key, value in self.tags.items():
             key = normkey(key)
-            if not (key in tags and tags[key].lower() == value.lower()):
+            if not (key in tags and sm.match(value.lower(), tags[key].lower())):
                 return False
         return True
 
@@ -74,6 +80,3 @@ class Exif(Filter):
             matches=matches,
             updates={self.name: exif_result},
         )
-
-    def __str__(self) -> str:
-        return "EXIF(%s)" % ", ".join("%s=%s" % (k, v) for k, v in self.kwargs.items())

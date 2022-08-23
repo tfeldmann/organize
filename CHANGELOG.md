@@ -8,6 +8,7 @@
   (both in the CLI and ORGANIZE_CONFIG environment variable).
 - Removed hidden (deprecated) CLI option `--config-file`.
 - Lots of new tests and some bugfixes.
+- `exif` filter now supports the simplematch syntax.
 
 ## v2.3.0 (2022-07-26)
 

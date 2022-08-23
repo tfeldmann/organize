@@ -56,7 +56,7 @@ class MacOSTags(Action):
 
         COLORS = [c.name.lower() for c in macos_tags.Color]
 
-        for template in self.tags:
+        for template in self._tags:
             tag = template.render(**args)
             name, color = self._parse_tag(tag)
 

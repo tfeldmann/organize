@@ -33,7 +33,6 @@ class Regex(Filter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._expr = re.compile(self.expr, flags=re.UNICODE)
-        print(self.Config.
 
     def matches(self, path: str):
         return self._expr.search(path)

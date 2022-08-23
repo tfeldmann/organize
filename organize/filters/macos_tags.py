@@ -1,9 +1,11 @@
 import sys
-from typing import Union, Iterable
+from typing import List, Union
 
 import simplematch as sm
+from pydantic import Field
+from typing_extensions import Literal
 
-from organize.utils import flatten
+from organize.validators import ensure_list
 
 from .filter import Filter, FilterResult
 
@@ -23,13 +25,16 @@ class MacOSTags(Filter):
             The tags to filter by
     """
 
-    name = "macos_tags"
-    schema_support_instance_without_args = True
+    name: Literal["macos_tags"] = Field("macos_tags", repr=False)
+    tags: Union[List[str], str]
 
-    def __init__(self, *tags) -> None:
-        self.filter_tags = list(flatten(list(tags)))
+    _tags: list
+    _validate_tags = ensure_list("tags")
 
-    def matches(self, tags: Iterable[str]) -> Union[bool, str]:
+    class ParseConfig:
+        accepts_positional_arg = "tags"
+
+    def matches(self, tags: List[str]) -> Union[bool, str]:
         if not self.filter_tags:
             return True
         if not tags:
@@ -53,6 +58,3 @@ class MacOSTags(Filter):
             matches=bool(self.matches(tags)),
             updates={self.name: tags},
         )
-
-    def __str__(self):
-        return "MacOSTags(tags=%s)" % ", ".join(self.filter_tags)

@@ -10,9 +10,6 @@ class Empty(Filter):
 
     name: Literal["empty"] = "empty"
 
-    class ParseConfig:
-        accepts_positional_arg = "match"
-
     def pipeline(self, args: dict) -> FilterResult:
         fs = args["fs"]  # type: FS
         fs_path = args["fs_path"]  # type: str
@@ -23,6 +20,3 @@ class Empty(Filter):
             result = fs.getsize(fs_path) == 0
 
         return FilterResult(matches=result, updates={})
-
-    def __str__(self) -> str:
-        return "Empty()"

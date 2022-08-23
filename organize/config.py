@@ -1,6 +1,7 @@
 import textwrap
 from typing import List, Union
 
+import fs
 import yaml
 from fs.base import FS
 from pydantic import BaseModel
@@ -73,10 +74,10 @@ class Config(BaseModel):
                 continue
 
             for walk_args in rule.walk():
-                filesystem = walk_args["fs"]
-                fs_path = walk_args["fs_path"]
+                walker_fs = walk_args["fs"]
+                walker_path = walk_args["fs_path"]
 
-                console.path(filesystem, fs_path)
+                console.path(walker_fs, walker_path)
 
                 args.update(walk_args)
                 match = filter_pipeline(
@@ -97,11 +98,12 @@ class Config(BaseModel):
                 #     )
                 # args.pop("resource_changed", None)
 
-                is_success = action_pipeline(
-                    actions=rule.actions,
-                    args=args,
-                    simulate=simulate,
-                )
+                with fs.open_fs(working_dir) as working_dir:
+                    is_success = action_pipeline(
+                        actions=rule.actions,
+                        args=args,
+                        simulate=simulate,
+                    )
 
 
 if __name__ == "__main__":
@@ -116,13 +118,8 @@ if __name__ == "__main__":
             subfolders: true
             filters:
               - name
-              - extension: json csv
-              - size:
-                 - < 1 Mb
-                 - < 2MB
-              - hash: md5
-              - mimetype:
-                 - application/json
+              - exif:
+                  image.model: "test"
             actions:
               - confirm
               - echo: "Test {name} {extension} {size} {hash}"

@@ -1,9 +1,8 @@
 import textwrap
-from typing import Any
-from typing import Optional as tyOpt
-from typing import Sequence
+from typing import Any, Optional, Sequence
 
-from schema import Or
+from pydantic import Field, validator
+from typing_extensions import Literal
 
 from .filter import Filter, FilterResult
 
@@ -27,16 +26,22 @@ class Python(Filter):
         `{python.nested.k}`.
     """
 
-    name = "python"
+    name: Literal["python"] = Field("python", repr=False)
+    code: str
 
-    arg_schema = Or(str, {"code": str})
+    class ParseConfig:
+        accepts_positional_arg = "code"
 
-    def __init__(self, code) -> None:
-        self.code = textwrap.dedent(code)
-        if "return" not in self.code:
+    @validator("code")
+    def must_have_return_statement(cls, value):
+        if "return" not in value:
             raise ValueError("No return statement found in your code!")
 
-    def usercode(self, *args, **kwargs) -> tyOpt[Any]:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.code = textwrap.dedent(self.code)
+
+    def usercode(self, *args, **kwargs) -> Optional[Any]:
         pass  # will be overwritten by `create_method`
 
     def create_method(self, name: str, argnames: Sequence[str], code: str) -> None:

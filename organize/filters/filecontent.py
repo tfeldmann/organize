@@ -4,6 +4,8 @@ from typing import Any
 
 from fs.base import FS
 from fs.errors import NoSysPath
+from pydantic import Field
+from typing_extensions import Literal
 
 from .filter import Filter, FilterResult
 
@@ -25,11 +27,17 @@ class FileContent(Filter):
       `(?P<groupname>)`
     """
 
-    name = "filecontent"
-    schema_support_instance_without_args = True
+    name: Literal["filecontent"] = Field("filecontent", repr=False)
+    expr: str = r"(?P<all>.*)"
 
-    def __init__(self, expr="(?P<all>.*)") -> None:
-        self.expr = re.compile(expr, re.MULTILINE | re.DOTALL)
+    _expr: re.Pattern
+
+    class ParseConfig:
+        accepts_positional_arg = "expr"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._expr = re.compile(self.expr, re.MULTILINE | re.DOTALL)
 
     def matches(self, path: str) -> Any:
         try:
@@ -39,7 +47,7 @@ class FileContent(Filter):
                 str(path),
                 errors="ignore",
             )
-            match = self.expr.search(content.decode("utf-8", errors="ignore"))
+            match = self._expr.search(content.decode("utf-8", errors="ignore"))
             return match
         except ImportError as e:
             raise ImportError(
@@ -47,7 +55,7 @@ class FileContent(Filter):
                 "Install with pip install organize-tool[textract]"
             ) from e
         except textract.exceptions.CommandLineError as e:
-            pass
+            logger.exception(e)
 
     def pipeline(self, args: dict) -> FilterResult:
         fs = args["fs"]  # type: FS
