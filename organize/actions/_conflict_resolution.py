@@ -42,8 +42,9 @@ def next_free_name(fs: FS, template: jinja2.Template, name: str, extension: str)
     """
     counter = 1
     prev_candidate = ""
-    extension = extension.lstrip(".")
-    wanted = ".".join((name, extension))
+    if not extension.startswith("."):
+        extension = ".%s" % extension
+    wanted = "%s%s" % (name, extension)
     if not fs.exists(wanted):
         return wanted
     while True:

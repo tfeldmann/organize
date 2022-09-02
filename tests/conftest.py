@@ -1,3 +1,4 @@
+import pathlib
 from typing import Union
 from unittest.mock import patch
 
@@ -5,6 +6,8 @@ import fs
 import pytest
 from fs.base import FS
 from fs.path import basename, join
+
+ORGANIZE_DIR = pathlib.Path(__file__).parent.parent
 
 
 @pytest.fixture
@@ -38,15 +41,17 @@ def mock_echo():
 
 def make_files(fs: FS, layout: Union[dict, list], path="/"):
     """
-    layout = {
-        "folder": {
-            "subfolder": {
-                "test.txt": "",
-                "other.pdf": b"binary",
+    Example layout:
+
+        layout = {
+            "folder": {
+                "subfolder": {
+                    "test.txt": "",
+                    "other.pdf": b"binary",
+                },
             },
-        },
-        "file.txt": "Hello world\nAnother line",
-    }
+            "file.txt": "Hello world\nAnother line",
+        }
     """
     fs.makedirs(path, recreate=True)
     if isinstance(layout, list):

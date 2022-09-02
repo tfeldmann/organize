@@ -12,11 +12,11 @@ from organize.utils import Template
 @pytest.mark.parametrize(
     "template,wanted,result",
     (
-        ("{name}-{counter}.{extension}", "file.txt", "file-1.txt"),
-        ("{name}-{counter}.{extension}", "file.txt", "file-1.txt"),
-        ("{name}-{'%02d' % counter}.{extension}", "file.txt", "file-02.txt"),
-        ("{name}{counter}.{extension}", "file.txt", "file4.txt"),
-        ("{name}{counter}.{extension}", "other.txt", "other.txt"),
+        ("{name}-{counter}{extension}", "file.txt", "file-1.txt"),
+        ("{name}-{counter}{extension}", "file.txt", "file-1.txt"),
+        ("{name}-{'%02d' % counter}{extension}", "file.txt", "file-02.txt"),
+        ("{name}{counter}{extension}", "file.txt", "file4.txt"),
+        ("{name}{counter}{extension}", "other.txt", "other.txt"),
     ),
 )
 def test_next_free_name(template, wanted, result):
@@ -26,7 +26,7 @@ def test_next_free_name(template, wanted, result):
         mem.touch("file-01.txt")
         mem.touch("file2.txt")
         mem.touch("file3.txt")
-        name, ext = wanted.split(".")
+        name, ext = fs.path.splitext(wanted)
         tmp = Template.from_string(template)
         assert next_free_name(mem, tmp, name, ext) == result
 
@@ -35,9 +35,9 @@ def test_next_free_name_exception():
     with fs.open_fs("mem://") as mem:
         mem.touch("file.txt")
         mem.touch("file1.txt")
-        tmp = Template.from_string("{name}.{extension}")
+        tmp = Template.from_string("{name}{extension}")
         with pytest.raises(ValueError):
-            assert next_free_name(mem, tmp, "file", "txt")
+            assert next_free_name(fs=mem, template=tmp, name="file", extension=".txt")
 
 
 @pytest.mark.parametrize(
@@ -60,7 +60,7 @@ def test_resolve_overwrite_conflict(mode, result, files):
             dst_fs=mem,
             dst_path="other.txt",
             conflict_mode=mode,
-            rename_template=Template.from_string("{name}{counter}.{extension}"),
+            rename_template=Template.from_string("{name}{counter}{extension}"),
             simulate=False,
             print=print,
         )
