@@ -10,7 +10,7 @@ from schema import Optional, Or
 from organize.utils import SimulationFS, Template, safe_description
 
 from .action import Action
-from .copymove_utils import CONFLICT_OPTIONS, check_conflict, dst_from_options
+from ._conflict_resolution import CONFLICT_OPTIONS, check_conflict, dst_from_options
 
 
 class Copy(Action):
