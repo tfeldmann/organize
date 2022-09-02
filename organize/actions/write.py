@@ -31,6 +31,7 @@ class Write(Action):
 
         file (str):
             The file `text` should be written into. Supports templates.
+            Defaults to `organize-out.txt`
 
         mode (str):
             Can be either `append` (append text to the file), `prepend` (insert text as
@@ -56,7 +57,7 @@ class Write(Action):
     arg_schema = Or(
         {
             "text": str,
-            "path": str,
+            Optional("path"): str,
             Optional("mode"): Or(*MODES),
             Optional("newline"): bool,
             Optional("clear_before_first_write"): bool,
@@ -67,7 +68,7 @@ class Write(Action):
     def __init__(
         self,
         text: str,
-        path: str,
+        path: str = "organize-out.txt",
         mode: str = "append",
         newline: bool = True,
         clear_before_first_write: bool = False,
