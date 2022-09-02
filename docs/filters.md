@@ -372,6 +372,11 @@ rules:
       - echo: "Year: {regex.year}"
 ```
 
+!!! note
+
+    If you have trouble getting the filecontent filter to work, have a look at the
+    [installation hints](textract-hints.md)
+
 ## hash
 
 ::: organize.filters.Hash
