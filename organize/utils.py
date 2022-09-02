@@ -87,12 +87,19 @@ def expand_args(template: Union[str, jinja2.environment.Template], args=None):
 
 
 def fs_path_expand(*, fs=None, path: str = "/", args=None):
+    """returns a tuple (fs, path)"""
+    path = fspath.normpath(expand_args(path, args=args))
+
+    # if a FS instance is given we always use that
+    if isinstance(fs, FS):
+        return (fs, path)
+
+    # no filesystem given, we use the path as filesystem
     if fs is None:
-        fs = path
-        path = "/"
+        return (path, "/")
+
     if isinstance(fs, str):
         fs = expand_args(fs, args=args)
-        path = expand_args(path, args=args)
     return (fs, path)
 
 

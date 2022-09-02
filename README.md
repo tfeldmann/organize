@@ -35,7 +35,7 @@ Please backup all your important stuff before running and use the simulate optio
   features!
 - [Migration guide](https://organize.readthedocs.io/en/latest/updating-from-v1/) from organize v1
 
-## About
+## Who this is for
 
 Your desktop is a mess? You cannot find anything in your downloads and
 documents? Sorting and renaming all these files by hand is too tedious?
@@ -44,11 +44,20 @@ Time to automate it once and benefit from it forever.
 **organize** is a command line, open-source alternative to apps like Hazel (macOS)
 or File Juggler (Windows).
 
+## What it does
+
+`organize` walks files and folders in the given locations and applies rules which you
+define in a yaml file.
+
+Rules consist of a pipeline of filters and actions.
+The filters restrict the files / folders to be handled and extract data if necessary.
+Then the defined actions are applied to the files / folders.
+
 ## Features
 
 Some highlights include:
 
-- Free and open source. Please donate if it is useful for you!
+- Free and open source.
 - Works on macOS, Windows and Linux
 - Safe moving, renaming, copying of files and folders with conflict resolution options
 - Fast duplicate file detection

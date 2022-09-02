@@ -1,3 +1,4 @@
+from functools import partial
 from typing import Callable, Union
 
 from fs import errors, open_fs
@@ -68,9 +69,9 @@ class Copy(Action):
         # should we copy a dir or a file?
         copy_action: Callable[[FS, str, FS, str], None]
         if src_fs.isdir(src_path):
-            copy_action = copy_dir
+            copy_action = partial(copy_dir, preserve_time=True)
         elif src_fs.isfile(src_path):
-            copy_action = copy_file
+            copy_action = partial(copy_file, preserve_time=True)
 
         dst_fs, dst_path = dst_from_options(
             src_path=src_path,

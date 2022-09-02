@@ -1,3 +1,4 @@
+from pydantic import Field
 import logging
 
 from fs.base import FS
@@ -19,7 +20,7 @@ class Delete(Action):
     Using the `Trash` action is strongly advised for most use-cases!
     """
 
-    name: Literal["delete"] = "delete"
+    name: Literal["delete"] = Field("delete", repr=False)
 
     def pipeline(self, args: dict, simulate: bool):
         fs = args["fs"]  # type: FS

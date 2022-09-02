@@ -16,7 +16,21 @@ DESKTOP_WITH_USER = expanduser("~/Desktop")
         ("~/Desktop", "/etc", None, DESKTOP_WITH_USER, "/etc"),
         ("~/Desktop", "/etc/{name}", {"name": "test"}, DESKTOP_WITH_USER, "/etc/test"),
         ("{env.HOME}/Desktop", "/", {"name": "test"}, DESKTOP_WITH_USER, "/"),
+        ("", "relative_folder", None, "", "relative_folder"),
+        ("/", "relative_folder", None, "/", "relative_folder"),
+        ("", "/abs_folder", None, "/abs_folder", ""),
     ],
 )
-def test_fs_path_from_options(fs, path, args, result_fs, result_path):
+def test_fs_path_expand(fs, path, args, result_fs, result_path):
     assert fs_path_expand(fs=fs, path=path, args=args) == (result_fs, result_path)
+
+
+"""md
+
+FS    | Path      | Workdir
+mem     /           ""          -> mem, /
+mem     relative    ""          -> mem, /relative
+""      /Desktop    ""          -> /Desktop, ""
+""      test        ""          ->
+
+"""

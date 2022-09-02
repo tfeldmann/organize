@@ -39,7 +39,7 @@ class Location(BaseModel):
     filter: Union[List[str], None] = None
     filter_dirs: Union[List[str], None] = None
     ignore_errors: bool = False
-    filesystem: Union[str, FS] = "inherit"
+    filesystem: Union[FS, str, None] = None
 
     class Config:
         extra = "forbid"

@@ -3,6 +3,7 @@ from enum import Enum
 from typing import List, Union
 
 import fs
+from fs.errors import ResourceNotFound
 from fs.base import FS
 from pydantic import BaseModel, Field, validator
 
@@ -98,7 +99,7 @@ class Rule(BaseModel):
                 return normalized
         return normalized
 
-    def walk(self, working_dir):
+    def walk(self, working_dir: Union[FS, str] = ""):
         """
         Walk all given locations and yield the pathes
         """
@@ -128,12 +129,14 @@ class Rule(BaseModel):
                 RuleTarget.dirs: walker.dirs,
             }
             walk_func = _walk_funcs[self.targets]
-            if location.filesystem == "inherit":
-                _filesystem = self.filesystem
-            else:
-                _filesystem = location.filesystem
 
-            _filesystem, _path = fs_path_expand(path=location.path, fs=_filesystem)
+            _filesystem, _path = fs_path_expand(
+                path=location.path,
+                fs=location.filesystem or self.filesystem or working_dir,
+            )
+
+            print(_filesystem)
+
             fs_base_path = fs.path.forcedir(fs.path.relpath(fs.path.normpath(_path)))
             with fs.open_fs(_filesystem) as filesystem:
                 for resource in walk_func(fs=filesystem, path=_path):
@@ -145,7 +148,7 @@ class Rule(BaseModel):
                     try:
                         if filesystem.islink(fs_path):
                             continue
-                    except fs.errors.ResourceNotFound:
+                    except ResourceNotFound:
                         continue
 
                     yield {
@@ -153,3 +156,18 @@ class Rule(BaseModel):
                         "fs_path": fs_path,
                         "fs_base_path": fs_base_path,
                     }
+
+
+if __name__ == "__main__":
+    from organize.core import run
+
+    with fs.open_fs("mem://") as mem:
+        mem.touch("test")
+        mem.touch("test2")
+        conf = """
+        rules:
+          - locations: "~/Desktop"
+            actions:
+              - echo: "test"
+        """
+        run(config=conf, working_dir=".")

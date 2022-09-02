@@ -13,9 +13,9 @@ from .rule import FilterMode
 logger = logging.getLogger(__name__)
 
 
-def syspath_or_exception(fs, path):
+def syspath_or_exception(filesystem, path):
     try:
-        return Path(fs.getsyspath(path))
+        return Path(filesystem.getsyspath(path))
     except fs.errors.NoSysPath as e:
         return e
 

@@ -1,3 +1,4 @@
+from functools import partial
 from typing import Callable, Union
 
 import fs
@@ -68,9 +69,9 @@ class Move(Action):
 
         move_action: Callable[[FS, str, FS, str], None]
         if src_fs.isdir(src_path):
-            move_action = fs.move.move_dir
+            move_action = partial(fs.move.move_dir, preserve_time=True)
         elif src_fs.isfile(src_path):
-            move_action = fs.move.move_file
+            move_action = partial(fs.move.move_file, preserve_time=True)
 
         dst_fs, dst_path = dst_from_options(
             src_path=src_path,

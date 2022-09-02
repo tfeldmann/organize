@@ -1,3 +1,7 @@
+import shutil
+
+shutil.move
+
 from functools import partial
 from typing import Optional, Tuple, Union
 
@@ -14,7 +18,7 @@ def execute(
     skip_tags: Optional[Tuple[str]] = None,
 ):
     if isinstance(config, str):
-        config = load_from_string(str)
+        config = load_from_string(config)
     if isinstance(config, dict):
         config = Config.parse_obj(config)
 

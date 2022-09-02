@@ -64,7 +64,7 @@ class Config(BaseModel):
         simulate: bool = True,
         tags=set(),
         skip_tags=set(),
-        working_dir: Union[FS, str] = "",
+        working_dir: Union[FS, str, None] = None,
     ):
         args = basic_args()
         for rule in self.rules:
@@ -73,7 +73,7 @@ class Config(BaseModel):
             if not should_execute(rule_tags=rule.tags, tags=tags, skip_tags=skip_tags):
                 continue
 
-            for walk_args in rule.walk():
+            for walk_args in rule.walk(working_dir=working_dir):
                 walker_fs = walk_args["fs"]
                 walker_path = walk_args["fs_path"]
 
@@ -98,12 +98,11 @@ class Config(BaseModel):
                 #     )
                 # args.pop("resource_changed", None)
 
-                with fs.open_fs(working_dir) as working_dir:
-                    is_success = action_pipeline(
-                        actions=rule.actions,
-                        args=args,
-                        simulate=simulate,
-                    )
+                is_success = action_pipeline(
+                    actions=rule.actions,
+                    args=args,
+                    simulate=simulate,
+                )
 
 
 if __name__ == "__main__":
