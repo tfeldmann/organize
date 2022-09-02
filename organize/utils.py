@@ -111,27 +111,29 @@ def fs_path_from_options(
     return (open_fs(path), "/")
 
 
+def unwrap_wrapfs(fs, path):
+    from fs.path import abspath
+    from fs.wrapfs import WrapFS
+
+    if isinstance(fs, WrapFS):
+        fs, path = fs.delegate_path(path)
+    return fs, abspath(path)
+
+
 def is_same_resource(fs1: FS, path1: str, fs2: FS, path2: str):
     from fs.errors import NoSysPath, NoURL
-    from fs.path import abspath
     from fs.tarfs import ReadTarFS, WriteTarFS
-    from fs.wrapfs import WrapFS
     from fs.zipfs import ReadZipFS, WriteZipFS
 
-    # def unwrap(fs, path):
+    # def unwrap_wrapfs(fs, path):
     #     base = "/"
     #     if isinstance(fs, WrapFS):
     #         fs, base = fs.delegate_path("/")
     #     return fs, normpath(join(base, path))  # to support ".." in path
 
-    def unwrap(fs, path):
-        if isinstance(fs, WrapFS):
-            fs, path = fs.delegate_path(path)
-        return fs, abspath(path)
-
     # completely unwrap WrapFS instances
-    fs1, path1 = unwrap(fs1, path1)
-    fs2, path2 = unwrap(fs2, path2)
+    fs1, path1 = unwrap_wrapfs(fs1, path1)
+    fs2, path2 = unwrap_wrapfs(fs2, path2)
 
     # obvious check
     if fs1 == fs2 and path1 == path2:

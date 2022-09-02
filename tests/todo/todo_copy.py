@@ -55,36 +55,6 @@ def test_overwrite(mock_exists, mock_samefile, mock_copy, mock_trash, mock_mkdir
     )
 
 
-def test_already_exists(mock_exists, mock_samefile, mock_copy, mock_trash, mock_mkdir):
-    mock_exists.side_effect = [True, False]
-    mock_samefile.return_value = False
-    copy = Copy(dest="~/folder/", overwrite=False)
-    copy.run(**DEFAULT_ARGS)
-    mock_mkdir.assert_called_with(exist_ok=True, parents=True)
-    mock_exists.assert_called_with()
-    mock_trash.assert_not_called()
-    mock_copy.assert_called_with(
-        src=os.path.join(USER_DIR, "test.py"),
-        dst=os.path.join(USER_DIR, "folder", "test 2.py"),
-    )
-
-
-def test_already_exists_multiple(
-    mock_exists, mock_samefile, mock_copy, mock_trash, mock_mkdir
-):
-    mock_exists.side_effect = [True, True, True, False]
-    mock_samefile.return_value = False
-    copy = Copy(dest="~/folder/", overwrite=False)
-    copy.run(**DEFAULT_ARGS)
-    mock_mkdir.assert_called_with(exist_ok=True, parents=True)
-    mock_exists.assert_called_with()
-    mock_trash.assert_not_called()
-    mock_copy.assert_called_with(
-        src=os.path.join(USER_DIR, "test.py"),
-        dst=os.path.join(USER_DIR, "folder", "test 4.py"),
-    )
-
-
 def test_already_exists_multiple_with_separator(
     mock_exists, mock_samefile, mock_copy, mock_trash, mock_mkdir
 ):

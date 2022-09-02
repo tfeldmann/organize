@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "organize-tool"
-version = "2.1.2"
+version = "2.3.0"
 description = "The file management automation tool"
 packages = [{ include = "organize" }]
 authors = ["Thomas Feldmann <mail@tfeldmann.de>"]
@@ -33,16 +33,16 @@ organize = "organize.cli:cli"
 
 [tool.poetry.dependencies]
 python = "^3.6.2"
-fs = "^2.4.15"
-rich = "^11.0.0"
-PyYAML = "^5.4.1"
+fs = ">=2.4.16"
+rich = "^12.0.0"
+PyYAML = "^6.0"
 Send2Trash = { version = "^1.8.0", extras = ["nativeLib"] }
-ExifRead = "^2.3.2"
-textract = { version = "^1.6.4", optional = true }
+ExifRead = "^3.0.0"
+textract = { version = "^1.6.5", optional = true }
 simplematch = "^1.3"
 macos-tags = { version = "^1.5.1", markers = "sys_platform == 'darwin'" }
 schema = "^0.7.5"
-Jinja2 = "^3.0.3"
+Jinja2 = "3.0.3"
 click = "^8.0.3"
 
 # must be in main dependencies for readthedocs.
@@ -62,9 +62,14 @@ docs = [
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
-mypy = "^0.931"
+mypy = "^0.971"
 requests = "^2.27.1"
 types-PyYAML = "^6.0.3"
+coverage = "^5"
+pytest-cov = "^3.0.0"
+
+[tool.coverage.run]
+source = ['organize']
 
 [tool.mypy]
 python_version = "3.6"

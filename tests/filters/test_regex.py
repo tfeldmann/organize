@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from organize import core
 from organize.filters import Regex
 
 TESTDATA = [
@@ -39,3 +40,24 @@ def test_regex_umlaut():
     result = regex.run(fs_path=doc)
     assert result.updates == {"regex": {"year": "1998"}}
     assert result.matches
+
+
+def test_multiple_regex_placeholders(testfs):
+    config = """
+    rules:
+      - locations: "."
+        filters:
+          - regex: (?P<word>\w+)-(?P<number>\d+).*
+          - regex: (?P<all>.+?)\.\w{3}
+          - extension
+        actions:
+          - write:
+               text: '{regex.word} {regex.number} {regex.all} {extension}'
+               path: out.txt
+    """
+    testfs.touch("test-123.jpg")
+    testfs.touch("other-456.pdf")
+    core.run(config, simulate=False, working_dir=testfs)
+    out = testfs.readtext("out.txt")
+    assert "test 123 test-123 jpg" in out
+    assert "other 456 other-456 pdf" in out

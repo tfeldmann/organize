@@ -5,51 +5,94 @@ The file management automation tool.
 """
 import os
 import sys
+import textwrap
+from typing import Optional, Tuple
 
 import click
-from fs import appfs
-from pathlib import Path
+import fs
 
 from . import console
 from .__version__ import __version__
 from .migration import NeedsMigrationError
 
-# Alternative: "https://tfeldmann.github.io/organize/"
-DOCS_URL = "https://organize.readthedocs.io"
-MIGRATE_URL = "https://organize.readthedocs.io/en/latest/updating-from-v1/"
-DEFAULT_CONFIG = """\
-# organize configuration file
-# {docs}
+DOCS_RTD = "https://organize.readthedocs.io"
+DOCS_GHPAGES = "https://tfeldmann.github.io/organize/"
 
-rules:
-  - locations:
-      - # your locations here
-    filters:
-      - # your filters here
-    actions:
-      - # your actions here
-""".format(
-    docs=DOCS_URL
-)
+DEFAULT_CONFIG_FS_URL = "userconf://organize::/config.yaml"
 
-try:
-    config_filename = "config.yaml"
-    envvar = os.getenv("ORGANIZE_CONFIG")
-    if envvar:
-        dirname, config_filename = os.path.split(envvar)
-        if not dirname or not config_filename:
-            raise ValueError("Invalid ORGANIZE_CONFIG: %s" % envvar)
-        CONFIG_PATH = Path(envvar)
-    else:
-        CONFIG_PATH = Path(appfs.UserConfigFS("organize").getsyspath(config_filename))
 
-    # create default config file if it not exists
-    CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    if not CONFIG_PATH.exists():
-        CONFIG_PATH.write_text(DEFAULT_CONFIG)
-except Exception as e:
-    console.error(str(e), title="Config file")
-    sys.exit(1)
+def path_split(path_or_url: str) -> Tuple[str, str]:
+    if sys.platform.startswith("win"):
+        path_or_url = path_or_url.replace("\\", "/")
+    dirname, filename = fs.path.split(path_or_url)
+    return dirname, filename
+
+
+def ensure_default_config():
+    """
+    Ensures a configuration file exists in the default location.
+    """
+    DEFAULT_CONFIG_TEXT = textwrap.dedent(
+        """\
+        # organize configuration file
+        # {docs}
+
+        rules:
+          - name: "The name of this rule"
+            locations:
+              - # your locations here
+            filters:
+              - # your filters here
+            actions:
+              - # your actions here
+        """
+    ).format(docs=DOCS_RTD)
+
+    dirname, filename = path_split(DEFAULT_CONFIG_FS_URL)
+    if not filename:
+        raise ValueError("invalid config path, missing filename")
+    with fs.open_fs(dirname, create=True, writeable=True) as confdir:
+        if not confdir.exists(filename):
+            confdir.writetext(filename, DEFAULT_CONFIG_TEXT)
+
+
+def config_path(fs_url: Optional[str] = None) -> Tuple[bool, str]:
+    """
+    Return the config path, resolved into a syspath if possible.
+    If no fs_url is given, the default locations are checked.
+    As last resort, a config is created in the default location.
+    """
+    is_syspath = False
+    if not fs_url:
+        # first check whether the user set a env var
+        env_fs_url = os.getenv("ORGANIZE_CONFIG")
+        if env_fs_url:
+            fs_url = env_fs_url
+        else:
+            # if no env variable is given we make sure that there is a config file in
+            # the default location
+            ensure_default_config()
+            fs_url = DEFAULT_CONFIG_FS_URL
+
+    dirname, filename = path_split(fs_url)
+    try:
+        with fs.open_fs(dirname) as confdir:
+            config_path = confdir.getsyspath(filename)
+            is_syspath = True
+    except Exception:
+        config_path = fs_url
+    return is_syspath, config_path
+
+
+def read_config(fs_url: Optional[str] = None) -> Tuple[str, str]:
+    """
+    Read the config at the given fs_url.
+    If no fs_url is given, try the default locations.
+    """
+    _, fs_url = config_path(fs_url)
+    dirname, filename = path_split(fs_url)
+    with fs.open_fs(dirname) as confdir:
+        return (fs_url, confdir.readtext(filename))
 
 
 class NaturalOrderGroup(click.Group):
@@ -57,43 +100,69 @@ class NaturalOrderGroup(click.Group):
         return self.commands.keys()
 
 
+class TagType(click.ParamType):
+    name = "tag"
+
+    def convert(self, value, param, ctx):
+        if not value:
+            return tuple()
+        return tuple(tag.strip() for tag in value.split(","))
+
+
 CLI_CONFIG = click.argument(
     "config",
     required=False,
-    default=CONFIG_PATH,
-    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    type=str,
 )
 CLI_WORKING_DIR_OPTION = click.option(
     "--working-dir",
-    default=".",
-    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+    default="",
+    type=str,
     help="The working directory",
 )
-# for CLI backwards compatibility with organize v1.x
-CLI_CONFIG_FILE_OPTION = click.option(
-    "--config-file",
-    default=None,
-    hidden=True,
-    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+CLI_TAGS = click.option(
+    "--tags",
+    type=TagType(),
+    default="",
+    help="tags to run",
+)
+CLI_SKIP_TAGS = click.option(
+    "--skip-tags",
+    type=TagType(),
+    default="",
+    help="tags to skip",
 )
 
 
-def run_local(config_path: Path, working_dir: Path, simulate: bool):
+def execute(
+    config: Optional[str],
+    working_dir: str,
+    simulate: bool,
+    tags: Optional[Tuple[str]] = None,
+    skip_tags: Optional[Tuple[str]] = None,
+):
     from schema import SchemaError
-
     from . import core
 
+    config_path, config_text = read_config(config)
+
     try:
-        console.info(config_path=config_path, working_dir=working_dir)
-        config = config_path.read_text()
-        os.chdir(working_dir)
-        core.run(rules=config, simulate=simulate)
+        console.info(config=config_path, working_dir=working_dir)
+        core.run(
+            rules=config_text,
+            simulate=simulate,
+            working_dir=working_dir,
+            tags=tags,
+            skip_tags=skip_tags,
+        )
     except NeedsMigrationError as e:
+        from .migration import MIGRATION_DOCS_URL
+
         console.error(e, title="Config needs migration")
         console.warn(
             "Your config file needs some updates to work with organize v2.\n"
             "Please see the migration guide at\n\n"
-            "%s" % MIGRATE_URL
+            "%s" % MIGRATION_DOCS_URL
         )
         sys.exit(1)
     except SchemaError as e:
@@ -121,55 +190,58 @@ def cli():
 @cli.command()
 @CLI_CONFIG
 @CLI_WORKING_DIR_OPTION
-@CLI_CONFIG_FILE_OPTION
-def run(config: Path, working_dir: Path, config_file):
+@CLI_TAGS
+@CLI_SKIP_TAGS
+def run(config: Optional[str], working_dir: str, tags, skip_tags):
     """Organizes your files according to your rules."""
-    if config_file:
-        config = config_file
-        console.deprecated(
-            "The --config-file option can now be omitted. See organize --help."
-        )
-    run_local(config_path=config, working_dir=working_dir, simulate=False)
+    execute(
+        config=config,
+        working_dir=working_dir,
+        simulate=False,
+        tags=tags,
+        skip_tags=skip_tags,
+    )
 
 
 @cli.command()
 @CLI_CONFIG
 @CLI_WORKING_DIR_OPTION
-@CLI_CONFIG_FILE_OPTION
-def sim(config: Path, working_dir: Path, config_file):
+@CLI_TAGS
+@CLI_SKIP_TAGS
+def sim(config: Optional[str], working_dir: str, tags, skip_tags):
     """Simulates a run (does not touch your files)."""
-    if config_file:
-        config = config_file
-        console.deprecated(
-            "The --config-file option can now be omitted. See organize --help."
-        )
-    run_local(config_path=config, working_dir=working_dir, simulate=True)
+    execute(
+        config=config,
+        working_dir=working_dir,
+        simulate=True,
+        tags=tags,
+        skip_tags=skip_tags,
+    )
 
 
 @cli.command()
-@click.argument(
-    "config",
-    required=False,
-    default=CONFIG_PATH,
-    type=click.Path(),
-)
+@click.argument("config", required=False, type=str)
 @click.option(
     "--editor",
     envvar="EDITOR",
     help="The editor to use. (Default: $EDITOR)",
 )
-def edit(config, editor):
+def edit(config: Optional[str], editor):
     """Edit the rules.
 
     If called without arguments it will open the default config file in $EDITOR.
     """
-    click.edit(filename=config, editor=editor)
+    is_syspath, confpath = config_path(config)
+    if is_syspath:
+        click.edit(filename=confpath, editor=editor)
+    else:
+        click.echo("Not a local config path: %s" % confpath)
 
 
 @cli.command()
 @CLI_CONFIG
 @click.option("--debug", is_flag=True, help="Verbose output")
-def check(config: Path, debug):
+def check(config: str, debug):
     """Checks whether a given config file is valid.
 
     If called without arguments it will check the default config file.
@@ -179,9 +251,9 @@ def check(config: Path, debug):
     from .core import highlighted_console as out
     from .core import replace_with_instances
 
-    print("Checking: %s" % config)
     try:
-        config_str = config.read_text()
+        config_path, config_str = read_config(config)
+        print("Checking: %s" % config_path)
 
         if debug:
             out.rule("Raw", align="left")
@@ -219,11 +291,11 @@ def check(config: Path, debug):
             out.print("\n\n")
             out.rule("Instantiation", align="left")
 
-        warnings = replace_with_instances(rules)
-        if debug:
-            out.print(rules)
-            for msg in warnings:
-                out.print("Warning: %s" % msg)
+        # warnings = replace_with_instances(rules)
+        # if debug:
+        #     out.print(rules)
+        #     for msg in warnings:
+        #         out.print("Warning: %s" % msg)
 
         if debug:
             out.print("\n\n")
@@ -236,18 +308,33 @@ def check(config: Path, debug):
 
 
 @cli.command()
+@CLI_CONFIG
 @click.option("--path", is_flag=True, help="Print the path instead of revealing it.")
-def reveal(path: bool):
+def reveal(config: Optional[str], path: bool):
     """Reveals the default config file."""
+    is_syspath, confpath = config_path(config)
     if path:
-        click.echo(CONFIG_PATH)
-    else:
-        click.launch(str(CONFIG_PATH), locate=True)
+        click.echo(confpath)
+        return
+    try:
+        # convert the url
+        dirname, _ = path_split(confpath)
+        import webbrowser
+
+        with fs.open_fs(dirname) as dirfs:
+            dir_url = dirfs.geturl("/")
+            if not is_syspath:
+                raise ValueError("not a local path")
+            webbrowser.open(dir_url)
+    except Exception as e:
+        click.echo("Cannot reveal this config (%s)" % e)
+        click.echo(confpath)
 
 
 @cli.command()
 def schema():
     """Prints the json schema for config files."""
+    # ORGANIZE SCHEMA IS DEPRECATED AND WILL BE REMOVED IN THE FUTURE
     import json
 
     from .config import CONFIG_SCHEMA
@@ -264,28 +351,9 @@ def schema():
 @cli.command()
 def docs():
     """Opens the documentation."""
-    click.launch(DOCS_URL)
+    import webbrowser
 
-
-# deprecated - only here for backwards compatibility
-@cli.command(hidden=True)
-@click.option("--path", is_flag=True, help="Print the default config file path")
-@click.option("--debug", is_flag=True, help="Debug the default config file")
-@click.option("--open-folder", is_flag=True)
-@click.pass_context
-def config(ctx, path, debug, open_folder):
-    """Edit the default configuration file."""
-    if open_folder:
-        ctx.invoke(reveal)
-    elif path:
-        ctx.invoke(reveal, path=True)
-        return
-    elif debug:
-        ctx.invoke(check)
-    else:
-        ctx.invoke(edit)
-    console.deprecated("`organize config` is deprecated.")
-    console.deprecated("Please see `organize --help` for all available commands.")
+    webbrowser.open(DOCS_RTD)
 
 
 if __name__ == "__main__":

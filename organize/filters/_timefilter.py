@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Union
 
 from schema import Optional, Or
 
@@ -58,6 +59,8 @@ class TimeFilter(Filter):
 
     def pipeline(self, args: dict) -> FilterResult:
         dt = self.get_datetime(args)
+        if dt is None:
+            return FilterResult(matches=False, updates={})
         dt = dt.astimezone()
 
         match = self.matches_datetime(dt)
@@ -66,5 +69,5 @@ class TimeFilter(Filter):
             updates={self.get_name(): dt},
         )
 
-    def get_datetime(self, args: dict) -> datetime:
+    def get_datetime(self, args: dict) -> Union[datetime, None]:
         raise NotImplemented

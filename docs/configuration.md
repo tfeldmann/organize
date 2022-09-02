@@ -48,6 +48,34 @@ Optionally you can specify the working directory like this:
 organize sim [FILE] --working-dir=~/Documents
 ```
 
+## Running specific rules of your config
+
+You can tag your rules like this:
+
+```yml
+rules:
+  - name: My first rule
+    actions:
+      - echo: "Hello world"
+    tags:
+      - debug
+      - fast
+```
+
+Then use the command line options `--tags` and `--skip-tags` so select the rules you
+want to run. The options take a comma-separated list of tags:
+
+```
+organize sim --tags=debug,foo --skip-tags=slow
+```
+
+Special tags:
+
+- Rules tagged with the special tag `always` will always run
+  (except if `--skip-tags=always` is specified)
+- Rules tagged with the special tag `never` will never run
+  (except if ' `--tags=never` is specified)
+
 ## Environment variables
 
 - `ORGANIZE_CONFIG` - The path to the default config file.

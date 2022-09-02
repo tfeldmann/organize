@@ -1,3 +1,6 @@
+MIGRATION_DOCS_URL = "https://organize.readthedocs.io/en/latest/updating-from-v1/"
+
+
 class MigrationWarning(UserWarning):
     pass
 

@@ -176,7 +176,9 @@ rules:
   - name: "Recursively delete all empty directories"
     locations:
       - path: ~/Downloads
+    targets: dirs
     subfolders: true
+    targets: dirs
     filters:
       - empty
     actions:
@@ -255,11 +257,11 @@ Commands:
 ETH:
 
 ```
-0x0C0EF9e121e105dbFEfd1CF1f6a0C1588c839B13
+0x8924a060CD533699E230C5694EC95b26BC4168E7
 ```
 
 BTC:
 
 ```
-3PfHR44kUUGXNV5pvRTEBpNgcKPx7byjop
+39vpniiZk8qqGB2xEqcDjtWxngFCCdWGjY
 ```
