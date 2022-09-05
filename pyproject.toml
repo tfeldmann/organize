@@ -61,7 +61,7 @@ docs = [
 ]
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2.5"
+pytest = "^7.0.1"
 mypy = "^0.971"
 requests = "^2.27.1"
 types-PyYAML = "^6.0.3"
