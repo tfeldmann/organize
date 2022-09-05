@@ -65,7 +65,7 @@ pytest = "^6.2.5"
 mypy = "^0.971"
 requests = "^2.27.1"
 types-PyYAML = "^6.0.3"
-coverage = "^5"
+coverage = "^6"
 pytest-cov = "^3.0.0"
 
 [tool.coverage.run]
