@@ -1,6 +1,6 @@
 # Changelog
 
-## WIP
+## v2.4.0 (2022-09-05)
 
 - New action: `write`.
 - New filter: `date_lastused` (macOS only).
