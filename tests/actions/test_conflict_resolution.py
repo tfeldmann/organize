@@ -12,9 +12,9 @@ from organize.utils import Template
 @pytest.mark.parametrize(
     "template,wanted,result",
     (
-        ("{name}-{counter}{extension}", "file.txt", "file-1.txt"),
-        ("{name}-{counter}{extension}", "file.txt", "file-1.txt"),
-        ("{name}-{'%02d' % counter}{extension}", "file.txt", "file-02.txt"),
+        ("{name}-{counter}{extension}", "file.txt", "file-2.txt"),
+        ("{name}-{counter}{extension}", "file.txt", "file-2.txt"),
+        ("{name}-{'%02d' % counter}{extension}", "file.txt", "file-03.txt"),
         ("{name}{counter}{extension}", "file.txt", "file4.txt"),
         ("{name}{counter}{extension}", "other.txt", "other.txt"),
     ),
@@ -24,6 +24,7 @@ def test_next_free_name(template, wanted, result):
         mem.touch("file.txt")
         mem.touch("file1.txt")
         mem.touch("file-01.txt")
+        mem.touch("file-02.txt")
         mem.touch("file2.txt")
         mem.touch("file3.txt")
         name, ext = fs.path.splitext(wanted)
@@ -46,8 +47,8 @@ def test_next_free_name_exception():
         ("skip", None, {"file.txt": "file", "other.txt": "other"}),
         ("overwrite", "other.txt", {"file.txt": "file"}),
         # ("trash", None, {"file.txt": "file", "other.txt": "other"}),
-        ("rename_new", "other1.txt", {"file.txt": "file", "other.txt": "other"}),
-        ("rename_existing", "other.txt", {"file.txt": "file", "other1.txt": "other"}),
+        ("rename_new", "other2.txt", {"file.txt": "file", "other.txt": "other"}),
+        ("rename_existing", "other.txt", {"file.txt": "file", "other2.txt": "other"}),
     ),
 )
 def test_resolve_overwrite_conflict(mode, result, files):

@@ -37,8 +37,8 @@ def test_copy_on_itself(testfiles):
     [
         ("skip", ["file.txt", "test.txt"], "old"),
         ("overwrite", ["test.txt"], "new"),
-        ("rename_new", ["test.txt", "test 1.txt"], "old"),
-        ("rename_existing", ["test.txt", "test 1.txt"], "new"),
+        ("rename_new", ["test.txt", "test 2.txt"], "old"),
+        ("rename_existing", ["test.txt", "test 2.txt"], "new"),
     ],
 )
 def test_move_conflict(testfs: FS, mode, files, test_txt_content):

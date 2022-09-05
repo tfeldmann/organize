@@ -8,6 +8,8 @@
   (both in the CLI and ORGANIZE_CONFIG environment variable).
 - Removed hidden (deprecated) CLI option `--config-file`.
 - Lots of new tests and some bugfixes.
+- Conflict resolution renaming now starts with 2 instead of 1.
+  For example when copying "file.txt" the new file will be named "file 2.txt".
 
 ## v2.3.0 (2022-07-26)
 

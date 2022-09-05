@@ -10,7 +10,8 @@ rules:
   - locations: "."
     subfolders: true
     filters:
-      - duplicate
+      - duplicate:
+          detect_original_by: name
     actions:
       - delete
 """

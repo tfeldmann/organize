@@ -23,7 +23,9 @@ CONFLICT_OPTIONS = (
 )
 
 
-def next_free_name(fs: FS, template: jinja2.Template, name: str, extension: str) -> str:
+def next_free_name(
+    fs: FS, template: jinja2.Template, name: str, extension: str, start=2
+) -> str:
     """
     Increments {counter} in the template until the given resource does not exist.
 
@@ -40,7 +42,7 @@ def next_free_name(fs: FS, template: jinja2.Template, name: str, extension: str)
     Returns:
         (str) A filename according to the given template that does not exist on **fs**.
     """
-    counter = 1
+    counter = start
     prev_candidate = ""
     if not extension.startswith("."):
         extension = ".%s" % extension

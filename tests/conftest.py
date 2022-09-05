@@ -25,7 +25,7 @@ def memfs():
 @pytest.fixture(
     params=[
         "mem://",
-        # pytest.param("temp://", marks=pytest.mark.skip),
+        pytest.param("temp://"),
     ],
 )
 def testfs(request) -> FS:
