@@ -5,7 +5,7 @@ from organize import core
 CONTENT_SMALL = "COPY CONTENT"
 CONTENT_LARGE = "XYZ" * 300000
 
-DEEP_DUP_DELETE = """
+CONFIG_DEEP_DUP_DELETE = """
 rules:
   - locations: "."
     subfolders: true
@@ -32,7 +32,7 @@ def test_duplicate_smallfiles(testfs):
     }
 
     make_files(testfs, files)
-    core.run(DEEP_DUP_DELETE, simulate=False, working_dir=testfs)
+    core.run(CONFIG_DEEP_DUP_DELETE, simulate=False, working_dir=testfs)
     result = read_files(testfs)
     testfs.tree()
     assert result == {
@@ -59,7 +59,7 @@ def test_duplicate_largefiles(testfs):
     }
 
     make_files(testfs, files)
-    core.run(DEEP_DUP_DELETE, simulate=False, working_dir=testfs)
+    core.run(CONFIG_DEEP_DUP_DELETE, simulate=False, working_dir=testfs)
     result = read_files(testfs)
     testfs.tree()
     assert result == {
@@ -70,7 +70,6 @@ def test_duplicate_largefiles(testfs):
     }
 
 
-# TODO detect_original_by: name
 # TODO detect_original_by: first_seen
 # TODO detect_original_by: created
 # TODO detect_original_by: lastmodified
