@@ -25,6 +25,9 @@ def test_fs_path_expand(fs, path, args, result_fs, result_path):
     assert fs_path_expand(fs=fs, path=path, args=args) == (result_fs, result_path)
 
 
+def test_resolve_fs_path(filesystem, working_dir, path):
+    pass
+
 """md
 
 FS    | Path      | Workdir

@@ -103,6 +103,29 @@ def fs_path_expand(*, fs=None, path: str = "/", args=None):
     return (fs, path)
 
 
+def resolve_fs_path(filesystem, path, working_dir) -> Tuple[FS, str]:
+    """
+    filesystem =
+        - filesystem (falls gegeben)
+        - working_dir (falls FS oder FS_URL)
+        - path, osfs (falls absolut)
+        - working_dir
+    #
+    # action filesystem / location filesystem > working_dir
+
+    # working dir FS oder fs_url: working_dir
+    # working dir relativ, path absolut: osfs path
+    # working dir absolut, path absolut: osfs path
+    """
+    if filesystem:
+        return filesystem, path
+    if isinstance(working_dir, FS) or is_fs_url(working_dir):
+        return working_dir, path
+    if isabs(path):
+        return OSFS(path), "."
+    return OSFS(working_dir), path
+
+
 def fs_path_from_options(
     path: str, filesystem: Union[FS, str, None] = ""
 ) -> Tuple[FS, str]:

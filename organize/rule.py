@@ -135,8 +135,6 @@ class Rule(BaseModel):
                 fs=location.filesystem or self.filesystem or working_dir,
             )
 
-            print(_filesystem)
-
             fs_base_path = fs.path.forcedir(fs.path.relpath(fs.path.normpath(_path)))
             with fs.open_fs(_filesystem) as filesystem:
                 for resource in walk_func(fs=filesystem, path=_path):

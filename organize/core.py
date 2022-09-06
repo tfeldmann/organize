@@ -1,7 +1,3 @@
-import shutil
-
-shutil.move
-
 from functools import partial
 from typing import Optional, Tuple, Union
 
