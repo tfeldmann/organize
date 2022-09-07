@@ -135,26 +135,26 @@ class Rule(BaseModel):
             )
 
             fs_base_path = fs.path.forcedir(fs.path.relpath(fs.path.normpath(_path)))
-            with fs.open_fs(_filesystem) as filesystem:
-                console.location(filesystem, _path)
-                for resource in walk_func(fs=filesystem, path=_path):
-                    # fs_path: no starting "./", no ending "/"
-                    # fs_base_path: no starting "./", ends with "/"
-                    fs_path = fs.path.relpath(resource)
+            filesystem = fs.open_fs(_filesystem)
+            console.location(filesystem, _path)
+            for resource in walk_func(fs=filesystem, path=_path):
+                # fs_path: no starting "./", no ending "/"
+                # fs_base_path: no starting "./", ends with "/"
+                fs_path = fs.path.relpath(resource)
 
-                    # skip broken symlinks
-                    try:
-                        if filesystem.islink(fs_path):
-                            continue
-                    except ResourceNotFound:
+                # skip broken symlinks
+                try:
+                    if filesystem.islink(fs_path):
                         continue
+                except ResourceNotFound:
+                    continue
 
-                    yield {
-                        "fs": filesystem,
-                        "fs_path": fs_path,
-                        "fs_base_path": fs_base_path,
-                        "working_dir": working_dir,
-                    }
+                yield {
+                    "fs": filesystem,
+                    "fs_path": fs_path,
+                    "fs_base_path": fs_base_path,
+                    "working_dir": working_dir,
+                }
 
 
 if __name__ == "__main__":

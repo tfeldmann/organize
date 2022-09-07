@@ -36,7 +36,7 @@ class Shell(Action):
     cmd: str
     run_in_simulation: bool = False
     ignore_errors: bool = False
-    _simulation_output: str = "** simulation **"
+    simulation_output: str = "** simulation **"
     simulation_returncode: int = 0
 
     _cmd: Template
@@ -48,7 +48,7 @@ class Shell(Action):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._cmd = Template.from_string(self.cmd)
-        self._simulation_output = Template.from_string(self._simulation_output)
+        self._simulation_output = Template.from_string(self.simulation_output)
 
     def pipeline(self, args: dict, simulate: bool):
         full_cmd = self._cmd.render(**args)

@@ -26,7 +26,7 @@ class Action(BaseModel):
     def __init__(self, *args, **kwargs) -> None:
         # handle positional arguments when calling the class directly
         if self.ParseConfig.accepts_positional_arg and len(args) == 1:
-            kwargs[self.Settings.accepts_positional_arg] = args[0]
+            kwargs[self.ParseConfig.accepts_positional_arg] = args[0]
             super().__init__(**kwargs)
             return
         super().__init__(*args, **kwargs)
