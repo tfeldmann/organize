@@ -114,3 +114,17 @@ def test_rename_in_subfolders(testfs):
             "Metadata": "",
         },
     }
+
+
+def test_filename_move(tempfs):
+    config = """
+        rules:
+        - locations: "."
+          filters:
+            - extension
+          actions:
+            - rename: '{path.stem}{path.stem}.{extension.lower()}'
+    """
+    make_files(tempfs, {"test.PY": ""})
+    run(rules=config, simulate=False, working_dir=tempfs)
+    assert read_files(tempfs) == {"testtest.py": ""}

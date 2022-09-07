@@ -1,6 +1,8 @@
-from fs.base import FS
+from copy import deepcopy
+
 import pytest
 from conftest import make_files, read_files
+from fs.base import FS
 
 from organize import core
 
@@ -30,6 +32,26 @@ def test_copy_on_itself(testfiles):
     core.run(config, simulate=False, working_dir=testfiles)
     result = read_files(testfiles)
     assert result == files
+
+
+def test_copy_basic(testfs):
+    config = """
+    rules:
+      - locations: "."
+        filters:
+          - name: test
+        actions:
+          - copy: newname.pdf
+    """
+    make_files(testfs, ["asd.txt", "newname 2.pdf", "newname.pdf", "test.pdf"])
+    core.run(config, simulate=False, working_dir=testfs)
+    assert read_files(testfs) == {
+        "newname.pdf": "",
+        "newname 2.pdf": "",
+        "newname 3.pdf": "",
+        "test.pdf": "",
+        "asd.txt": "",
+    }
 
 
 def test_copy_into_dir(testfiles):
@@ -95,8 +117,8 @@ def test_copy_into_dir_subfolders(testfiles):
     [
         ("skip", ["file.txt", "test.txt"], "old"),
         ("overwrite", ["file.txt", "test.txt"], "new"),
-        ("rename_new", ["file.txt", "test.txt", "test 1.txt"], "old"),
-        ("rename_existing", ["file.txt", "test.txt", "test 1.txt"], "new"),
+        ("rename_new", ["file.txt", "test.txt", "test 2.txt"], "old"),
+        ("rename_existing", ["file.txt", "test.txt", "test 2.txt"], "new"),
     ],
 )
 def test_copy_conflict(testfs: FS, mode, files, test_txt_content):
@@ -120,33 +142,26 @@ def test_copy_conflict(testfs: FS, mode, files, test_txt_content):
     assert testfs.readtext("test.txt") == test_txt_content
 
 
-# def test_does_not_create_folder_in_simulation():
-#     with fs.open_fs("mem://") as mem:
-#         config = {
-#             "rules": [
-#                 {
-#                     "locations": [
-#                         {"path": "files", "filesystem": mem},
-#                     ],
-#                     "actions": [
-#                         {"copy": {"dest": "files/new-subfolder/", "filesystem": mem}},
-#                         {"copy": {"dest": "files/copyhere/", "filesystem": mem}},
-#                     ],
-#                 },
-#             ]
-#         }
-#         make_files(mem, files)
-#         core.run(config, simulate=True)
-#         result = read_files(mem)
-#         assert result == files
+def test_does_not_create_folder_in_simulation(testfs):
+    config = """
+        rules:
+          - locations: "."
+            actions:
+              - copy: "new-subfolder/"
+              - copy: "copyhere/"
+        """
+    make_files(testfs, files)
+    core.run(config, simulate=True, working_dir=testfs)
+    result = read_files(testfs)
+    assert result == files
 
-#         core.run(config, simulate=False, validate=False)
-#         result = read_files(mem)
+    core.run(config, simulate=False, working_dir=testfs)
+    result = read_files(testfs)
 
-#         expected = deepcopy(files)
-#         expected["files"]["new-subfolder"] = deepcopy(files["files"])
-#         expected["files"]["new-subfolder"].pop("folder")
-#         expected["files"]["copyhere"] = deepcopy(files["files"])
-#         expected["files"]["copyhere"].pop("folder")
+    expected = deepcopy(files)
+    expected["new-subfolder"] = deepcopy(files)
+    expected["new-subfolder"].pop("folder")
+    expected["copyhere"] = deepcopy(files)
+    expected["copyhere"].pop("folder")
 
-#         assert result == expected
+    assert result == expected

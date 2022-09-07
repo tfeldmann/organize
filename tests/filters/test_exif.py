@@ -1,12 +1,15 @@
-from fs import copy
 import pytest
+from conftest import ORGANIZE_DIR
+from fs import copy
 
 from organize.core import run
+
+RESOURCE_DIR = str(ORGANIZE_DIR / "tests" / "resources" / "images-with-exif")
 
 
 @pytest.fixture
 def images_folder(testfs):
-    copy.copy_dir(".", "tests/resources/images-with-exif", testfs, "/")
+    copy.copy_dir(RESOURCE_DIR, "/", testfs, "/")
     yield testfs
 
 
