@@ -5,20 +5,19 @@ from typing import Union
 from .filter import Filter, FilterResult
 
 
-def age_condition_applies(dt: datetime, age: timedelta, mode: str, reference: datetime):
+class Mode(Enum):
+    older = "older"
+    newer = "newer"
+
+
+def age_condition_applies(
+    dt: datetime, age: timedelta, mode: Mode, reference: datetime
+):
     """
     Returns whether `dt` is older / newer (`mode`) than `age` as measured on `reference`
     """
-    if mode not in ("older", "newer"):
-        raise ValueError(mode)
-
     is_past = (dt + age).timestamp() < reference.timestamp()
-    return (mode == "older") == is_past
-
-
-class Mode(str, Enum):
-    older = "older"
-    newer = "newer"
+    return (mode == Mode.older) == is_past
 
 
 class TimeFilter(Filter):
@@ -55,7 +54,7 @@ class TimeFilter(Filter):
                 match = age_condition_applies(
                     dt=dt,
                     age=self._age,
-                    mode=str(self.mode),
+                    mode=self.mode,
                     reference=datetime.now(),
                 )
         return match
