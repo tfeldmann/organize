@@ -1,7 +1,8 @@
 from typing import Any, Dict, List, Union
 
-from fs import path
 import simplematch
+from fs import path
+from pydantic import Field
 from typing_extensions import Literal
 
 from .filter import Filter, FilterResult
@@ -28,7 +29,7 @@ class Name(Filter):
             case insensitive matching.
     """
 
-    name: Literal["name"] = "name"
+    name: Literal["name"] = Field("name", repr=False)
 
     match: str = "*"
     startswith: Union[str, List[str]] = ""

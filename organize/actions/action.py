@@ -23,21 +23,23 @@ class Action(BaseModel):
         arbitrary_types_allowed = True
         underscore_attrs_are_private = True
 
-    def __init__(self, *args, **kwargs) -> None:
-        # handle positional arguments when calling the class directly
-        if self.ParseConfig.accepts_positional_arg and len(args) == 1:
-            kwargs[self.ParseConfig.accepts_positional_arg] = args[0]
-            super().__init__(**kwargs)
-            return
-        super().__init__(*args, **kwargs)
+    # def __init__(self, *args, **kwargs) -> None:
+    #     # handle positional arguments when calling the class directly
+    #     if self.ParseConfig.accepts_positional_arg and len(args) == 1:
+    #         kwargs[self.ParseConfig.accepts_positional_arg] = args[0]
+    #         super().__init__(**kwargs)
+    #         return
+    #     super().__init__(*args, **kwargs)
 
     @root_validator(pre=True)
     def handle_single_str(cls, value):
         # handle positional arguments when parsing a config file.
-        if "__positional_arg__" in value:
+        if "__positional_arg__" in value and cls is not Action:
             param = cls.ParseConfig.accepts_positional_arg
             if not param:
-                raise ValueError("Non-dict arguments are not accepted")
+                raise ValueError(
+                    "%s does not accept positional arguments" % cls.__name__
+                )
             param_val = value.pop("__positional_arg__")
             return {param: param_val, **value}
         return value

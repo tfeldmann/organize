@@ -24,7 +24,7 @@ class Filter(BaseModel):
     @root_validator(pre=True)
     def handle_single_str(cls, value):
         # handle positional arguments when parsing a config file.
-        if "__positional_arg__" in value:
+        if "__positional_arg__" in value and cls is not Filter:
             param = cls.ParseConfig.accepts_positional_arg
             if not param:
                 raise ValueError("Non-dict arguments are not accepted")
@@ -32,13 +32,13 @@ class Filter(BaseModel):
             return {param: param_val, **value}
         return value
 
-    def __init__(self, *args, **kwargs) -> None:
-        # handle positional arguments when calling the class directly
-        if self.ParseConfig.accepts_positional_arg and len(args) == 1:
-            kwargs[self.ParseConfig.accepts_positional_arg] = args[0]
-            super().__init__(**kwargs)
-            return
-        super().__init__(*args, **kwargs)
+    # def __init__(self, *args, **kwargs) -> None:
+    #     # handle positional arguments when calling the class directly
+    #     if self.ParseConfig.accepts_positional_arg and len(args) == 1:
+    #         kwargs[self.ParseConfig.accepts_positional_arg] = args[0]
+    #         super().__init__(**kwargs)
+    #         return
+    #     super().__init__(*args, **kwargs)
 
     def run(self, **kwargs: Dict) -> FilterResult:
         return self.pipeline(dict(kwargs))

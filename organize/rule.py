@@ -135,6 +135,7 @@ class Rule(BaseModel):
             )
 
             fs_base_path = fs.path.forcedir(fs.path.relpath(fs.path.normpath(_path)))
+            # we keep the filesystem open after walking
             filesystem = fs.open_fs(_filesystem)
             console.location(filesystem, _path)
             for resource in walk_func(fs=filesystem, path=_path):

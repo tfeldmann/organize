@@ -46,7 +46,7 @@ def test_codepost_usecase():
                 },
             ]
         }
-        core.run(conf, simulate=False)
+        core.run(conf, simulate=False, working_dir=mem)
         result = read_files(mem)
         mem.tree()
 
