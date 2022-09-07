@@ -10,7 +10,7 @@ DESKTOP_WITH_USER = expanduser("~/Desktop")
 
 
 @pytest.mark.parametrize(
-    "fs,path,args,result_fs,result_path",
+    "filesystem,path,args,result_fs,result_path",
     [
         (None, "~/Desktop", None, DESKTOP_WITH_USER, "/"),
         (OSFS_ROOT, "/etc", None, OSFS_ROOT, "/etc"),
@@ -22,8 +22,13 @@ DESKTOP_WITH_USER = expanduser("~/Desktop")
         ("", "/abs_folder", None, "/abs_folder", ""),
     ],
 )
-def test_fs_path_expand(fs, path, args, result_fs, result_path):
-    assert fs_path_expand(fs=fs, path=path, args=args) == (result_fs, result_path)
+def test_fs_path_expand(filesystem, path, args, result_fs, result_path):
+    assert fs_path_expand(
+        filesystem=filesystem,
+        path=path,
+        working_dir=".",
+        args=args,
+    ) == (result_fs, result_path)
 
 
 def test_resolve_fs_path(filesystem, working_dir, path):
