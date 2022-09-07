@@ -1,3 +1,4 @@
+import re
 import os
 from copy import deepcopy
 from datetime import datetime
@@ -64,6 +65,34 @@ def open_fs_or_sim(fs_url, *args, simulate=False, **kwargs):
     return open_fs(fs_url, *args, **kwargs)
 
 
+def isabsolute(path):
+    """path starts with / or a drive letter"""
+    return path.startswith("/") or re.match(r"[a-zA-Z]:[\\/]", path)
+
+
+def resolve_fs_path(
+    filesystem: Union[FS, str, None],
+    path: str,
+    working_dir: Union[FS, str, None],
+) -> Tuple[Union[FS, str], str]:
+    """
+    use in this order as filesystem:
+        filesystem (if given)
+        working_dir (if FS or FS_URL)
+        path (if absolute as osfs)
+        working_dir
+    """
+    if filesystem:
+        return filesystem, path
+    if isinstance(working_dir, FS) or (
+        isinstance(working_dir, str) and "://" in working_dir
+    ):
+        return working_dir, path
+    if isabsolute(path):
+        return path, ""
+    return working_dir, path
+
+
 def expand_user(fs_url: str) -> str:
     fs_url = os.path.expanduser(fs_url)
     if fs_url.startswith("zip://~"):
@@ -86,44 +115,19 @@ def expand_args(template: Union[str, jinja2.environment.Template], args=None):
     return text
 
 
-def fs_path_expand(*, fs=None, path: str = "/", args=None):
+def fs_path_expand(filesystem, path, working_dir, args=None):
     """returns a tuple (fs, path)"""
-    path = fspath.normpath(expand_args(path, args=args))
+    # expand args
+    path = expand_args(path, args=args)
+    if isinstance(filesystem, str):
+        filesystem = expand_args(filesystem, args=args)
+    if isinstance(working_dir, str):
+        working_dir = expand_args(working_dir, args=args)
 
-    # if a FS instance is given we always use that
-    if isinstance(fs, FS):
-        return (fs, path)
+    result = resolve_fs_path(filesystem=filesystem, path=path, working_dir=working_dir)
 
-    # no filesystem given, we use the path as filesystem
-    if fs is None:
-        return (path, "/")
-
-    if isinstance(fs, str):
-        fs = expand_args(fs, args=args)
-    return (fs, path)
-
-
-def resolve_fs_path(filesystem, path, working_dir) -> Tuple[FS, str]:
-    """
-    filesystem =
-        - filesystem (falls gegeben)
-        - working_dir (falls FS oder FS_URL)
-        - path, osfs (falls absolut)
-        - working_dir
-    #
-    # action filesystem / location filesystem > working_dir
-
-    # working dir FS oder fs_url: working_dir
-    # working dir relativ, path absolut: osfs path
-    # working dir absolut, path absolut: osfs path
-    """
-    if filesystem:
-        return filesystem, path
-    if isinstance(working_dir, FS) or is_fs_url(working_dir):
-        return working_dir, path
-    if isabs(path):
-        return OSFS(path), "."
-    return OSFS(working_dir), path
+    print("resolved (%s, %s, %s) -> %s" % (filesystem, path, working_dir, result))
+    return result
 
 
 def fs_path_from_options(
@@ -158,18 +162,6 @@ def unwrap_wrapfs(fs, path):
 
 def is_same_resource(fs1: FS, path1: str, fs2: FS, path2: str):
     from fs.errors import NoSysPath, NoURL
-    from fs.tarfs import ReadTarFS, WriteTarFS
-    from fs.zipfs import ReadZipFS, WriteZipFS
-
-    # def unwrap_wrapfs(fs, path):
-    #     base = "/"
-    #     if isinstance(fs, WrapFS):
-    #         fs, base = fs.delegate_path("/")
-    #     return fs, normpath(join(base, path))  # to support ".." in path
-
-    # completely unwrap WrapFS instances
-    fs1, path1 = unwrap_wrapfs(fs1, path1)
-    fs2, path2 = unwrap_wrapfs(fs2, path2)
 
     # obvious check
     if fs1 == fs2 and path1 == path2:
@@ -180,14 +172,6 @@ def is_same_resource(fs1: FS, path1: str, fs2: FS, path2: str):
         return fs1.getsyspath(path1) == fs2.getsyspath(path2)
     except NoSysPath:
         pass
-
-    # check zip and tar
-    Tar = (WriteTarFS, ReadTarFS)
-    Zip = (WriteZipFS, ReadZipFS)
-    if (isinstance(fs1, Tar) and isinstance(fs2, Tar)) or (
-        isinstance(fs1, Zip) and isinstance(fs2, Zip)
-    ):
-        return path1 == path2 and fs1._file == fs2._file
 
     # check all fs with url support
     if isinstance(fs1, fs2.__class__):

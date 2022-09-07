@@ -64,7 +64,7 @@ class Config(BaseModel):
         simulate: bool = True,
         tags=set(),
         skip_tags=set(),
-        working_dir: Union[FS, str, None] = None,
+        working_dir: Union[FS, str, None] = ".",
     ):
         args = basic_args()
         for rule in self.rules:
@@ -124,6 +124,6 @@ if __name__ == "__main__":
         """
     )
     x = Config.parse_obj(obj)
-    print(x)
+    print(x.json())
     x.execute(simulate=True)
     sys.exit()

@@ -1,7 +1,8 @@
 import pytest
+import fs
 from fs.osfs import OSFS
 from os.path import expanduser
-from organize.utils import fs_path_expand
+from organize.utils import fs_path_expand, resolve_fs_path
 
 
 OSFS_ROOT = OSFS("/")
@@ -26,14 +27,10 @@ def test_fs_path_expand(fs, path, args, result_fs, result_path):
 
 
 def test_resolve_fs_path(filesystem, working_dir, path):
-    pass
+    userfs = fs.open_fs("~")
 
-"""md
-
-FS    | Path      | Workdir
-mem     /           ""          -> mem, /
-mem     relative    ""          -> mem, /relative
-""      /Desktop    ""          -> /Desktop, ""
-""      test        ""          ->
-
-"""
+    resolve_fs_path(filesystem=None, path="test.yaml", working_dir="~") == (
+        "~",
+        "test.yaml",
+    )
+    assert True

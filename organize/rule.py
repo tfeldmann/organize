@@ -6,7 +6,7 @@ import fs
 from fs.errors import ResourceNotFound
 from fs.base import FS
 from pydantic import BaseModel, Field, validator
-
+from . import console
 from .actions import ActionType
 from .filters import FilterType
 from .location import Location
@@ -63,7 +63,6 @@ class Rule(BaseModel):
     locations: List[Location]
     subfolders: bool = False
     tags: List[str] = Field(default_factory=list)
-    filesystem: Union[FS, str, None] = None
     filters: List[FilterType] = Field(default_factory=list)
     filter_mode: FilterMode = FilterMode.all
     actions: List[ActionType] = Field(..., min_items=1)
@@ -99,12 +98,11 @@ class Rule(BaseModel):
                 return normalized
         return normalized
 
-    def walk(self, working_dir: Union[FS, str] = ""):
+    def walk(self, working_dir: Union[FS, str] = "."):
         """
         Walk all given locations and yield the pathes
         """
         for location in self.locations:
-
             # instantiate the fs walker
             exclude = location.system_exclude_files + location.exclude_files
             exclude_dirs = location.system_exclude_dirs + location.exclude_dirs
@@ -132,11 +130,13 @@ class Rule(BaseModel):
 
             _filesystem, _path = fs_path_expand(
                 path=location.path,
-                fs=location.filesystem or self.filesystem or working_dir,
+                filesystem=location.filesystem,
+                working_dir=working_dir,
             )
 
             fs_base_path = fs.path.forcedir(fs.path.relpath(fs.path.normpath(_path)))
             with fs.open_fs(_filesystem) as filesystem:
+                console.location(filesystem, _path)
                 for resource in walk_func(fs=filesystem, path=_path):
                     # fs_path: no starting "./", no ending "/"
                     # fs_base_path: no starting "./", ends with "/"
@@ -153,6 +153,7 @@ class Rule(BaseModel):
                         "fs": filesystem,
                         "fs_path": fs_path,
                         "fs_base_path": fs_base_path,
+                        "working_dir": working_dir,
                     }
 
 
@@ -164,8 +165,9 @@ if __name__ == "__main__":
         mem.touch("test2")
         conf = """
         rules:
-          - locations: "~/Desktop"
+          - locations:
+              - path: "~/Desktop"
             actions:
               - echo: "test"
         """
-        run(config=conf, working_dir=".")
+        run(config=conf, working_dir="~")
