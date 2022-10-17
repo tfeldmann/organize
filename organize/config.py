@@ -1,7 +1,6 @@
 import textwrap
 from typing import List, Union
 
-import fs
 import yaml
 from fs.base import FS
 from pydantic import BaseModel

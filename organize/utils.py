@@ -103,7 +103,8 @@ def expand_user(fs_url: str) -> str:
 
 
 def expand_args(template: Union[str, jinja2.environment.Template], args=None):
-    _args = deep_merge(basic_args(), args or {})
+    _args = basic_args()
+    deep_merge_inplace(_args, args or {})
     if isinstance(template, str):
         text = Template.from_string(template).render(**_args)
     else:

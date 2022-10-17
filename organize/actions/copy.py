@@ -9,7 +9,7 @@ from fs.path import dirname
 from pydantic import Field
 from typing_extensions import Literal
 
-from organize.utils import SimulationFS, Template, safe_description
+from organize.utils import SimulationFS, Template, safe_description, fs_path_expand
 
 from ._conflict import ConflictOption, check_conflict, dst_from_options
 from .action import Action
@@ -48,7 +48,7 @@ class Copy(Action):
     dest: str
     on_conflict: ConflictOption = ConflictOption.rename_new
     rename_template: str = "{name} {counter}{extension}"
-    filesystem: Union[None, str] = None
+    filesystem: Union[FS, str, None] = None
 
     _dest: Template
     _rename_template = Template
@@ -60,11 +60,19 @@ class Copy(Action):
         super().__init__(*args, **kwargs)
         self._dest = Template.from_string(self.dest)
         self._rename_template = Template.from_string(self.rename_template)
-        # self.filesystem = filesystem or self.Meta.default_filesystem
 
     def pipeline(self, args: dict, simulate: bool):
         src_fs = args["fs"]  # type: FS
         src_path = args["fs_path"]
+        working_dir = args["working_dir"]
+
+        # expand destination filesystem and path
+        dst_fs, dst_path = fs_path_expand(
+            filesystem=self.filesystem,
+            path=self._dest.render(**args),
+            working_dir=working_dir,
+            args=args,
+        )
 
         # should we copy a dir or a file?
         copy_action: Callable[[FS, str, FS, str], None]
@@ -73,21 +81,14 @@ class Copy(Action):
         elif src_fs.isfile(src_path):
             copy_action = partial(copy_file, preserve_time=True)
 
-        dst_fs, dst_path = dst_from_options(
-            src_path=src_path,
-            dest=self.dest,
-            filesystem=self.filesystem,
-            args=args,
-        )
-
         # check for conflicts
         skip, dst_path = check_conflict(
             src_fs=src_fs,
             src_path=src_path,
             dst_fs=dst_fs,
             dst_path=dst_path,
-            conflict_mode=self.conflict_mode,
-            rename_template=self.rename_template,
+            conflict_mode=self.on_conflict,
+            rename_template=self._rename_template,
             simulate=simulate,
             print=self.print,
         )

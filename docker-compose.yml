@@ -1,0 +1,7 @@
+version: "3.9"
+services:
+  test:
+    build: .
+    volumes:
+      - ./:/app
+    entrypoint: ["python", "-m", "pytest"]

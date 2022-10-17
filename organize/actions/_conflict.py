@@ -20,7 +20,8 @@ class ConflictOption(str, Enum):
     trash = "trash"
     rename_new = "rename_new"
     rename_existing = "rename_existing"
-    # TODO keep_newer, keep_older
+    # TODO: keep_newer
+    # TODO: keep_older
 
 
 def next_free_name(fs: FS, template: jinja2.Template, name: str, extension: str) -> str:
@@ -40,7 +41,7 @@ def next_free_name(fs: FS, template: jinja2.Template, name: str, extension: str)
     Returns:
         (str) A filename according to the given template that does not exist on **fs**.
     """
-    counter = 1
+    counter = 2
     prev_candidate = ""
     while True:
         candidate = template.render(name=name, extension=extension, counter=counter)
@@ -74,15 +75,15 @@ def resolve_overwrite_conflict(
         print("Same resource: Skipped.")
         return None
 
-    if conflict_mode == "trash":
+    if conflict_mode == ConflictOption.trash:
         Trash().run(fs=dst_fs, fs_path=dst_path, simulate=simulate)
         return dst_path
 
-    elif conflict_mode == "skip":
+    elif conflict_mode == ConflictOption.skip:
         print("Skipped.")
         return None
 
-    elif conflict_mode == "overwrite":
+    elif conflict_mode == ConflictOption.overwrite:
         print("Overwrite %s." % safe_description(dst_fs, dst_path))
         if not simulate:
             if dst_fs.isdir(dst_path):
@@ -91,7 +92,7 @@ def resolve_overwrite_conflict(
                 dst_fs.remove(dst_path)
         return dst_path
 
-    elif conflict_mode == "rename_new":
+    elif conflict_mode == ConflictOption.rename_new:
         stem, ext = splitext(dst_path)
         name = next_free_name(
             fs=dst_fs,
@@ -101,7 +102,7 @@ def resolve_overwrite_conflict(
         )
         return name
 
-    elif conflict_mode == "rename_existing":
+    elif conflict_mode == ConflictOption.rename_existing:
         stem, ext = splitext(dst_path)
         name = next_free_name(
             fs=dst_fs,

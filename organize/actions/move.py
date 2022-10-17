@@ -6,7 +6,13 @@ from fs.base import FS
 from fs.opener.errors import OpenerError
 from typing_extensions import Literal
 
-from organize.utils import SimulationFS, Template, safe_description
+from organize.utils import (
+    SimulationFS,
+    Template,
+    safe_description,
+    resolve_fs_path,
+    fs_path_expand,
+)
 
 from ._conflict import ConflictOption, check_conflict, dst_from_options
 from .action import Action
@@ -66,19 +72,22 @@ class Move(Action):
     def pipeline(self, args: dict, simulate: bool):
         src_fs = args["fs"]  # type: FS
         src_path = args["fs_path"]
+        working_dir = args["working_dir"]
 
+        # expand destination filesystem and path
+        dst_fs, dst_path = fs_path_expand(
+            filesystem=self.filesystem,
+            path=self._dest.render(**args),
+            working_dir=working_dir,
+            args=args,
+        )
+
+        # use move_dir or move_file depending on src resource type
         move_action: Callable[[FS, str, FS, str], None]
         if src_fs.isdir(src_path):
             move_action = partial(fs.move.move_dir, preserve_time=True)
         elif src_fs.isfile(src_path):
             move_action = partial(fs.move.move_file, preserve_time=True)
-
-        dst_fs, dst_path = dst_from_options(
-            src_path=src_path,
-            dest=self.dest,
-            filesystem=self.filesystem,
-            args=args,
-        )
 
         # check for conflicts
         skip, dst_path = check_conflict(
@@ -86,8 +95,8 @@ class Move(Action):
             src_path=src_path,
             dst_fs=dst_fs,
             dst_path=dst_path,
-            conflict_mode=self.conflict_mode,
-            rename_template=self.rename_template,
+            conflict_mode=self.on_conflict,
+            rename_template=self._rename_template,
             simulate=simulate,
             print=self.print,
         )
