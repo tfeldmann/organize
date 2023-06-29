@@ -50,6 +50,13 @@ class Exif(Filter):
     The `exif` filter can be used as a filter as well as a way to get exif information
     into your actions.
 
+    Exif fields which contain "datetime", "date" or "offsettime" in their fieldname 
+    will have their value converted to 'datetime.datetime', 'datetime.date' and 
+    'datetime.timezone' respectivly.
+    - `datetime.datetime` : exif.image.datetime, exif.exif.datetimeoriginal, ...
+    - `datetime.date` : exif.gps.date, ...
+    - `datetime.timezone` : exif.exif.offsettimeoriginal, exif.exif.offsettimedigitized, ...
+
     Returns:
         ``{exif}``: 
             a dict of all the collected exif inforamtion available in the

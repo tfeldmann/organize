@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.6.0 (2023-xx-yy)
+
+- Modified filter: `exif`. Enabled datetime fields on exif data (Issue #266)
+
 ## v2.4.0 (2022-09-05)
 
 - New action: `write`.
