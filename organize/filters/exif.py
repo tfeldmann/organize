@@ -1,5 +1,5 @@
 import collections
-from datetime import datetime
+from datetime import datetime, date, timezone
 from pathlib import Path
 from typing import Any, DefaultDict, Dict, Mapping, Optional, Union
 
@@ -9,15 +9,28 @@ from .filter import Filter, FilterResult
 
 ExifDict = Mapping[str, Union[str, Mapping[str, str]]]
 
-def to_datetime(key: str, value: str) -> Union[datetime, str]:
+def to_datetime(key: str, value: str) -> Union[datetime, date, timezone, str]:
+    """Converts exif datetime/date/offsettime fields to datetime objects
+
+    :returns:
+        ``value`` -- converted to datetime, date or timezone if possible
+
+        - ``{datetime.datetime}`` -- If `key` contains "datetime" 
+                                     (e.g. image.datetime, exif.datetimeoriginal, exif.datetimedigitized)
+        - ``{datetime.date}``     -- If `key` contains "date" 
+                                     (e.g. gps.date)
+        - ``{datetime.timezone}`` -- If `key` contains "offsettime" 
+                                     (e.g. exif.offsettimeoriginal, exif.offsettimedigitized)
+    """
+
     if "datetime" in key:
-        # value = "YYYY:MM:DD HH:MM:SS"
+        # value = "YYYY:MM:DD HH:MM:SS" --> convert to 'datetime.datetime'
         return datetime.strptime(value, "%Y:%m:%d %H:%M:%S")
     elif "date" in key:
-        # value = "YYYY:MM:DD"
-        return datetime.strptime(value, "%Y:%m:%d")
+        # value = "YYYY:MM:DD" --> convert to datetime.date
+        return datetime.strptime(value, "%Y:%m:%d").date()
     elif "offsettime" in key:
-        # value = "+HH:MM" or "UTC+HH:MM"
+        # value = "+HH:MM" or "UTC+HH:MM" --> convert to 'datetime.timezone'
         if value[:3].upper() == "UTC":
             value = value[3:]
         return datetime.strptime(value, "%z").tzinfo
