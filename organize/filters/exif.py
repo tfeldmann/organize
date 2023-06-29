@@ -12,15 +12,23 @@ ExifDict = Mapping[str, Union[str, Mapping[str, str]]]
 def to_datetime(key: str, value: str) -> Union[datetime, date, timezone, str]:
     """Converts exif datetime/date/offsettime fields to datetime objects
 
-    :returns:
-        ``value`` -- converted to datetime, date or timezone if possible
+    Value is converted to datetime, date or timezone by following rules:
+    - If `key` contains "datetime" convert `value` to 'datetime.datetime'
+        (e.g. image.datetime, exif.datetimeoriginal, exif.datetimedigitized)
+    - If `key` contains "date" convert `value` to 'datetime.date'
+        (e.g. gps.date)
+    - If `key` contains "offsettime" convert `value` to 'datetime.timezone'
+        (e.g. exif.offsettimeoriginal, exif.offsettimedigitized)
+    - Otherwise `value` is not converted and returned as is
 
-        - ``{datetime.datetime}`` -- If `key` contains "datetime" 
-                                     (e.g. image.datetime, exif.datetimeoriginal, exif.datetimedigitized)
-        - ``{datetime.date}``     -- If `key` contains "date" 
-                                     (e.g. gps.date)
-        - ``{datetime.timezone}`` -- If `key` contains "offsettime" 
-                                     (e.g. exif.offsettimeoriginal, exif.offsettimedigitized)
+    Args:
+        key (str): Key of entry in ExifDict
+        value (str): Value of entry in ExifDict
+
+    Returns:
+        value (datetime | date | timezone | str) : 
+            Value of entry in ExifDict converted to datetime, date or timezone 
+            if applicable
     """
 
     if "datetime" in key:
@@ -42,14 +50,15 @@ class Exif(Filter):
     The `exif` filter can be used as a filter as well as a way to get exif information
     into your actions.
 
-    :returns:
-        ``{exif}`` -- a dict of all the collected exif inforamtion available in the
-        file. Typically it consists of the following tags (if present in the file):
+    Returns:
+        ``{exif}``: 
+            a dict of all the collected exif inforamtion available in the
+            file. Typically it consists of the following tags (if present in the file):
 
-        - ``{exif.image}`` -- information related to the main image
-        - ``{exif.exif}`` -- Exif information
-        - ``{exif.gps}`` -- GPS information
-        - ``{exif.interoperability}`` -- Interoperability information
+            - `{exif.image}`: information related to the main image
+            - `{exif.exif}`: Exif information
+            - `{exif.gps}`: GPS information
+            - `{exif.interoperability}`:  Interoperability information
     """
 
     name = "exif"
