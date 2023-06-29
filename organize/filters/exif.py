@@ -39,10 +39,11 @@ def to_datetime(key: str, value: str) -> ExifValue:
         # value = "YYYY:MM:DD" --> convert to datetime.date
         converted_value = datetime.strptime(value, "%Y:%m:%d").date()
     elif "offsettime" in key:
-        # value = "+HH:MM" or "UTC+HH:MM" --> convert to 'datetime.timedelta'
+        # value = "+HHMM" or "+HH:MM[:SS]" or "UTC+HH:MM[:SS]" --> convert to 'datetime.timedelta'
         if value[:3].upper() == "UTC":
+            # Remove UTC
             value = value[3:]
-        converted_value = datetime.strptime(value, "%z").utcoffset() or timedelta(seconds=0)
+        converted_value = datetime.strptime(value.replace(":", ""), "%z").utcoffset() or timedelta(seconds=0)
     return converted_value
 
 
