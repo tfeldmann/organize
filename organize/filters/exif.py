@@ -1,4 +1,5 @@
 import collections
+from datetime import datetime
 from pathlib import Path
 from typing import Any, DefaultDict, Dict, Mapping, Optional, Union
 
@@ -8,6 +9,19 @@ from .filter import Filter, FilterResult
 
 ExifDict = Mapping[str, Union[str, Mapping[str, str]]]
 
+def to_datetime(key: str, value: str) -> Union[datetime, str]:
+    if "datetime" in key:
+        # value = "YYYY:MM:DD HH:MM:SS"
+        return datetime.strptime(value, "%Y:%m:%d %H:%M:%S")
+    elif "date" in key:
+        # value = "YYYY:MM:DD"
+        return datetime.strptime(value, "%Y:%m:%d")
+    elif "offsettime" in key:
+        # value = "+HH:MM" or "UTC+HH:MM"
+        if value[:3].upper() == "UTC":
+            value = value[3:]
+        return datetime.strptime(value, "%z").tzinfo
+    return value
 
 class Exif(Filter):
     """Filter by image EXIF data
@@ -38,9 +52,9 @@ class Exif(Filter):
         for key, value in tags.items():
             if " " in key:
                 category, field = key.split(" ", maxsplit=1)
-                result[category][field] = value
+                result[category][field] = to_datetime(field, value)
             else:
-                result[key] = value
+                result[key] = to_datetime(key, value)
         return dict(result)
 
     def matches(self, exiftags: dict) -> bool:
