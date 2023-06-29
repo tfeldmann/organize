@@ -1,5 +1,5 @@
 import collections
-from datetime import datetime, date, tzinfo
+from datetime import datetime, date, timedelta
 from pathlib import Path
 from typing import Any, DefaultDict, Dict, Mapping, Optional, Union
 
@@ -7,17 +7,18 @@ import exifread
 
 from .filter import Filter, FilterResult
 
-ExifDict = Mapping[str, Union[str, Mapping[str, str]]]
+ExifValue = Union[datetime, date, timedelta, str]
+ExifDict = Mapping[str, Union[ExifValue, Mapping[str, ExifValue]]]
 
-def to_datetime(key: str, value: str) -> Union[datetime, date, tzinfo, str]:
+def to_datetime(key: str, value: str) -> ExifValue:
     """Converts exif datetime/date/offsettime fields to datetime objects
 
-    Value is converted to datetime, date or tzinfo by following rules:
+    Value is converted to datetime, date or timedelta by following rules:
     - If `key` contains "datetime" convert `value` to 'datetime.datetime'
         (e.g. image.datetime, exif.datetimeoriginal, exif.datetimedigitized)
     - If `key` contains "date" convert `value` to 'datetime.date'
         (e.g. gps.date)
-    - If `key` contains "offsettime" convert `value` to 'datetime.tzinfo'
+    - If `key` contains "offsettime" convert `value` to 'datetime.timedelta'
         (e.g. exif.offsettimeoriginal, exif.offsettimedigitized)
     - Otherwise `value` is not converted and returned as is
 
@@ -26,23 +27,24 @@ def to_datetime(key: str, value: str) -> Union[datetime, date, tzinfo, str]:
         value (str): Value of entry in ExifDict
 
     Returns:
-        value (datetime | date | tzinfo | str) : 
-            Value of entry in ExifDict converted to datetime, date or tzinfo 
+        value (datetime | date | timedelta | str) : 
+            Value of entry in ExifDict converted to datetime, date or timedelta 
             if applicable
     """
-
+    converted_value: ExifValue = value
     if "datetime" in key:
         # value = "YYYY:MM:DD HH:MM:SS" --> convert to 'datetime.datetime'
-        return datetime.strptime(value, "%Y:%m:%d %H:%M:%S")
+        converted_value = datetime.strptime(value, "%Y:%m:%d %H:%M:%S")
     elif "date" in key:
         # value = "YYYY:MM:DD" --> convert to datetime.date
-        return datetime.strptime(value, "%Y:%m:%d").date()
+        converted_value = datetime.strptime(value, "%Y:%m:%d").date()
     elif "offsettime" in key:
-        # value = "+HH:MM" or "UTC+HH:MM" --> convert to 'datetime.tzinfo'
+        # value = "+HH:MM" or "UTC+HH:MM" --> convert to 'datetime.timedelta'
         if value[:3].upper() == "UTC":
             value = value[3:]
-        return datetime.strptime(value, "%z").tzinfo
-    return value
+        converted_value = datetime.strptime(value, "%z").utcoffset() or timedelta(seconds=0)
+    return converted_value
+
 
 class Exif(Filter):
     """Filter by image EXIF data
@@ -52,10 +54,10 @@ class Exif(Filter):
 
     Exif fields which contain "datetime", "date" or "offsettime" in their fieldname 
     will have their value converted to 'datetime.datetime', 'datetime.date' and 
-    'datetime.tzinfo' respectivly.
+    'datetime.timedelta' respectivly.
     - `datetime.datetime` : exif.image.datetime, exif.exif.datetimeoriginal, ...
     - `datetime.date` : exif.gps.date, ...
-    - `datetime.tzinfo` : exif.exif.offsettimeoriginal, exif.exif.offsettimedigitized, ...
+    - `datetime.timedelta` : exif.exif.offsettimeoriginal, exif.exif.offsettimedigitized, ...
 
     Returns:
         ``{exif}``: 
