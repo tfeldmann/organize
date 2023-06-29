@@ -103,7 +103,7 @@ def test_exif_filter_datetime(images_folder):
     assert "5: 2015-07-08T14:43:52" in out
 
 
-def test_exif_filter_timezone(images_folder):
+def test_exif_filter_timedelta(images_folder):
     config = """
       rules:
         - locations: "/"
@@ -119,8 +119,8 @@ def test_exif_filter_timezone(images_folder):
     run(config, simulate=False, working_dir=images_folder)
     out = images_folder.readtext("out.txt")
     assert len(out.splitlines()) == 1
-    # 1: EXIF OffsetTimeOriginal +01:00
-    assert "1: UTC+01:00" in out
+    # 1: EXIF OffsetTimeOriginal +01:00 -> datetime.timedelta(seconds=3600) -> '1:00:00'
+    assert "1: 1:00:00" in out
 
 
 def test_exif_filter_by_multiple_keys(images_folder):
