@@ -33,7 +33,7 @@ jobs:
           python3 -m pip install --upgrade pip setuptools
           python3 -m pip install poetry
           poetry run python -m pip install -U pip setuptools
-          poetry install -E textract
+          poetry install -E textract --with=dev
 
       - name: Version info
         run: |
