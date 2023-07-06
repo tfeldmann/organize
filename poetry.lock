@@ -295,20 +295,6 @@ files = [
 ]
 
 [[package]]
-name = "commonmark"
-version = "0.9.1"
-description = "Python parser for the CommonMark Markdown spec"
-optional = false
-python-versions = "*"
-files = [
-    {file = "commonmark-0.9.1-py2.py3-none-any.whl", hash = "sha256:da2f38c92590f83de410ba1a3cbceafbc74fee9def35f9251ba9a971d6d66fd9"},
-    {file = "commonmark-0.9.1.tar.gz", hash = "sha256:452f9dc859be7f06631ddcb328b6919c67984aca654e5fefb3914d54691aed60"},
-]
-
-[package.extras]
-test = ["flake8 (==3.7.8)", "hypothesis (==3.55.3)"]
-
-[[package]]
 name = "compressed-rtf"
 version = "1.0.6"
 description = "Compressed Rich Text Format (RTF) compression and decompression package"
@@ -567,13 +553,13 @@ files = [
 
 [[package]]
 name = "jinja2"
-version = "3.0.3"
+version = "3.1.2"
 description = "A very fast and expressive template engine."
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "Jinja2-3.0.3-py3-none-any.whl", hash = "sha256:077ce6014f7b40d03b47d1f1ca4b0fc8328a692bd284016f806ed0eaca390ad8"},
-    {file = "Jinja2-3.0.3.tar.gz", hash = "sha256:611bb273cd68f3b993fabdc4064fc858c5b47a973cb5aa7999ec1ba405c87cd7"},
+    {file = "Jinja2-3.1.2-py3-none-any.whl", hash = "sha256:6088930bfe239f0e6710546ab9c19c9ef35e29792895fed6e6e31a023a182a61"},
+    {file = "Jinja2-3.1.2.tar.gz", hash = "sha256:31351a702a408a9e7595a8fc6150fc3f43bb6bf7e319770cbc0db9df9437e852"},
 ]
 
 [package.dependencies]
@@ -711,6 +697,30 @@ importlib-metadata = {version = ">=4.4", markers = "python_version < \"3.10\""}
 testing = ["coverage", "pyyaml"]
 
 [[package]]
+name = "markdown-it-py"
+version = "3.0.0"
+description = "Python port of markdown-it. Markdown parsing, done right!"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "markdown-it-py-3.0.0.tar.gz", hash = "sha256:e3f60a94fa066dc52ec76661e37c851cb232d92f9886b15cb560aaada2df8feb"},
+    {file = "markdown_it_py-3.0.0-py3-none-any.whl", hash = "sha256:355216845c60bd96232cd8d8c40e8f9765cc86f46880e43a8fd22dc1a1a8cab1"},
+]
+
+[package.dependencies]
+mdurl = ">=0.1,<1.0"
+
+[package.extras]
+benchmarking = ["psutil", "pytest", "pytest-benchmark"]
+code-style = ["pre-commit (>=3.0,<4.0)"]
+compare = ["commonmark (>=0.9,<1.0)", "markdown (>=3.4,<4.0)", "mistletoe (>=1.0,<2.0)", "mistune (>=2.0,<3.0)", "panflute (>=2.3,<3.0)"]
+linkify = ["linkify-it-py (>=1,<3)"]
+plugins = ["mdit-py-plugins"]
+profiling = ["gprof2dot"]
+rtd = ["jupyter_sphinx", "mdit-py-plugins", "myst-parser", "pyyaml", "sphinx", "sphinx-copybutton", "sphinx-design", "sphinx_book_theme"]
+testing = ["coverage", "pytest", "pytest-cov", "pytest-regressions"]
+
+[[package]]
 name = "markupsafe"
 version = "2.1.3"
 description = "Safely add untrusted strings to HTML/XML markup."
@@ -778,6 +788,17 @@ python-versions = ">=3.6"
 files = [
     {file = "mdfind-wrapper-0.1.5.tar.gz", hash = "sha256:c0dbd5bc99c6d1fb4678bfa1841a3380ccac61e9b43a26a8d658aa9cafe27441"},
     {file = "mdfind_wrapper-0.1.5-py3-none-any.whl", hash = "sha256:fd00e65684b47f2d286eb7394eb172f4766f2926d95eddff6eb948352f620cbc"},
+]
+
+[[package]]
+name = "mdurl"
+version = "0.1.2"
+description = "Markdown URL utilities"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8"},
+    {file = "mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba"},
 ]
 
 [[package]]
@@ -1363,22 +1384,22 @@ use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "rich"
-version = "12.6.0"
+version = "13.4.2"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
 optional = false
-python-versions = ">=3.6.3,<4.0.0"
+python-versions = ">=3.7.0"
 files = [
-    {file = "rich-12.6.0-py3-none-any.whl", hash = "sha256:a4eb26484f2c82589bd9a17c73d32a010b1e29d89f1604cd9bf3a2097b81bb5e"},
-    {file = "rich-12.6.0.tar.gz", hash = "sha256:ba3a3775974105c221d31141f2c116f4fd65c5ceb0698657a11e9f295ec93fd0"},
+    {file = "rich-13.4.2-py3-none-any.whl", hash = "sha256:8f87bc7ee54675732fa66a05ebfe489e27264caeeff3728c945d25971b6485ec"},
+    {file = "rich-13.4.2.tar.gz", hash = "sha256:d653d6bccede5844304c605d5aac802c7cf9621efd700b46c7ec2b51ea914898"},
 ]
 
 [package.dependencies]
-commonmark = ">=0.9.0,<0.10.0"
-pygments = ">=2.6.0,<3.0.0"
+markdown-it-py = ">=2.2.0"
+pygments = ">=2.13.0,<3.0.0"
 typing-extensions = {version = ">=4.0.0,<5.0", markers = "python_version < \"3.9\""}
 
 [package.extras]
-jupyter = ["ipywidgets (>=7.5.1,<8.0.0)"]
+jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
 [[package]]
 name = "schema"
@@ -1753,4 +1774,4 @@ textract = ["textract"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.12"
-content-hash = "e52c69ea49ce7dc951df15f6cdc99e6fde0bb1177e531e8c3e178919ce722ea9"
+content-hash = "971b981977600c92a95137a5de0a4067fd338134a7058a22899c892fc74178f3"
