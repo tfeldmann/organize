@@ -37,7 +37,7 @@ classifiers = [
 organize = "organize.cli:cli"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8,<3.12"
 fs = ">=2.4.16"
 rich = "^12.0.0"
 PyYAML = "^6.0"
@@ -66,12 +66,12 @@ docs = [
 ]
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^6.2.5"
-mypy = "^0.971"
-requests = "^2.27.1"
-types-PyYAML = "^6.0.3"
-coverage = "^5"
-pytest-cov = "^3.0.0"
+pytest = "^7.4.0"
+mypy = "^1.4.0"
+requests = "^2.31.0"
+types-PyYAML = "^6.0.12.10"
+coverage = "^7.2.0"
+pytest-cov = "^4.1.0"
 
 [tool.coverage.run]
 source = ['organize']
@@ -103,5 +103,5 @@ skip_gitignore = true
 line_length = 88
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
