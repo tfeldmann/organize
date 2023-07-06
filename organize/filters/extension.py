@@ -55,4 +55,4 @@ class Extension(Filter):
         )
 
     def __str__(self):
-        return "Extension(%s)" % ", ".join(self.extensions)
+        return f"Extension({', '.join(self.extensions)})"

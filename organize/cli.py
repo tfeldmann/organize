@@ -142,6 +142,7 @@ def execute(
     skip_tags: Optional[Tuple[str]] = None,
 ):
     from schema import SchemaError
+
     from . import core
 
     config_path, config_text = read_config(config)
@@ -235,7 +236,7 @@ def edit(config: Optional[str], editor):
     if is_syspath:
         click.edit(filename=confpath, editor=editor)
     else:
-        click.echo("Not a local config path: %s" % confpath)
+        click.echo(f"Not a local config path: {confpath}")
 
 
 @cli.command()
@@ -253,7 +254,7 @@ def check(config: str, debug):
 
     try:
         config_path, config_str = read_config(config)
-        print("Checking: %s" % config_path)
+        print(f"Checking: {config_path}")
 
         if debug:
             out.rule("Raw", align="left")
@@ -327,7 +328,7 @@ def reveal(config: Optional[str], path: bool):
                 raise ValueError("not a local path")
             webbrowser.open(dir_url)
     except Exception as e:
-        click.echo("Cannot reveal this config (%s)" % e)
+        click.echo(f"Cannot reveal this config ({e})")
         click.echo(confpath)
 
 

@@ -45,8 +45,8 @@ def next_free_name(
     counter = start
     prev_candidate = ""
     if not extension.startswith("."):
-        extension = ".%s" % extension
-    wanted = "%s%s" % (name, extension)
+        extension = f".{extension}"
+    wanted = f"{name}{extension}"
     if not fs.exists(wanted):
         return wanted
     while True:
@@ -90,7 +90,7 @@ def resolve_overwrite_conflict(
         return None
 
     elif conflict_mode == "overwrite":
-        print("Overwrite %s." % safe_description(dst_fs, dst_path))
+        print(f"Overwrite {safe_description(dst_fs, dst_path)}.")
         if not simulate:
             if dst_fs.isdir(dst_path):
                 dst_fs.removedir(dst_path)
@@ -116,7 +116,7 @@ def resolve_overwrite_conflict(
             extension=ext,
             template=rename_template,
         )
-        print('Renaming existing to: "%s"' % name)
+        print(f'Renaming existing to: "{name}"')
         if not simulate:
             if dst_fs.isdir(dst_path):
                 move_dir(dst_fs, dst_path, dst_fs, name)
@@ -124,7 +124,7 @@ def resolve_overwrite_conflict(
                 move_file(dst_fs, dst_path, dst_fs, name)
         return dst_path
 
-    raise ValueError("Unknown conflict_mode %s" % conflict_mode)
+    raise ValueError(f"Unknown conflict_mode {conflict_mode}")
 
 
 def dst_from_options(src_path, dest, filesystem, args: dict):

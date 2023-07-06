@@ -54,7 +54,7 @@ class SimulationFS(MemoryFS):
         if not self.fs_url:
             return "<Simulation>"
         elif "://" in self.fs_url:
-            return "<%s>" % self.fs_url
+            return f"<{self.fs_url}>"
         return self.fs_url
 
 
@@ -130,7 +130,6 @@ def is_same_resource(fs1: FS, path1: str, fs2: FS, path2: str):
     #     if isinstance(fs, WrapFS):
     #         fs, base = fs.delegate_path("/")
     #     return fs, normpath(join(base, path))  # to support ".." in path
-
     # completely unwrap WrapFS instances
     fs1, path1 = unwrap_wrapfs(fs1, path1)
     fs2, path2 = unwrap_wrapfs(fs2, path2)
@@ -165,10 +164,10 @@ def is_same_resource(fs1: FS, path1: str, fs2: FS, path2: str):
 def safe_description(fs: FS, path):
     try:
         if isinstance(fs, SimulationFS):
-            return "%s%s" % (str(fs), fspath.abspath(path))
+            return f"{str(fs)}{fspath.abspath(path)}"
         return fs.getsyspath(path)
     except Exception as e:
-        return '{} in "{}"'.format(path, fs)
+        return f'{path} in "{fs}"'
 
 
 def ensure_list(inp):
@@ -182,7 +181,7 @@ def ensure_dict(inp):
         return inp
     elif isinstance(inp, str):
         return {inp: {}}
-    raise ValueError("Cannot ensure dict: %s" % inp)
+    raise ValueError(f"Cannot ensure dict: {inp}")
 
 
 def to_args(inp):

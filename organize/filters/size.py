@@ -49,7 +49,7 @@ def create_constraints(inp: str) -> Set[Tuple[Callable[[int, int], bool], int]]:
                 numbytes = num * base**exp
                 result.add((op, numbytes))
         except (AttributeError, KeyError, IndexError, ValueError, TypeError) as e:
-            raise ValueError("Invalid size format: %s" % part) from e
+            raise ValueError(f"Invalid size format: {part}") from e
     return result
 
 
@@ -121,4 +121,4 @@ class Size(Filter):
         )
 
     def __str__(self) -> str:
-        return "FileSize({})".format(" ".join(self.conditions))
+        return f"FileSize({' '.join(self.conditions)})"

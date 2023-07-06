@@ -26,7 +26,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
@@ -39,7 +38,7 @@ classifiers = [
 organize = "organize.cli:cli"
 
 [tool.poetry.dependencies]
-python = "^3.6.2"
+python = "^3.7"
 fs = ">=2.4.16"
 rich = "^12.0.0"
 PyYAML = "^6.0"
@@ -79,7 +78,7 @@ pytest-cov = "^3.0.0"
 source = ['organize']
 
 [tool.mypy]
-python_version = "3.6"
+python_version = "3.7"
 
 [[tool.mypy.overrides]]
 module = [

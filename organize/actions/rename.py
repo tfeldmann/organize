@@ -9,8 +9,12 @@ from schema import Optional, Or
 
 from organize.utils import Template, safe_description
 
+from ._conflict_resolution import (
+    CONFLICT_OPTIONS,
+    check_conflict,
+    resolve_overwrite_conflict,
+)
 from .action import Action
-from ._conflict_resolution import CONFLICT_OPTIONS, check_conflict, resolve_overwrite_conflict
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +57,7 @@ class Rename(Action):
     ) -> None:
         if on_conflict not in CONFLICT_OPTIONS:
             raise ValueError(
-                "on_conflict must be one of %s" % ", ".join(CONFLICT_OPTIONS)
+                f"on_conflict must be one of {', '.join(CONFLICT_OPTIONS)}"
             )
 
         self.new_name = Template.from_string(name)
@@ -95,7 +99,7 @@ class Rename(Action):
             )
 
             if not skip:
-                self.print("Rename to %s" % safe_description(fs, dst_path))
+                self.print(f"Rename to {safe_description(fs, dst_path)}")
                 if not simulate:
                     move_action(fs, src_path, fs, dst_path)
 
@@ -106,7 +110,4 @@ class Rename(Action):
         }
 
     def __str__(self) -> str:
-        return "Rename(new_name=%s, conflict_mode=%s)" % (
-            self.new_name,
-            self.conflict_mode,
-        )
+        return f"Rename(new_name={self.new_name}, conflict_mode={self.conflict_mode})"

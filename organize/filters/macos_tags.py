@@ -1,5 +1,5 @@
 import sys
-from typing import Union, Iterable
+from typing import Iterable, Union
 
 import simplematch as sm
 
@@ -12,7 +12,7 @@ def list_tags(path):
     import macos_tags
 
     tags = macos_tags.get_all(path)
-    return ["{} ({})".format(tag.name, tag.color.name.lower()) for tag in tags]
+    return [f"{tag.name} ({tag.color.name.lower()})" for tag in tags]
 
 
 class MacOSTags(Filter):
@@ -55,4 +55,4 @@ class MacOSTags(Filter):
         )
 
     def __str__(self):
-        return "MacOSTags(tags=%s)" % ", ".join(self.filter_tags)
+        return f"MacOSTags(tags={', '.join(self.filter_tags)})"

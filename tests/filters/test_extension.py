@@ -33,7 +33,6 @@ def test_extension_empty():
 
 def test_extension_result():
     with open_fs("mem://") as mem:
-
         path = "somefile.TxT"
         mem.touch(path)
 
