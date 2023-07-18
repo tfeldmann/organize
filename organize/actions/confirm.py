@@ -37,4 +37,4 @@ class Confirm(Action):
             raise StopIteration("Aborted")
 
     def __str__(self) -> str:
-        return 'Confirm(msg="%s")' % self.msg
+        return f'Confirm(msg="{self.msg}")'

@@ -42,15 +42,11 @@ def test_all_filters_documented():
     with fs.open_fs(DOCS_DIR) as docdir:
         filter_docs = docdir.readtext("filters.md")
         for name in FILTERS.keys():
-            assert (
-                "## {}".format(name) in filter_docs
-            ), f"The {name} filter is not documented!"
+            assert f"## {name}" in filter_docs, f"The {name} filter is not documented!"
 
 
 def test_all_actions_documented():
     with fs.open_fs(DOCS_DIR) as docdir:
         action_docs = docdir.readtext("actions.md")
         for name in ACTIONS.keys():
-            assert (
-                "## {}".format(name) in action_docs
-            ), f"The {name} action is not documented!"
+            assert f"## {name}" in action_docs, f"The {name} action is not documented!"

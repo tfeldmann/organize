@@ -24,7 +24,7 @@ class Echo(Action):
 
     def pipeline(self, args: dict, simulate: bool) -> None:
         full_msg = self.msg.render(**args)
-        self.print("%s" % full_msg)
+        self.print(f"{full_msg}")
 
     def __str__(self) -> str:
-        return 'Echo(msg="%s")' % self.msg
+        return f'Echo(msg="{self.msg}")'

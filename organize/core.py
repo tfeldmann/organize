@@ -164,7 +164,7 @@ def replace_with_instances(config: dict, default_filesystem):
                 if isinstance(options, dict) and options.get("ignore_errors", False):
                     warnings.append(str(e))
                 else:
-                    raise ValueError("Invalid location %s (%s)" % (options, e)) from e
+                    raise ValueError(f"Invalid location {options} ({e})") from e
 
         # filters are optional
         _filters = []
@@ -172,7 +172,7 @@ def replace_with_instances(config: dict, default_filesystem):
             try:
                 _filters.append(instantiate_filter(x))
             except Exception as e:
-                raise ValueError("Invalid filter %s (%s)" % (x, e)) from e
+                raise ValueError(f"Invalid filter {x} ({e})") from e
 
         # actions
         _actions = []
@@ -180,7 +180,7 @@ def replace_with_instances(config: dict, default_filesystem):
             try:
                 _actions.append(instantiate_action(x))
             except Exception as e:
-                raise ValueError("Invalid action %s (%s)" % (x, e)) from e
+                raise ValueError(f"Invalid action {x} ({e})") from e
 
         rule["locations"] = _locations
         rule["filters"] = _filters
@@ -291,7 +291,7 @@ def run_rules(rules: dict, tags, skip_tags, simulate: bool = True):
         if not should_run:
             continue
         target = rule.get("targets", "files")
-        console.rule(rule.get("name", "Rule %s" % rule_nr))
+        console.rule(rule.get("name", f"Rule {rule_nr}"))
         filter_mode = rule.get("filter_mode", "all")
 
         for walker, walker_fs, walker_path in rule["locations"]:

@@ -116,3 +116,6 @@ venv.bak/
 
 # End of https://www.gitignore.io/api/visualstudiocode
 .idea
+
+# ruff
+**/.ruff_cache/

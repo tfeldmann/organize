@@ -42,7 +42,7 @@ def test_copy_on_itself(testfiles):
     ],
 )
 def test_move_conflict(testfs: FS, mode, files, test_txt_content):
-    config = """
+    config = f"""
     rules:
       - locations: "/"
         filters:
@@ -50,10 +50,8 @@ def test_move_conflict(testfs: FS, mode, files, test_txt_content):
         actions:
           - move:
               dest: "test.txt"
-              on_conflict: {}
-    """.format(
-        mode
-    )
+              on_conflict: {mode}
+    """
     testfs.writetext("file.txt", "new")
     testfs.writetext("test.txt", "old")
     core.run(config, simulate=False, working_dir=testfs)

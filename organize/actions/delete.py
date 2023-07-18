@@ -28,7 +28,7 @@ class Delete(Action):
         fs = args["fs"]  # type: FS
         fs_path = args["fs_path"]  # type: str
         desc = safe_description(fs=fs, path=fs_path)
-        self.print('Deleting "%s"' % desc)
+        self.print(f'Deleting "{desc}"')
         if not simulate:
             logger.info("Deleting %s.", desc)
             if fs.isdir(fs_path):

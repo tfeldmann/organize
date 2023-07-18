@@ -84,7 +84,7 @@ class Write(Action):
         self._is_first_write = True
 
         if self.mode not in MODES:
-            raise ValueError("mode must be one of %s" % ", ".join(MODES))
+            raise ValueError(f"mode must be one of {', '.join(MODES)}")
 
     def pipeline(self, args: dict, simulate: bool):
         text = self.text.render(args)

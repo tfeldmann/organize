@@ -1,5 +1,6 @@
-import fs
 from unittest.mock import patch
+
+import fs
 
 from organize.actions import Trash
 from organize.core import run

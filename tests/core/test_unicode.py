@@ -1,6 +1,6 @@
 import pytest
-
 from conftest import make_files, read_files
+
 from organize import core
 
 

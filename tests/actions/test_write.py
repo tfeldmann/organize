@@ -1,6 +1,6 @@
 import pytest
-from fs.base import FS
 from conftest import make_files
+from fs.base import FS
 
 from organize import core
 

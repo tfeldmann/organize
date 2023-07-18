@@ -47,7 +47,7 @@ def test_working_dir(tempfs: FS):
         configfs.writetext("config.yaml", config)
         args = [
             configfs.getsyspath("config.yaml"),
-            "--working-dir=%s" % tempfs.getsyspath("/"),
+            f"--working-dir={tempfs.getsyspath('/')}",
         ]
         print(args)
         runner.invoke(cli.sim, args)

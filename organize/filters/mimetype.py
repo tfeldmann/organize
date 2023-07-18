@@ -57,4 +57,4 @@ class MimeType(Filter):
         )
 
     def __str__(self):
-        return "MimeType(%s)" % ", ".join(self.mimetypes)
+        return f"MimeType({', '.join(self.mimetypes)})"
