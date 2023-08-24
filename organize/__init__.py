@@ -24,6 +24,7 @@ handlers:
         class: logging.handlers.TimedRotatingFileHandler
         level: DEBUG
         filename: {str(LOG_PATH)}
+        encoding: utf-8
         formatter: simple
         when: midnight
         backupCount: 30

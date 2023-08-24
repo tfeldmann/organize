@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.4.1 (2023-08-19)
+- Fix unicode bug in logging (Issue #294)
+
 ## v2.4.0 (2022-09-05)
 
 - New action: `write`.
