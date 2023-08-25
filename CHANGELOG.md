@@ -1,6 +1,7 @@
 # Changelog
 
-## v2.4.1 (2023-08-19)
+## v2.4.1 (2023-08-25)
+
 - Fix unicode bug in logging (Issue #294) (Thanks @xdhmoore)
 - Updated dependencies (Thanks @gaby)
 - Removed support for python 3.7 (EOL - June 2023) (Thanks @gaby)
