@@ -1,5 +1,6 @@
 import argparse
 import getpass
+import os
 import re
 import subprocess
 from datetime import datetime
@@ -104,6 +105,10 @@ def publish(args):
     if not ask_confirm(f"Publishing version {version}. Is this correct?"):
         return
 
+    if ask_confirm("Run the tests?"):
+        os.system("poetry run pytest")
+        os.system("poetry run mypy organize main.py")
+
     # extract changes from changelog
     with open(CURRENT_FOLDER / "CHANGELOG.md", "r") as f:
         changelog = f.read()
@@ -140,7 +145,7 @@ def publish(args):
             auth=(input("Benutzer: "), getpass.getpass(prompt="API token: ")),
             json={
                 "tag_name": f"v{version}",
-                "target_commitish": "master",
+                "target_commitish": "main",
                 "name": f"v{version}",
                 "body": changes,
                 "draft": False,

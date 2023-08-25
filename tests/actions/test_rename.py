@@ -1,108 +1,130 @@
-import os
+import fs
+from conftest import make_files, read_files
 
-from organize.actions import Rename
-from organize.compat import Path
-
-USER_DIR = os.path.expanduser("~")
-
-ARGS = {"basedir": Path.home(), "path": Path.home() / "test.py", "simulate": False}
+from organize.core import run
 
 
-def test_tilde_expansion(mock_exists, mock_samefile, mock_rename, mock_trash):
-    mock_exists.return_value = False
-    mock_samefile.return_value = False
-    rename = Rename(name="newname.py", overwrite=False)
-    new_path = rename.run(**ARGS)
-    assert mock_exists.call_count > 0
-    mock_trash.assert_not_called()
-    expected_path = (Path.home() / "newname.py").expanduser()
-    mock_rename.assert_called_with(expected_path)
-    assert new_path == {'path': expected_path}
+def test_rename_issue51(testfs):
+    # test for issue https://github.com/tfeldmann/organize/issues/51
+    files = {
+        "19asd_WF_test2.PDF": "",
+        "other.pdf": "",
+        "18asd_WFX_test2.pdf": "",
+    }
+    make_files(testfs, files)
 
-
-def test_overwrite(mock_exists, mock_samefile, mock_rename, mock_trash):
-    mock_exists.return_value = True
-    mock_samefile.return_value = False
-    rename = Rename(name="{path.stem} Kopie.py", overwrite=True)
-    new_path = rename.run(**ARGS)
-    assert mock_exists.call_count > 0
-    mock_trash.assert_called_with(os.path.join(USER_DIR, "test Kopie.py"))
-    mock_rename.assert_called_with(Path("~/test Kopie.py").expanduser())
-    assert new_path is not None
-
-
-def test_already_exists(mock_exists, mock_samefile, mock_rename, mock_trash):
-    mock_exists.side_effect = [True, False]
-    mock_samefile.return_value = False
-    rename = Rename(name="asd.txt", overwrite=False)
-    new_path = rename.run(**ARGS)
-    assert mock_exists.call_count > 0
-    mock_trash.assert_not_called()
-    mock_rename.assert_called_with(Path("~/asd 2.txt").expanduser())
-    assert new_path is not None
-
-
-def test_overwrite_samefile(mock_exists, mock_samefile, mock_rename, mock_trash):
-    args = {"basedir": Path.home(), "path": Path.home() / "test.PDF", "simulate": False}
-    mock_exists.return_value = True
-    mock_samefile.return_value = True
-    rename = Rename(name="{path.stem}.pdf", overwrite=False)
-    new_path = rename.run(**args)
-    assert mock_exists.call_count > 0
-    mock_trash.assert_not_called()
-    mock_rename.assert_called_with((Path.home() / "test.pdf").expanduser())
-    assert new_path is not None
-
-
-def test_keep_name(mock_exists, mock_samefile, mock_rename, mock_trash):
-    args = {"basedir": Path.home(), "path": Path.home() / "test.pdf", "simulate": False}
-    mock_exists.return_value = True
-    mock_samefile.return_value = True
-    rename = Rename(name="{path.stem}.pdf", overwrite=False)
-    new_path = rename.run(**args)
-    assert mock_exists.call_count > 0
-    mock_trash.assert_not_called()
-    mock_rename.assert_not_called()
-    assert new_path is not None
-
-
-def test_already_exists_multiple(mock_exists, mock_samefile, mock_rename, mock_trash):
-    mock_exists.side_effect = [True, True, True, False]
-    mock_samefile.return_value = False
-    rename = Rename(name="asd.txt", overwrite=False)
-    new_path = rename.run(**ARGS)
-    assert mock_exists.call_count > 0
-    mock_trash.assert_not_called()
-    mock_rename.assert_called_with(Path("~/asd 4.txt").expanduser())
-    assert new_path is not None
-
-
-def test_already_exists_multiple_separator(
-    mock_exists, mock_samefile, mock_rename, mock_trash
-):
-    mock_exists.side_effect = [True, True, True, False]
-    mock_samefile.return_value = False
-    rename = Rename(name="asd.txt", overwrite=False, counter_separator="-")
-    new_path = rename.run(**ARGS)
-    assert mock_exists.call_count > 0
-    mock_trash.assert_not_called()
-    mock_rename.assert_called_with(Path("~/asd-4.txt").expanduser())
-    assert new_path is not None
-
-
-def test_args(mock_exists, mock_samefile, mock_rename, mock_trash):
-    args = {
-        "basedir": Path.home(),
-        "path": Path.home() / "test.py",
-        "nr": {"upper": 1},
-        "simulate": False,
+    CONFIG = """
+    rules:
+      - locations: "./"
+        filters:
+          - extension
+          - name:
+              startswith: "19"
+              contains:
+                - "_WF_"
+        actions:
+          - rename: "{name}_unread.{extension.lower()}"
+          - copy:
+              dest: "copy/"
+    """
+    run(CONFIG, simulate=False, working_dir=testfs)
+    result = read_files(testfs)
+    assert result == {
+        "copy": {
+            "19asd_WF_test2_unread.pdf": "",
+        },
+        "19asd_WF_test2_unread.pdf": "",
+        "other.pdf": "",
+        "18asd_WFX_test2.pdf": "",
     }
 
-    mock_exists.return_value = False
-    mock_samefile.return_value = False
-    rename = Rename(name="{nr.upper}-{path.stem} Kopie.py")
-    new_path = rename.run(**args)
-    assert mock_exists.call_count > 0
-    mock_trash.assert_not_called()
-    mock_rename.assert_called_with(Path("~/1-test Kopie.py").expanduser())
-    assert new_path is not None
+
+def test_rename_folders(testfs):
+    config = """
+    rules:
+      - name: "Renaming DVD folders"
+        locations: "/"
+        targets: dirs
+        filters:
+          - name:
+              contains: DVD
+        actions:
+          - rename:
+              name: "{name.replace('[DVD] ','').replace(' [1080p]','').replace(' ', '_')}"
+    """
+    files = {
+        "[DVD] Best Of Video 1080 [1080p]": {
+            "[DVD] Best Of Video 1080 [1080p]": "",
+            "Metadata": "",
+        },
+        "[DVD] This Is A Title [1080p]": {
+            "[DVD] This Is A Title [1080p]": "",
+            "Metadata": "",
+        },
+    }
+    make_files(testfs, files)
+    run(rules=config, simulate=False, working_dir=testfs)
+    assert read_files(testfs) == {
+        "Best_Of_Video_1080": {
+            "[DVD] Best Of Video 1080 [1080p]": "",
+            "Metadata": "",
+        },
+        "This_Is_A_Title": {
+            "[DVD] This Is A Title [1080p]": "",
+            "Metadata": "",
+        },
+    }
+
+
+def test_rename_in_subfolders(testfs):
+    config = """
+    rules:
+      - locations: "/"
+        subfolders: true
+        filters:
+          - name:
+              contains: RENAME
+          - extension
+        actions:
+          - rename: "DONE.{extension}"
+    """
+    files = {
+        "folder": {
+            "FIRST-RENAME.pdf": "",
+            "Other": "",
+        },
+        "Another folder": {
+            "Subfolder": {
+                "RENAME-ME_TOO.txt": "",
+            },
+            "Metadata": "",
+        },
+    }
+    make_files(testfs, files)
+    run(rules=config, simulate=False, working_dir=testfs)
+    assert read_files(testfs) == {
+        "folder": {
+            "DONE.pdf": "",
+            "Other": "",
+        },
+        "Another folder": {
+            "Subfolder": {
+                "DONE.txt": "",
+            },
+            "Metadata": "",
+        },
+    }
+
+
+def test_filename_move(tempfs):
+    config = """
+        rules:
+        - locations: "."
+          filters:
+            - extension
+          actions:
+            - rename: '{path.stem}{path.stem}.{extension.lower()}'
+    """
+    make_files(tempfs, {"test.PY": ""})
+    run(rules=config, simulate=False, working_dir=tempfs)
+    assert read_files(tempfs) == {"testtest.py": ""}

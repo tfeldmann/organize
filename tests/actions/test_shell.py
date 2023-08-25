@@ -1,25 +1,28 @@
+from pathlib import Path
 from unittest.mock import patch
 
 from organize.actions import Shell
-from organize.compat import Path
 
 
 def test_shell_basic():
-    with patch("subprocess.call") as m:
-        shell = Shell("echo 'Hello World'")
-        shell.run(path=Path.home(), simulate=False)
-        m.assert_called_with("echo 'Hello World'", shell=True)
+    shell = Shell(
+        "echo 'Hello World'",
+        simulation_output="-sim-",
+        simulation_returncode=127,
+    )
+    result = shell.run(simulate=True)
+    assert "-sim-" in result["shell"]["output"]
+    assert 127 == result["shell"]["returncode"]
+
+    result = shell.run(simulate=False)
+    result = result["shell"]
+    assert "Hello World" in result["output"]  # windows escapes the string
+    assert result["returncode"] == 0
 
 
-def test_shell_args():
-    with patch("subprocess.call") as m:
-        shell = Shell("echo {year}")
-        shell.run(path=Path.home(), year=2017, simulate=False)
-        m.assert_called_with("echo 2017", shell=True)
-
-
-def test_shell_path():
-    with patch("subprocess.call") as m:
-        shell = Shell("echo {path.stem} for {year}")
-        shell.run(path=Path("/") / "this" / "isafile.txt", year=2017, simulate=False)
-        m.assert_called_with("echo isafile for 2017", shell=True)
+def test_shell_template_simulation():
+    shell = Shell("echo '{msg}'", run_in_simulation=True)
+    result = shell.run(msg="Hello", simulate=True)
+    result = result["shell"]
+    assert "Hello" in result["output"]
+    assert result["returncode"] == 0

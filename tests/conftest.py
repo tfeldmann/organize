@@ -1,96 +1,85 @@
-import os
-from typing import Iterable, Tuple, Union
+import pathlib
+from typing import Union
 from unittest.mock import patch
 
+import fs
 import pytest
+from fs.base import FS
+from fs.path import basename, join
 
-from organize.compat import Path
-from organize.utils import DotDict
-
-TESTS_FOLDER = os.path.dirname(os.path.abspath(__file__))
-
-TESTS_FOLDER = os.path.dirname(os.path.abspath(__file__))
-
-
-def create_filesystem(tmp_path, files, config):
-    # create files
-    for f in files:
-        try:
-            name, content = f
-        except Exception:
-            name = f
-            content = ""
-        p = tmp_path / "files" / Path(name)
-        p.parent.mkdir(parents=True, exist_ok=True)
-        with p.open("w") as ptr:
-            ptr.write(content)
-    # create config
-    with (tmp_path / "config.yaml").open("w") as f:
-        f.write(config)
-    # change working directory
-    os.chdir(str(tmp_path))
-
-
-def assertdir(path, *files):
-    os.chdir(str(path / "files"))
-    assert set(files) == set(str(x) for x in Path(".").glob("**/*") if x.is_file())
+ORGANIZE_DIR = pathlib.Path(__file__).parent.parent
 
 
 @pytest.fixture
-def mock_exists():
-    with patch.object(Path, "exists") as mck:
-        yield mck
+def tempfs():
+    with fs.open_fs("temp://") as tmp:
+        yield tmp
 
 
 @pytest.fixture
-def mock_samefile():
-    with patch.object(Path, "samefile") as mck:
-        yield mck
+def memfs():
+    with fs.open_fs("mem://") as mem:
+        yield mem
 
 
-@pytest.fixture
-def mock_rename():
-    with patch.object(Path, "rename") as mck:
-        yield mck
-
-
-@pytest.fixture
-def mock_move():
-    with patch("shutil.move") as mck:
-        yield mck
-
-
-@pytest.fixture
-def mock_copy():
-    with patch("shutil.copy2") as mck:
-        yield mck
-
-
-@pytest.fixture
-def mock_remove():
-    with patch("os.remove") as mck:
-        yield mck
-
-
-@pytest.fixture
-def mock_trash():
-    with patch("send2trash.send2trash") as mck:
-        yield mck
-
-
-@pytest.fixture
-def mock_parent():
-    with patch.object(Path, "parent") as mck:
-        yield mck
-
-
-@pytest.fixture
-def mock_mkdir():
-    with patch.object(Path, "mkdir") as mck:
-        yield mck
+@pytest.fixture(
+    params=[
+        "mem://",
+        pytest.param("temp://"),
+    ],
+)
+def testfs(request) -> FS:
+    with fs.open_fs(request.param) as tmp:
+        yield tmp
 
 
 @pytest.fixture
 def mock_echo():
     with patch("organize.actions.Echo.print") as mck:
         yield mck
+
+
+def make_files(fs: FS, layout: Union[dict, list], path="/"):
+    """
+    Example layout:
+
+        layout = {
+            "folder": {
+                "subfolder": {
+                    "test.txt": "",
+                    "other.pdf": b"binary",
+                },
+            },
+            "file.txt": "Hello world\nAnother line",
+        }
+    """
+    fs.makedirs(path, recreate=True)
+    if isinstance(layout, list):
+        for f in layout:
+            fs.touch(f)
+        return
+    for k, v in layout.items():
+        respath = join(path, k)
+
+        # folders are dicts
+        if isinstance(v, dict):
+            make_files(fs=fs, layout=v, path=respath)
+
+        # everything else is a file
+        elif v is None:
+            fs.touch(respath)
+        elif isinstance(v, bytes):
+            fs.writebytes(respath, v)
+        elif isinstance(v, str):
+            fs.writetext(respath, v)
+        else:
+            raise ValueError(f"Unknown file data {v}")
+
+
+def read_files(fs: FS, path="/"):
+    result = dict()
+    for x in fs.walk.files(path, max_depth=0):
+        result[basename(x)] = fs.readtext(x)
+    for x in fs.walk.dirs(path, max_depth=0):
+        result[basename(x)] = read_files(fs, path=join(path, x))
+    return result

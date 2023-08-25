@@ -1,130 +1,201 @@
-import logging
-import os
-import shutil
-from typing import Mapping
+from os.path import commonpath
+from typing import Callable, Union
 
-from organize.compat import Path
-from organize.utils import DotDict, find_unused_filename, fullpath
+from fs import errors, open_fs
+from fs.base import FS
+from fs.copy import copy_file
+from fs.errors import FSError
+from fs.move import move_dir
+from fs.opener import manage_fs
+from fs.opener.errors import OpenerError
+from fs.osfs import OSFS
+from fs.path import dirname, frombase
+from schema import Optional, Or
 
+from organize.utils import SimulationFS, Template, safe_description
+
+from ._conflict_resolution import CONFLICT_OPTIONS, check_conflict, dst_from_options
 from .action import Action
-from .trash import Trash
 
-logger = logging.getLogger(__name__)
+
+# this is taken from my PR
+def move_file_optimized(
+    src_fs,
+    src_path,
+    dst_fs,
+    dst_path,
+    preserve_time=False,
+    cleanup_dst_on_error=True,
+):
+    # type: (...) -> None
+    """Move a file from one filesystem to another.
+
+    Arguments:
+        src_fs (FS or str): Source filesystem (instance or URL).
+        src_path (str): Path to a file on ``src_fs``.
+        dst_fs (FS or str): Destination filesystem (instance or URL).
+        dst_path (str): Path to a file on ``dst_fs``.
+        preserve_time (bool): If `True`, try to preserve mtime of the
+            resources (defaults to `False`).
+        cleanup_dst_on_error (bool): If `True`, tries to delete the file copied to
+            ``dst_fs`` if deleting the file from ``src_fs`` fails (defaults to `True`).
+
+    """
+    with manage_fs(src_fs, writeable=True) as _src_fs:
+        with manage_fs(dst_fs, writeable=True, create=True) as _dst_fs:
+            if _src_fs is _dst_fs:
+                # Same filesystem, may be optimized
+                _src_fs.move(
+                    src_path, dst_path, overwrite=True, preserve_time=preserve_time
+                )
+                return
+
+            if _src_fs.hassyspath(src_path) and _dst_fs.hassyspath(dst_path):
+                # if both filesystems have a syspath we create a new OSFS from a
+                # common parent folder and use it to move the file.
+                try:
+                    src_syspath = _src_fs.getsyspath(src_path)
+                    dst_syspath = _dst_fs.getsyspath(dst_path)
+                    common = commonpath([src_syspath, dst_syspath])
+                    if common:
+                        rel_src = frombase(common, src_syspath)
+                        rel_dst = frombase(common, dst_syspath)
+                        with _src_fs.lock(), _dst_fs.lock():
+                            with OSFS(common) as base:
+                                base.move(rel_src, rel_dst, preserve_time=preserve_time)
+                                return  # optimization worked, exit early
+                except ValueError:
+                    # This is raised if we cannot find a common base folder.
+                    # In this case just fall through to the standard method.
+                    pass
+
+            # Standard copy and delete
+            with _src_fs.lock(), _dst_fs.lock():
+                copy_file(
+                    _src_fs,
+                    src_path,
+                    _dst_fs,
+                    dst_path,
+                    preserve_time=preserve_time,
+                )
+                try:
+                    _src_fs.remove(src_path)
+                except FSError as e:
+                    # if the source cannot be removed we delete the copy on the
+                    # destination
+                    if cleanup_dst_on_error:
+                        _dst_fs.remove(dst_path)
+                    raise e
 
 
 class Move(Action):
 
-    """
-    Move a file to a new location. The file can also be renamed.
+    """Move a file to a new location.
+
+    The file can also be renamed.
     If the specified path does not exist it will be created.
 
     If you only want to rename the file and keep the folder, it is
-    easier to use the Rename-Action.
+    easier to use the `rename` action.
 
-    :param str dest:
-        The destination folder or path.
-        If `dest` ends with a slash / backslash, the file will be moved into
-        this folder and not renamed.
+    Args:
+        dest (str):
+            The destination where the file / dir should be moved to.
+            If `dest` ends with a slash, it is assumed to be a target directory
+            and the file / dir will be moved into `dest` and keep its name.
 
-    :param bool overwrite:
-        specifies whether existing files should be overwritten.
-        Otherwise it will start enumerating files (append a counter to the
-        filename) to resolve naming conflicts. [Default: False]
+        on_conflict (str):
+            What should happen in case **dest** already exists.
+            One of `skip`, `overwrite`, `trash`, `rename_new` and `rename_existing`.
+            Defaults to `rename_new`.
 
-    :param str counter_separator:
-        specifies the separator between filename and the appended counter.
-        Only relevant if **overwrite** is disabled. [Default: ``\' \'``]
+        rename_template (str):
+            A template for renaming the file / dir in case of a conflict.
+            Defaults to `{name} {counter}{extension}`.
 
-    Examples:
-        - Move all pdfs and jpgs from the desktop into the folder "~/Desktop/media/".
-          Filenames are not changed.
+        filesystem (str):
+            (Optional) A pyfilesystem opener url of the filesystem you want to copy to.
+            If this is not given, the local filesystem is used.
 
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: ~/Desktop
-                filters:
-                  - extension:
-                      - pdf
-                      - jpg
-                actions:
-                  - move: '~/Desktop/media/'
-
-        - Use a placeholder to move all .pdf files into a "PDF" folder and all
-          .jpg files into a "JPG" folder. Existing files will be overwritten.
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: ~/Desktop
-                filters:
-                  - extension:
-                      - pdf
-                      - jpg
-                actions:
-                  - move:
-                      dest: '~/Desktop/{extension.upper}/'
-                      overwrite: true
-
-        - Move pdfs into the folder `Invoices`. Keep the filename but do not
-          overwrite existing files. To prevent overwriting files, an index is
-          added to the filename, so ``somefile.jpg`` becomes ``somefile 2.jpg``.
-
-          .. code-block:: yaml
-            :caption: config.yaml
-
-            rules:
-              - folders: ~/Desktop/Invoices
-                filters:
-                  - extension:
-                      - pdf
-                actions:
-                  - move:
-                      dest: '~/Documents/Invoices/'
-                      overwrite: false
-                      counter_separator: '_'
+    The next action will work with the moved file / dir.
     """
 
-    def __init__(self, dest: str, overwrite=False, counter_separator=" "):
-        self.dest = dest
-        self.overwrite = overwrite
-        self.counter_separator = counter_separator
+    name = "move"
+    arg_schema = Or(
+        str,
+        {
+            "dest": str,
+            Optional("on_conflict"): Or(*CONFLICT_OPTIONS),
+            Optional("rename_template"): str,
+            Optional("filesystem"): object,
+        },
+    )
 
-    def pipeline(self, args: DotDict) -> Mapping[str, Path]:
-        path = args["path"]
-        simulate = args["simulate"]
+    def __init__(
+        self,
+        dest: str,
+        on_conflict="rename_new",
+        rename_template="{name} {counter}{extension}",
+        filesystem: Union[FS, str, None] = None,
+    ) -> None:
+        if on_conflict not in CONFLICT_OPTIONS:
+            raise ValueError(
+                f"on_conflict must be one of {', '.join(CONFLICT_OPTIONS)}"
+            )
 
-        expanded_dest = self.fill_template_tags(self.dest, args)
-        # if only a folder path is given we append the filename to have the full
-        # path. We use os.path for that because pathlib removes trailing slashes
-        if expanded_dest.endswith(("\\", "/")):
-            expanded_dest = os.path.join(expanded_dest, path.name)
+        self.dest = Template.from_string(dest)
+        self.conflict_mode = on_conflict
+        self.rename_template = Template.from_string(rename_template)
+        self.filesystem = filesystem or self.Meta.default_filesystem
 
-        new_path = fullpath(expanded_dest)
-        new_path_exists = new_path.exists()
-        new_path_samefile = new_path_exists and new_path.samefile(path)
-        if new_path_exists and not new_path_samefile:
-            if self.overwrite:
-                self.print("File already exists")
-                Trash().run(path=new_path, simulate=simulate)
-            else:
-                new_path = find_unused_filename(
-                    path=new_path, separator=self.counter_separator
-                )
+    def pipeline(self, args: dict, simulate: bool):
+        src_fs = args["fs"]  # type: FS
+        src_path = args["fs_path"]
 
-        if new_path_samefile and new_path == path:
-            self.print("Keep location")
-        else:
-            self.print('Move to "%s"' % new_path)
+        move_action: Callable[[FS, str, FS, str], None]
+        if src_fs.isdir(src_path):
+            move_action = move_dir
+        elif src_fs.isfile(src_path):
+            move_action = move_file_optimized
+
+        dst_fs, dst_path = dst_from_options(
+            src_path=src_path,
+            dest=self.dest,
+            filesystem=self.filesystem,
+            args=args,
+        )
+
+        # check for conflicts
+        skip, dst_path = check_conflict(
+            src_fs=src_fs,
+            src_path=src_path,
+            dst_fs=dst_fs,
+            dst_path=dst_path,
+            conflict_mode=self.conflict_mode,
+            rename_template=self.rename_template,
+            simulate=simulate,
+            print=self.print,
+        )
+
+        try:
+            dst_fs = open_fs(dst_fs, create=False, writeable=True)
+        except (errors.CreateFailed, OpenerError):
             if not simulate:
-                logger.info("Creating folder if not exists: %s", new_path.parent)
-                new_path.parent.mkdir(parents=True, exist_ok=True)
-                logger.info('Moving "%s" to "%s"', path, new_path)
-                shutil.move(src=str(path), dst=str(new_path))
+                dst_fs = open_fs(dst_fs, create=True, writeable=True)
+            else:
+                dst_fs = SimulationFS(dst_fs)
 
-        return {"path": new_path}
+        if not skip:
+            self.print(f"Move to {safe_description(dst_fs, dst_path)}")
+            if not simulate:
+                dst_fs.makedirs(dirname(dst_path), recreate=True)
+                move_action(src_fs, src_path, dst_fs, dst_path)
+
+        # the next action should work with the newly created copy
+        return {
+            "fs": dst_fs,
+            "fs_path": dst_path,
+        }
 
     def __str__(self) -> str:
-        return "Move(dest=%s, overwrite=%s)" % (self.dest, self.overwrite)
+        return f"Move(dest={self.dest}, conflict_mode={self.conflict_mode})"

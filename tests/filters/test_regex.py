@@ -1,21 +1,21 @@
-from organize.compat import Path
-from organize.filters import Regex
-from organize.utils import DotDict
+from pathlib import Path
 
+from organize import core
+from organize.filters import Regex
 
 TESTDATA = [
-    (Path("~/Invoices/RG123456123456-sig.pdf"), True, "123456123456"),
-    (Path("~/Invoices/RG002312321542-sig.pdf"), True, "002312321542"),
-    (Path("~/Invoices/RG002312321542.pdf"), False, None),
+    ("RG123456123456-sig.pdf", True, "123456123456"),
+    ("RG002312321542-sig.pdf", True, "002312321542"),
+    ("RG002312321542.pdf", False, None),
 ]
 
 
 def test_regex_backslash():
     regex = Regex(r"^\.pdf$")
-    assert regex.matches(Path(".pdf"))
-    assert not regex.matches(Path("+pdf"))
-    assert not regex.matches(Path("/pdf"))
-    assert not regex.matches(Path("\\pdf"))
+    assert regex.matches(".pdf")
+    assert not regex.matches("+pdf")
+    assert not regex.matches("/pdf")
+    assert not regex.matches("\\pdf")
 
 
 def test_regex_basic():
@@ -26,15 +26,38 @@ def test_regex_basic():
 
 def test_regex_return():
     regex = Regex(r"^RG(?P<the_number>\d{12})-sig\.pdf$")
-    for path, valid, result in TESTDATA:
+    for path, valid, test_result in TESTDATA:
         if valid:
-            dct = regex.run(path=path)
-            assert dct == {"regex": {"the_number": result}}
+            result = regex.run(fs_path=path)
+            assert result.updates == {"regex": {"the_number": test_result}}
+            assert result.matches == True
 
 
 def test_regex_umlaut():
     regex = Regex(r"^Erträgnisaufstellung-(?P<year>\d*)\.pdf")
-    doc = Path("~/Documents/Erträgnisaufstellung-1998.pdf")
+    doc = "Erträgnisaufstellung-1998.pdf"
     assert regex.matches(doc)
-    dct = regex.run(path=doc)
-    assert dct == {"regex": {"year": "1998"}}
+    result = regex.run(fs_path=doc)
+    assert result.updates == {"regex": {"year": "1998"}}
+    assert result.matches
+
+
+def test_multiple_regex_placeholders(testfs):
+    config = """
+    rules:
+      - locations: "."
+        filters:
+          - regex: (?P<word>\w+)-(?P<number>\d+).*
+          - regex: (?P<all>.+?)\.\w{3}
+          - extension
+        actions:
+          - write:
+               text: '{regex.word} {regex.number} {regex.all} {extension}'
+               path: out.txt
+    """
+    testfs.touch("test-123.jpg")
+    testfs.touch("other-456.pdf")
+    core.run(config, simulate=False, working_dir=testfs)
+    out = testfs.readtext("out.txt")
+    assert "test 123 test-123 jpg" in out
+    assert "other 456 other-456 pdf" in out

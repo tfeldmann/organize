@@ -1,49 +1,108 @@
 [tool.poetry]
 name = "organize-tool"
-version = "1.7.0"
+version = "2.4.1"
 description = "The file management automation tool"
-packages = [
-    { include = "organize" },
-]
+packages = [{ include = "organize" }]
 authors = ["Thomas Feldmann <mail@tfeldmann.de>"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/tfeldmann/organize"
 documentation = "https://organize.readthedocs.io"
-keywords = ["file", "management", "automation", "tool", "organization", "rules", "yaml"]
+keywords = [
+    "file",
+    "management",
+    "automation",
+    "tool",
+    "organization",
+    "rules",
+    "yaml",
+]
 classifiers = [
     # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
-    "Natural Language :: English",
     "Intended Audience :: End Users/Desktop",
+    "Natural Language :: English",
     "Operating System :: OS Independent",
     "Topic :: Utilities",
 ]
 
 [tool.poetry.scripts]
-organize = "organize.cli:main"
+organize = "organize.cli:cli"
 
 [tool.poetry.dependencies]
-python = "^3.5"
-appdirs = "^1.4"
-docopt = "^0.6.2"
-PyYAML = "^5.1"
-Send2Trash = "^1.5"
-colorama = "^0.4.1"
-typing = { version = "^3.6", python = "<3.5" }
-pathlib2 = [
-    { version = "^2.3.3", python = "<3.5" },
-    { version = "2.3.0", python = "<3.4" },
-]
-exifread = "^2.1"
-textract = "^1.6.3"
+python = ">=3.8,<3.12"
+fs = ">=2.4.16"
+rich = "^13.4.2"
+PyYAML = "^6.0"
+Send2Trash = { version = "^1.8.2", extras = ["nativeLib"] }
+ExifRead = "^3.0.0"
+textract = { version = "^1.6.5", optional = true }
+simplematch = "^1.3"
+macos-tags = { version = "^1.5.1", markers = "sys_platform == 'darwin'" }
+schema = "^0.7.5"
+Jinja2 = "^3.1.2"
+click = "^8.1.3"
 
-[tool.poetry.dev-dependencies]
-pytest = "^4.6"
-pylint = "^2.3"
-ipdb = "^0.12.0"
+# must be in main dependencies for readthedocs.
+mkdocs = { version = "^1.2.3", optional = true }
+mkdocs-autorefs = { version = "^0.5.0", optional = true }
+mkdocs-include-markdown-plugin = { version = "^6.0.0", optional = true }
+mkdocstrings = { version = "^0.22.0", extras = ["python"], optional = true }
+markupsafe = { version = "2.0.1", optional = true } # pinned. https://stackoverflow.com/q/72191560/300783
+
+[tool.poetry.extras]
+textract = ["textract"]
+docs = [
+    "mkdocs",
+    "mkdocs-autorefs",
+    "mkdocs-include-markdown-plugin",
+    "mkdocstrings",
+    "markupsafe",
+]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+mypy = "^1.4.0"
+requests = "^2.31.0"
+types-PyYAML = "^6.0.12.10"
+coverage = "^7.2.0"
+pytest-cov = "^4.1.0"
+ruff = "^0.0.285"
+
+[tool.coverage.run]
+source = ['organize']
+
+[tool.mypy]
+python_version = "3.8"
+
+[[tool.mypy.overrides]]
+module = [
+    "schema",
+    "simplematch",
+    "appdirs",
+    "send2trash",
+    "exifread",
+    "textract",
+    "requests",
+    "macos_tags",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"
+testpaths = ["tests", "organize"]
+norecursedirs = ["tests/todo", "organize/filters", ".configs"]
+
+[tool.isort]
+profile = "black"
+skip_gitignore = true
+line_length = 88
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

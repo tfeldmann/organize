@@ -1,3 +1,4 @@
+.configs
 .pytest_cache/
 
 # Created by https://www.gitignore.io/api/python
@@ -115,3 +116,6 @@ venv.bak/
 
 # End of https://www.gitignore.io/api/visualstudiocode
 .idea
+
+# ruff
+**/.ruff_cache/
