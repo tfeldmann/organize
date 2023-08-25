@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "organize-tool"
-version = "2.4.0"
+version = "2.4.1"
 description = "The file management automation tool"
 packages = [{ include = "organize" }]
 authors = ["Thomas Feldmann <mail@tfeldmann.de>"]
@@ -24,12 +24,6 @@ classifiers = [
     "Intended Audience :: End Users/Desktop",
     "Natural Language :: English",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Topic :: Utilities",
 ]
 
