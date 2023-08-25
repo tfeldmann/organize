@@ -8,7 +8,7 @@
     <title>Filters - organize</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
         <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
     
       <script>
@@ -18,12 +18,11 @@
         var mkdocs_page_url = null;
       </script>
     
-    <script src="../js/jquery-3.6.0.min.js" defer></script>
     <!--[if lt IE 9]>
       <script src="../js/html5shiv.min.js"></script>
     <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-      <script>hljs.initHighlightingOnLoad();</script> 
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -35,7 +34,7 @@
           <a href=".." class="icon icon-home"> organize
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -122,11 +121,10 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-      <li>Filters</li>
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+      <li class="breadcrumb-item active">Filters</li>
     <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/tfeldmann/organize/edit/main/docs/filters.md"
-          class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/tfeldmann/organize/edit/main/docs/filters.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -168,12 +166,17 @@
 <h2 id="created">created<a class="headerlink" href="#created" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Matches files / folders by created date</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -185,21 +188,79 @@
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>years</strong> (<code>int</code>) – specify number of years</p></li>
-            <li><p><strong>months</strong> (<code>int</code>) – specify number of months</p></li>
-            <li><p><strong>weeks</strong> (<code>float</code>) – specify number of weeks</p></li>
-            <li><p><strong>days</strong> (<code>float</code>) – specify number of days</p></li>
-            <li><p><strong>hours</strong> (<code>float</code>) – specify number of hours</p></li>
-            <li><p><strong>minutes</strong> (<code>float</code>) – specify number of minutes</p></li>
-            <li><p><strong>seconds</strong> (<code>float</code>) – specify number of seconds</p></li>
-            <li><p><strong>mode</strong> (<code>str</code>) – either 'older' or 'newer'. 'older' matches files / folders created before the given
+            <li>
+              <b>years</b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of years</p>
+              </div>
+            </li>
+            <li>
+              <b>months</b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of months</p>
+              </div>
+            </li>
+            <li>
+              <b>weeks</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of weeks</p>
+              </div>
+            </li>
+            <li>
+              <b>days</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of days</p>
+              </div>
+            </li>
+            <li>
+              <b>hours</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of hours</p>
+              </div>
+            </li>
+            <li>
+              <b>minutes</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of minutes</p>
+              </div>
+            </li>
+            <li>
+              <b>seconds</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of seconds</p>
+              </div>
+            </li>
+            <li>
+              <b>mode</b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>either 'older' or 'newer'. 'older' matches files / folders created before the given
 time, 'newer' matches files / folders created within the given time.
-(default = 'older')</p></li>
+(default = 'older')</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
   </tbody>
 </table>
+
+
 <table class="field-list">
   <colgroup>
     <col class="field-name" />
@@ -209,20 +270,38 @@ time, 'newer' matches files / folders created within the given time.
     <tr class="field">
     <th class="field-name">Returns:</th>
     <td class="field-body">
-        <ul class="first simple">
-          <li><p><code>{created}</code> – The datetime the file / folder was created.</p></li>
-        </ul>
+      <ul class="first simple">
+          <li>
+            –
+            <div class="doc-md-description">
+              <p>{created}: The datetime the file / folder was created.</p>
+            </div>
+          </li>
+      </ul>
     </td>
     </tr>
   </tbody>
 </table>
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <p>Show all files on your desktop created at least 10 days ago</p>
 <pre><code class="language-yaml">rules:
   - name: Show all files on your desktop created at least 10 days ago
@@ -268,13 +347,18 @@ time, 'newer' matches files / folders created within the given time.
 <h2 id="date_added">date_added<a class="headerlink" href="#date_added" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Matches files by the time the file was added to a folder.</p>
 <p><strong><code>date_added</code> is only available on macOS!</strong></p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -286,21 +370,79 @@ time, 'newer' matches files / folders created within the given time.
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>years</strong> (<code>int</code>) – specify number of years</p></li>
-            <li><p><strong>months</strong> (<code>int</code>) – specify number of months</p></li>
-            <li><p><strong>weeks</strong> (<code>float</code>) – specify number of weeks</p></li>
-            <li><p><strong>days</strong> (<code>float</code>) – specify number of days</p></li>
-            <li><p><strong>hours</strong> (<code>float</code>) – specify number of hours</p></li>
-            <li><p><strong>minutes</strong> (<code>float</code>) – specify number of minutes</p></li>
-            <li><p><strong>seconds</strong> (<code>float</code>) – specify number of seconds</p></li>
-            <li><p><strong>mode</strong> (<code>str</code>) – either 'older' or 'newer'. 'older' matches files / folders last modified before
+            <li>
+              <b>years</b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of years</p>
+              </div>
+            </li>
+            <li>
+              <b>months</b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of months</p>
+              </div>
+            </li>
+            <li>
+              <b>weeks</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of weeks</p>
+              </div>
+            </li>
+            <li>
+              <b>days</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of days</p>
+              </div>
+            </li>
+            <li>
+              <b>hours</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of hours</p>
+              </div>
+            </li>
+            <li>
+              <b>minutes</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of minutes</p>
+              </div>
+            </li>
+            <li>
+              <b>seconds</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of seconds</p>
+              </div>
+            </li>
+            <li>
+              <b>mode</b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>either 'older' or 'newer'. 'older' matches files / folders last modified before
 the given time, 'newer' matches files / folders last modified within the given
-time. (default = 'older')</p></li>
+time. (default = 'older')</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
   </tbody>
 </table>
+
+
 <table class="field-list">
   <colgroup>
     <col class="field-name" />
@@ -310,21 +452,39 @@ time. (default = 'older')</p></li>
     <tr class="field">
     <th class="field-name">Returns:</th>
     <td class="field-body">
-        <ul class="first simple">
-          <li><p><code>{date_added}</code> – The datetime the files / folders were added.</p></li>
-        </ul>
+      <ul class="first simple">
+          <li>
+            –
+            <div class="doc-md-description">
+              <p>{date_added}: The datetime the files / folders were added.</p>
+            </div>
+          </li>
+      </ul>
     </td>
     </tr>
   </tbody>
 </table>
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p>Works the same way as <a href="#created"><code>created</code></a> and <a href="#lastmodified"><code>lastmodified</code></a>.</p>
-<p><strong> Examples </strong></p>
+  </div>
+
+</div><p>Works the same way as <a href="#created"><code>created</code></a> and <a href="#lastmodified"><code>lastmodified</code></a>.</p>
+<p>** Examples **</p>
 <pre><code class="language-yaml">rules:
   - name: Show the date the file was added to the folder
     locations: &quot;~/Desktop&quot;
@@ -336,13 +496,18 @@ time. (default = 'older')</p></li>
 <h2 id="date_lastused">date_lastused<a class="headerlink" href="#date_lastused" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Matches files by the time the file was last used.</p>
 <p><strong><code>date_lastused</code> is only available on macOS!</strong></p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -354,21 +519,79 @@ time. (default = 'older')</p></li>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>years</strong> (<code>int</code>) – specify number of years</p></li>
-            <li><p><strong>months</strong> (<code>int</code>) – specify number of months</p></li>
-            <li><p><strong>weeks</strong> (<code>float</code>) – specify number of weeks</p></li>
-            <li><p><strong>days</strong> (<code>float</code>) – specify number of days</p></li>
-            <li><p><strong>hours</strong> (<code>float</code>) – specify number of hours</p></li>
-            <li><p><strong>minutes</strong> (<code>float</code>) – specify number of minutes</p></li>
-            <li><p><strong>seconds</strong> (<code>float</code>) – specify number of seconds</p></li>
-            <li><p><strong>mode</strong> (<code>str</code>) – either 'older' or 'newer'. 'older' matches files / folders last used before
+            <li>
+              <b>years</b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of years</p>
+              </div>
+            </li>
+            <li>
+              <b>months</b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of months</p>
+              </div>
+            </li>
+            <li>
+              <b>weeks</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of weeks</p>
+              </div>
+            </li>
+            <li>
+              <b>days</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of days</p>
+              </div>
+            </li>
+            <li>
+              <b>hours</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of hours</p>
+              </div>
+            </li>
+            <li>
+              <b>minutes</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of minutes</p>
+              </div>
+            </li>
+            <li>
+              <b>seconds</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of seconds</p>
+              </div>
+            </li>
+            <li>
+              <b>mode</b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>either 'older' or 'newer'. 'older' matches files / folders last used before
 the given time, 'newer' matches files / folders last used within the given
-time. (default = 'older')</p></li>
+time. (default = 'older')</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
   </tbody>
 </table>
+
+
 <table class="field-list">
   <colgroup>
     <col class="field-name" />
@@ -378,21 +601,39 @@ time. (default = 'older')</p></li>
     <tr class="field">
     <th class="field-name">Returns:</th>
     <td class="field-body">
-        <ul class="first simple">
-          <li><p><code>{date_lastused}</code> – The datetime the files / folders were added.</p></li>
-        </ul>
+      <ul class="first simple">
+          <li>
+            –
+            <div class="doc-md-description">
+              <p>{date_lastused}: The datetime the files / folders were added.</p>
+            </div>
+          </li>
+      </ul>
     </td>
     </tr>
   </tbody>
 </table>
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p>Works the same way as <a href="#created"><code>created</code></a> and <a href="#lastmodified"><code>lastmodified</code></a>.</p>
-<p><strong> Examples </strong></p>
+  </div>
+
+</div><p>Works the same way as <a href="#created"><code>created</code></a> and <a href="#lastmodified"><code>lastmodified</code></a>.</p>
+<p>** Examples **</p>
 <pre><code class="language-yaml">rules:
   - name: Show the date the file was added to the folder
     locations: &quot;~/Desktop&quot;
@@ -404,14 +645,19 @@ time. (default = 'older')</p></li>
 <h2 id="duplicate">duplicate<a class="headerlink" href="#duplicate" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>A fast duplicate file finder.</p>
 <p>This filter compares files byte by byte and finds identical files with potentially
 different filenames.</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -423,7 +669,14 @@ different filenames.</p>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>detect_original_by</strong> (<code>str</code>) – Detection method to distinguish between original and duplicate.
+            <li>
+              <b>detect_original_by</b>
+                  (<code>str</code>, default:
+                      <code>&#39;first_seen&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Detection method to distinguish between original and duplicate.
 Possible values are:</p>
 <ul>
 <li><code>"first_seen"</code>: Whatever file is visited first is the original. This
@@ -431,7 +684,9 @@ Possible values are:</p>
 <li><code>"name"</code>: The first entry sorted by name is the original.</li>
 <li><code>"created"</code>: The first entry sorted by creation date is the original.</li>
 <li><code>"lastmodified"</code>: The first file sorted by date of last modification is the original.</li>
-</ul></li>
+</ul>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -444,12 +699,25 @@ example <code>"-first_seen"</code>, <code>"-name"</code>, <code>"-created"</code
 <p><code>{duplicate.original}</code> - The path to the original</p>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <p>Show all duplicate files in your desktop and download folder (and their subfolders)</p>
 <pre><code class="language-yaml">rules:
   - name: Show all duplicate files in your desktop and download folder (and their subfolders)
@@ -477,20 +745,36 @@ example <code>"-first_seen"</code>, <code>"-name"</code>, <code>"-created"</code
 <h2 id="empty">empty<a class="headerlink" href="#empty" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Finds empty dirs and files</p>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <p>Recursively delete empty folders</p>
 <pre><code class="language-yaml">rules:
   - targets: dirs
@@ -505,11 +789,14 @@ example <code>"-first_seen"</code>, <code>"-name"</code>, <code>"-created"</code
 <h2 id="exif">exif<a class="headerlink" href="#exif" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Filter by image EXIF data</p>
 <p>The <code>exif</code> filter can be used as a filter as well as a way to get exif information
 into your actions.</p>
@@ -523,12 +810,25 @@ into your actions.</p>
 </code></pre>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p>Show available EXIF data of your pictures</p>
+  </div>
+
+</div><p>Show available EXIF data of your pictures</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Show available EXIF data of your pictures&quot;
     locations:
@@ -579,12 +879,17 @@ accordingly:</p>
 <h2 id="extension">extension<a class="headerlink" href="#extension" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Filter by file extension</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -596,7 +901,16 @@ accordingly:</p>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>*extensions</strong> (<code>list(str) or str</code>) – The file extensions to match (does not need to start with a colon).</p></li>
+            <li>
+              <b>*extensions</b>
+                  (<code>list(str) or str</code>, default:
+                      <code>()</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The file extensions to match (does not need to start with a colon).</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -607,12 +921,25 @@ accordingly:</p>
 </ul>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <p>Match a single file extension</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Match a single file extension&quot;
@@ -666,12 +993,17 @@ rules:
 <h2 id="filecontent">filecontent<a class="headerlink" href="#filecontent" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Matches file content with the given regular expression</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -683,7 +1015,16 @@ rules:
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>expr</strong> (<code>str</code>) – The regular expression to be matched.</p></li>
+            <li>
+              <b>expr</b>
+                  (<code>str</code>, default:
+                      <code>&#39;(?P&lt;all&gt;.*)&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The regular expression to be matched.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -697,12 +1038,25 @@ be returned like this:</p>
 </ul>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <p>Show the content of all your PDF files</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Show the content of all your PDF files&quot;
@@ -747,12 +1101,17 @@ be returned like this:</p>
 <h2 id="hash">hash<a class="headerlink" href="#hash" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Calculates the hash of a file.</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -764,8 +1123,17 @@ be returned like this:</p>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>algorithm</strong> (<code>str</code>) – Any hashing algorithm available to python's <code>hashlib</code>.
-<code>md5</code> by default.</p></li>
+            <li>
+              <b>algorithm</b>
+                  (<code>str</code>, default:
+                      <code>&#39;md5&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Any hashing algorithm available to python's <code>hashlib</code>.
+<code>md5</code> by default.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -787,12 +1155,25 @@ interpreter:</p>
 </ul>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <p>Show the hashes of your files:</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Show the hashes and size of your files&quot;
@@ -806,12 +1187,17 @@ interpreter:</p>
 <h2 id="lastmodified">lastmodified<a class="headerlink" href="#lastmodified" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Matches files by last modified date</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -823,21 +1209,79 @@ interpreter:</p>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>years</strong> (<code>int</code>) – specify number of years</p></li>
-            <li><p><strong>months</strong> (<code>int</code>) – specify number of months</p></li>
-            <li><p><strong>weeks</strong> (<code>float</code>) – specify number of weeks</p></li>
-            <li><p><strong>days</strong> (<code>float</code>) – specify number of days</p></li>
-            <li><p><strong>hours</strong> (<code>float</code>) – specify number of hours</p></li>
-            <li><p><strong>minutes</strong> (<code>float</code>) – specify number of minutes</p></li>
-            <li><p><strong>seconds</strong> (<code>float</code>) – specify number of seconds</p></li>
-            <li><p><strong>mode</strong> (<code>str</code>) – either 'older' or 'newer'. 'older' matches files / folders last modified before
+            <li>
+              <b>years</b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of years</p>
+              </div>
+            </li>
+            <li>
+              <b>months</b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of months</p>
+              </div>
+            </li>
+            <li>
+              <b>weeks</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of weeks</p>
+              </div>
+            </li>
+            <li>
+              <b>days</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of days</p>
+              </div>
+            </li>
+            <li>
+              <b>hours</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of hours</p>
+              </div>
+            </li>
+            <li>
+              <b>minutes</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of minutes</p>
+              </div>
+            </li>
+            <li>
+              <b>seconds</b>
+                  (<code>float</code>)
+              –
+              <div class="doc-md-description">
+                <p>specify number of seconds</p>
+              </div>
+            </li>
+            <li>
+              <b>mode</b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>either 'older' or 'newer'. 'older' matches files / folders last modified before
 the given time, 'newer' matches files / folders last modified within the given
-time. (default = 'older')</p></li>
+time. (default = 'older')</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
   </tbody>
 </table>
+
+
 <table class="field-list">
   <colgroup>
     <col class="field-name" />
@@ -847,20 +1291,38 @@ time. (default = 'older')</p></li>
     <tr class="field">
     <th class="field-name">Returns:</th>
     <td class="field-body">
-        <ul class="first simple">
-          <li><p><code>{lastmodified}</code> – The datetime the files / folders was lastmodified.</p></li>
-        </ul>
+      <ul class="first simple">
+          <li>
+            –
+            <div class="doc-md-description">
+              <p>{lastmodified}: The datetime the files / folders was lastmodified.</p>
+            </div>
+          </li>
+      </ul>
     </td>
     </tr>
   </tbody>
 </table>
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Show all files on your desktop last modified at least 10 days ago&quot;
     locations: &quot;~/Desktop&quot;
@@ -904,12 +1366,17 @@ time. (default = 'older')</p></li>
 <h2 id="macos_tags">macos_tags<a class="headerlink" href="#macos_tags" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Filter by macOS tags</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -921,19 +1388,41 @@ time. (default = 'older')</p></li>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>*tags</strong> (<code>list(str) or str</code>) – The tags to filter by</p></li>
+            <li>
+              <b>*tags</b>
+                  (<code>list(str) or str</code>, default:
+                      <code>()</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The tags to filter by</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
   </tbody>
 </table>
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Only files with a red macOS tag&quot;
     locations: &quot;~/Downloads&quot;
@@ -971,11 +1460,14 @@ time. (default = 'older')</p></li>
 <h2 id="mimetype">mimetype<a class="headerlink" href="#mimetype" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Filter by MIME type associated with the file extension.</p>
 <p>Supports a single string or list of MIME type strings as argument.
 The types don't need to be fully specified, for example "audio" matches everything
@@ -983,6 +1475,8 @@ from "audio/midi" to "audio/quicktime".</p>
 <p>You can see a list of known MIME types on your system by running this oneliner:</p>
 <pre><code class="language-sh">python3 -c &quot;import mimetypes as m; print('\n'.join(sorted(set(m.common_types.values()) | set(m.types_map.values()))))&quot;
 </code></pre>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -994,7 +1488,16 @@ from "audio/midi" to "audio/quicktime".</p>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>*mimetypes</strong> (<code>list(str) or str</code>) – The MIME types to filter for.</p></li>
+            <li>
+              <b>*mimetypes</b>
+                  (<code>list(str) or str</code>, default:
+                      <code>()</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The MIME types to filter for.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -1005,12 +1508,25 @@ from "audio/midi" to "audio/quicktime".</p>
 </ul>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <p>Show MIME types</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Show MIME types&quot;
@@ -1052,12 +1568,17 @@ from "audio/midi" to "audio/quicktime".</p>
 <h2 id="name">name<a class="headerlink" href="#name" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Match files and folders by name</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -1069,24 +1590,82 @@ from "audio/midi" to "audio/quicktime".</p>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>match</strong> (<code>str</code>) – A matching string in <a href="https://github.com/tfeldmann/simplematch">simplematch-syntax</a></p></li>
-            <li><p><strong>startswith</strong> (<code>str</code>) – The filename must begin with the given string</p></li>
-            <li><p><strong>contains</strong> (<code>str</code>) – The filename must contain the given string</p></li>
-            <li><p><strong>endswith</strong> (<code>str</code>) – The filename (without extension) must end with the given string</p></li>
-            <li><p><strong>case_sensitive</strong> (<code>bool</code>) – By default, the matching is case sensitive. Change this to False to use
-case insensitive matching.</p></li>
+            <li>
+              <b>match</b>
+                  (<code>str</code>, default:
+                      <code>&#39;*&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>A matching string in <a href="https://github.com/tfeldmann/simplematch">simplematch-syntax</a></p>
+              </div>
+            </li>
+            <li>
+              <b>startswith</b>
+                  (<code>str</code>, default:
+                      <code>&#39;&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The filename must begin with the given string</p>
+              </div>
+            </li>
+            <li>
+              <b>contains</b>
+                  (<code>str</code>, default:
+                      <code>&#39;&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The filename must contain the given string</p>
+              </div>
+            </li>
+            <li>
+              <b>endswith</b>
+                  (<code>str</code>, default:
+                      <code>&#39;&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The filename (without extension) must end with the given string</p>
+              </div>
+            </li>
+            <li>
+              <b>case_sensitive</b>
+                  (<code>bool</code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>By default, the matching is case sensitive. Change this to False to use
+case insensitive matching.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
   </tbody>
 </table>
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <p>Match all files starting with 'Invoice':</p>
 <pre><code class="language-yaml">rules:
   - locations: &quot;~/Desktop&quot;
@@ -1128,12 +1707,17 @@ case insensitive matching.</p></li>
 <h2 id="python">python<a class="headerlink" href="#python" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Use python code to filter files.</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -1145,7 +1729,14 @@ case insensitive matching.</p></li>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>code</strong> (<code>str</code>) – The python code to execute. The code must contain a <code>return</code> statement.</p></li>
+            <li>
+              <b>code</b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>The python code to execute. The code must contain a <code>return</code> statement.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -1161,12 +1752,25 @@ case insensitive matching.</p></li>
 </ul>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <pre><code class="language-yaml">rules:
   - name: A file name reverser.
     locations: ~/Documents
@@ -1223,12 +1827,17 @@ and then renaming the files with the output of your python script.</p>
 <h2 id="regex">regex<a class="headerlink" href="#regex" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Matches filenames with the given regular expression</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -1240,7 +1849,14 @@ and then renaming the files with the output of your python script.</p>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>expr</strong> (<code>str</code>) – The regular expression to be matched.</p></li>
+            <li>
+              <b>expr</b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>The regular expression to be matched.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -1253,12 +1869,25 @@ and then renaming the files with the output of your python script.</p>
 </ul>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <p>Match an invoice with a regular expression:</p>
 <pre><code class="language-yaml">rules:
   - locations: &quot;~/Desktop&quot;
@@ -1281,12 +1910,17 @@ group <code>the_number</code>.</p>
 <h2 id="size">size<a class="headerlink" href="#size" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Matches files and folders by size</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -1298,7 +1932,16 @@ group <code>the_number</code>.</p>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>*conditions</strong> (<code>list(str) or str</code>) – The size constraints.</p></li>
+            <li>
+              <b>*conditions</b>
+                  (<code>list(str) or str</code>, default:
+                      <code>()</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The size constraints.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -1322,12 +1965,25 @@ conditions are satisfied.</p>
 </ul>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <p>Trash big downloads:</p>
 <pre><code class="language-yaml">rules:
   - locations: &quot;~/Downloads&quot;
@@ -1390,14 +2046,15 @@ original relative path.</p>
     
   </span>
 </div>
-    <script>var base_url = '..';</script>
-    <script src="../js/theme_extra.js" defer></script>
-    <script src="../js/theme.js" defer></script>
-      <script src="../search/main.js" defer></script>
-    <script defer>
-        window.onload = function () {
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
             SphinxRtdTheme.Navigation.enable(true);
-        };
+        });
     </script>
 
 </body>

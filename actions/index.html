@@ -8,7 +8,7 @@
     <title>Actions - organize</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
         <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
     
       <script>
@@ -18,12 +18,11 @@
         var mkdocs_page_url = null;
       </script>
     
-    <script src="../js/jquery-3.6.0.min.js" defer></script>
     <!--[if lt IE 9]>
       <script src="../js/html5shiv.min.js"></script>
     <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-      <script>hljs.initHighlightingOnLoad();</script> 
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -35,7 +34,7 @@
           <a href=".." class="icon icon-home"> organize
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -112,11 +111,10 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-      <li>Actions</li>
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+      <li class="breadcrumb-item active">Actions</li>
     <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/tfeldmann/organize/edit/main/docs/actions.md"
-          class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/tfeldmann/organize/edit/main/docs/actions.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -130,20 +128,36 @@ look at the <a href="../rules/">Rules</a> section.</p>
 <h2 id="confirm">confirm<a class="headerlink" href="#confirm" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Ask for confirmation before continuing.</p>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples</strong></p>
+  </div>
+
+</div><p><strong>Examples</strong></p>
 <p>Confirm before deleting a duplicate</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Delete duplicates with confirmation&quot;
@@ -161,13 +175,18 @@ look at the <a href="../rules/">Rules</a> section.</p>
 <h2 id="copy">copy<a class="headerlink" href="#copy" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Copy a file or dir to a new location.</p>
 <p>If the specified path does not exist it will be created.</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -179,16 +198,50 @@ look at the <a href="../rules/">Rules</a> section.</p>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>dest</strong> (<code>str</code>) – The destination where the file / dir should be copied to.
+            <li>
+              <b>dest</b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>The destination where the file / dir should be copied to.
 If <code>dest</code> ends with a slash, it is assumed to be a target directory
-and the file / dir will be copied into <code>dest</code> and keep its name.</p></li>
-            <li><p><strong>on_conflict</strong> (<code>str</code>) – What should happen in case <strong>dest</strong> already exists.
+and the file / dir will be copied into <code>dest</code> and keep its name.</p>
+              </div>
+            </li>
+            <li>
+              <b>on_conflict</b>
+                  (<code>str</code>, default:
+                      <code>&#39;rename_new&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>What should happen in case <strong>dest</strong> already exists.
 One of <code>skip</code>, <code>overwrite</code>, <code>trash</code>, <code>rename_new</code> and <code>rename_existing</code>.
-Defaults to <code>rename_new</code>.</p></li>
-            <li><p><strong>rename_template</strong> (<code>str</code>) – A template for renaming the file / dir in case of a conflict.
-Defaults to <code>{name} {counter}{extension}</code>.</p></li>
-            <li><p><strong>filesystem</strong> (<code>str</code>) – (Optional) A pyfilesystem opener url of the filesystem you want to copy to.
-If this is not given, the local filesystem is used.</p></li>
+Defaults to <code>rename_new</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b>rename_template</b>
+                  (<code>str</code>, default:
+                      <code>&#39;{name} {counter}{extension}&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>A template for renaming the file / dir in case of a conflict.
+Defaults to <code>{name} {counter}{extension}</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b>filesystem</b>
+                  (<code>str</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>(Optional) A pyfilesystem opener url of the filesystem you want to copy to.
+If this is not given, the local filesystem is used.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -196,12 +249,25 @@ If this is not given, the local filesystem is used.</p></li>
 </table>      <p>The next action will work with the created copy.</p>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <p>Copy all pdfs into <code>~/Desktop/somefolder/</code> and keep filenames</p>
 <pre><code class="language-yaml">rules:
   - locations: ~/Desktop
@@ -239,22 +305,38 @@ The counter separator is <code>' '</code> by default, but can be changed using t
 <h2 id="delete">delete<a class="headerlink" href="#delete" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Delete a file from disk.</p>
 <p>Deleted files have no recovery option!
 Using the <code>Trash</code> action is strongly advised for most use-cases!</p>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <p>Delete old downloads.</p>
 <pre><code class="language-yaml">rules:
   - locations: &quot;~/Downloads&quot;
@@ -282,14 +364,19 @@ Using the <code>Trash</code> action is strongly advised for most use-cases!</p>
 <h2 id="echo">echo<a class="headerlink" href="#echo" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Prints the given message.</p>
 <p>This can be useful to test your rules, especially in combination with placeholder
 variables.</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -301,19 +388,39 @@ variables.</p>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>msg</strong> (<code>str</code>) – The message to print. Accepts placeholder variables.</p></li>
+            <li>
+              <b>msg</b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>The message to print. Accepts placeholder variables.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
   </tbody>
 </table>
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Find files older than a year&quot;
     locations: ~/Desktop
@@ -354,12 +461,17 @@ variables.</p>
 <h2 id="macos_tags">macos_tags<a class="headerlink" href="#macos_tags" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Add macOS tags.</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -371,7 +483,16 @@ variables.</p>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>*tags</strong> (<code>str</code>) – A list of tags or a single tag.</p></li>
+            <li>
+              <b>*tags</b>
+                  (<code>str</code>, default:
+                      <code>()</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>A list of tags or a single tag.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -383,12 +504,25 @@ variables.</p>
 <code>orange</code>.</p>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <pre><code class="language-yaml">rules:
   - name: &quot;add a single tag&quot;
     locations: &quot;~/Documents/Invoices&quot;
@@ -435,16 +569,21 @@ variables.</p>
 <h2 id="move">move<a class="headerlink" href="#move" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Move a file to a new location.</p>
 <p>The file can also be renamed.
 If the specified path does not exist it will be created.</p>
 <p>If you only want to rename the file and keep the folder, it is
 easier to use the <code>rename</code> action.</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -456,16 +595,50 @@ easier to use the <code>rename</code> action.</p>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>dest</strong> (<code>str</code>) – The destination where the file / dir should be moved to.
+            <li>
+              <b>dest</b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>The destination where the file / dir should be moved to.
 If <code>dest</code> ends with a slash, it is assumed to be a target directory
-and the file / dir will be moved into <code>dest</code> and keep its name.</p></li>
-            <li><p><strong>on_conflict</strong> (<code>str</code>) – What should happen in case <strong>dest</strong> already exists.
+and the file / dir will be moved into <code>dest</code> and keep its name.</p>
+              </div>
+            </li>
+            <li>
+              <b>on_conflict</b>
+                  (<code>str</code>, default:
+                      <code>&#39;rename_new&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>What should happen in case <strong>dest</strong> already exists.
 One of <code>skip</code>, <code>overwrite</code>, <code>trash</code>, <code>rename_new</code> and <code>rename_existing</code>.
-Defaults to <code>rename_new</code>.</p></li>
-            <li><p><strong>rename_template</strong> (<code>str</code>) – A template for renaming the file / dir in case of a conflict.
-Defaults to <code>{name} {counter}{extension}</code>.</p></li>
-            <li><p><strong>filesystem</strong> (<code>str</code>) – (Optional) A pyfilesystem opener url of the filesystem you want to copy to.
-If this is not given, the local filesystem is used.</p></li>
+Defaults to <code>rename_new</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b>rename_template</b>
+                  (<code>str</code>, default:
+                      <code>&#39;{name} {counter}{extension}&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>A template for renaming the file / dir in case of a conflict.
+Defaults to <code>{name} {counter}{extension}</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b>filesystem</b>
+                  (<code>str</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>(Optional) A pyfilesystem opener url of the filesystem you want to copy to.
+If this is not given, the local filesystem is used.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -473,12 +646,25 @@ If this is not given, the local filesystem is used.</p></li>
 </table>      <p>The next action will work with the moved file / dir.</p>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <p>Move all pdfs and jpgs from the desktop into the folder "~/Desktop/media/". Filenames are not changed.</p>
 <pre><code class="language-yaml">rules:
   - locations: ~/Desktop
@@ -517,12 +703,17 @@ If this is not given, the local filesystem is used.</p></li>
 <h2 id="python">python<a class="headerlink" href="#python" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Execute python code.</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -534,20 +725,49 @@ If this is not given, the local filesystem is used.</p></li>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>code</strong> (<code>str</code>) – The python code to execute.</p></li>
-            <li><p><strong>run_in_simulation</strong> (<code>bool</code>) – Whether to execute this code in simulation mode (Default false).</p></li>
+            <li>
+              <b>code</b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>The python code to execute.</p>
+              </div>
+            </li>
+            <li>
+              <b>run_in_simulation</b>
+                  (<code>bool</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to execute this code in simulation mode (Default false).</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
   </tbody>
 </table>
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <p>A basic example that shows how to get the current file path and do some printing in a
 for loop. The <code>|</code> is yaml syntax for defining a string literal spanning multiple lines.</p>
 <pre><code class="language-yaml">rules:
@@ -597,12 +817,17 @@ filename starting with an underscore:</p>
 <h2 id="rename">rename<a class="headerlink" href="#rename" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Renames a file.</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -614,12 +839,37 @@ filename starting with an underscore:</p>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>name</strong> (<code>str</code>) – The new name for the file / dir.</p></li>
-            <li><p><strong>on_conflict</strong> (<code>str</code>) – What should happen in case <strong>dest</strong> already exists.
+            <li>
+              <b>name</b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>The new name for the file / dir.</p>
+              </div>
+            </li>
+            <li>
+              <b>on_conflict</b>
+                  (<code>str</code>, default:
+                      <code>&#39;rename_new&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>What should happen in case <strong>dest</strong> already exists.
 One of <code>skip</code>, <code>overwrite</code>, <code>trash</code>, <code>rename_new</code> and <code>rename_existing</code>.
-Defaults to <code>rename_new</code>.</p></li>
-            <li><p><strong>rename_template</strong> (<code>str</code>) – A template for renaming the file / dir in case of a conflict.
-Defaults to <code>{name} {counter}{extension}</code>.</p></li>
+Defaults to <code>rename_new</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b>rename_template</b>
+                  (<code>str</code>, default:
+                      <code>&#39;{name} {counter}{extension}&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>A template for renaming the file / dir in case of a conflict.
+Defaults to <code>{name} {counter}{extension}</code>.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -627,12 +877,25 @@ Defaults to <code>{name} {counter}{extension}</code>.</p></li>
 </table>      <p>The next action will work with the renamed file / dir.</p>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Convert all .PDF file extensions to lowercase (.pdf)&quot;
     locations: &quot;~/Desktop&quot;
@@ -654,12 +917,17 @@ Defaults to <code>{name} {counter}{extension}</code>.</p></li>
 <h2 id="shell">shell<a class="headerlink" href="#shell" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Executes a shell command</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -671,11 +939,54 @@ Defaults to <code>{name} {counter}{extension}</code>.</p></li>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>cmd</strong> (<code>str</code>) – The command to execute.</p></li>
-            <li><p><strong>run_in_simulation</strong> (<code>bool</code>) – Whether to execute in simulation mode (default = false)</p></li>
-            <li><p><strong>ignore_errors</strong> (<code>bool</code>) – Whether to continue on returncodes != 0.</p></li>
-            <li><p><strong>simulation_output</strong> (<code>str</code>) – The value of <code>{shell.output}</code> if run in simulation</p></li>
-            <li><p><strong>simulation_returncode</strong> (<code>int</code>) – The value of <code>{shell.returncode}</code> if run in simulation</p></li>
+            <li>
+              <b>cmd</b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>The command to execute.</p>
+              </div>
+            </li>
+            <li>
+              <b>run_in_simulation</b>
+                  (<code>bool</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to execute in simulation mode (default = false)</p>
+              </div>
+            </li>
+            <li>
+              <b>ignore_errors</b>
+                  (<code>bool</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to continue on returncodes != 0.</p>
+              </div>
+            </li>
+            <li>
+              <b>simulation_output</b>
+                  (<code>str</code>, default:
+                      <code>&#39;** simulation **&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The value of <code>{shell.output}</code> if run in simulation</p>
+              </div>
+            </li>
+            <li>
+              <b>simulation_returncode</b>
+                  (<code>int</code>, default:
+                      <code>0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The value of <code>{shell.returncode}</code> if run in simulation</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -687,12 +998,25 @@ Defaults to <code>{name} {counter}{extension}</code>.</p></li>
 </ul>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <pre><code class="language-yaml">rules:
   - name: &quot;On macOS: Open all pdfs on your desktop&quot;
     locations: &quot;~/Desktop&quot;
@@ -704,12 +1028,17 @@ Defaults to <code>{name} {counter}{extension}</code>.</p></li>
 <h2 id="symlink">symlink<a class="headerlink" href="#symlink" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Create a symbolic link.</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -721,8 +1050,15 @@ Defaults to <code>{name} {counter}{extension}</code>.</p></li>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>dest</strong> (<code>str</code>) – The symlink destination. If <strong>dest</strong> ends with a slash `/``, create the
-symlink in the given directory. Can contain placeholders.</p></li>
+            <li>
+              <b>dest</b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>The symlink destination. If <strong>dest</strong> ends with a slash `/``, create the
+symlink in the given directory. Can contain placeholders.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -730,28 +1066,57 @@ symlink in the given directory. Can contain placeholders.</p></li>
 </table>      <p>Only the local filesystem is supported.</p>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<h2 id="trash">trash<a class="headerlink" href="#trash" title="Permanent link">#</a></h2>
+  </div>
+
+</div><h2 id="trash">trash<a class="headerlink" href="#trash" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Move a file or dir into the trash.</p>
 
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples:</strong></p>
+  </div>
+
+</div><p><strong>Examples:</strong></p>
 <pre><code class="language-yaml">rules:
   - name: Move all JPGs and PNGs on the desktop which are older than one year into the trash
     locations: &quot;~/Desktop&quot;
@@ -768,13 +1133,18 @@ symlink in the given directory. Can contain placeholders.</p></li>
 <h2 id="write">write<a class="headerlink" href="#write" title="Permanent link">#</a></h2>
 
 
-  <div class="doc doc-object doc-class">
+<div class="doc doc-object doc-class">
 
 
-    <div class="doc doc-contents first">
 
+
+  <div class="doc doc-contents first">
+
+  
       <p>Write text to a file.</p>
 <p>If the specified path does not exist it will be created.</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -786,32 +1156,95 @@ symlink in the given directory. Can contain placeholders.</p></li>
       <th class="field-name">Parameters:</th>
       <td class="field-body">
         <ul class="first simple">
-            <li><p><strong>text</strong> (<code>str</code>) – The text that should be written. Supports templates.</p></li>
-            <li><p><strong>file</strong> (<code>str</code>) – The file <code>text</code> should be written into. Supports templates.
-Defaults to <code>organize-out.txt</code></p></li>
-            <li><p><strong>mode</strong> (<code>str</code>) – Can be either <code>append</code> (append text to the file), <code>prepend</code> (insert text as
+            <li>
+              <b>text</b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>The text that should be written. Supports templates.</p>
+              </div>
+            </li>
+            <li>
+              <b>file</b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>The file <code>text</code> should be written into. Supports templates.
+Defaults to <code>organize-out.txt</code></p>
+              </div>
+            </li>
+            <li>
+              <b>mode</b>
+                  (<code>str</code>, default:
+                      <code>&#39;append&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Can be either <code>append</code> (append text to the file), <code>prepend</code> (insert text as
 first line) or <code>overwrite</code> (overwrite content with text).
-Defaults to <code>append</code>.</p></li>
-            <li><p><strong>newline</strong> (<code>str</code>) – (Optional) Whether to append a newline to the given <code>text</code>.
-Defaults to <code>true</code>.</p></li>
-            <li><p><strong>clear_before_first_write</strong> (<code>bool</code>) – (Optional) Clears the file before first appending / prepending text to it.
+Defaults to <code>append</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b>newline</b>
+                  (<code>str</code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>(Optional) Whether to append a newline to the given <code>text</code>.
+Defaults to <code>true</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b>clear_before_first_write</b>
+                  (<code>bool</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>(Optional) Clears the file before first appending / prepending text to it.
 This happens only the first time write_file is run. If the rule filters
 don't match anything the file is left as it is.
-Defaults to <code>false</code>.</p></li>
-            <li><p><strong>filesystem</strong> (<code>str</code>) – (Optional) A pyfilesystem opener url of the filesystem the textfile is on.
-If this is not given, the local filesystem is used.</p></li>
+Defaults to <code>false</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b>filesystem</b>
+                  (<code>str</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>(Optional) A pyfilesystem opener url of the filesystem the textfile is on.
+If this is not given, the local filesystem is used.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
   </tbody>
 </table>
 
+  
 
-    </div>
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 
   </div>
 
-<p><strong>Examples</strong></p>
+  </div>
+
+</div><p><strong>Examples</strong></p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Record file sizes&quot;
     locations: ~/Downloads
@@ -888,14 +1321,15 @@ filesizes of everything in the <code>~/Downloads</code> folder:</p>
     
   </span>
 </div>
-    <script>var base_url = '..';</script>
-    <script src="../js/theme_extra.js" defer></script>
-    <script src="../js/theme.js" defer></script>
-      <script src="../search/main.js" defer></script>
-    <script defer>
-        window.onload = function () {
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
             SphinxRtdTheme.Navigation.enable(true);
-        };
+        });
     </script>
 
 </body>

@@ -8,7 +8,7 @@
     <title>Changelog - organize</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
         <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
     
       <script>
@@ -18,12 +18,11 @@
         var mkdocs_page_url = null;
       </script>
     
-    <script src="../js/jquery-3.6.0.min.js" defer></script>
     <!--[if lt IE 9]>
       <script src="../js/html5shiv.min.js"></script>
     <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-      <script>hljs.initHighlightingOnLoad();</script> 
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -35,7 +34,7 @@
           <a href=".." class="icon icon-home"> organize
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -72,6 +71,8 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">Changelog</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#v241-2023-08-19">v2.4.1 (2023-08-19)</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#v240-2022-09-05">v2.4.0 (2022-09-05)</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#v230-2022-07-26">v2.3.0 (2022-07-26)</a>
@@ -178,11 +179,10 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-      <li>Changelog</li>
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+      <li class="breadcrumb-item active">Changelog</li>
     <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/tfeldmann/organize/edit/main/docs/changelog.md"
-          class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/tfeldmann/organize/edit/main/docs/changelog.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -192,6 +192,12 @@
               
                 <!-- BEGIN INCLUDE ../CHANGELOG.md -->
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">#</a></h1>
+<h2 id="v241-2023-08-19">v2.4.1 (2023-08-19)<a class="headerlink" href="#v241-2023-08-19" title="Permanent link">#</a></h2>
+<ul>
+<li>Fix unicode bug in logging (Issue #294) (Thanks @xdhmoore)</li>
+<li>Updated dependencies (Thanks @gaby)</li>
+<li>Removed support for python 3.7 (EOL - June 2023) (Thanks @gaby)</li>
+</ul>
 <h2 id="v240-2022-09-05">v2.4.0 (2022-09-05)<a class="headerlink" href="#v240-2022-09-05" title="Permanent link">#</a></h2>
 <ul>
 <li>New action: <code>write</code>.</li>
@@ -501,14 +507,15 @@ Please backup all your important stuff before running and use the simulate optio
     
   </span>
 </div>
-    <script>var base_url = '..';</script>
-    <script src="../js/theme_extra.js" defer></script>
-    <script src="../js/theme.js" defer></script>
-      <script src="../search/main.js" defer></script>
-    <script defer>
-        window.onload = function () {
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
             SphinxRtdTheme.Navigation.enable(true);
-        };
+        });
     </script>
 
 </body>

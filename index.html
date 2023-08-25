@@ -8,7 +8,7 @@
     <title>organize</title>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
         <link href="assets/_mkdocstrings.css" rel="stylesheet" />
     
       <script>
@@ -18,12 +18,11 @@
         var mkdocs_page_url = null;
       </script>
     
-    <script src="js/jquery-3.6.0.min.js" defer></script>
     <!--[if lt IE 9]>
       <script src="js/html5shiv.min.js"></script>
     <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-      <script>hljs.initHighlightingOnLoad();</script> 
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -35,7 +34,7 @@
           <a href="." class="icon icon-home"> organize
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -108,11 +107,10 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-      <li>Home</li>
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+      <li class="breadcrumb-item active">Home</li>
     <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/tfeldmann/organize/edit/main/docs/index.md"
-          class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/tfeldmann/organize/edit/main/docs/index.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -180,13 +178,14 @@ or File Juggler (Windows).</p>
 <h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">#</a></h2>
 <h3 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h3>
 <p>organize works on macOS, Windows and Linux.</p>
-<p>Only python 3.6+ is needed.
+<p>Only python 3.8+ is needed.
 Install it via your package manager or from <a href="https://python.org/..">python.org</a>.</p>
 <p>Installation is done via pip. Note that the package name is <code>organize-tool</code>:</p>
-<pre><code class="language-bash">pip3 install -U organize-tool
+<pre><code class="language-bash">pip install -U organize-tool
 </code></pre>
-<p>If you want the text extraction capabilities, install with <code>textract</code> like this:</p>
-<pre><code class="language-bash">pip3 install -U &quot;organize-tool[textract]&quot;
+<p>If you want the text extraction capabilities, install with <code>textract</code> like this (the 
+qoutes are important):</p>
+<pre><code class="language-bash">pip install &quot;organize-tool[texttract]&quot;
 </code></pre>
 <p>This command can also be used to update to the newest version. Now you can run <code>organize --help</code> to check if the installation was successful.</p>
 <h3 id="create-your-first-rule">Create your first rule<a class="headerlink" href="#create-your-first-rule" title="Permanent link">#</a></h3>
@@ -361,20 +360,21 @@ Commands:
     
   </span>
 </div>
-    <script>var base_url = '.';</script>
-    <script src="js/theme_extra.js" defer></script>
-    <script src="js/theme.js" defer></script>
-      <script src="search/main.js" defer></script>
-    <script defer>
-        window.onload = function () {
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
             SphinxRtdTheme.Navigation.enable(true);
-        };
+        });
     </script>
 
 </body>
 </html>
 
 <!--
-MkDocs version : 1.3.1
-Build Date UTC : 2022-09-05 14:48:54.671000+00:00
+MkDocs version : 1.5.2
+Build Date UTC : 2023-08-25 15:05:08.496238+00:00
 -->

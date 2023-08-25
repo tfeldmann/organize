@@ -4,10 +4,10 @@
   word-break: normal !important;
 }
 
-/* For pieces of Markdown rendered in table cells. */
-.doc-contents td p {
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
+/* No line break before first paragraph of descriptions. */
+.doc-md-description,
+.doc-md-description>p:first-child {
+  display: inline;
 }
 
 /* Avoid breaking code headings. */
@@ -19,10 +19,39 @@
 .doc-contents .field-name {
   min-width: 100px;
 }
-.doc-contents .field-name, .field-body {
+
+/* Other curious-spacing fixes. */
+.doc-contents .field-name,
+.doc-contents .field-body {
   border: none !important;
   padding: 0 !important;
 }
+
+.doc-contents p {
+  margin: 1em 0 1em;
+}
+
 .doc-contents .field-list {
   margin: 0 !important;
+}
+
+.doc-contents pre {
+  padding: 0 !important;
+}
+
+.doc-contents .wy-table-responsive {
+  margin-bottom: 0 !important;
+}
+
+.doc-contents td.code {
+  padding: 0 !important;
+}
+
+.doc-contents td.linenos {
+  padding: 0 8px !important;
+}
+
+.doc-children,
+footer {
+  margin-top: 20px;
 }
