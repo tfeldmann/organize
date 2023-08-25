@@ -66,6 +66,7 @@ requests = "^2.31.0"
 types-PyYAML = "^6.0.12.10"
 coverage = "^7.2.0"
 pytest-cov = "^4.1.0"
+ruff = "^0.0.285"
 
 [tool.coverage.run]
 source = ['organize']
@@ -95,6 +96,10 @@ norecursedirs = ["tests/todo", "organize/filters", ".configs"]
 profile = "black"
 skip_gitignore = true
 line_length = 88
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
