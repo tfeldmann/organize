@@ -414,17 +414,14 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "exifread"
-version = "3.0.0"
+version = "2.3.2"
 description = "Read Exif metadata from tiff and jpeg files."
 optional = false
 python-versions = "*"
 files = [
-    {file = "ExifRead-3.0.0-py3-none-any.whl", hash = "sha256:2c5c59ef03b3bbee75b82b82d2498006b3c13509f35c9a76c7552faff73fa2d5"},
-    {file = "ExifRead-3.0.0.tar.gz", hash = "sha256:0ac5a364169dbdf2bd62f94f5c073970ab6694a3166177f5e448b10c943e2ca4"},
+    {file = "ExifRead-2.3.2-py3-none-any.whl", hash = "sha256:3ef8725efdb66530b4b3cd1c4ba5d3f3b35a7872137d2c707f711971f8ebf809"},
+    {file = "ExifRead-2.3.2.tar.gz", hash = "sha256:a0f74af5040168d3883bbc980efe26d06c89f026dc86ba28eb34107662d51766"},
 ]
-
-[package.extras]
-dev = ["mypy (==0.950)", "pylint (==2.13.8)"]
 
 [[package]]
 name = "extract-msg"
@@ -1834,4 +1831,4 @@ textract = ["textract"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.12"
-content-hash = "b669aea7f95ce18b4c52e8c9f47e89ed3056e657b0b983b67d8c7fab713a35f3"
+content-hash = "0ed7e69de9429a9bc6f65734e6b6f3be1ded7b5ee6b55151fee1d83d178b109d"
