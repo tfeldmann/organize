@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.4.2 (2023-08-25)
+
+- Fix reading exif data for HEIC images (Issue #267)
+
 ## v2.4.1 (2023-08-25)
 
 - Fix unicode bug in logging (Issue #294) (Thanks @xdhmoore)
