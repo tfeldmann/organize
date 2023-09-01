@@ -1831,4 +1831,4 @@ textract = ["textract"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.12"
-content-hash = "0ed7e69de9429a9bc6f65734e6b6f3be1ded7b5ee6b55151fee1d83d178b109d"
+content-hash = "38d09b3872202c4cae6dcba899b6a9a63cbc87d5ba22edd2c2c2680beb151940"

@@ -23,6 +23,7 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -35,7 +36,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install --with dev -E textract || poetry install --with dev -E textract || echo "No dev group"
+          poetry install --with=dev --extras=textract
 
       - name: Version info
         run: |
