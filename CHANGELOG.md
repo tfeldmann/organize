@@ -1,5 +1,9 @@
 # Changelog
 
+## WIP
+
+- Modified filter: `exif`. Enabled datetime fields on exif data (Issue #266)
+
 ## v2.4.2 (2023-08-25)
 
 - Fix reading exif data for HEIC images (Issue #267)
