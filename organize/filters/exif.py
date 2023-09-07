@@ -10,6 +10,7 @@ from .filter import Filter, FilterResult
 ExifValue = Union[datetime, date, timedelta, str]
 ExifDict = Mapping[str, Union[ExifValue, Mapping[str, ExifValue]]]
 
+
 def to_datetime(key: str, value: str) -> ExifValue:
     """Converts exif datetime/date/offsettime fields to datetime objects
 
@@ -27,8 +28,8 @@ def to_datetime(key: str, value: str) -> ExifValue:
         value (str): Value of entry in ExifDict
 
     Returns:
-        value (datetime | date | timedelta | str) : 
-            Value of entry in ExifDict converted to datetime, date or timedelta 
+        value (datetime | date | timedelta | str) :
+            Value of entry in ExifDict converted to datetime, date or timedelta
             if applicable
     """
     converted_value: ExifValue = value
@@ -39,11 +40,14 @@ def to_datetime(key: str, value: str) -> ExifValue:
         # value = "YYYY:MM:DD" --> convert to datetime.date
         converted_value = datetime.strptime(value, "%Y:%m:%d").date()
     elif "offsettime" in key:
-        # value = "+HHMM" or "+HH:MM[:SS]" or "UTC+HH:MM[:SS]" --> convert to 'datetime.timedelta'
+        # value = "+HHMM" or "+HH:MM[:SS]" or "UTC+HH:MM[:SS]"
+        # --> convert to 'datetime.timedelta'
         if value[:3].upper() == "UTC":
             # Remove UTC
             value = value[3:]
-        converted_value = datetime.strptime(value.replace(":", ""), "%z").utcoffset() or timedelta(seconds=0)
+        converted_value = datetime.strptime(
+            value.replace(":", ""), "%z"
+        ).utcoffset() or timedelta(seconds=0)
     return converted_value
 
 
@@ -53,15 +57,15 @@ class Exif(Filter):
     The `exif` filter can be used as a filter as well as a way to get exif information
     into your actions.
 
-    Exif fields which contain "datetime", "date" or "offsettime" in their fieldname 
-    will have their value converted to 'datetime.datetime', 'datetime.date' and 
+    Exif fields which contain "datetime", "date" or "offsettime" in their fieldname
+    will have their value converted to 'datetime.datetime', 'datetime.date' and
     'datetime.timedelta' respectivly.
     - `datetime.datetime` : exif.image.datetime, exif.exif.datetimeoriginal, ...
     - `datetime.date` : exif.gps.date, ...
     - `datetime.timedelta` : exif.exif.offsettimeoriginal, exif.exif.offsettimedigitized, ...
 
     Returns:
-        ``{exif}``: 
+        ``{exif}``:
             a dict of all the collected exif inforamtion available in the
             file. Typically it consists of the following tags (if present in the file):
 

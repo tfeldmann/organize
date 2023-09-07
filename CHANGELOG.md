@@ -2,7 +2,7 @@
 
 ## WIP
 
-- Modified filter: `exif`. Enabled datetime fields on exif data (Issue #266)
+- Modified filter: `exif`. Enabled datetime fields on exif data (Issue #266) (Thanks @FlorianFritz)
 
 ## v2.4.2 (2023-08-25)
 
