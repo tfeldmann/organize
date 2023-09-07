@@ -27,4 +27,4 @@ RUN mkdir /config
 COPY --from=pydeps ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 COPY . .
 
-ENTRYPOINT ["/usr/bin/bash"]
+ENTRYPOINT ["python", "main.py"]
