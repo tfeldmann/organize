@@ -65,19 +65,20 @@ Some highlights include:
 
 organize works on macOS, Windows and Linux.
 
-Only python 3.6+ is needed.
+Only python 3.8+ is needed.
 Install it via your package manager or from [python.org](https://python.org).
 
 Installation is done via pip. Note that the package name is `organize-tool`:
 
 ```bash
-pip3 install -U organize-tool
+pip install -U organize-tool
 ```
 
-If you want the text extraction capabilities, install with `textract` like this:
+If you want the text extraction capabilities, install with `textract` like this (the 
+qoutes are important):
 
 ```bash
-pip3 install -U "organize-tool[textract]"
+pip install "organize-tool[texttract]"
 ```
 
 This command can also be used to update to the newest version. Now you can run `organize --help` to check if the installation was successful.

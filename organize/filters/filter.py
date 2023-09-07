@@ -78,7 +78,7 @@ class Filter:
         return self.get_name()
 
     def __repr__(self) -> str:
-        return "<%s>" % str(self)
+        return f"<{str(self)}>"
 
     def __eq__(self, other) -> bool:
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__

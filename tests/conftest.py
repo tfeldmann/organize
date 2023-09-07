@@ -73,7 +73,7 @@ def make_files(fs: FS, layout: Union[dict, list], path="/"):
         elif isinstance(v, str):
             fs.writetext(respath, v)
         else:
-            raise ValueError("Unknown file data %s" % v)
+            raise ValueError(f"Unknown file data {v}")
 
 
 def read_files(fs: FS, path="/"):

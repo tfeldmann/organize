@@ -55,4 +55,4 @@ class Hash(Filter):
         )
 
     def __str__(self) -> str:
-        return "Hash(algorithm={})".format(self.algorithm)
+        return f"Hash(algorithm={self.algorithm})"

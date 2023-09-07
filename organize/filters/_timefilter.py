@@ -8,7 +8,6 @@ from .utils import age_condition_applies
 
 
 class TimeFilter(Filter):
-
     schema_support_instance_without_args = True
     arg_schema = {
         Optional("mode"): Or("older", "newer"),

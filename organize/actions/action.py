@@ -21,7 +21,7 @@ class Action:
     schema_support_instance_without_args = False
 
     class Meta:
-        default_filesystem = "." # type: Union[FS, str]
+        default_filesystem = "."  # type: Union[FS, str]
 
     @classmethod
     def get_name(cls):
@@ -70,7 +70,7 @@ class Action:
         return self.__class__.__name__
 
     def __repr__(self) -> str:
-        return "<%s>" % str(self)
+        return f"<{str(self)}>"
 
     def __eq__(self, other) -> bool:
         return isinstance(other, self.__class__) and self.__dict__ == other.__dict__

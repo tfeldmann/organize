@@ -62,7 +62,7 @@ class Shell(Action):
 
         if not simulate or self.run_in_simulation:
             # we use call instead of run to be compatible with python < 3.5
-            self.print("$ %s" % full_cmd)
+            self.print(f"$ {full_cmd}")
             logger.info('Executing command "%s" in shell.', full_cmd)
             try:
                 call = subprocess.run(
@@ -88,7 +88,7 @@ class Shell(Action):
                     }
                 }
         else:
-            self.print("** not run in simulation ** $ %s" % full_cmd)
+            self.print(f"** not run in simulation ** $ {full_cmd}")
             return {
                 self.get_name(): {
                     "output": self.simulation_output.render(**args),
@@ -97,4 +97,4 @@ class Shell(Action):
             }
 
     def __str__(self) -> str:
-        return 'Shell(cmd="%s")' % self.cmd
+        return f'Shell(cmd="{self.cmd}")'

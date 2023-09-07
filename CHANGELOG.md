@@ -1,8 +1,18 @@
 # Changelog
 
-## v2.6.0 (2023-xx-yy)
+## WIP
 
 - Modified filter: `exif`. Enabled datetime fields on exif data (Issue #266)
+
+## v2.4.2 (2023-08-25)
+
+- Fix reading exif data for HEIC images (Issue #267)
+
+## v2.4.1 (2023-08-25)
+
+- Fix unicode bug in logging (Issue #294) (Thanks @xdhmoore)
+- Updated dependencies (Thanks @gaby)
+- Removed support for python 3.7 (EOL - June 2023) (Thanks @gaby)
 
 ## v2.4.0 (2022-09-05)
 

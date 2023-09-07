@@ -9,8 +9,8 @@ from schema import Optional, Or
 
 from organize.utils import SimulationFS, Template, safe_description
 
-from .action import Action
 from ._conflict_resolution import CONFLICT_OPTIONS, check_conflict, dst_from_options
+from .action import Action
 
 
 class Copy(Action):
@@ -61,7 +61,7 @@ class Copy(Action):
     ) -> None:
         if on_conflict not in CONFLICT_OPTIONS:
             raise ValueError(
-                "on_conflict must be one of %s" % ", ".join(CONFLICT_OPTIONS)
+                f"on_conflict must be one of {', '.join(CONFLICT_OPTIONS)}"
             )
 
         self.dest = Template.from_string(dest)
@@ -108,7 +108,7 @@ class Copy(Action):
                 dst_fs = SimulationFS(dst_fs)
 
         if not skip:
-            self.print("Copy to %s" % safe_description(dst_fs, dst_path))
+            self.print(f"Copy to {safe_description(dst_fs, dst_path)}")
             if not simulate:
                 dst_fs.makedirs(dirname(dst_path), recreate=True)
                 copy_action(src_fs, src_path, dst_fs, dst_path)
@@ -120,4 +120,4 @@ class Copy(Action):
         }
 
     def __str__(self) -> str:
-        return "Copy(dest=%s, conflict_mode=%s)" % (self.dest, self.conflict_mode)
+        return f"Copy(dest={self.dest}, conflict_mode={self.conflict_mode})"

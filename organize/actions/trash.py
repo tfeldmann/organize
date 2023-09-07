@@ -18,7 +18,7 @@ class Trash(Action):
     def trash(self, path: str, simulate: bool):
         from send2trash import send2trash
 
-        self.print('Trash "%s"' % path)
+        self.print(f'Trash "{path}"')
         if not simulate:
             logger.info("Moving file %s into trash.", path)
             send2trash(path)

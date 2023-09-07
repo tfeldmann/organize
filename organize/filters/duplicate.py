@@ -51,7 +51,7 @@ class File(NamedTuple):
             return self.fs.geturl(self.path)
         except NoURL:
             pass
-        return "%s,%s" % (self.path, id(self.fs))
+        return f"{self.path},{id(self.fs)}"
 
 
 def getsize(f: File):
@@ -83,7 +83,7 @@ def detect_original(known: File, new: File, method: str, reverse: bool):
             sorted((known, new), key=lambda x: x.lastmodified, reverse=reverse)
         )
     else:
-        raise ValueError("Unknown original detection method: %s" % method)
+        raise ValueError(f"Unknown original detection method: {method}")
 
 
 class Duplicate(Filter):

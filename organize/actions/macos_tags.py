@@ -55,10 +55,10 @@ class MacOSTags(Action):
 
             if color not in COLORS:
                 raise ValueError(
-                    "color %s is unknown. (Available: %s)" % (color, " / ".join(COLORS))
+                    f"color {color} is unknown. (Available: {' / '.join(COLORS)})"
                 )
 
-            self.print('Adding tag: "%s" (color: %s)' % (name, color))
+            self.print(f'Adding tag: "{name}" (color: {color})')
             if not simulate:
                 _tag = macos_tags.Tag(
                     name=name,
@@ -74,4 +74,4 @@ class MacOSTags(Action):
         return result["name"], result["color"].lower()
 
     def __str__(self) -> str:
-        return "MacOSTags(tags=%s)" % self.tags
+        return f"MacOSTags(tags={self.tags})"

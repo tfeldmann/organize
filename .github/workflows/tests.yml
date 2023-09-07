@@ -17,23 +17,26 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11"]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
       fail-fast: false
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '${{ matrix.python-version }}'
 
+      - name: Setup Environment
+        run: |
+          python3 -m pip install --upgrade pip setuptools wheel "poetry<1.4.0"
+          poetry run python -m pip install -U pip setuptools wheel
+
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip setuptools
-          python3 -m pip install poetry
-          poetry run python -m pip install -U pip setuptools
-          poetry install -E textract
+          poetry install --with=dev --extras=textract
 
       - name: Version info
         run: |

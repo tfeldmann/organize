@@ -40,7 +40,7 @@ class Symlink(Action):
         if dest.endswith("/"):
             dest = path.join(dest, path.basename(fs_path))
 
-        self.print("Creating symlink: %s" % dest)
+        self.print(f"Creating symlink: {dest}")
         if not simulate:
             os.makedirs(os.path.dirname(dest), exist_ok=True)
             os.symlink(fs.getsyspath(fs_path), dest)

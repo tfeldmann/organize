@@ -102,14 +102,14 @@ def _highlight_path(path, base_style, main_style, relative=False):
 
 
 def info(config: str, working_dir: str):
-    console.print("organize {}".format(__version__))
-    console.print('Config: "{}"'.format(config))
+    console.print(f"organize {__version__}")
+    console.print(f'Config: "{config}"')
     if working_dir != Path("."):
-        console.print('Working dir: "{}"'.format(working_dir))
+        console.print(f'Working dir: "{working_dir}"')
 
 
 def warn(msg, title="Warning"):
-    console.print("[warning][b]{}:[/b] {}[/warning]".format(title, msg))
+    console.print(f"[warning][b]{title}:[/b] {msg}[/warning]")
 
 
 def deprecated(msg):
@@ -117,7 +117,7 @@ def deprecated(msg):
 
 
 def error(msg, title="Error"):
-    console.print("[error]{}: {}[/error]".format(title, msg))
+    console.print(f"[error]{title}: {msg}[/error]")
 
 
 def simulation_banner():
@@ -133,7 +133,7 @@ def spinner(simulate: bool):
 
 def rule(rule):
     console.print()
-    console.rule("[rule]:gear: %s" % rule, align="left", style="rule")
+    console.rule(f"[rule]:gear: {rule}", align="left", style="rule")
     with_newline.reset()
 
 
@@ -171,7 +171,7 @@ def path_changed_during_pipeline(
         _highlight_path(
             safe_description(new_fs, new_path), "path.base", "path.main", relative=True
         ),
-        (" <- %s " % reason, "yellow"),
+        (f" <- {reason} ", "yellow"),
         _highlight_path(fs_path, "path.base", "path.main", relative=True),
         " ",
         (icon, "path.icon"),
@@ -182,7 +182,7 @@ def path_changed_during_pipeline(
 def _pipeline_base(source: str):
     return Text.assemble(
         INDENT * 2,
-        ("- ({}) ".format(source), "pipeline.source"),
+        (f"- ({source}) ", "pipeline.source"),
     )
 
 
@@ -197,7 +197,7 @@ def pipeline_message(source: str, msg: str) -> None:
 
 def pipeline_error(source: str, msg: str):
     line = _pipeline_base(source)
-    line.append("ERROR! {}".format(msg), "pipeline.error")
+    line.append(f"ERROR! {msg}", "pipeline.error")
     with_path.print(line)
     with_newline.set_prefix("")
 

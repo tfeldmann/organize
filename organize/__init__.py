@@ -8,7 +8,7 @@ with appfs.UserLogFS("organize") as log_fs:
     LOG_PATH = log_fs.getsyspath("organize.log")
 
 # configure logging
-LOGGING_CONFIG = """
+LOGGING_CONFIG = f"""
 version: 1
 disable_existing_loggers: false
 formatters:
@@ -23,7 +23,8 @@ handlers:
     file:
         class: logging.handlers.TimedRotatingFileHandler
         level: DEBUG
-        filename: {filename}
+        filename: {str(LOG_PATH)}
+        encoding: utf-8
         formatter: simple
         when: midnight
         backupCount: 30
@@ -32,7 +33,5 @@ root:
     handlers: [file]
 exifread:
     level: INFO
-""".format(
-    filename=str(LOG_PATH)
-)
+"""
 logging.config.dictConfig(yaml.safe_load(LOGGING_CONFIG))
