@@ -1,0 +1,59 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Settings and CI
+.editorconfig
+.envrc
+.readthedocs.yml
+
+# Docker
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Byte-compiled / optimized / DLL files
+**/__pycache__/
+**/*.py[cod]
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.cache
+.ruff_cache
+nosetests.xml
+coverage.xml
+
+# Docs and tests
+docs/
+tests/
+
+# Virtual environment
+.env
+.venv/
+venv/
+
+# Vim swap files
+**/*.swp
+
+# VS Code
+.vscode/
