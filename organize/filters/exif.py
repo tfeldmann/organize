@@ -32,23 +32,26 @@ def to_datetime(key: str, value: str) -> ExifValue:
             Value of entry in ExifDict converted to datetime, date or timedelta
             if applicable
     """
-    converted_value: ExifValue = value
-    if "datetime" in key:
-        # value = "YYYY:MM:DD HH:MM:SS" --> convert to 'datetime.datetime'
-        converted_value = datetime.strptime(value, "%Y:%m:%d %H:%M:%S")
-    elif "date" in key:
-        # value = "YYYY:MM:DD" --> convert to datetime.date
-        converted_value = datetime.strptime(value, "%Y:%m:%d").date()
-    elif "offsettime" in key:
-        # value = "+HHMM" or "+HH:MM[:SS]" or "UTC+HH:MM[:SS]"
-        # --> convert to 'datetime.timedelta'
-        if value[:3].upper() == "UTC":
-            # Remove UTC
-            value = value[3:]
-        converted_value = datetime.strptime(
-            value.replace(":", ""), "%z"
-        ).utcoffset() or timedelta(seconds=0)
-    return converted_value
+    try:
+        converted_value: ExifValue = value
+        if "datetime" in key:
+            # value = "YYYY:MM:DD HH:MM:SS" --> convert to 'datetime.datetime'
+            converted_value = datetime.strptime(value, "%Y:%m:%d %H:%M:%S")
+        elif "date" in key:
+            # value = "YYYY:MM:DD" --> convert to datetime.date
+            converted_value = datetime.strptime(value, "%Y:%m:%d").date()
+        elif "offsettime" in key:
+            # value = "+HHMM" or "+HH:MM[:SS]" or "UTC+HH:MM[:SS]"
+            # --> convert to 'datetime.timedelta'
+            if value[:3].upper() == "UTC":
+                # Remove UTC
+                value = value[3:]
+            converted_value = datetime.strptime(
+                value.replace(":", ""), "%z"
+            ).utcoffset() or timedelta(seconds=0)
+        return converted_value
+    except ValueError:
+        return value
 
 
 class Exif(Filter):
