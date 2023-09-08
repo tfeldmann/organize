@@ -27,30 +27,39 @@ class Walker:
         stack = [(dir, 0)]
         while stack:
             cur, lvl = stack.pop()
-            for entry in os.scandir(cur):
-                if (
-                    entry.is_file()
-                    and lvl >= self.min_depth
-                    and not pattern_match(entry.name, self.exclude_files)
-                    and (
-                        self.filter_files is None
-                        or pattern_match(entry.name, self.filter_files)
-                    )
-                ):
-                    yield entry
-                elif (
-                    entry.is_dir()
-                    and not pattern_match(entry.name, self.exclude_dirs)
-                    and (
-                        self.filter_dirs is None
-                        or pattern_match(entry.name, self.filter_dirs)
-                    )
-                    and not entry.is_symlink()
-                ):
-                    if self.max_depth is None or lvl < self.max_depth:
-                        stack.append((entry.path, lvl + 1))
-                    if lvl >= self.min_depth:
-                        yield entry
+            try:
+                for entry in os.scandir(cur):
+                    try:
+                        # we do not handle symlinks at the moment
+                        if entry.is_symlink():
+                            continue
+                        if (
+                            entry.is_file()
+                            and lvl >= self.min_depth
+                            and not pattern_match(entry.name, self.exclude_files)
+                            and (
+                                self.filter_files is None
+                                or pattern_match(entry.name, self.filter_files)
+                            )
+                        ):
+                            yield entry
+                        elif (
+                            entry.is_dir()
+                            and not pattern_match(entry.name, self.exclude_dirs)
+                            and (
+                                self.filter_dirs is None
+                                or pattern_match(entry.name, self.filter_dirs)
+                            )
+                            and not entry.is_symlink()
+                        ):
+                            if self.max_depth is None or lvl < self.max_depth:
+                                stack.append((entry.path, lvl + 1))
+                            if lvl >= self.min_depth:
+                                yield entry
+                    except OSError:
+                        pass
+            except OSError:
+                pass
 
     def _walk(self, dir: Path):
         if self.method == "breadth":
@@ -74,6 +83,6 @@ for x in Walker(
     max_depth=2,
     exclude_dirs=(".*", "__pycache__"),
     exclude_files=(".*yml",),
-).files("."):
+).files(os.path.expanduser("~")):
     print(x)
     time.sleep(0.01)
