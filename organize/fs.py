@@ -24,19 +24,20 @@ class Walker:
             for entry in os.scandir(cur):
                 if (
                     entry.is_file()
-                    and self.min_depth <= lvl
-                    and (self.filter_files is None or entry.name in self.filter_files)
+                    and lvl >= self.min_depth
                     and entry.name not in self.exclude_files
+                    and (self.filter_files is None or entry.name in self.filter_files)
                 ):
                     yield entry
                 elif (
                     entry.is_dir()
-                    and (self.max_depth is None or self.max_depth >= lvl)
-                    and (self.filter_dirs is None or entry.name in self.filter_dirs)
                     and entry.name not in self.exclude_dirs
+                    and (self.filter_dirs is None or entry.name in self.filter_dirs)
+                    and not entry.is_symlink()
                 ):
-                    stack.append((entry.path, lvl + 1))
-                    if self.min_depth <= lvl:
+                    if self.max_depth is None or lvl < self.max_depth:
+                        stack.append((entry.path, lvl + 1))
+                    if lvl >= self.min_depth:
                         yield entry
 
     def _walk(self, dir: Path):
@@ -48,12 +49,12 @@ class Walker:
     def files(self, dir: Path):
         for entry in self._walk(dir):
             if entry.is_file():
-                yield Path(entry.path)
+                yield entry.path
 
     def dirs(self, dir: Path):
         for entry in self._walk(dir):
             if entry.is_dir():
-                yield Path(entry.path)
+                yield entry.path
 
 
 for x in Walker(

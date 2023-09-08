@@ -1189,6 +1189,17 @@ files = [
 typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
+name = "pyfakefs"
+version = "5.2.4"
+description = "pyfakefs implements a fake file system that mocks the Python file system modules."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pyfakefs-5.2.4-py3-none-any.whl", hash = "sha256:8eb95f1dd1c4b8bdce30448fe169875e3a4451c32d3f9c37799157bd4eb7b789"},
+    {file = "pyfakefs-5.2.4.tar.gz", hash = "sha256:3e040f3792086086a0dc2191b05fe709438e168aafe2e94fcdbef8e3859208d8"},
+]
+
+[[package]]
 name = "pygments"
 version = "2.13.0"
 description = "Pygments is a syntax highlighting package written in Python."
@@ -1878,4 +1889,4 @@ textract = ["textract"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "79b6827de1e0f96d2ddab8f6ec40188c004f77418ffa1e75cd5149599d16e5eb"
+content-hash = "aec3ed8c99d155059cb778f813f61904908fdf30eda70ca43b9d932d3512cf2b"
