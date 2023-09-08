@@ -5,7 +5,8 @@ from typing import List, Union
 import fs
 from fs.errors import ResourceNotFound
 from fs.base import FS
-from pydantic import BaseModel, Field, validator
+from pydantic import ConfigDict, field_validator, Field
+from pydantic.dataclasses import dataclass
 from . import console
 from .actions import ActionType
 from .filters import FilterType
@@ -46,33 +47,29 @@ def normalize_filter_or_action_definition(value):
 
 
 class FilterMode(str, Enum):
-    all = "all"
-    any = "any"
-    none = "none"
+    ALL = "all"
+    ANY = "any"
+    NONE = "none"
 
 
 class RuleTarget(str, Enum):
-    dirs = "dirs"
-    files = "files"
+    DIRS = "dirs"
+    FILES = "files"
 
 
-class Rule(BaseModel):
+@dataclass(kw_only=True, config=ConfigDict(extra="forbid"))
+class Rule:
     name: Union[str, None] = Field(default_factory=rule_name)
-    enabled: bool = Field(True)
-    targets: RuleTarget = RuleTarget.files
+    enabled: bool = True
+    targets: RuleTarget = RuleTarget.FILES
     locations: List[Location]
     subfolders: bool = False
     tags: List[str] = Field(default_factory=list)
     filters: List[FilterType] = Field(default_factory=list)
-    filter_mode: FilterMode = FilterMode.all
+    filter_mode: FilterMode = FilterMode.ALL
     actions: List[ActionType] = Field(..., min_items=1)
 
-    class Config:
-        title = "A rule definition"
-        extra = "forbid"
-        arbitrary_types_allowed = True
-
-    @validator("locations", pre=True)
+    @field_validator("locations", pre=True)
     def validate_locations(cls, v):
         if v is None:
             raise ValueError("Location cannot be empty")
@@ -82,11 +79,11 @@ class Rule(BaseModel):
             v = [v]
         return v
 
-    @validator("actions", pre=True, each_item=True)
+    @field_validator("actions", pre=True, each_item=True)
     def action_rewriter(cls, value):
         return normalize_filter_or_action_definition(value)
 
-    @validator("filters", pre=True, each_item=True)
+    @field_validator("filters", pre=True, each_item=True)
     def validate_filters(cls, value):
         normalized = normalize_filter_or_action_definition(value)
         # handle inverting filters by prepending `not`
@@ -157,7 +154,7 @@ class Rule(BaseModel):
                     "working_dir": working_dir,
                 }
 
-
+s
 if __name__ == "__main__":
     from organize.core import run
 

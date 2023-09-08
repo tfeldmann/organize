@@ -3,7 +3,8 @@ from typing import List, Union
 
 import yaml
 from fs.base import FS
-from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic.dataclasses import dataclass
 
 from . import console
 from .pipeline import action_pipeline, filter_pipeline
@@ -50,13 +51,9 @@ def should_execute(rule_tags, tags, skip_tags):
     return should_run and not should_skip
 
 
-class Config(BaseModel):
+@dataclass(config=ConfigDict(extra="forbid"))
+class Config:
     rules: List[Rule]
-
-    class Config:
-        title = "organize config file"
-        extra = "forbid"
-        arbitrary_types_allowed = True
 
     def execute(
         self,
@@ -67,7 +64,6 @@ class Config(BaseModel):
     ):
         args = basic_args()
         for rule in self.rules:
-
             # exclude rules by tags
             if not should_execute(rule_tags=rule.tags, tags=tags, skip_tags=skip_tags):
                 continue

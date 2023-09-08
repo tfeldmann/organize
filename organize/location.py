@@ -2,7 +2,8 @@ from enum import Enum
 from typing import List, Union
 
 from fs.base import FS
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, ConfigDict
+from pydantic.dataclasses import dataclass
 from typing_extensions import Literal
 
 DEFAULT_SYSTEM_EXCLUDE_FILES = [
@@ -20,14 +21,14 @@ DEFAULT_SYSTEM_EXCLUDE_DIRS = [
 
 
 class SearchMethod(str, Enum):
-    depth = "depth"
-    breadth = "breadth"
+    DEPTH = "depth"
+    BREADTH = "breadth"
 
-
+@dataclass(config=ConfigDict(extra="forbid"))
 class Location(BaseModel):
     path: str
     max_depth: Union[Literal["inherit"], int, None] = "inherit"
-    search: SearchMethod = SearchMethod.depth
+    search: SearchMethod = SearchMethod.DEPTH
     exclude_files: List[str] = Field(default_factory=list)
     exclude_dirs: List[str] = Field(default_factory=list)
     system_exclude_files: List[str] = Field(
@@ -40,10 +41,6 @@ class Location(BaseModel):
     filter_dirs: Union[List[str], None] = None
     ignore_errors: bool = False
     filesystem: Union[FS, str, None] = None
-
-    class Config:
-        extra = "forbid"
-        arbitrary_types_allowed = True
 
     @validator(
         "exclude_files",
