@@ -5,6 +5,12 @@ from fs.walk import Walker as FSWalke
 from typing import Literal, Set
 from pathlib import Path
 import os
+from fnmatch import fnmatch
+
+
+def pattern_match(name, patterns):
+    # TODO: This can be more performant
+    return any(fnmatch(name, pat) for pat in patterns)
 
 
 @dataclass(frozen=True)
@@ -25,14 +31,20 @@ class Walker:
                 if (
                     entry.is_file()
                     and lvl >= self.min_depth
-                    and entry.name not in self.exclude_files
-                    and (self.filter_files is None or entry.name in self.filter_files)
+                    and not pattern_match(entry.name, self.exclude_files)
+                    and (
+                        self.filter_files is None
+                        or pattern_match(entry.name, self.filter_files)
+                    )
                 ):
                     yield entry
                 elif (
                     entry.is_dir()
-                    and entry.name not in self.exclude_dirs
-                    and (self.filter_dirs is None or entry.name in self.filter_dirs)
+                    and not pattern_match(entry.name, self.exclude_dirs)
+                    and (
+                        self.filter_dirs is None
+                        or pattern_match(entry.name, self.filter_dirs)
+                    )
                     and not entry.is_symlink()
                 ):
                     if self.max_depth is None or lvl < self.max_depth:
@@ -60,16 +72,8 @@ class Walker:
 for x in Walker(
     min_depth=0,
     max_depth=2,
-    exclude_dirs=(
-        ".vscode",
-        ".git",
-        ".ruff_cache",
-        ".github",
-        ".venv",
-        ".mypy_cache",
-        ".pytest_cache",
-        "__pycache__",
-    ),
+    exclude_dirs=(".*", "__pycache__"),
+    exclude_files=(".*yml",),
 ).files("."):
     print(x)
     time.sleep(0.01)
