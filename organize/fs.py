@@ -1,16 +1,63 @@
-import time
+from typing import NamedTuple, List, Iterable
 from pydantic import Field
 from pydantic.dataclasses import dataclass
-from fs.walk import Walker as FSWalke
 from typing import Literal, Set
-from pathlib import Path
-import os
 from fnmatch import fnmatch
+import os
 
 
 def pattern_match(name, patterns):
-    # TODO: This can be more performant
+    # TODO: This can be more performant!
     return any(fnmatch(name, pat) for pat in patterns)
+
+
+class ScandirResult(NamedTuple):
+    dirs: List[os.DirEntry]
+    nondirs: List[os.DirEntry]
+
+
+def scandir(top: str, collectfiles: bool = True):
+    result = ScandirResult([], [])
+    try:
+        # build iterator if we have the permissions to this folder
+        scandir_it = os.scandir(top)
+    except OSError:
+        return result
+
+    with scandir_it:
+        while True:
+            try:
+                try:
+                    entry = next(scandir_it)
+                except StopIteration:
+                    break
+            except OSError:
+                return result
+
+            try:
+                is_symlink = entry.is_symlink()
+            except OSError:
+                # If is_symlink() raises an OSError, consider that the
+                # entry is not a symbolic link, same behaviour than
+                # os.path.islink().
+                is_symlink = False
+
+            # As of now, we skip all symlinks.
+            if is_symlink:
+                continue
+
+            try:
+                is_dir = entry.is_dir()
+            except OSError:
+                # If is_dir() raises an OSError, consider that the entry is not
+                # a directory, same behaviour than os.path.isdir().
+                is_dir = False
+
+            if is_dir:
+                result.dirs.append(entry)
+            elif collectfiles:
+                result.nondirs.append(entry)
+    return result
 
 
 @dataclass(frozen=True)
@@ -23,66 +70,65 @@ class Walker:
     exclude_dirs: Set[str] = Field(default_factory=set)
     exclude_files: Set[str] = Field(default_factory=set)
 
-    def _walk_breadth(self, dir: Path):
-        stack = [(dir, 0)]
-        while stack:
-            cur, lvl = stack.pop()
-            try:
-                for entry in os.scandir(cur):
-                    try:
-                        # we do not handle symlinks at the moment
-                        if entry.is_symlink():
-                            continue
-                        if (
-                            entry.is_file()
-                            and lvl >= self.min_depth
-                            and not pattern_match(entry.name, self.exclude_files)
-                            and (
-                                self.filter_files is None
-                                or pattern_match(entry.name, self.filter_files)
-                            )
-                        ):
-                            yield entry
-                        elif (
-                            entry.is_dir()
-                            and not pattern_match(entry.name, self.exclude_dirs)
-                            and (
-                                self.filter_dirs is None
-                                or pattern_match(entry.name, self.filter_dirs)
-                            )
-                            and not entry.is_symlink()
-                        ):
-                            if self.max_depth is None or lvl < self.max_depth:
-                                stack.append((entry.path, lvl + 1))
-                            if lvl >= self.min_depth:
-                                yield entry
-                    except OSError:
-                        pass
-            except OSError:
-                pass
+    def _should_yield_file(self, entry: os.DirEntry, lvl: int):
+        return (
+            lvl >= self.min_depth
+            and not pattern_match(entry.name, self.exclude_files)
+            and (
+                self.filter_files is None
+                or pattern_match(entry.name, self.filter_files)
+            )
+        )
 
-    def _walk(self, dir: Path):
+    def _dir_category_yield_walk(self, entries: Iterable[os.DirEntry], lvl: int):
+        to_yield, to_walk = [], []
+        for entry in entries:
+            if not pattern_match(entry.name, self.exclude_dirs) and (
+                self.filter_dirs is None or pattern_match(entry.name, self.filter_dirs)
+            ):
+                if self.max_depth is None or lvl < self.max_depth:
+                    to_walk.append(entry)
+                if lvl >= self.min_depth:
+                    to_yield.append(entry)
+        return (to_yield, to_walk)
+
+    def walk(self, top: str, files: bool = True, dirs: bool = True, lvl: int = 0):
+        if not files and not dirs:
+            return
+
+        # list all dirs and nondirs of the folder
+        result = scandir(top, collectfiles=files)
+
         if self.method == "breadth":
-            yield from self._walk_breadth(dir)
+            # Return entries
+            for entry in result.nondirs:
+                if files and self._should_yield_file(entry=entry, lvl=lvl):
+                    yield entry
+            to_yield, to_walk = self._dir_category_yield_walk(result.dirs, lvl=lvl)
+            if dirs:
+                yield from to_yield
+            # Recurse into sub-directories
+            for entry in to_walk:
+                yield from self.walk(entry.path, files=files, dirs=dirs, lvl=lvl + 1)
+
+        elif self.method == "depth":
+            to_yield, to_walk = self._dir_category_yield_walk(result.dirs, lvl=lvl)
+            # Recurse into sub-directories
+            for entry in to_walk:
+                yield from self.walk(entry.path, files=files, dirs=dirs, lvl=lvl + 1)
+            # Return entries
+            for entry in result.nondirs:
+                if files and self._should_yield_file(entry=entry, lvl=lvl):
+                    yield entry
+            if dirs:
+                yield from to_yield
         else:
-            raise NotImplemented()
+            raise ValueError(f'Unknown method "{self.method}"')
 
-    def files(self, dir: Path):
-        for entry in self._walk(dir):
-            if entry.is_file():
-                yield entry.path
+    def files(self, dir: str) -> str:
+        for entry in self.walk(dir, files=True, dirs=False):
+            yield entry.path
 
-    def dirs(self, dir: Path):
-        for entry in self._walk(dir):
-            if entry.is_dir():
-                yield entry.path
-
-
-for x in Walker(
-    min_depth=0,
-    max_depth=2,
-    exclude_dirs=(".*", "__pycache__"),
-    exclude_files=(".*yml",),
-).files(os.path.expanduser("~")):
-    print(x)
-    time.sleep(0.01)
+    def dirs(self, dir: str) -> str:
+        for entry in self.walk(dir, files=False, dirs=True):
+            yield entry.path
