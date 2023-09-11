@@ -62,7 +62,7 @@ class Rule:
     name: Union[str, None] = Field(default_factory=rule_name)
     enabled: bool = True
     targets: RuleTarget = RuleTarget.FILES
-    locations: List[Location]
+    locations: List[Location] = Field(..., min_items=1)
     subfolders: bool = False
     tags: List[str] = Field(default_factory=list)
     filters: List[FilterType] = Field(default_factory=list)
