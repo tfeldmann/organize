@@ -7,8 +7,8 @@ import fs
 from . import console
 from .actions import Action
 from .filters import Filter
-from .utils import deep_merge_inplace
 from .rule import FilterMode
+from .utils import deep_merge_inplace
 
 logger = logging.getLogger(__name__)
 

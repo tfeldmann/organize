@@ -80,7 +80,7 @@ class Walker:
             )
         )
 
-    def _dir_category_yield_walk(self, entries: Iterable[os.DirEntry], lvl: int):
+    def _dirs_list_yield_walk(self, entries: Iterable[os.DirEntry], lvl: int):
         to_yield, to_walk = [], []
         for entry in entries:
             if not pattern_match(entry.name, self.exclude_dirs) and (
@@ -104,7 +104,7 @@ class Walker:
             for entry in result.nondirs:
                 if files and self._should_yield_file(entry=entry, lvl=lvl):
                     yield entry
-            to_yield, to_walk = self._dir_category_yield_walk(result.dirs, lvl=lvl)
+            to_yield, to_walk = self._dirs_list_yield_walk(result.dirs, lvl=lvl)
             if dirs:
                 yield from to_yield
             # Recurse into sub-directories
@@ -112,7 +112,7 @@ class Walker:
                 yield from self.walk(entry.path, files=files, dirs=dirs, lvl=lvl + 1)
 
         elif self.method == "depth":
-            to_yield, to_walk = self._dir_category_yield_walk(result.dirs, lvl=lvl)
+            to_yield, to_walk = self._dirs_list_yield_walk(result.dirs, lvl=lvl)
             # Recurse into sub-directories
             for entry in to_walk:
                 yield from self.walk(entry.path, files=files, dirs=dirs, lvl=lvl + 1)

@@ -63,13 +63,14 @@ docs = [
     "mkdocs-autorefs",
 ]
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^6.2.5"
 pytest-cov = "^3.0.0"
 coverage = "^5"
-mypy = "^0.971"
 types-PyYAML = "^6.0.3"
 requests = "^2.27.1"
+mypy = "^1.5.1"
+ruff = "^0.0.287"
 
 [tool.coverage.run]
 source = ['organize']

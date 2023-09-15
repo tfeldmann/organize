@@ -1,8 +1,7 @@
 from enum import Enum
 from typing import List, Union
 
-from fs.base import FS
-from pydantic import BaseModel, Field, validator, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, validator
 from pydantic.dataclasses import dataclass
 from typing_extensions import Literal
 
@@ -24,6 +23,7 @@ class SearchMethod(str, Enum):
     DEPTH = "depth"
     BREADTH = "breadth"
 
+
 @dataclass(config=ConfigDict(extra="forbid"))
 class Location(BaseModel):
     path: str
@@ -40,7 +40,6 @@ class Location(BaseModel):
     filter: Union[List[str], None] = None
     filter_dirs: Union[List[str], None] = None
     ignore_errors: bool = False
-    filesystem: Union[FS, str, None] = None
 
     @validator(
         "exclude_files",

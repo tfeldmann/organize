@@ -1,17 +1,15 @@
 import logging
 from enum import Enum
-from typing import List, Union
+from pathlib import Path
+from typing import Dict, List, Union
 
-import fs
-from fs.errors import ResourceNotFound
-from fs.base import FS
-from pydantic import ConfigDict, field_validator, Field
+from pydantic import ConfigDict, Field, field_validator
 from pydantic.dataclasses import dataclass
-from . import console
-from .actions import ActionType
-from .filters import FilterType
+
+from .action import Action
+from .filter import Filter, Not
 from .location import Location
-from .utils import fs_path_expand
+from .registry import get_action, get_filter
 
 logger = logging.getLogger(__name__)
 
@@ -22,28 +20,6 @@ def rule_name():
     global rule_count
     rule_count += 1
     return "Unnamed rule %s" % rule_count
-
-
-def normalize_filter_or_action_definition(value):
-    """
-    Transform input like {"extension": {**args}} to {"name": "extension", **args}
-    """
-    if isinstance(value, str):
-        return {"name": value}
-    if isinstance(value, dict):
-        if len(value.keys()) != 1:
-            keys = ", ".join(value.keys())
-            raise ValueError("Definition must have a single key (found: %s)" % keys)
-        name = list(value.keys())[0]
-        args = value[name]
-        # if anything but a dictionary is given we assign it to the special key
-        # __positional_arg__, which is then handled in the root validator of the
-        # instantiated class.
-        if not isinstance(args, dict):
-            return {"name": name, "__positional_arg__": args}
-        return {"name": name, **args}
-    # anything else we just return. Could be an instance of an allowed class.
-    return value
 
 
 class FilterMode(str, Enum):
@@ -57,17 +33,54 @@ class RuleTarget(str, Enum):
     FILES = "files"
 
 
+def action_from_dict(d):
+    if not len(d.keys()) == 1:
+        raise ValueError("Action definition must have only one key")
+    name, value = next(iter(d.items()))
+    ActionCls = get_action(name)
+    if value is None:
+        return ActionCls()
+    elif isinstance(value, dict):
+        return ActionCls(**value)
+    else:
+        return ActionCls(value)
+
+
+def filter_from_dict(d: Dict):
+    if not len(d.keys()) == 1:
+        raise ValueError("Filter definition must have a single key")
+    name, value = next(iter(d.items()))
+
+    # check for "not" in filter key
+    invert_filter = False
+    if name.startswith("not "):
+        name = name[4:]
+        invert_filter = True
+
+    FilterCls = get_filter(name)
+
+    # instantiate
+    if value is None:
+        inst = FilterCls()
+    elif isinstance(value, dict):
+        inst = FilterCls(**value)
+    else:
+        inst = FilterCls(value)
+
+    return Not(inst) if invert_filter else inst
+
+
 @dataclass(kw_only=True, config=ConfigDict(extra="forbid"))
 class Rule:
     name: Union[str, None] = Field(default_factory=rule_name)
     enabled: bool = True
     targets: RuleTarget = RuleTarget.FILES
-    locations: List[Location] = Field(..., min_items=1)
+    locations: List[Location] = Field(default_factory=list)
     subfolders: bool = False
     tags: List[str] = Field(default_factory=list)
-    filters: List[FilterType] = Field(default_factory=list)
+    filters: List[Filter] = Field(default_factory=list)
     filter_mode: FilterMode = FilterMode.ALL
-    actions: List[ActionType] = Field(..., min_items=1)
+    actions: List[Action] = Field(..., min_items=1)
 
     @field_validator("locations", pre=True)
     def validate_locations(cls, v):
@@ -79,93 +92,69 @@ class Rule:
             v = [v]
         return v
 
-    @field_validator("actions", pre=True, each_item=True)
-    def action_rewriter(cls, value):
-        return normalize_filter_or_action_definition(value)
+    @field_validator("filters", mode="before")
+    def validate_filters(cls, filters):
+        result = []
+        for x in filters:
+            # make sure "- extension" becomes "- extension:"
+            if isinstance(x, str):
+                x = {x: None}
+            # create instance from dict
+            if isinstance(x, dict):
+                result.append(filter_from_dict(x))
+            # other instances
+            else:
+                result.append(x)
+        return result
 
-    @field_validator("filters", pre=True, each_item=True)
-    def validate_filters(cls, value):
-        normalized = normalize_filter_or_action_definition(value)
-        # handle inverting filters by prepending `not`
-        if isinstance(normalized, dict):
-            if normalized["name"].startswith("not "):
-                _, name = normalized["name"].split()
-                normalized["name"] = name
-                normalized["filter_is_inverted"] = True
-                return normalized
-        return normalized
+    @field_validator("actions", mode="before")
+    def validate_actions(cls, actions):
+        result = []
+        for x in actions:
+            # make sure "- extension" becomes "- extension:"
+            if isinstance(x, str):
+                x = {x: None}
+            # create instance from dict
+            if isinstance(x, dict):
+                result.append(action_from_dict(x))
+            # other instances
+            else:
+                result.append(x)
+        return result
 
-    def walk(self, working_dir: Union[FS, str] = "."):
+    def walk(self, working_dir: Union[Path, str] = "."):
         """
         Walk all given locations and yield the pathes
         """
         for location in self.locations:
             # instantiate the fs walker
-            exclude = location.system_exclude_files + location.exclude_files
+            exclude_files = location.system_exclude_files + location.exclude_files
             exclude_dirs = location.system_exclude_dirs + location.exclude_dirs
             if location.max_depth == "inherit":
                 max_depth = None if self.subfolders else 0
             else:
                 max_depth = location.max_depth
-            walker = fs.walk.Walker(
-                ignore_errors=location.ignore_errors,
-                on_error=None,
-                search=location.search,
-                exclude=exclude,
-                exclude_dirs=exclude_dirs,
+
+            from .fs import Walker
+
+            walker = Walker(
+                min_depth=0,
                 max_depth=max_depth,
-                filter=location.filter,
                 filter_dirs=location.filter_dirs,
+                filter_files=location.filter,
+                method=location.search,
+                exclude_dirs=exclude_dirs,
+                exclude_files=exclude_files,
             )
 
             # whether to walk dirs or files
             _walk_funcs = {
-                RuleTarget.files: walker.files,
-                RuleTarget.dirs: walker.dirs,
+                RuleTarget.FILES: walker.files,
+                RuleTarget.DIRS: walker.dirs,
             }
             walk_func = _walk_funcs[self.targets]
 
-            _filesystem, _path = fs_path_expand(
-                path=location.path,
-                filesystem=location.filesystem,
-                working_dir=working_dir,
-            )
-
-            fs_base_path = fs.path.forcedir(fs.path.relpath(fs.path.normpath(_path)))
-            # we keep the filesystem open after walking
-            filesystem = fs.open_fs(_filesystem)
-            console.location(filesystem, _path)
-            for resource in walk_func(fs=filesystem, path=_path):
-                # fs_path: no starting "./", no ending "/"
-                # fs_base_path: no starting "./", ends with "/"
-                fs_path = fs.path.relpath(resource)
-
-                # skip broken symlinks
-                try:
-                    if filesystem.islink(fs_path):
-                        continue
-                except ResourceNotFound:
-                    continue
-
+            for resource in walk_func(location.path):
                 yield {
-                    "fs": filesystem,
-                    "fs_path": fs_path,
-                    "fs_base_path": fs_base_path,
                     "working_dir": working_dir,
                 }
-
-s
-if __name__ == "__main__":
-    from organize.core import run
-
-    with fs.open_fs("mem://") as mem:
-        mem.touch("test")
-        mem.touch("test2")
-        conf = """
-        rules:
-          - locations:
-              - path: "~/Desktop"
-            actions:
-              - echo: "test"
-        """
-        run(config=conf, working_dir="~")
