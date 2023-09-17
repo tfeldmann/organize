@@ -6,10 +6,7 @@ from fs.base import FS
 from pydantic import ConfigDict
 from pydantic.dataclasses import dataclass
 
-from . import console
-from .pipeline import action_pipeline, filter_pipeline
 from .rule import Rule
-from .utils import basic_args
 
 
 def default_yaml_cnst(loader, tag_suffix, node):
@@ -19,11 +16,6 @@ def default_yaml_cnst(loader, tag_suffix, node):
 
 
 yaml.add_multi_constructor("", default_yaml_cnst, Loader=yaml.SafeLoader)
-
-
-def load_from_string(config: str) -> dict:
-    dedented_config = textwrap.dedent(config)
-    return yaml.load(dedented_config, Loader=yaml.SafeLoader)
 
 
 def should_execute(rule_tags, tags, skip_tags):
@@ -55,6 +47,12 @@ def should_execute(rule_tags, tags, skip_tags):
 class Config:
     rules: List[Rule]
 
+    @classmethod
+    def from_string(cls, config: str):
+        dedented = textwrap.dedent(config)
+        as_dict = yaml.load(dedented, Loader=yaml.SafeLoader)
+        return cls(**as_dict)
+
     def execute(
         self,
         simulate: bool = True,
@@ -62,42 +60,9 @@ class Config:
         skip_tags=set(),
         working_dir: Union[FS, str, None] = ".",
     ):
-        args = basic_args()
         for rule in self.rules:
-            # exclude rules by tags
-            if not should_execute(rule_tags=rule.tags, tags=tags, skip_tags=skip_tags):
-                continue
-
-            for walk_args in rule.walk(working_dir=working_dir):
-                walker_fs = walk_args["fs"]
-                walker_path = walk_args["fs_path"]
-
-                console.path(walker_fs, walker_path)
-
-                args.update(walk_args)
-                match = filter_pipeline(
-                    rule.filters, args=args, filter_mode=rule.filter_mode
-                )
-
-                if not match:
-                    continue
-
-                # # if the currently handled resource changed we adjust the prefix message
-                # if args.get("resource_changed"):
-                #     console.path_changed_during_pipeline(
-                #         fs=filesystem,
-                #         fs_path=fs_path,
-                #         new_fs=args["fs"],
-                #         new_path=args["fs_path"],
-                #         reason=args.get("resource_changed"),
-                #     )
-                # args.pop("resource_changed", None)
-
-                is_success = action_pipeline(
-                    actions=rule.actions,
-                    args=args,
-                    simulate=simulate,
-                )
+            if should_execute(rule_tags=rule.tags, tags=tags, skip_tags=skip_tags):
+                rule.execute(simulate=simulate)
 
 
 if __name__ == "__main__":

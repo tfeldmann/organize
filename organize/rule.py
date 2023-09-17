@@ -1,7 +1,7 @@
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Set, Union
 
 from pydantic import ConfigDict, Field, field_validator
 from pydantic.dataclasses import dataclass
@@ -14,25 +14,6 @@ from .registry import get_action, get_filter
 from .resource import Resource
 
 logger = logging.getLogger(__name__)
-
-rule_count = 0
-
-
-def rule_name():
-    global rule_count
-    rule_count += 1
-    return "Unnamed rule %s" % rule_count
-
-
-class FilterMode(str, Enum):
-    ALL = "all"
-    ANY = "any"
-    NONE = "none"
-
-
-class RuleTarget(str, Enum):
-    DIRS = "dirs"
-    FILES = "files"
 
 
 def action_from_dict(d):
@@ -72,6 +53,17 @@ def filter_from_dict(d: Dict):
     return Not(inst) if invert_filter else inst
 
 
+class FilterMode(str, Enum):
+    ALL = "all"
+    ANY = "any"
+    NONE = "none"
+
+
+class RuleTarget(str, Enum):
+    DIRS = "dirs"
+    FILES = "files"
+
+
 @dataclass(
     kw_only=True,
     config=ConfigDict(
@@ -80,12 +72,12 @@ def filter_from_dict(d: Dict):
     ),
 )
 class Rule:
-    name: Union[str, None] = Field(default_factory=rule_name)
+    name: Optional[str] = None
     enabled: bool = True
     targets: RuleTarget = RuleTarget.FILES
     locations: List[Location] = Field(default_factory=list)
     subfolders: bool = False
-    tags: List[str] = Field(default_factory=list)
+    tags: Set[str] = Field(default_factory=set)
     filters: List[Filter] = Field(default_factory=list)
     filter_mode: FilterMode = FilterMode.ALL
     actions: List[Action] = Field(..., min_items=1)
@@ -134,9 +126,6 @@ class Rule:
         return result
 
     def walk(self, working_dir: Union[Path, str] = "."):
-        """
-        Walk all given locations and yield the pathes
-        """
         for location in self.locations:
             # instantiate the fs walker
             exclude_files = location.system_exclude_files + location.exclude_files
@@ -166,11 +155,11 @@ class Rule:
             walk_func = _walk_funcs[self.targets]
 
             for path in walk_func(location.path):
-                yield Resource(path=path, rule=self, basedir=location)
+                yield Resource(path=Path(path), rule=self, basedir=location)
 
     def execute(self, *, simulate: bool):
         for res in self.walk():
-            for filt in self.filters:
-                match = filt.pipeline(res)
+            for filter in self.filters:
+                match = filter.pipeline(res)
                 if match:
                     print(res)
