@@ -1,8 +1,20 @@
-from typing import Set
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from pathlib import Path
-from pydantic import BaseModel, Field
+from typing import TYPE_CHECKING, Any, Dict, Optional
+
+if TYPE_CHECKING:
+    from .rule import Rule
 
 
-class Resource(BaseModel):
+@dataclass
+class Resource:
     path: Path
-    walker_skip_files: Set[Path] = Field(default_factory=set)
+    basedir: Optional[Path] = None
+    rule: Optional[Rule] = None
+    vars: Dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def relative_path(self):
+        return self.path.relative_to(self.basedir)

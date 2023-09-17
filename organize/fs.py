@@ -1,9 +1,9 @@
-from typing import NamedTuple, List, Iterable
+import os
+from fnmatch import fnmatch
+from typing import Iterable, List, Literal, NamedTuple, Set
+
 from pydantic import Field
 from pydantic.dataclasses import dataclass
-from typing import Literal, Set
-from fnmatch import fnmatch
-import os
 
 
 def pattern_match(name, patterns):

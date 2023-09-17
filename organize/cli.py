@@ -134,6 +134,7 @@ def execute(
     skip_tags: Optional[Tuple[str]] = None,
 ):
     from schema import SchemaError
+
     from . import core
 
     if config:

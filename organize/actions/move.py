@@ -9,9 +9,9 @@ from typing_extensions import Literal
 from organize.utils import (
     SimulationFS,
     Template,
-    safe_description,
-    resolve_fs_path,
     fs_path_expand,
+    resolve_fs_path,
+    safe_description,
 )
 
 from ._conflict import ConflictOption, check_conflict, dst_from_options

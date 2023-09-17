@@ -5,11 +5,13 @@ from typing import Dict, List, Union
 
 from pydantic import ConfigDict, Field, field_validator
 from pydantic.dataclasses import dataclass
+from rich import print
 
 from .action import Action
 from .filter import Filter, Not
 from .location import Location
 from .registry import get_action, get_filter
+from .resource import Resource
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +72,13 @@ def filter_from_dict(d: Dict):
     return Not(inst) if invert_filter else inst
 
 
-@dataclass(kw_only=True, config=ConfigDict(extra="forbid"))
+@dataclass(
+    kw_only=True,
+    config=ConfigDict(
+        extra="forbid",
+        arbitrary_types_allowed=True,
+    ),
+)
 class Rule:
     name: Union[str, None] = Field(default_factory=rule_name)
     enabled: bool = True
@@ -82,15 +90,18 @@ class Rule:
     filter_mode: FilterMode = FilterMode.ALL
     actions: List[Action] = Field(..., min_items=1)
 
-    @field_validator("locations", pre=True)
-    def validate_locations(cls, v):
-        if v is None:
+    @field_validator("locations", mode="before")
+    def validate_locations(cls, locations):
+        if locations is None:
             raise ValueError("Location cannot be empty")
-        if isinstance(v, str):
-            v = {"path": v}
-        if not isinstance(v, list):
-            v = [v]
-        return v
+        if not isinstance(locations, list):
+            locations = [locations]
+        result = []
+        for x in locations:
+            if isinstance(x, str):
+                x = {"path": x}
+            result.append(x)
+        return result
 
     @field_validator("filters", mode="before")
     def validate_filters(cls, filters):
@@ -142,7 +153,7 @@ class Rule:
                 max_depth=max_depth,
                 filter_dirs=location.filter_dirs,
                 filter_files=location.filter,
-                method=location.search,
+                method="breadth",
                 exclude_dirs=exclude_dirs,
                 exclude_files=exclude_files,
             )
@@ -154,7 +165,12 @@ class Rule:
             }
             walk_func = _walk_funcs[self.targets]
 
-            for resource in walk_func(location.path):
-                yield {
-                    "working_dir": working_dir,
-                }
+            for path in walk_func(location.path):
+                yield Resource(path=path, rule=self, basedir=location)
+
+    def execute(self, *, simulate: bool):
+        for res in self.walk():
+            for filt in self.filters:
+                match = filt.pipeline(res)
+                if match:
+                    print(res)

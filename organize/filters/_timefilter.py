@@ -1,5 +1,5 @@
-from enum import Enum
 from datetime import datetime, timedelta
+from enum import Enum
 from typing import Union
 
 from .filter import Filter, FilterResult
@@ -21,7 +21,6 @@ def age_condition_applies(
 
 
 class TimeFilter(Filter):
-
     years: int = 0
     months: int = 0
     weeks: int = 0

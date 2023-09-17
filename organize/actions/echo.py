@@ -1,11 +1,9 @@
 from typing_extensions import Literal
 
 from ..utils import Template
-from .action import Action
 
 
-class Echo(Action):
-
+class Echo:
     """Prints the given message.
 
     This can be useful to test your rules, especially in combination with placeholder
@@ -15,18 +13,11 @@ class Echo(Action):
         msg (str): The message to print. Accepts placeholder variables.
     """
 
-    name: Literal["echo"] = "echo"
-    msg: str
+    msg: str = ""
 
-    _msg_templ: Template
-
-    class ParseConfig:
-        accepts_positional_arg = "msg"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __post_init__(self):
         self._msg_templ = Template.from_string(self.msg)
 
-    def pipeline(self, args: dict, simulate: bool) -> None:
-        full_msg = self._msg_templ.render(**args)
+    def pipeline(self, res: dict) -> None:
+        full_msg = self._msg_templ.render(**res)
         self.print("%s" % full_msg)
