@@ -1,4 +1,5 @@
 import pytest
+
 from organize.config import should_execute
 
 

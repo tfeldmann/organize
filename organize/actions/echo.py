@@ -1,8 +1,14 @@
-from typing_extensions import Literal
+from typing import ClassVar
 
-from ..utils import Template
+from pydantic.dataclasses import dataclass
+
+from organize.action import ActionConfig
+from organize.output import Output
+from organize.resource import Resource
+from organize.utils import Template
 
 
+@dataclass
 class Echo:
     """Prints the given message.
 
@@ -15,9 +21,16 @@ class Echo:
 
     msg: str = ""
 
+    action_config: ClassVar = ActionConfig(
+        name="echo",
+        standalone=True,
+        files=True,
+        dirs=True,
+    )
+
     def __post_init__(self):
         self._msg_templ = Template.from_string(self.msg)
 
-    def pipeline(self, res: dict) -> None:
+    def pipeline(self, res: Resource, output: Output, simulate: bool):
         full_msg = self._msg_templ.render(**res)
-        self.print("%s" % full_msg)
+        output.info(res, full_msg)

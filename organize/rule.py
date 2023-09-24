@@ -8,7 +8,7 @@ from pydantic.dataclasses import dataclass
 from rich import print
 
 from .action import Action
-from .filter import Filter, Not
+from .filter import All, Filter, Not
 from .location import Location
 from .registry import get_action, get_filter
 from .resource import Resource
@@ -80,7 +80,7 @@ class Rule:
     tags: Set[str] = Field(default_factory=set)
     filters: List[Filter] = Field(default_factory=list)
     filter_mode: FilterMode = FilterMode.ALL
-    actions: List[Action] = Field(..., min_items=1)
+    actions: List[Action] = Field(..., min_length=1)
 
     @field_validator("locations", mode="before")
     def validate_locations(cls, locations):
@@ -135,7 +135,7 @@ class Rule:
             else:
                 max_depth = location.max_depth
 
-            from .fs import Walker
+            from .walker import Walker
 
             walker = Walker(
                 min_depth=0,
@@ -158,8 +158,14 @@ class Rule:
                 yield Resource(path=Path(path), rule=self, basedir=location)
 
     def execute(self, *, simulate: bool):
+        from .output import RichOutput
+
+        output = RichOutput()
         for res in self.walk():
-            for filter in self.filters:
-                match = filter.pipeline(res)
-                if match:
-                    print(res)
+            result = All(*self.filters).pipeline(res, output=output)  # TODO: Any
+            if result:
+                try:
+                    for action in self.actions:
+                        action.pipeline(res, simulate=simulate, output=output)
+                except Exception as e:
+                    output.error(res, msg=str(e), origin=action.Meta.name)

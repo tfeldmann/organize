@@ -33,7 +33,7 @@ theme = Theme(
         "path.main": "green",
         "path.icon": "green",
         "pipeline.source": "cyan",
-        "pipeline.msg": "white",
+        "pipeline.msg": "",
         "pipeline.error": "bold red",
         "pipeline.prompt": "bold yellow",
         "summary.done": "bold green",

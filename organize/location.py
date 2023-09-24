@@ -1,7 +1,7 @@
 from enum import Enum
-from typing import List, Union
+from typing import List, Set, Union
 
-from pydantic import BaseModel, ConfigDict, Field, validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic.dataclasses import dataclass
 from typing_extensions import Literal
 
@@ -19,16 +19,11 @@ DEFAULT_SYSTEM_EXCLUDE_DIRS = [
 ]
 
 
-class SearchMethod(str, Enum):
-    DEPTH = "depth"
-    BREADTH = "breadth"
-
-
 @dataclass(config=ConfigDict(extra="forbid"))
 class Location(BaseModel):
     path: str
     max_depth: Union[Literal["inherit"], int, None] = "inherit"
-    search: SearchMethod = SearchMethod.DEPTH
+    search: Literal["depth", "breadth"] = "breadth"
     exclude_files: List[str] = Field(default_factory=list)
     exclude_dirs: List[str] = Field(default_factory=list)
     system_exclude_files: List[str] = Field(
@@ -41,12 +36,12 @@ class Location(BaseModel):
     filter_dirs: Union[List[str], None] = None
     ignore_errors: bool = False
 
-    @validator(
+    @field_validator(
         "exclude_files",
         "exclude_dirs",
         "system_exclude_files",
         "system_exclude_dirs",
-        pre=True,
+        mode="before",
     )
     def ensure_list(cls, value):
         if isinstance(value, str):

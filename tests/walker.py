@@ -1,5 +1,5 @@
 import pytest
-from organize.fs import Walker
+from organize.walker import Walker
 from pyfakefs.fake_filesystem import FakeFilesystem
 from collections import Counter
 

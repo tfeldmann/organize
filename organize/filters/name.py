@@ -1,14 +1,18 @@
-from typing import Any, Dict, List, Union
+from typing import Any, ClassVar, Dict, List, Union
 
 import simplematch
 from fs import path
 from pydantic import Field
 from typing_extensions import Literal
 
+from organize.output import Output
+from organize.resource import Resource
+
+from . import FilterConfig
 from .filter import Filter, FilterResult
 
 
-class Name(Filter):
+class Name:
     """Match files and folders by name
 
     Args:
@@ -29,21 +33,15 @@ class Name(Filter):
             case insensitive matching.
     """
 
-    name: Literal["name"] = Field("name", repr=False)
-
     match: str = "*"
     startswith: Union[str, List[str]] = ""
     contains: Union[str, List[str]] = ""
     endswith: Union[str, List[str]] = ""
     case_sensitive: bool = True
 
-    _matcher: simplematch.Matcher
+    filter_config: ClassVar = FilterConfig(name="name", files=True, dirs=True)
 
-    class ParseConfig:
-        accepts_positional_arg = "match"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __post_init__(self, *args, **kwargs):
         self._matcher = simplematch.Matcher(
             self.match,
             case_sensitive=self.case_sensitive,
@@ -64,7 +62,7 @@ class Name(Filter):
         )
         return is_match
 
-    def pipeline(self, args: Dict) -> FilterResult:
+    def pipeline(self, res: Resource, output: Output) -> bool:
         fs = args["fs"]
         fs_path = args["fs_path"]
         if fs.isdir(fs_path):

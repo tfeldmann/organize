@@ -1,19 +1,12 @@
 import pytest
-from fs import open_fs
 from schema import SchemaError
 
-from organize import config, core
-
-
-def validate_config(string: str):
-    conf = config.load_from_string(string)
-    conf = config.cleanup(conf)
-    config.validate(conf)
-    return conf
+from organize.config import Config
 
 
 def test_basic():
-    STR = """
+    Config.from_string(
+        """
     rules:
     - locations: '~/'
       filters:
@@ -32,11 +25,12 @@ def test_basic():
       - shell:
           cmd: 'say {path.stem}'
     """
-    validate_config(STR)
+    )
 
 
 def test_yaml_ref():
-    STR = """
+    Config.from_string(
+        """
     media: &media
       - wav
       - png
@@ -63,7 +57,7 @@ def test_yaml_ref():
         actions:
           - trash
     """
-    validate_config(STR)
+    )
 
 
 def test_error_filter_dict():
