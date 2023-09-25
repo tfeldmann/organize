@@ -1,22 +1,18 @@
-from fs.base import FS
-from typing_extensions import Literal
+from typing import ClassVar
 
-from .filter import Filter, FilterResult
+from pydantic.dataclasses import dataclass
+
+from organize.filter import FilterConfig
+from organize.output import Output
+from organize.resource import Resource
 
 
-class Empty(Filter):
+@dataclass
+class Empty:
 
     """Finds empty dirs and files"""
 
-    name: Literal["empty"] = "empty"
+    filter_config: ClassVar = FilterConfig(name="empty", files=True, dirs=True)
 
-    def pipeline(self, args: dict) -> FilterResult:
-        fs = args["fs"]  # type: FS
-        fs_path = args["fs_path"]  # type: str
-
-        if fs.isdir(fs_path):
-            result = fs.isempty(fs_path)
-        else:
-            result = fs.getsize(fs_path) == 0
-
-        return FilterResult(matches=result, updates={})
+    def pipeline(self, res: Resource, output: Output) -> bool:
+        return res.is_empty()

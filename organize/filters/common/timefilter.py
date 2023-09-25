@@ -1,8 +1,12 @@
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Union
+from typing import ClassVar, Literal, Union
 
-from .filter import Filter, FilterResult
+from pydantic.dataclasses import dataclass
+
+from organize.filter import FilterConfig
+from organize.output import Output
+from organize.resource import Resource
 
 
 class Mode(Enum):
@@ -20,7 +24,8 @@ def age_condition_applies(
     return (mode == Mode.older) == is_past
 
 
-class TimeFilter(Filter):
+@dataclass
+class TimeFilter:
     years: int = 0
     months: int = 0
     weeks: int = 0
@@ -28,12 +33,11 @@ class TimeFilter(Filter):
     hours: int = 0
     minutes: int = 0
     seconds: int = 0
-    mode: Mode = Mode.older
+    mode: Literal["older", "newer"] = "older"
 
-    _age: timedelta
+    filter_config: ClassVar = FilterConfig("timefilter", files=True, dirs=False)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __post_init__(self):
         self._age = timedelta(
             weeks=52 * self.years
             + 4 * self.months
@@ -58,17 +62,16 @@ class TimeFilter(Filter):
                 )
         return match
 
-    def pipeline(self, args: dict) -> FilterResult:
-        dt = self.get_datetime(args)
+    def pipeline(self, res: Resource, output: Output) -> bool:
+        dt = self.get_datetime(res.path)
         if dt is None:
-            return FilterResult(matches=False, updates={})
+            return False
         dt = dt.astimezone()
-
         match = self.matches_datetime(dt)
-        return FilterResult(
-            matches=match,
-            updates={self.name: dt},
-        )
+        if match:
+            res.vars[self.filter_config.name] = dt
+            return True
+        return False
 
     def get_datetime(self, args: dict) -> Union[datetime, None]:
-        raise NotImplemented
+        raise NotImplementedError

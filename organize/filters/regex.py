@@ -1,12 +1,15 @@
 import re
+from typing import ClassVar
 
-from fs.path import basename
-from typing_extensions import Literal
+from pydantic.dataclasses import dataclass
 
-from .filter import Filter, FilterResult
+from organize.filter import FilterConfig
+from organize.output import Output
+from organize.resource import Resource
 
 
-class Regex(Filter):
+@dataclass
+class Regex:
 
     """Matches filenames with the given regular expression
 
@@ -22,27 +25,21 @@ class Regex(Filter):
 
     """
 
-    name: Literal["regex"] = "regex"
     expr: str
 
-    _expr: re.Pattern
+    filter_config: ClassVar = FilterConfig(name="regex", files=True, dirs=True)
 
-    class ParseConfig:
-        accepts_positional_arg = "expr"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __post_init__(self):
         self._expr = re.compile(self.expr, flags=re.UNICODE)
 
     def matches(self, path: str):
         return self._expr.search(path)
 
-    def pipeline(self, args: dict) -> FilterResult:
-        fs_path = args["fs_path"]
-        match = self.matches(basename(fs_path))
-        return FilterResult(
-            matches=bool(match),
-            updates={
-                self.name: match.groupdict() if match else "",
-            },
-        )
+    def pipeline(self, res: Resource, output: Output) -> bool:
+        match = self.matches(res.path.name)
+        if match:
+            vars = res.vars.get(self.filter_config.name) or dict()
+            vars.update(match.groupdict())
+            res.vars[self.filter_config.name] = vars
+            return True
+        return False

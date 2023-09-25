@@ -1,38 +1,25 @@
-from typing import List
-
-from pydantic import BaseModel
-from pydantic.dataclasses import dataclass
 from rich import print
 
+from organize.actions import Echo
 from organize.config import Config
-from organize.filter import Not
-from organize.filters.extension import Extension
-from organize.output import Output
-from organize.registry import register_action, register_filter
-from organize.resource import Resource
+from organize.filters import Extension, Hash, LastModified, Regex, Size
 from organize.rule import Rule
-
-
-@dataclass
-class Echo:
-    msg: str = ""
-
-    def pipeline(self, res: Resource, output: Output, simulate: bool) -> dict:
-        output.info(res=res, msg=self.msg)
-        return res
-
-
-register_filter(Extension, "extension")
-register_action(Echo, "echo")
 
 rule = Rule(
     locations=["."],
-    subfolders=True,
     filter_mode="any",
     filters=[
         Extension(".toml"),
+        Hash("sha256"),
+        Size(),
+        Regex(".*proj"),
+        LastModified(),
     ],
-    actions=[Echo("test")],
+    actions=[
+        Echo("File {path} has hash {hash}"),
+        Echo("{size.traditional}"),
+        Echo("{lastmodified}"),
+    ],
 )
 conf2 = Config(rules=[rule])
 print(conf2)

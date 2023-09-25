@@ -1,6 +1,5 @@
-from typing import ClassVar, NamedTuple
-
-from typing_extensions import Protocol, runtime_checkable
+import logging
+from typing import ClassVar, NamedTuple, Protocol, runtime_checkable
 
 from .output import Output
 from .resource import Resource
@@ -46,5 +45,7 @@ class All:
                 if not match:
                     return False
             except Exception as e:
-                print(filter.filter_config.name, str(e))
+                output.msg(res=res, level="error", msg=str(e))
+                logging.exception()
+                return False
         return True

@@ -83,3 +83,14 @@ def read_files(fs: FS, path="/"):
     for x in fs.walk.dirs(path, max_depth=0):
         result[basename(x)] = read_files(fs, path=join(path, x))
     return result
+
+
+def Dir(name: str, *content):
+    result = {name: dict()}
+    for x in content:
+        result[name].update(x)
+    return result
+
+
+def File(name: str, content=""):
+    return {name: content}

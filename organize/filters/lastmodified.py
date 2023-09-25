@@ -1,9 +1,10 @@
 from datetime import datetime
+from pathlib import Path
+from typing import ClassVar
 
-from fs.base import FS
-from typing_extensions import Literal
+from organize.filter import FilterConfig
 
-from ._timefilter import TimeFilter
+from .common.timefilter import TimeFilter
 
 
 class LastModified(TimeFilter):
@@ -27,12 +28,7 @@ class LastModified(TimeFilter):
         {lastmodified}: The datetime the files / folders was lastmodified.
     """
 
-    name: Literal["lastmodified"] = "lastmodified"
+    filter_config: ClassVar = FilterConfig(name="lastmodified", files=True, dirs=False)
 
-    def get_datetime(self, args: dict) -> datetime:
-        fs = args["fs"]  # type: FS
-        fs_path = args["fs_path"]
-        modified = fs.getmodified(fs_path)
-        if not modified:
-            raise EnvironmentError("lastmodified date is not available")
-        return modified
+    def get_datetime(self, path: Path) -> datetime:
+        return datetime.fromtimestamp(path.stat().st_mtime)

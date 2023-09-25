@@ -3,15 +3,15 @@ from typing import Any, ClassVar, Dict, List, Union
 import simplematch
 from fs import path
 from pydantic import Field
+from pydantic.dataclasses import dataclass
 from typing_extensions import Literal
 
+from organize.filter import Filter, FilterConfig
 from organize.output import Output
 from organize.resource import Resource
 
-from . import FilterConfig
-from .filter import Filter, FilterResult
 
-
+@dataclass
 class Name:
     """Match files and folders by name
 

@@ -1,17 +1,15 @@
-import logging
+from typing import ClassVar
 
-from fs.base import FS
-from pydantic import Field
-from typing_extensions import Literal
+from pydantic.dataclasses import dataclass
 
+from organize.filter import FilterConfig
+from organize.output import Output
+from organize.resource import Resource
 from organize.utils import Template
 
-from .filter import Filter, FilterResult
 
-logger = logging.getLogger(__name__)
-
-
-class Hash(Filter):
+@dataclass
+class Hash:
 
     """Calculates the hash of a file.
 
@@ -32,7 +30,10 @@ class Hash(Filter):
     ```py
     >>> import hashlib
     >>> hashlib.algorithms_available
-    {'shake_256', 'whirlpool', 'mdc2', 'blake2s', 'sha224', 'shake_128', 'sha3_512', 'sha3_224', 'sha384', 'md5', 'sha1', 'sha512_256', 'blake2b', 'sha256', 'sha512_224', 'ripemd160', 'sha3_384', 'md4', 'sm3', 'sha3_256', 'md5-sha1', 'sha512'}
+    {'shake_256', 'whirlpool', 'mdc2', 'blake2s', 'sha224', 'shake_128', 'sha3_512',
+    'sha3_224', 'sha384', 'md5', 'sha1', 'sha512_256', 'blake2b', 'sha256',
+    'sha512_224', 'ripemd160', 'sha3_384', 'md4', 'sm3', 'sha3_256', 'md5-sha1',
+    'sha512'}
     ```
 
     **Returns:**
@@ -40,24 +41,15 @@ class Hash(Filter):
     - `{hash}`:  The hash of the file.
     """
 
-    name: Literal["hash"] = Field("hash", repr=False)
     algorithm: str = "md5"
 
-    _algorithm: Template
+    filter_config: ClassVar = FilterConfig(name="hash", files=True, dirs=False)
 
-    class ParseConfig:
-        accepts_positional_arg = "algorithm"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __post_init__(self):
         self._algorithm = Template.from_string(self.algorithm)
 
-    def pipeline(self, args: dict):
-        fs = args["fs"]  # type: FS
-        fs_path = args["fs_path"]  # type: str
-        algo = self._algorithm.render(**args)
-        hash_ = fs.hash(fs_path, name=algo)
-        return FilterResult(
-            matches=True,
-            updates={self.name: hash_},
-        )
+    def pipeline(self, res: Resource, output: Output) -> bool:
+        algo = self._algorithm.render(**res.dict()).lower()
+        hash = res.hash(algo=algo)
+        res.vars[self.filter_config.name] = hash
+        return True

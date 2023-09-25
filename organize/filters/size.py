@@ -1,14 +1,14 @@
-from pydantic import validator
 import operator
 import re
-from typing import Callable, List, Set, Tuple, Union
+from typing import Callable, ClassVar, Iterable, List, Set, Tuple, Union
 
-from fs.filesize import binary, decimal, traditional
-from typing_extensions import Literal
+from pydantic import validator
+from pydantic.dataclasses import dataclass
 
+from organize.filter import FilterConfig
+from organize.output import Output
+from organize.resource import Resource
 from organize.utils import flattened_string_list
-
-from .filter import Filter, FilterResult
 
 OPERATORS = {
     "<": operator.lt,
@@ -19,6 +19,7 @@ OPERATORS = {
     ">=": operator.ge,
     ">": operator.gt,
 }
+
 SIZE_REGEX = re.compile(
     r"^(?P<op>[<>=]*)(?P<num>(\d*\.)?\d+)(?P<unit>[kmgtpezy]?i?)b?$"
 )
@@ -56,7 +57,43 @@ def satisfies_constraints(size, constraints):
     return all(op(size, p_size) for op, p_size in constraints)
 
 
-class Size(Filter):
+def number_with_unit(size: int, suffixes: Iterable[str], base: int) -> str:
+    size = int(size)
+    if size == 1:
+        return "1 byte"
+    elif size < base:
+        return "{:,} bytes".format(size)
+
+    for i, suffix in enumerate(suffixes, 2):
+        unit = base**i
+        if size < unit:
+            break
+    return "{:,.1f} {}".format((base * size / unit), suffix)
+
+
+def traditional(size):
+    """Convert a filesize in to a string (powers of 1024, JDEC prefixes)."""
+    return number_with_unit(
+        size, ("KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"), 1024
+    )
+
+
+def binary(size):
+    """Convert a filesize in to a string (powers of 1024, IEC prefixes)."""
+    return number_with_unit(
+        size, ("KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"), 1024
+    )
+
+
+def decimal(size):
+    """Convert a filesize in to a string (powers of 1000, SI prefixes)."""
+    return number_with_unit(
+        size, ("kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"), 1000
+    )
+
+
+@dataclass
+class Size:
     """Matches files and folders by size
 
     Args:
@@ -82,13 +119,9 @@ class Size(Filter):
     - `{size.decimal}`: (str) Size with unit (powers of 1000, SI prefixes)
     """
 
-    name: Literal["size"] = "size"
     conditions: Union[List[str], str] = ""
 
-    _constraints: Set[Tuple[Callable[[int, int], bool], int]]
-
-    class ParseConfig:
-        accepts_positional_arg = "conditions"
+    filter_config: ClassVar = FilterConfig(name="size", files=True, dirs=True)
 
     @validator("conditions", pre=True)
     def ensure_joined_str(cls, value):
@@ -96,8 +129,7 @@ class Size(Filter):
             value = [value]
         return ", ".join(flattened_string_list(list(value)))
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __post_init__(self):
         self._constraints = create_constraints(self.conditions)
 
     def matches(self, filesize: int) -> bool:
@@ -105,26 +137,12 @@ class Size(Filter):
             return True
         return all(op(filesize, c_size) for op, c_size in self._constraints)
 
-    def pipeline(self, args: dict) -> FilterResult:
-        fs = args["fs"]
-        fs_path = args["fs_path"]
-
-        if fs.isdir(fs_path):
-            size = sum(
-                info.size
-                for _, info in fs.walk.info(path=fs_path, namespaces=["details"])
-            )
-        else:
-            size = fs.getsize(fs_path)
-
-        return FilterResult(
-            matches=self.matches(size),
-            updates={
-                self.name: {
-                    "bytes": size,
-                    "traditional": traditional(size),
-                    "binary": binary(size),
-                    "decimal": decimal(size),
-                },
-            },
-        )
+    def pipeline(self, res: Resource, output: Output) -> bool:
+        bytes = res.size()
+        res.vars[self.filter_config.name] = {
+            "bytes": bytes,
+            "traditional": traditional(bytes),
+            "binary": binary(bytes),
+            "decimal": decimal(bytes),
+        }
+        return self.matches(bytes)

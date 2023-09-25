@@ -32,5 +32,5 @@ class Echo:
         self._msg_templ = Template.from_string(self.msg)
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
-        full_msg = self._msg_templ.render(**res)
-        output.info(res, full_msg)
+        full_msg = self._msg_templ.render(**res.dict())
+        output.msg(res, full_msg)

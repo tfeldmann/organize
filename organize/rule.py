@@ -10,17 +10,15 @@ from rich import print
 from .action import Action
 from .filter import All, Filter, Not
 from .location import Location
-from .registry import get_action, get_filter
+from .registry import action_by_name, filter_by_name
 from .resource import Resource
-
-logger = logging.getLogger(__name__)
 
 
 def action_from_dict(d):
     if not len(d.keys()) == 1:
         raise ValueError("Action definition must have only one key")
     name, value = next(iter(d.items()))
-    ActionCls = get_action(name)
+    ActionCls = action_by_name(name)
     if value is None:
         return ActionCls()
     elif isinstance(value, dict):
@@ -40,7 +38,7 @@ def filter_from_dict(d: Dict):
         name = name[4:]
         invert_filter = True
 
-    FilterCls = get_filter(name)
+    FilterCls = filter_by_name(name)
 
     # instantiate
     if value is None:
@@ -155,12 +153,12 @@ class Rule:
             walk_func = _walk_funcs[self.targets]
 
             for path in walk_func(location.path):
-                yield Resource(path=Path(path), rule=self, basedir=location)
+                yield Resource(path=Path(path), rule=self, basedir=location.path)
 
     def execute(self, *, simulate: bool):
-        from .output import RichOutput
+        from .output import JSONL as Output
 
-        output = RichOutput()
+        output = Output()
         for res in self.walk():
             result = All(*self.filters).pipeline(res, output=output)  # TODO: Any
             if result:
@@ -168,4 +166,5 @@ class Rule:
                     for action in self.actions:
                         action.pipeline(res, simulate=simulate, output=output)
                 except Exception as e:
-                    output.error(res, msg=str(e), origin=action.Meta.name)
+                    output.msg(res=res, msg=str(e), level="error")
+                    logging.exception()
