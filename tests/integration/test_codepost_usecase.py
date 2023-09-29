@@ -1,61 +1,40 @@
-import fs
-from conftest import make_files, read_files
+from collections import Counter
+from pathlib import Path
 
-from organize import config, core
+from organize.config import Config
 
 
-def test_codepost_usecase():
-    files = {
-        "files": {
-            "Devonte-Betts.txt": "",
-            "Alaina-Cornish.txt": "",
-            "Dimitri-Bean.txt": "",
-            "Lowri-Frey.txt": "",
-            "Someunknown-User.txt": "",
-        }
-    }
+def test_codepost_usecase(fs):
+    fs.create_file("files/Devonte-Betts.txt")
+    fs.create_file("files/Alaina-Cornish.txt")
+    fs.create_file("files/Dimitri-Bean.txt")
+    fs.create_file("files/Lowri-Frey.txt")
+    fs.create_file("files/Someunknown-User.txt")
 
-    with fs.open_fs("temp://") as mem:
-        make_files(mem, files)
-
-        filters = config.load_from_string(
-            """
-            - extension: txt
-            - regex: (?P<firstname>\w+)-(?P<lastname>\w+)\..*
-            - python: |
-                emails = {
-                    "Betts": "dbetts@mail.de",
-                    "Cornish": "acornish@google.com",
-                    "Bean": "dbean@aol.com",
-                    "Frey": "l-frey@frey.org",
-                }
-                if regex["lastname"] in emails:
-                    return {"mail": emails[regex["lastname"]]}
-            """
-        )
-        conf = {
-            "rules": [
-                {
-                    "locations": [
-                        {"path": "files", "filesystem": mem},
-                    ],
-                    "filters": filters,
-                    "actions": [
-                        {"move": {"dest": "files/{python.mail}.txt", "filesystem": mem}}
-                    ],
-                },
-            ]
-        }
-        core.run(conf, simulate=False)
-        result = read_files(mem)
-        mem.tree()
-
-    assert result == {
-        "files": {
-            "dbetts@mail.de.txt": "",
-            "acornish@google.com.txt": "",
-            "dbean@aol.com.txt": "",
-            "l-frey@frey.org.txt": "",
-            "Someunknown-User.txt": "",
-        }
-    }
+    Config.from_string(
+        """
+        rules:
+            -   locations: files
+                filters:
+                    - extension: txt
+                    - regex: (?P<firstname>\w+)-(?P<lastname>\w+)\..*
+                    - python: |
+                        emails = {
+                            "Betts": "dbetts@mail.de",
+                            "Cornish": "acornish@google.com",
+                            "Bean": "dbean@aol.com",
+                            "Frey": "l-frey@frey.org",
+                        }
+                        if regex["lastname"] in emails:
+                            return {"mail": emails[regex["lastname"]]}
+                actions:
+                    - move: "files/{python.mail}.txt"
+        """
+    ).execute(simulate=False)
+    assert Counter(Path("files").glob("*")) == Counter(
+        "files/dbetts@mail.de.txt",
+        "files/acornish@google.com.txt",
+        "files/dbean@aol.com.txt",
+        "files/l-frey@frey.org.txt",
+        "files/Someunknown-User.txt",
+    )

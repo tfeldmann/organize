@@ -1,8 +1,6 @@
 import pytest
-from fs.base import FS
-from conftest import make_files
 
-from organize import core
+from organize.config import Config
 
 
 @pytest.mark.parametrize(
@@ -16,40 +14,44 @@ from organize import core
         ("overwrite", "false", "c"),
     ],
 )
-def test_write(testfs: FS, mode, newline, result):
-    files = ["a.txt", "b.txt", "c.txt"]
-    make_files(testfs, files)
+def test_write(fs, mode, newline, result):
+    fs.create_file("test/a.txt")
+    fs.create_file("test/b.txt")
+    fs.create_file("test/c.txt")
+
     config = """
     rules:
-      - locations: "."
+      - locations: "test"
         filters:
           - name: "a"
         actions:
           - write:
               text: "{text}"
-              path: "out.txt"
+              path: "new/folder/out.txt"
               mode: {mode}
               newline: {newline}
-      - locations: "."
+      - locations: "test"
         filters:
           - name: "b"
         actions:
           - write:
               text: "{text}"
-              path: "out.txt"
+              path: "new/folder/out.txt"
               mode: {mode}
               newline: {newline}
-      - locations: "."
+      - locations: "test"
         filters:
           - name: "c"
         actions:
           - write:
               text: "{text}"
-              path: "out.txt"
+              path: "new/folder/out.txt"
               mode: {mode}
               newline: {newline}
     """.format(
         text="{name}", mode=mode, newline=newline
     )
-    core.run(config, simulate=False, working_dir=testfs)
-    assert testfs.readtext("out.txt") == result
+
+    Config.from_string(config).execute(simulate=False)
+    with open("new/folder/out.txt") as f:
+        assert result == f.read()

@@ -5,7 +5,7 @@ from datetime import datetime
 from fs.base import FS
 from typing_extensions import Literal
 
-from ._timefilter import TimeFilter
+from .common.timefilter import TimeFilter
 
 
 class DateAdded(TimeFilter):

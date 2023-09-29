@@ -159,6 +159,7 @@ class Rule:
         from .output import JSONL as Output
 
         output = Output()
+        output.start(simulate=simulate)
         for res in self.walk():
             result = All(*self.filters).pipeline(res, output=output)  # TODO: Any
             if result:

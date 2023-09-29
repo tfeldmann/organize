@@ -49,3 +49,20 @@ class All:
                 logging.exception()
                 return False
         return True
+
+
+class Any:
+    def __init__(self, *filters: Filter):
+        self.filters = filters
+
+    def pipeline(self, res: Resource, output: Output) -> bool:
+        for filter in self.filters:
+            result = False
+            try:
+                match = filter.pipeline(res, output=output)
+                if match:
+                    result = True
+            except Exception as e:
+                output.msg(res=res, level="error", msg=str(e))
+                logging.exception()
+        return result

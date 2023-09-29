@@ -1,9 +1,14 @@
+from __future__ import annotations
+
 import json
-from typing import Literal, Optional, Protocol
+from typing import TYPE_CHECKING, Literal, Optional, Protocol, Union
 
 from rich import print
 
-from .resource import Resource
+if TYPE_CHECKING:
+    from .action import Action
+    from .filter import Filter
+    from .resource import Resource
 
 # theme = Theme(
 #     {
@@ -31,7 +36,7 @@ from .resource import Resource
 
 
 class Output(Protocol):
-    def start(self, simulate: bool, config_path: Optional[str]):
+    def start(self, simulate: bool, config_path: Optional[str] = None):
         ...
 
     def msg(
@@ -39,6 +44,7 @@ class Output(Protocol):
         res: Resource,
         msg: str,
         level: Literal["info", "warn", "error"] = "info",
+        sender: Union[Filter, Action, str] = "",
     ):
         ...
 
@@ -53,7 +59,7 @@ class Output(Protocol):
 
 
 class Rich:
-    def start(self, simulate: bool, config_path: Optional[str]):
+    def start(self, simulate: bool, config_path: Optional[str] = None):
         self.prev_resource: Optional[Resource] = None
 
         print(f"Starte. {simulate}, {config_path}")
@@ -74,7 +80,7 @@ class Rich:
 
 
 class JSONL:
-    def start(self, simulate: bool, config_path: Optional[str]):
+    def start(self, simulate: bool, config_path: Optional[str] = None):
         self._print_json(
             type="START",
             simulate=simulate,
@@ -86,6 +92,7 @@ class JSONL:
         res: Resource,
         msg: str,
         level: Literal["info", "warn", "error"] = "info",
+        sender: str = "",
     ):
         self._print_json(
             type="MSG",

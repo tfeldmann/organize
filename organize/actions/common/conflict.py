@@ -1,4 +1,5 @@
 from enum import Enum
+from pathlib import Path
 from typing import Callable, Union
 
 import jinja2
@@ -9,9 +10,10 @@ from fs.opener.errors import OpenerError
 from fs.path import basename, dirname, join, splitext
 from jinja2 import Template
 
+from organize.output import Output
 from organize.utils import expand_args, is_same_resource, safe_description
 
-from .trash import Trash
+from ..trash import Trash
 
 
 class ConflictOption(str, Enum):
@@ -22,6 +24,8 @@ class ConflictOption(str, Enum):
     rename_existing = "rename_existing"
     # TODO: keep_newer
     # TODO: keep_older
+    # TODO: keep_bigger
+    # TODO: keep_smaller
 
 
 def next_free_name(fs: FS, template: jinja2.Template, name: str, extension: str) -> str:
@@ -57,43 +61,41 @@ def next_free_name(fs: FS, template: jinja2.Template, name: str, extension: str)
 
 
 def resolve_overwrite_conflict(
-    src_fs: FS,
-    src_path: str,
-    dst_fs: FS,
-    dst_path: str,
+    src: Path,
+    dest: Path,
     conflict_mode: str,
     rename_template: Template,
     simulate: bool,
-    print: Callable,
+    output: Output,
 ) -> Union[None, str]:
     """
     Returns:
         - A new path if applicable
         - None if this action should be skipped.
     """
-    if is_same_resource(src_fs, src_path, dst_fs, dst_path):
-        print("Same resource: Skipped.")
+    if is_same_resource(src_fs, src, dst_fs, dest):
+        output("Same resource: Skipped.")
         return None
 
     if conflict_mode == ConflictOption.trash:
-        Trash().run(fs=dst_fs, fs_path=dst_path, simulate=simulate)
-        return dst_path
+        Trash().run(fs=dst_fs, fs_path=dest, simulate=simulate)
+        return dest
 
     elif conflict_mode == ConflictOption.skip:
-        print("Skipped.")
+        output("Skipped.")
         return None
 
     elif conflict_mode == ConflictOption.overwrite:
-        print("Overwrite %s." % safe_description(dst_fs, dst_path))
+        output("Overwrite %s." % safe_description(dst_fs, dest))
         if not simulate:
-            if dst_fs.isdir(dst_path):
-                dst_fs.removedir(dst_path)
-            elif dst_fs.isfile(dst_path):
-                dst_fs.remove(dst_path)
-        return dst_path
+            if dst_fs.isdir(dest):
+                dst_fs.removedir(dest)
+            elif dst_fs.isfile(dest):
+                dst_fs.remove(dest)
+        return dest
 
     elif conflict_mode == ConflictOption.rename_new:
-        stem, ext = splitext(dst_path)
+        stem, ext = splitext(dest)
         name = next_free_name(
             fs=dst_fs,
             name=stem,
@@ -103,20 +105,20 @@ def resolve_overwrite_conflict(
         return name
 
     elif conflict_mode == ConflictOption.rename_existing:
-        stem, ext = splitext(dst_path)
+        stem, ext = splitext(dest)
         name = next_free_name(
             fs=dst_fs,
             name=stem,
             extension=ext,
             template=rename_template,
         )
-        print('Renaming existing to: "%s"' % name)
+        output('Renaming existing to: "%s"' % name)
         if not simulate:
-            if dst_fs.isdir(dst_path):
-                move_dir(dst_fs, dst_path, dst_fs, name)
-            elif dst_fs.isfile(dst_path):
-                move_file(dst_fs, dst_path, dst_fs, name)
-        return dst_path
+            if dst_fs.isdir(dest):
+                move_dir(dst_fs, dest, dst_fs, name)
+            elif dst_fs.isfile(dest):
+                move_file(dst_fs, dest, dst_fs, name)
+        return dest
 
     raise ValueError("Unknown conflict_mode %s" % conflict_mode)
 
@@ -158,13 +160,13 @@ def check_conflict(
             )
             new_path = resolve_overwrite_conflict(
                 src_fs=src_fs,
-                src_path=src_path,
+                src=src_path,
                 dst_fs=check_fs,
-                dst_path=dst_path,
+                dest=dst_path,
                 conflict_mode=conflict_mode,
                 rename_template=rename_template,
                 simulate=simulate,
-                print=print,
+                output=print,
             )
             if new_path is not None:
                 dst_path = new_path

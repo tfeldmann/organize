@@ -1,12 +1,9 @@
-from typing import Any, ClassVar, Dict, List, Union
+from typing import Any, ClassVar, List, Union
 
 import simplematch
-from fs import path
-from pydantic import Field
 from pydantic.dataclasses import dataclass
-from typing_extensions import Literal
 
-from organize.filter import Filter, FilterConfig
+from organize.filter import FilterConfig
 from organize.output import Output
 from organize.resource import Resource
 
@@ -63,22 +60,19 @@ class Name:
         return is_match
 
     def pipeline(self, res: Resource, output: Output) -> bool:
-        fs = args["fs"]
-        fs_path = args["fs_path"]
-        if fs.isdir(fs_path):
-            name = path.basename(fs_path)
+        if res.is_dir():
+            name = res.path.stem
         else:
-            name, ext = path.splitext(path.basename(fs_path))
+            name, ext = res.path.stem, res.path.suffix
             if not name:
                 name = ext
         result = self.matches(name)
         m = self._matcher.match(name)
         if m == {}:
             m = name
-        return FilterResult(
-            matches=result,
-            updates={self.name: m},
-        )
+
+        res.vars[self.filter_config.name] = m
+        return result
 
     @staticmethod
     def create_list(x: Union[int, str, List[Any]], case_sensitive: bool) -> List[str]:

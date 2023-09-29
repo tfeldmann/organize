@@ -9,10 +9,10 @@ from fs.path import dirname
 from pydantic import Field
 from typing_extensions import Literal
 
-from organize.utils import SimulationFS, Template, safe_description, fs_path_expand
+from organize.utils import SimulationFS, Template, fs_path_expand, safe_description
 
-from ._conflict import ConflictOption, check_conflict, dst_from_options
 from .action import Action
+from .common.conflict import ConflictOption, check_conflict, dst_from_options
 
 
 class Copy(Action):

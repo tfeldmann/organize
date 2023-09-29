@@ -9,8 +9,8 @@ from typing_extensions import Literal
 
 from organize.utils import Template, safe_description
 
-from ._conflict import ConflictOption, check_conflict
 from .action import Action
+from .common.conflict import ConflictOption, check_conflict
 
 logger = logging.getLogger(__name__)
 

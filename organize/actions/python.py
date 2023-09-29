@@ -1,16 +1,15 @@
-import logging
 import textwrap
-from typing import Any, Dict, Iterable
-from typing import Optional as tyOptional
+from typing import ClassVar, Iterable
 
-from typing_extensions import Literal
+from pydantic.dataclasses import dataclass
 
-from .action import Action
+from organize.action import ActionConfig
+from organize.output import Output
+from organize.resource import Resource
 
-logger = logging.getLogger(__name__)
 
-
-class Python(Action):
+@dataclass
+class Python:
 
     """Execute python code.
 
@@ -20,16 +19,17 @@ class Python(Action):
             Whether to execute this code in simulation mode (Default false).
     """
 
-    name: Literal["python"] = "python"
-
     code: str
     run_in_simulation: bool = False
 
-    class ParseConfig:
-        accepts_positional_arg = "code"
+    action_config: ClassVar = ActionConfig(
+        name="python",
+        standalone=True,
+        files=True,
+        dirs=True,
+    )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __post_init__(self):
         self.code = textwrap.dedent(self.code)
 
     def usercode(self, *args, **kwargs):
@@ -46,14 +46,10 @@ class Python(Action):
         )
         exec(funccode, globals_, locals_)  # pylint: disable=exec-used
 
-    def pipeline(self, args: dict, simulate: bool) -> tyOptional[Dict[str, Any]]:
+    def pipeline(self, res: Resource, output: Output, simulate: bool):
         if simulate and not self.run_in_simulation:
-            self.print("** Code not run in simulation. **")
-            return None
+            output.msg(res=res, msg="** Code not run in simulation. **", level="warn")
+            return
 
-        logger.info('Executing python:\n"""\n%s\n"""', self.code)
-        self.create_method(name="usercode", argnames=args.keys(), code=self.code)
-        self.print("Running python script.")
-
-        result = self.usercode(**args)  # pylint: disable=assignment-from-no-return
-        return result
+        self.create_method(name="usercode", argnames=res.dict().keys(), code=self.code)
+        res.vars.update(self.usercode(**res.dict()))

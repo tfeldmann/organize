@@ -1,17 +1,13 @@
-from typing_extensions import Literal
-import logging
 from enum import Enum
-from typing import Union
+from pathlib import Path
+from typing import ClassVar
 
-from fs.base import FS
-from fs.opener import manage_fs
+from pydantic.dataclasses import dataclass
 
+from organize.action import ActionConfig
+from organize.output import Output
+from organize.resource import Resource
 from organize.utils import Template
-
-from ._utils import open_create_fs_path
-from .action import Action
-
-logger = logging.getLogger(__name__)
 
 
 class Mode(str, Enum):
@@ -20,7 +16,8 @@ class Mode(str, Enum):
     overwrite = "overwrite"
 
 
-class Write(Action):
+@dataclass
+class Write:
 
     """
     Write text to a file.
@@ -54,55 +51,54 @@ class Write(Action):
             If this is not given, the local filesystem is used.
     """
 
-    name: Literal["write"] = "write"
     text: str
     path: str
     mode: Mode = Mode.append
     newline: bool = True
     clear_before_first_write: bool = False
-    filesystem: Union[FS, str, None] = None
 
-    _text: Template
-    _path: Template
-    _is_first_write: bool
+    action_config: ClassVar = ActionConfig(
+        name="write",
+        standalone=True,
+        files=True,
+        dirs=True,
+    )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __post_init__(self):
         self._text = Template.from_string(self.text)
         self._path = Template.from_string(self.path)
         self._is_first_write = True
-        # self.filesystem = filesystem or self.Meta.default_filesystem
 
-    def pipeline(self, args: dict, simulate: bool):
-        text = self._text.render(args)
-        path = self._path.render(args)
+    def pipeline(self, res: Resource, output: Output, simulate: bool):
+        text = self._text.render(**res.dict())
+        path = Path(self._path.render(**res.dict()))
 
-        dst_fs, dst_path = open_create_fs_path(
-            fs=self.filesystem,
-            path=path,
-            args=args,
-            simulate=simulate,
-        )
+        if self._is_first_write:
+            # reset flag
+            self._is_first_write = False
 
-        if self._is_first_write and self.clear_before_first_write:
-            self.print(f"Clearing file {dst_path}")
-            if not simulate:
-                dst_fs.create(dst_path, wipe=True)
+            # create parent folders
+            path.parent.mkdir(parents=True, exist_ok=True)
 
-        self.print(f'{path}: {self.mode} "{text}"')
+            # optionally clear if path exists
+            if path.exists() and self.clear_before_first_write:
+                output.msg(res=res, msg=f"Clearing file {path}", sender=self)
+                if not simulate:
+                    with path.open("w"):
+                        pass
+
+        output.msg(res=res, msg=f'{path}: {self.mode} "{text}"', sender=self)
         if self.newline:
             text += "\n"
 
         if not simulate:
-            with manage_fs(dst_fs):
-                if self.mode == Mode.append:
-                    dst_fs.appendtext(dst_path, text)
-                elif self.mode == Mode.prepend:
-                    content = ""
-                    if dst_fs.exists(dst_path):
-                        content = dst_fs.readtext(dst_path)
-                    dst_fs.writetext(dst_path, text + content)
-                elif self.mode == Mode.overwrite:
-                    dst_fs.writetext(dst_path, text)
-
-        self._is_first_write = False
+            if self.mode == Mode.append:
+                with open(path, "a") as f:
+                    f.write(text)
+            elif self.mode == Mode.prepend:
+                content = ""
+                if path.exists():
+                    content = path.read_text()
+                path.write_text(text + content)
+            elif self.mode == Mode.overwrite:
+                path.write_text(text)

@@ -13,7 +13,8 @@ from .lastmodified import LastModified
 
 # from .macos_tags import MacOSTags
 # from .mimetype import MimeType
-# from .name import Name
+from .name import Name
+
 # from .python import Python
 from .regex import Regex
 from .size import Size
@@ -31,7 +32,7 @@ ALL = [
     LastModified,
     #     MacOSTags,
     #     MimeType,
-    #    Name,
+    Name,
     #     Python,
     Regex,
     Size,

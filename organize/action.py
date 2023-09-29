@@ -20,5 +20,5 @@ class ActionConfig(NamedTuple):
 class Action(Protocol):
     action_config: ClassVar[ActionConfig]
 
-    def pipeline(self, res: Resource, output: Output, simulate: bool) -> dict:
+    def pipeline(self, res: Resource, output: Output, simulate: bool):
         ...

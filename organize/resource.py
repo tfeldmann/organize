@@ -34,6 +34,8 @@ class Resource:
             **self.vars,
         )
 
+    # TODO: Caching for `is_file` and `is_dir`
+    # TODO: provide a `from_direntry` constructor to speed things up
     def is_file(self):
         return self.path.is_file()
 
