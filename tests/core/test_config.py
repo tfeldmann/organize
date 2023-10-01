@@ -1,5 +1,5 @@
 import pytest
-from schema import SchemaError
+from pydantic import ValidationError
 
 from organize.config import Config
 
@@ -69,8 +69,8 @@ def test_error_filter_dict():
       actions:
       - trash
     """
-    with pytest.raises(SchemaError):
-        validate_config(STR)
+    with pytest.raises(ValidationError):
+        Config.from_string(STR)
 
 
 # def test_error_action_dict():

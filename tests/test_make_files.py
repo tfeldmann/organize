@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from conftest import make_files, read_files
 
 

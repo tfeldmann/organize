@@ -1,5 +1,3 @@
-from glob import glob
-
 import pytest
 from conftest import make_files, read_files
 
@@ -46,25 +44,25 @@ def test_size_zero(fs):
             - delete
         """
     Config.from_string(config).execute(simulate=False)
-    assert glob("*", root_dir="test") == []
+    assert read_files("test") == {}
 
 
-def test_basic(testfs):
+def test_basic(fs):
     files = {
         "empty": "",
         "full": "0" * 2000,
         "halffull": "0" * 1010,
         "two_thirds.txt": "0" * 666,
     }
-    make_files(testfs, files)
+    make_files(files, "test")
     config = """
         rules:
-        - locations: "."
+        - locations: "test"
           filters:
             - size: '> 1kb, <= 1.0 KiB'
           actions:
             - echo: '{path.name} {size.bytes}'
-        - locations: "."
+        - locations: "test"
           filters:
             - not size:
               - '> 0.5 kb'
@@ -72,8 +70,8 @@ def test_basic(testfs):
           actions:
             - delete
         """
-    core.run(config, simulate=False, working_dir=testfs)
-    assert read_files(testfs) == {
+    Config.from_string(config).execute(simulate=False)
+    assert read_files("test") == {
         "halffull": "0" * 1010,
         "two_thirds.txt": "0" * 666,
     }
