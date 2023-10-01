@@ -68,7 +68,7 @@ requests = "^2.31.0"
 types-PyYAML = "^6.0.12.10"
 coverage = "^7.2.0"
 pytest-cov = "^4.1.0"
-ruff = "^0.0.285"
+ruff = ">=0.0.285,<0.0.292"
 
 [tool.coverage.run]
 source = ['organize']
