@@ -6,6 +6,8 @@ import logging.config
 import yaml
 from fs import appfs
 
+from .config import Config
+
 with appfs.UserLogFS("organize") as log_fs:
     LOG_PATH = log_fs.getsyspath("organize.log")
 

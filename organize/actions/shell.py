@@ -10,6 +10,7 @@ from .action import Action
 logger = logging.getLogger(__name__)
 
 
+# TODO: Terminal waterfall: https://github.com/Textualize/rich/discussions/2985
 class Shell(Action):
     """
     Executes a shell command
