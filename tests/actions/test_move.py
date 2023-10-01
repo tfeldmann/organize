@@ -1,10 +1,11 @@
+from pathlib import Path
+
 import pytest
 from conftest import make_files, read_files
-from fs.base import FS
 
-from organize import core
+from organize.config import Config
 
-files = {
+FILES = {
     "test.txt": "",
     "file.txt": "Hello world\nAnother line",
     "another.txt": "",
@@ -15,21 +16,20 @@ files = {
 
 
 @pytest.fixture
-def testfiles(testfs) -> FS:
-    make_files(testfs, files)
-    yield testfs
+def testfiles(fs):
+    make_files(FILES, path="test")
+    yield
 
 
 def test_copy_on_itself(testfiles):
     config = """
     rules:
-      - locations: "/"
+      - locations: "test"
         actions:
-          - move: "/"
+          - move: "test"
     """
-    core.run(config, simulate=True, working_dir=testfiles)
-    result = read_files(testfiles)
-    assert result == files
+    Config.from_string(config).execute(simulate=False)
+    assert read_files("test") == FILES
 
 
 @pytest.mark.parametrize(
@@ -41,10 +41,10 @@ def test_copy_on_itself(testfiles):
         ("rename_existing", ["test.txt", "test 2.txt"], "new"),
     ],
 )
-def test_move_conflict(testfs: FS, mode, files, test_txt_content):
+def test_move_conflict(fs, mode, files, test_txt_content):
     config = """
     rules:
-      - locations: "/"
+      - locations: "test"
         filters:
           - name: file
         actions:
@@ -54,8 +54,9 @@ def test_move_conflict(testfs: FS, mode, files, test_txt_content):
     """.format(
         mode
     )
-    testfs.writetext("file.txt", "new")
-    testfs.writetext("test.txt", "old")
-    core.run(config, simulate=False, working_dir=testfs)
-    assert set(testfs.listdir("/")) == set(files)
-    assert testfs.readtext("test.txt") == test_txt_content
+    fs.create_file("test/file.txt", contents="new")
+    fs.create_file("test/test.txt", contents="old")
+    Config.from_string(config).execute(simulate=False)
+    testdir = Path("test")
+    assert set(testdir.iterdir()) == set(files)
+    assert (testdir / "test.txt").read_text() == test_txt_content

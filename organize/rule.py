@@ -168,4 +168,4 @@ class Rule:
                         action.pipeline(res, simulate=simulate, output=output)
                 except Exception as e:
                     output.msg(res=res, msg=str(e), level="error")
-                    logging.exception()
+                    logging.exception(e)

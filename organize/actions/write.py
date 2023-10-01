@@ -1,13 +1,17 @@
+from __future__ import annotations
+
 from enum import Enum
 from pathlib import Path
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from pydantic.dataclasses import dataclass
 
 from organize.action import ActionConfig
-from organize.output import Output
-from organize.resource import Resource
 from organize.utils import Template
+
+if TYPE_CHECKING:
+    from organize.output import Output
+    from organize.resource import Resource
 
 
 class Mode(str, Enum):
@@ -28,7 +32,7 @@ class Write:
         text (str):
             The text that should be written. Supports templates.
 
-        file (str):
+        path (str):
             The file `text` should be written into. Supports templates.
 
         mode (str):
@@ -45,10 +49,6 @@ class Write:
             This happens only the first time write_file is run. If the rule filters
             don't match anything the file is left as it is.
             Defaults to `false`.
-
-        filesystem (str):
-            (Optional) A pyfilesystem opener url of the filesystem the textfile is on.
-            If this is not given, the local filesystem is used.
     """
 
     text: str

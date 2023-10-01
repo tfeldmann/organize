@@ -1,6 +1,6 @@
 # from .confirm import Confirm
 # from .copy import Copy
-# from .delete import Delete
+from .delete import Delete
 from .echo import Echo
 
 # from .macos_tags import MacOSTags
@@ -16,7 +16,7 @@ from .write import Write
 ALL = [
     #     Confirm,
     #     Copy,
-    #     Delete,
+    Delete,
     Echo,
     #     MacOSTags,
     Move,

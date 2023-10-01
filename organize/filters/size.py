@@ -2,7 +2,7 @@ import operator
 import re
 from typing import Callable, ClassVar, Iterable, List, Set, Tuple, Union
 
-from pydantic import validator
+from pydantic import field_validator
 from pydantic.dataclasses import dataclass
 
 from organize.filter import FilterConfig
@@ -123,10 +123,10 @@ class Size:
 
     filter_config: ClassVar = FilterConfig(name="size", files=True, dirs=True)
 
-    @validator("conditions", pre=True)
+    @field_validator("conditions", mode="before")
     def ensure_joined_str(cls, value):
-        if isinstance(value, str):
-            value = [value]
+        if not isinstance(value, List):
+            value = [str(value)]
         return ", ".join(flattened_string_list(list(value)))
 
     def __post_init__(self):

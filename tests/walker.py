@@ -1,7 +1,9 @@
-import pytest
-from organize.walker import Walker
-from pyfakefs.fake_filesystem import FakeFilesystem
 from collections import Counter
+
+import pytest
+from pyfakefs.fake_filesystem import FakeFilesystem
+
+from organize.walker import Walker
 
 
 def counter(items):

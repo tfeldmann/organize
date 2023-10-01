@@ -1,7 +1,9 @@
+from glob import glob
+
 import pytest
 from conftest import make_files, read_files
 
-from organize import core
+from organize.config import Config
 from organize.filters import Size
 
 
@@ -32,20 +34,19 @@ def test_other():
     assert Size(["<100 Mb", ">= 0 Tb"]).matches(20)
 
 
-def test_size_zero(testfs):
-    files = {"1": "", "2": "", "3": ""}
-    make_files(testfs, files)
+def test_size_zero(fs):
+    make_files(["1", "2", "3"], "test")
     config = """
         rules:
-        - locations: "."
+        - locations: "test"
           filters:
             - size: 0
           actions:
             - echo: '{path.name}'
             - delete
         """
-    core.run(config, simulate=False, working_dir=testfs)
-    assert read_files(testfs) == {}
+    Config.from_string(config).execute(simulate=False)
+    assert glob("*", root_dir="test") == []
 
 
 def test_basic(testfs):

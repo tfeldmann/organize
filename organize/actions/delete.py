@@ -1,17 +1,19 @@
-from pydantic import Field
-import logging
+from __future__ import annotations
 
-from fs.base import FS
-from typing_extensions import Literal
+import shutil
+from typing import TYPE_CHECKING, ClassVar
 
-from organize.utils import safe_description
+from pydantic.dataclasses import dataclass
 
-from .action import Action
+from organize.action import ActionConfig
 
-logger = logging.getLogger(__name__)
+if TYPE_CHECKING:
+    from organize.output import Output
+    from organize.resource import Resource
 
 
-class Delete(Action):
+@dataclass
+class Delete:
 
     """
     Delete a file from disk.
@@ -20,16 +22,17 @@ class Delete(Action):
     Using the `Trash` action is strongly advised for most use-cases!
     """
 
-    name: Literal["delete"] = Field("delete", repr=False)
+    action_config: ClassVar = ActionConfig(
+        name="delete",
+        standalone=False,
+        files=True,
+        dirs=True,
+    )
 
-    def pipeline(self, args: dict, simulate: bool):
-        fs = args["fs"]  # type: FS
-        fs_path = args["fs_path"]  # type: str
-        desc = safe_description(fs=fs, path=fs_path)
-        self.print('Deleting "%s"' % desc)
+    def pipeline(self, res: Resource, output: Output, simulate: bool):
+        output.msg(res=res, msg=f"Deleting {res.path}", sender=self)
         if not simulate:
-            logger.info("Deleting %s.", desc)
-            if fs.isdir(fs_path):
-                fs.removetree(fs_path)
-            elif fs.isfile(fs_path):
-                fs.remove(fs_path)
+            if res.is_dir():
+                shutil.rmtree(res.path)
+            else:
+                res.path.unlink()
