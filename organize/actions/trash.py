@@ -1,28 +1,27 @@
-import logging
-from typing_extensions import Literal
-from .action import Action
+from typing import ClassVar
 
-logger = logging.getLogger(__name__)
+from pydantic.dataclasses import dataclass
+
+from organize.action import ActionConfig
+from organize.output import Output
+from organize.resource import Resource
 
 
-class Trash(Action):
+@dataclass
+class Trash:
 
-    """Move a file or dir into the trash.
+    """Move a file or dir into the trash."""
 
-    Only the local filesystem is supported.
-    """
+    action_config: ClassVar = ActionConfig(
+        name="trash",
+        standalone=False,
+        files=True,
+        dirs=True,
+    )
 
-    name: Literal["trash"] = "trash"
-
-    def trash(self, path: str, simulate: bool):
+    def pipeline(self, res: Resource, output: Output, simulate: bool):
         from send2trash import send2trash
 
-        self.print('Trash "%s"' % path)
+        output.msg(res=res, msg=f'Trash "{res.path}"', sender=self)
         if not simulate:
-            logger.info("Moving file %s into trash.", path)
-            send2trash(path)
-
-    def pipeline(self, args: dict, simulate: bool):
-        fs = args["fs"]
-        fs_path = args["fs_path"]
-        self.trash(path=fs.getsyspath(fs_path), simulate=simulate)
+            send2trash(res.path)
