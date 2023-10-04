@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 import shutil
-from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
 
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.action import ActionConfig
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from organize.output import Output
     from organize.resource import Resource
 
@@ -20,7 +22,7 @@ def delete(path: Path):
         path.unlink()
 
 
-@dataclass
+@dataclass(config=ConfigDict(extra="forbid"))
 class Delete:
 
     """

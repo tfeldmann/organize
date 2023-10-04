@@ -1,5 +1,6 @@
 from typing import ClassVar
 
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.action import ActionConfig
@@ -8,7 +9,7 @@ from organize.resource import Resource
 from organize.utils import Template
 
 
-@dataclass
+@dataclass(config=ConfigDict(extra="forbid"))
 class Echo:
     """Prints the given message.
 
@@ -33,4 +34,4 @@ class Echo:
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
         full_msg = self._msg_templ.render(**res.dict())
-        output.msg(res, full_msg)
+        output.msg(res, full_msg, sender=self.action_config.name)

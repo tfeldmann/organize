@@ -1,21 +1,16 @@
 from functools import partial
-from typing import Callable, Union
+from typing import Callable, ClassVar, Literal, Union
 
-from fs import errors, open_fs
-from fs.base import FS
-from fs.copy import copy_dir, copy_file
-from fs.opener.errors import OpenerError
-from fs.path import dirname
-from pydantic import Field
-from typing_extensions import Literal
+from pydantic.dataclasses import dataclass
 
+from organize.action import ActionConfig
 from organize.utils import SimulationFS, Template, fs_path_expand, safe_description
 
-from .action import Action
 from .common.conflict import ConflictMode, check_conflict, dst_from_options
 
 
-class Copy(Action):
+@dataclass
+class Copy:
 
     """Copy a file or dir to a new location.
 
@@ -43,21 +38,19 @@ class Copy(Action):
     The next action will work with the created copy.
     """
 
-    name: Literal["copy"] = Field("copy", repr=False)
-
     dest: str
     on_conflict: ConflictMode = ConflictMode.RENAME_NEW
     rename_template: str = "{name} {counter}{extension}"
-    filesystem: Union[FS, str, None] = None
+    continue_with: Literal["copy", "original"]
 
-    _dest: Template
-    _rename_template = Template
+    action_config: ClassVar = ActionConfig(
+        name="copy",
+        standalone=False,
+        files=True,
+        dirs=True,
+    )
 
-    class ParseConfig:
-        accepts_positional_arg = "dest"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __post_init__(self):
         self._dest = Template.from_string(self.dest)
         self._rename_template = Template.from_string(self.rename_template)
 

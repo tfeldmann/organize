@@ -28,7 +28,7 @@ def test_write(fs, mode, newline, result):
             actions:
                 - write:
                     text: "{text}"
-                    path: "new/folder/out.txt"
+                    outfile: "new/folder/out.txt"
                     mode: {mode}
                     newline: {newline}
         -   locations: "test"
@@ -37,7 +37,7 @@ def test_write(fs, mode, newline, result):
             actions:
                 - write:
                     text: "{text}"
-                    path: "new/folder/out.txt"
+                    outfile: "new/folder/out.txt"
                     mode: {mode}
                     newline: {newline}
         -   locations: "test"
@@ -46,7 +46,7 @@ def test_write(fs, mode, newline, result):
             actions:
                 - write:
                     text: "{text}"
-                    path: "new/folder/out.txt"
+                    outfile: "new/folder/out.txt"
                     mode: {mode}
                     newline: {newline}
     """.format(
@@ -67,7 +67,7 @@ def test_write_manyfiles(fs):
                 actions:
                     - write:
                         text: "WRITE {path.name}"
-                        path: "/out/for-{path.stem}.txt"
+                        outfile: "/out/for-{path.stem}.txt"
                         mode: overwrite
                         clear_before_first_write: true
                         newline: false
@@ -98,14 +98,14 @@ def test_write_clear_then_append(fs):
                     - "loc3"
                 actions:
                     - write:
-                        text: "Found {path}"
-                        path: "/out/{path.stem}/{path.stem}.log"
+                        text: "FOUND {path}"
+                        outfile: "/out/{path.stem}/{path.stem}.log"
                         mode: append
                         clear_before_first_write: true
                         newline: true
         """
     ).execute(simulate=False)
     assert read_files("/out") == {
-        "test1": {"test1.log": "FOUND /loc1/test1.txt\nFOUND /loc2/test1.txt\n"},
-        "test2": {"test2.log": "FOUND /loc1/test2.txt\nFOUND /loc2/test2.txt\n"},
+        "test1": {"test1.log": "FOUND loc1/test1.txt\nFOUND loc2/test1.txt\n"},
+        "test2": {"test2.log": "FOUND loc1/test2.txt\nFOUND loc2/test2.txt\n"},
     }

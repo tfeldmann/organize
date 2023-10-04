@@ -3,7 +3,7 @@ from pathlib import Path
 
 def user_wants_a_folder(path: str, autodetect: bool) -> bool:
     """
-    Try to detect whether the user meant a folder target
+    Try to detect whether the user means to target a folder
     """
     if path.endswith(("/", "\\")):
         return True

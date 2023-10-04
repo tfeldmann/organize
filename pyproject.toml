@@ -95,6 +95,7 @@ ignore_missing_imports = true
 addopts = "--doctest-modules"
 testpaths = ["tests", "organize"]
 norecursedirs = ["tests/todo", "organize/filters", ".configs"]
+filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.isort]
 profile = "black"

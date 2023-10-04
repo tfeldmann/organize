@@ -13,7 +13,6 @@ import fs
 
 from . import console
 from .__version__ import __version__
-from .migration import NeedsMigrationError
 
 DOCS_RTD = "https://organize.readthedocs.io"
 DOCS_GHPAGES = "https://tfeldmann.github.io/organize/"

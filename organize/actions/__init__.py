@@ -13,7 +13,7 @@ from .python import Python
 # from .trash import Trash
 from .write import Write
 
-ALL = [
+ALL = (
     #     Confirm,
     #     Copy,
     Delete,
@@ -26,4 +26,4 @@ ALL = [
     #     Symlink,
     #     Trash,
     Write,
-]
+)

@@ -9,7 +9,7 @@ from organize.resource import Resource
 from organize.utils import Template
 
 from .common.conflict import ConflictMode, resolve_conflict
-from .common.folder_target import prepare_target_path
+from .common.target_path import prepare_target_path
 
 
 @dataclass
@@ -75,8 +75,8 @@ class Move:
             simulate=simulate,
         )
 
-        # Resolve conflicts when moving the file to the destination
-        conflict_result = resolve_conflict(
+        # Resolve conflicts before moving the file to the destination
+        skip_action, dst = resolve_conflict(
             dst=dst,
             res=res,
             conflict_mode=self.on_conflict,
@@ -85,12 +85,12 @@ class Move:
             output=output,
         )
 
-        if conflict_result.skip_action:
+        if skip_action:
             return
-
-        dst = conflict_result.use_dst
 
         output.msg(res=res, msg=f"Move to {dst}", sender=self)
         if not simulate:
             shutil.move(src=res.path, dst=dst)
+
+        # continue with the moved path
         res.path = dst

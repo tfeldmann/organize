@@ -2,7 +2,7 @@ from pathlib import Path
 
 from conftest import make_files, read_files
 
-from organize.actions.common.folder_target import (
+from organize.actions.common.target_path import (
     prepare_target_path,
     user_wants_a_folder,
 )

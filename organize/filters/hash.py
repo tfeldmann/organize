@@ -43,7 +43,11 @@ class Hash:
 
     algorithm: str = "md5"
 
-    filter_config: ClassVar = FilterConfig(name="hash", files=True, dirs=False)
+    filter_config: ClassVar = FilterConfig(
+        name="hash",
+        files=True,
+        dirs=False,
+    )
 
     def __post_init__(self):
         self._algorithm = Template.from_string(self.algorithm)

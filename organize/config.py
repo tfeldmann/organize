@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 import textwrap
 from typing import List, Union
 
 import yaml
-from fs.base import FS
 from pydantic import ConfigDict
 from pydantic.dataclasses import dataclass
+
+from organize.output import Output
+from organize.output import Rich as RichOutput
 
 from .rule import Rule
 
@@ -43,7 +47,7 @@ def should_execute(rule_tags, tags, skip_tags):
     return should_run and not should_skip
 
 
-@dataclass(config=ConfigDict(extra="forbid"))
+@dataclass(config=ConfigDict(extra="ignore"))
 class Config:
     rules: List[Rule]
 
@@ -56,13 +60,15 @@ class Config:
     def execute(
         self,
         simulate: bool = True,
+        output: Output = RichOutput(),
         tags=set(),
         skip_tags=set(),
-        working_dir: Union[FS, str, None] = ".",
+        working_dir: Union[str, None] = ".",
     ):
+        output.start(simulate=simulate, config_path=None)
         for rule in self.rules:
             if should_execute(rule_tags=rule.tags, tags=tags, skip_tags=skip_tags):
-                rule.execute(simulate=simulate)
+                rule.execute(simulate=simulate, output=output)
 
 
 if __name__ == "__main__":

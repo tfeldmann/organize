@@ -1,7 +1,7 @@
-from pydantic import Field
 import mimetypes
 from typing import List, Union
 
+from pydantic import Field
 from typing_extensions import Literal
 
 from organize.utils import flatten

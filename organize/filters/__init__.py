@@ -19,7 +19,7 @@ from .name import Name
 from .regex import Regex
 from .size import Size
 
-ALL = [
+ALL = (
     #     Created,
     #     DateAdded,
     #     DateLastUsed,
@@ -36,4 +36,4 @@ ALL = [
     #     Python,
     Regex,
     Size,
-]
+)

@@ -5,11 +5,11 @@ from typing import Dict, List, Optional, Set, Union
 
 from pydantic import ConfigDict, Field, field_validator
 from pydantic.dataclasses import dataclass
-from rich import print
 
 from .action import Action
 from .filter import All, Filter, Not
 from .location import Location
+from .output import Output
 from .registry import action_by_name, filter_by_name
 from .resource import Resource
 
@@ -155,11 +155,7 @@ class Rule:
             for path in walk_func(location.path):
                 yield Resource(path=Path(path), rule=self, basedir=location.path)
 
-    def execute(self, *, simulate: bool):
-        from .output import JSONL as Output
-
-        output = Output()
-        output.start(simulate=simulate)
+    def execute(self, *, simulate: bool, output: Output):
         for res in self.walk():
             result = All(*self.filters).pipeline(res, output=output)  # TODO: Any
             if result:

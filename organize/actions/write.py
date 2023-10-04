@@ -32,7 +32,7 @@ class Write:
         text (str):
             The text that should be written. Supports templates.
 
-        path (str):
+        outfile (str):
             The file `text` should be written into. Supports templates.
 
         mode (str):
@@ -46,13 +46,13 @@ class Write:
 
         clear_before_first_write (bool):
             (Optional) Clears the file before first appending / prepending text to it.
-            This happens only the first time write_file is run. If the rule filters
+            This happens only the first time the file is written to. If the rule filters
             don't match anything the file is left as it is.
             Defaults to `false`.
     """
 
     text: str
-    path: str
+    outfile: str
     mode: Mode = Mode.APPEND
     newline: bool = True
     clear_before_first_write: bool = False
@@ -66,29 +66,26 @@ class Write:
 
     def __post_init__(self):
         self._text = Template.from_string(self.text)
-        self._path = Template.from_string(self.path)
-        self._is_first_write = True
+        self._path = Template.from_string(self.outfile)
+        self._seen = set()
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
         text = self._text.render(**res.dict())
         path = Path(self._path.render(**res.dict()))
 
-        if (
-            self._is_first_write
-        ):  # TODO: is_first write macht nicht, was man denkt! Beim Schreiben in andere Dateien wird nicht geleert
-            # reset flag
-            self._is_first_write = False
+        # TODO: is_first write macht nicht, was man denkt! Beim Schreiben in andere Dateien wird nicht geleert
+        resolved = path.resolve()
+        if resolved not in self._seen:
+            self._seen.add(resolved)
 
-            # create parent folders
-            # TODO Darf bei der Simulation nicht passieren!
-            path.parent.mkdir(parents=True, exist_ok=True)
+            if not simulate:
+                resolved.parent.mkdir(parents=True, exist_ok=True)
 
-            # optionally clear if path exists
-            if path.exists() and self.clear_before_first_write:
+            # clear on first write
+            if resolved.exists() and self.clear_before_first_write:
                 output.msg(res=res, msg=f"Clearing file {path}", sender=self)
                 if not simulate:
-                    with path.open("w"):
-                        pass
+                    resolved.touch()
 
         output.msg(res=res, msg=f'{path}: {self.mode} "{text}"', sender=self)
         if self.newline:
