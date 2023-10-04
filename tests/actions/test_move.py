@@ -54,3 +54,34 @@ def test_move_conflict(fs, mode, result):
     """
     Config.from_string(config).execute(simulate=False)
     assert read_files("test") == result
+
+
+def test_move_folder_conflict(fs):
+    make_files(
+        {
+            "src": {"dir": {"src.txt": ""}},
+            "dst": {"dir": {"dst.txt": ""}},
+        },
+        "test",
+    )
+    # src is moved onto dst.
+    Config.from_string(
+        """
+        rules:
+            -   locations: "/test/src"
+                targets: dirs
+                filters:
+                    - name: dir
+                actions:
+                    - move:
+                        dest: "{location}/../dst"
+                        on_conflict: "rename_new"
+        """
+    ).execute(simulate=False)
+    assert read_files("test") == {
+        "src": {},
+        "dst": {
+            "dir": {"dst.txt": ""},
+            "dir 2": {"src.txt": ""},
+        },
+    }
