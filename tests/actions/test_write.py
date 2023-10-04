@@ -22,33 +22,33 @@ def test_write(fs, mode, newline, result):
 
     config = """
     rules:
-      - locations: "test"
-        filters:
-          - name: "a"
-        actions:
-          - write:
-              text: "{text}"
-              path: "new/folder/out.txt"
-              mode: {mode}
-              newline: {newline}
-      - locations: "test"
-        filters:
-          - name: "b"
-        actions:
-          - write:
-              text: "{text}"
-              path: "new/folder/out.txt"
-              mode: {mode}
-              newline: {newline}
-      - locations: "test"
-        filters:
-          - name: "c"
-        actions:
-          - write:
-              text: "{text}"
-              path: "new/folder/out.txt"
-              mode: {mode}
-              newline: {newline}
+        -   locations: "test"
+            filters:
+                - name: "a"
+            actions:
+                - write:
+                    text: "{text}"
+                    path: "new/folder/out.txt"
+                    mode: {mode}
+                    newline: {newline}
+        -   locations: "test"
+            filters:
+                - name: "b"
+            actions:
+                - write:
+                    text: "{text}"
+                    path: "new/folder/out.txt"
+                    mode: {mode}
+                    newline: {newline}
+        -   locations: "test"
+            filters:
+                - name: "c"
+            actions:
+                - write:
+                    text: "{text}"
+                    path: "new/folder/out.txt"
+                    mode: {mode}
+                    newline: {newline}
     """.format(
         text="{name}", mode=mode, newline=newline
     )
@@ -58,7 +58,7 @@ def test_write(fs, mode, newline, result):
         assert result == f.read()
 
 
-def test_write_clearing(fs):
+def test_write_manyfiles(fs):
     make_files({"test1.txt": "content\n", "test2.txt": "Other"}, "test")
     Config.from_string(
         """
@@ -68,7 +68,7 @@ def test_write_clearing(fs):
                     - write:
                         text: "WRITE {path.name}"
                         path: "/out/for-{path.stem}.txt"
-                        mode: append
+                        mode: overwrite
                         clear_before_first_write: true
                         newline: false
         """
@@ -76,4 +76,36 @@ def test_write_clearing(fs):
     assert read_files("/out") == {
         "for-test1.txt": "WRITE test1.txt",
         "for-test2.txt": "WRITE test2.txt",
+    }
+
+
+def test_write_clear_then_append(fs):
+    make_files({"test1.txt": "", "test2.txt": ""}, "loc1")
+    make_files({"test1.txt": "", "test2.txt": ""}, "loc2")
+    make_files(
+        {
+            "for-test1.txt": "Previous output",
+            "for-test2.txt": "Other previous output",
+        },
+        "out",
+    )
+    Config.from_string(
+        """
+        rules:
+            -   locations:
+                    - "loc1"
+                    - "loc2"
+                    - "loc3"
+                actions:
+                    - write:
+                        text: "Found {path}"
+                        path: "/out/{path.stem}/{path.stem}.log"
+                        mode: append
+                        clear_before_first_write: true
+                        newline: true
+        """
+    ).execute(simulate=False)
+    assert read_files("/out") == {
+        "test1": {"test1.log": "FOUND /loc1/test1.txt\nFOUND /loc2/test1.txt\n"},
+        "test2": {"test2.log": "FOUND /loc1/test2.txt\nFOUND /loc2/test2.txt\n"},
     }

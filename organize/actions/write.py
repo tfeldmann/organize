@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from enum import Enum
+import enum
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
 
@@ -14,10 +14,10 @@ if TYPE_CHECKING:
     from organize.resource import Resource
 
 
-class Mode(str, Enum):
-    prepend = "prepend"
-    append = "append"
-    overwrite = "overwrite"
+class Mode(enum.StrEnum):
+    PREPEND = "prepend"
+    APPEND = "append"
+    OVERWRITE = "overwrite"
 
 
 @dataclass
@@ -53,7 +53,7 @@ class Write:
 
     text: str
     path: str
-    mode: Mode = Mode.append
+    mode: Mode = Mode.APPEND
     newline: bool = True
     clear_before_first_write: bool = False
 
@@ -94,13 +94,13 @@ class Write:
             text += "\n"
 
         if not simulate:
-            if self.mode == Mode.append:
+            if self.mode == Mode.APPEND:
                 with open(path, "a") as f:
                     f.write(text)
-            elif self.mode == Mode.prepend:
+            elif self.mode == Mode.PREPEND:
                 content = ""
                 if path.exists():
                     content = path.read_text()
                 path.write_text(text + content)
-            elif self.mode == Mode.overwrite:
+            elif self.mode == Mode.OVERWRITE:
                 path.write_text(text)
