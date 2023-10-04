@@ -73,7 +73,9 @@ class Write:
         text = self._text.render(**res.dict())
         path = Path(self._path.render(**res.dict()))
 
-        if self._is_first_write:
+        if (
+            self._is_first_write
+        ):  # TODO: is_first write macht nicht, was man denkt! Beim Schreiben in andere Dateien wird nicht geleert
             # reset flag
             self._is_first_write = False
 

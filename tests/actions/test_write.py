@@ -1,4 +1,5 @@
 import pytest
+from conftest import make_files, read_files
 
 from organize.config import Config
 
@@ -55,3 +56,24 @@ def test_write(fs, mode, newline, result):
     Config.from_string(config).execute(simulate=False)
     with open("new/folder/out.txt") as f:
         assert result == f.read()
+
+
+def test_write_clearing(fs):
+    make_files({"test1.txt": "content\n", "test2.txt": "Other"}, "test")
+    Config.from_string(
+        """
+        rules:
+            -   locations: "/test"
+                actions:
+                    - write:
+                        text: "WRITE {path.name}"
+                        path: "/out/for-{path.stem}.txt"
+                        mode: append
+                        clear_before_first_write: true
+                        newline: false
+        """
+    ).execute(simulate=False)
+    assert read_files("/out") == {
+        "for-test1.txt": "WRITE test1.txt",
+        "for-test2.txt": "WRITE test2.txt",
+    }
