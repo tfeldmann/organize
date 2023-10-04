@@ -9,7 +9,7 @@ from organize.resource import Resource
 from organize.utils import Template
 
 from .common.conflict import ConflictMode, resolve_conflict
-from .common.folder_target import prepare_folder_target
+from .common.folder_target import prepare_target_path
 
 
 @dataclass
@@ -38,6 +38,12 @@ class Move:
             A template for renaming the file / dir in case of a conflict.
             Defaults to `{name} {counter}{extension}`.
 
+        autodetect (bool) = True
+            In case you forget the ending slash "/" to indicate moving into a folder
+            this settings will handle targets without a file extension as folders.
+            If you really mean to move to a file without file extension, set this to
+            false.
+
     The next action will work with the moved file / dir.
     """
 
@@ -62,7 +68,7 @@ class Move:
 
         # fully resolve the destination for folder targets and prepare the folder
         # structure
-        dst = prepare_folder_target(
+        dst = prepare_target_path(
             src_name=res.path.name,
             dst=rendered,
             autodetect_folder=self.autodetect_folder,

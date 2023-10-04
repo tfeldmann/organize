@@ -80,6 +80,7 @@ class Write:
             self._is_first_write = False
 
             # create parent folders
+            # TODO Darf bei der Simulation nicht passieren!
             path.parent.mkdir(parents=True, exist_ok=True)
 
             # optionally clear if path exists

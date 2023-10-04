@@ -1,21 +1,27 @@
 from pathlib import Path
 
 
-def user_wants_a_folder(name: str, autodetect: bool) -> bool:
+def user_wants_a_folder(path: str, autodetect: bool) -> bool:
     """
     Try to detect whether the user meant a folder target
     """
-    return name.endswith("/") or (autodetect and "." not in name)
+    if path.endswith(("/", "\\")):
+        return True
+
+    if autodetect:
+        return "." not in Path(path).name
+
+    return False
 
 
-def prepare_folder_target(
+def prepare_target_path(
     src_name: str,
     dst: str,
     autodetect_folder: bool,
     simulate: bool,
 ) -> Path:
     result = Path(dst)
-    wants_folder = user_wants_a_folder(dst, autodetect_folder)
+    wants_folder = user_wants_a_folder(path=dst, autodetect=autodetect_folder)
 
     # if dst is an existing folder, we use it
     if result.exists():

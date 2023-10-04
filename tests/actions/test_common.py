@@ -3,7 +3,7 @@ from pathlib import Path
 from conftest import make_files, read_files
 
 from organize.actions.common.folder_target import (
-    prepare_folder_target,
+    prepare_target_path,
     user_wants_a_folder,
 )
 
@@ -14,6 +14,7 @@ def test_user_wants_a_folder():
     assert not user_wants_a_folder("/test.asd", autodetect=False)
     assert user_wants_a_folder("/test.asd/", autodetect=False)
     assert not user_wants_a_folder("/some/original/folder/name.txt", autodetect=False)
+    assert not user_wants_a_folder("/some/thing.app/subfolder", autodetect=False)
 
 
 def test_user_wants_a_folder_autodetect():
@@ -21,12 +22,13 @@ def test_user_wants_a_folder_autodetect():
     assert user_wants_a_folder("/test", autodetect=True)
     assert not user_wants_a_folder("/test.asd", autodetect=True)
     assert user_wants_a_folder("/test.asd/", autodetect=True)
-    assert not user_wants_a_folder("/some/original/folder/name.txt", autodetect=False)
+    assert not user_wants_a_folder("/some/original/folder/name.txt", autodetect=True)
+    assert user_wants_a_folder("/some/thing.app/subfolder", autodetect=True)
 
 
-def test_prepare_folder_target(fs):
+def test_prepare_target_path(fs):
     # simulate
-    assert prepare_folder_target(
+    assert prepare_target_path(
         src_name="dst.txt",
         dst="/test/",
         autodetect_folder=True,
@@ -34,7 +36,7 @@ def test_prepare_folder_target(fs):
     ) == Path("/test/dst.txt")
     assert not Path("/test").exists()
     # for real
-    assert prepare_folder_target(
+    assert prepare_target_path(
         src_name="dst.txt",
         dst="/test/",
         autodetect_folder=True,
@@ -44,7 +46,7 @@ def test_prepare_folder_target(fs):
 
 
 def test_prepare_folder_target_advanced(fs):
-    assert prepare_folder_target(
+    assert prepare_target_path(
         src_name="dst",
         dst="/some/test/folder",
         autodetect_folder=True,
@@ -55,7 +57,7 @@ def test_prepare_folder_target_advanced(fs):
 
 def test_prepare_folder_target_already_exists(fs):
     make_files({"some": {"Application.app": {}}})
-    assert prepare_folder_target(
+    assert prepare_target_path(
         src_name="info.plist",
         dst="/some/Application.app",
         autodetect_folder=True,
@@ -65,7 +67,7 @@ def test_prepare_folder_target_already_exists(fs):
 
 
 def test_prepare_folder_no_folder(fs):
-    assert prepare_folder_target(
+    assert prepare_target_path(
         src_name="filename.txt",
         dst="/some/original/folder/name.txt",
         autodetect_folder=True,
