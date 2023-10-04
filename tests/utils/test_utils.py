@@ -1,9 +1,10 @@
-import pytest
-import fs
-from fs.osfs import OSFS
 from os.path import expanduser
-from organize.utils import fs_path_expand, resolve_fs_path
 
+import fs
+import pytest
+from fs.osfs import OSFS
+
+from organize.utils import fs_path_expand, resolve_fs_path
 
 OSFS_ROOT = OSFS("/")
 DESKTOP_WITH_USER = expanduser("~/Desktop")

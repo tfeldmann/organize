@@ -98,7 +98,7 @@ class JSONL:
             type="MSG",
             level=level,
             msg=msg,
-            rule=res.rule.name,
+            rule=res.rule.name if res.rule else "",
             basedir=res.basedir,
             path=str(res.path),
         )

@@ -1,9 +1,15 @@
 from pathlib import Path
 
 import pytest
-from conftest import read_files
+from conftest import make_files, read_files
 
-from organize.actions.common.conflict import next_free_name
+from organize.actions.common.conflict import (
+    ConflictResult,
+    next_free_name,
+    resolve_conflict,
+)
+from organize.output import JSONL
+from organize.resource import Resource
 from organize.utils import Template
 
 
@@ -40,28 +46,49 @@ def test_next_free_name_exception(fs):
         assert next_free_name(dst=Path("file.txt"), template=tmp)
 
 
-# @pytest.mark.parametrize(
-#     "mode,result,files",
-#     (
-#         ("skip", None, {"file.txt": "file", "other.txt": "other"}),
-#         ("overwrite", "other.txt", {"file.txt": "file"}),
-#         # ("trash", None, {"file.txt": "file", "other.txt": "other"}),
-#         ("rename_new", "other2.txt", {"file.txt": "file", "other.txt": "other"}),
-#         ("rename_existing", "other.txt", {"file.txt": "file", "other2.txt": "other"}),
-#     ),
-# )
-# def test_resolve_overwrite_conflict(mode, result, files):
-#     with fs.open_fs("mem://") as mem:
-#         mem.writetext("file.txt", "file")
-#         mem.writetext("other.txt", "other")
-#         assert result == resolve_overwrite_conflict(
-#             src_fs=mem,
-#             src_path="file.txt",
-#             dst_fs=mem,
-#             dst_path="other.txt",
-#             conflict_mode=mode,
-#             rename_template=Template.from_string("{name}{counter}{extension}"),
-#             simulate=False,
-#             print=print,
-#         )
-#         assert files == read_files(mem)
+@pytest.mark.parametrize(
+    "mode,result,files",
+    (
+        (
+            "skip",
+            (True, "test/file.txt"),
+            {"file.txt": "file", "other.txt": "other"},
+        ),
+        (
+            "overwrite",
+            (False, "test/other.txt"),
+            {"file.txt": "file"},
+        ),
+        # ("trash", None, {"file.txt": "file", "other.txt": "other"}),
+        (
+            "rename_new",
+            (False, "test/other2.txt"),
+            {"file.txt": "file", "other.txt": "other"},
+        ),
+        (
+            "rename_existing",
+            (False, "test/other.txt"),
+            {"file.txt": "file", "other2.txt": "other"},
+        ),
+    ),
+)
+def test_resolve_overwrite_conflict(fs, mode, result, files):
+    make_files(
+        {
+            "test": {
+                "file.txt": "file",
+                "other.txt": "other",
+            }
+        }
+    )
+    output = JSONL()
+    skip_action, use_dst = resolve_conflict(
+        dst=Path("test/other.txt"),
+        res=Resource(path=Path("test/file.txt")),
+        conflict_mode=mode,
+        rename_template=Template.from_string("{name}{counter}{extension}"),
+        simulate=False,
+        output=output,
+    )
+    assert (skip_action, use_dst) == result[0], Path(result[1])
+    assert files == read_files("test")

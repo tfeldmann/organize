@@ -25,6 +25,7 @@ class Resource:
         return dict(
             path=self.path,
             basedir=self.basedir,
+            location=self.basedir,
             relative_path=self.relative_path,
             rule=self.rule.name,
             env=os.environ,

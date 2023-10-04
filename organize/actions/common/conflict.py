@@ -4,8 +4,6 @@ from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, NamedTuple
 
-from organize.actions.delete import Delete
-from organize.actions.trash import Trash
 from organize.output import Output
 from organize.resource import Resource
 
@@ -25,6 +23,11 @@ class ConflictMode(str, Enum):
     # TODO: keep_older
     # TODO: keep_bigger
     # TODO: keep_smaller
+
+
+class ConflictResult(NamedTuple):
+    skip_action: bool  # Whether to skip the current action
+    use_dst: Optional[Path] = None  # The Path to continue with
 
 
 def next_free_name(dst: Path, template: Template) -> Path:
@@ -48,13 +51,12 @@ def next_free_name(dst: Path, template: Template) -> Path:
     counter = 2
     prev_candidate = None
     while True:
-        candidate = dst.with_name(
-            template.render(
-                name=dst.stem,
-                extension=dst.suffix,
-                counter=counter,
-            )
+        new_name = template.render(
+            name=dst.stem,
+            extension=dst.suffix,
+            counter=counter,
         )
+        candidate = dst.with_name(new_name)
         if not candidate.exists():
             return candidate
         if prev_candidate == candidate:
@@ -64,11 +66,6 @@ def next_free_name(dst: Path, template: Template) -> Path:
             )
         prev_candidate = candidate
         counter += 1
-
-
-class ConflictResult(NamedTuple):
-    skip_action: bool
-    use_dst: Optional[Path] = None
 
 
 def resolve_conflict(
@@ -86,51 +83,50 @@ def resolve_conflict(
     if not dst.exists():
         return ConflictResult(skip_action=False, use_dst=dst)
 
-    output.msg(
-        res=res, msg=f'"{dst}" already exists! (Conflict mode is "{conflict_mode}")'
-    )
+    def _print(msg: str):
+        output.msg(res=res, sender="conflict", msg=msg)
+
+    _print(f'"{dst}" already exists! (Conflict mode is "{conflict_mode}")')
 
     if res.path.resolve() == dst.resolve():
-        output.msg(res=res, msg="Same resource: Skipped.", sender="conflict")
+        _print("Same resource: Skipped.")
         return ConflictResult(skip_action=True, use_dst=res.path)
 
     if conflict_mode == ConflictMode.TRASH:
-        Trash().pipeline(res=Resource(dst), output=output, simulate=simulate)
+        _print(f'Trash "{dst}"')
+        if not simulate:
+            from organize.actions.trash import trash
+
+            trash(path=dst)
         return ConflictResult(skip_action=False, use_dst=dst)
 
     elif conflict_mode == ConflictMode.SKIP:
-        output("Skipped.")
+        _print("Skipped.")
         return ConflictResult(skip_action=True, use_dst=res.path)
 
     elif conflict_mode == ConflictMode.OVERWRITE:
-        output(f"Overwriting {dst}.")
-        Delete().pipeline(res=Resource(dst), output=output, simulate=simulate)
+        _print(f"Overwriting {dst}.")
+        if not simulate:
+            from organize.actions.delete import delete
+
+            delete(path=dst)
         return ConflictResult(skip_action=False, use_dst=dst)
 
     elif conflict_mode == ConflictMode.RENAME_NEW:
-        stem, ext = splitext(dst)
-        name = next_free_name(
-            fs=dst_fs,
-            name=stem,
-            extension=ext,
+        new_path = next_free_name(
+            dst=dst,
             template=rename_template,
         )
-        return name
+        return ConflictResult(skip_action=False, use_dst=new_path)
 
     elif conflict_mode == ConflictMode.RENAME_EXISTING:
-        stem, ext = splitext(dst)
-        name = next_free_name(
-            fs=dst_fs,
-            name=stem,
-            extension=ext,
+        new_path = next_free_name(
+            dst=dst,
             template=rename_template,
         )
-        output('Renaming existing to: "%s"' % name)
+        _print('Renaming existing to: "{new_path.name}"')
         if not simulate:
-            if dst_fs.isdir(dst):
-                move_dir(dst_fs, dst, dst_fs, name)
-            elif dst_fs.isfile(dst):
-                move_file(dst_fs, dst, dst_fs, name)
-        return dst
+            dst.rename(new_path)
+        return ConflictResult(skip_action=False, use_dst=dst)
 
     raise ValueError("Unknown conflict_mode %s" % conflict_mode)

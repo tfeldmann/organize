@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import shutil
+from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
 
 from pydantic.dataclasses import dataclass
@@ -10,6 +11,13 @@ from organize.action import ActionConfig
 if TYPE_CHECKING:
     from organize.output import Output
     from organize.resource import Resource
+
+
+def delete(path: Path):
+    if path.is_dir():
+        shutil.rmtree(path)
+    else:
+        path.unlink()
 
 
 @dataclass
@@ -32,7 +40,5 @@ class Delete:
     def pipeline(self, res: Resource, output: Output, simulate: bool):
         output.msg(res=res, msg=f"Deleting {res.path}", sender=self)
         if not simulate:
-            if res.is_dir():
-                shutil.rmtree(res.path)
-            else:
-                res.path.unlink()
+            delete(res.path)
+        res.path = None

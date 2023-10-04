@@ -12,7 +12,7 @@ from typing_extensions import Literal
 from organize.utils import SimulationFS, Template, fs_path_expand, safe_description
 
 from .action import Action
-from .common.conflict import ConflictOption, check_conflict, dst_from_options
+from .common.conflict import ConflictMode, check_conflict, dst_from_options
 
 
 class Copy(Action):
@@ -46,7 +46,7 @@ class Copy(Action):
     name: Literal["copy"] = Field("copy", repr=False)
 
     dest: str
-    on_conflict: ConflictOption = ConflictOption.rename_new
+    on_conflict: ConflictMode = ConflictMode.RENAME_NEW
     rename_template: str = "{name} {counter}{extension}"
     filesystem: Union[FS, str, None] = None
 

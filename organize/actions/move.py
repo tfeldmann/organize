@@ -1,5 +1,4 @@
 import shutil
-from pathlib import Path
 from typing import ClassVar
 
 from pydantic.dataclasses import dataclass
@@ -9,7 +8,8 @@ from organize.output import Output
 from organize.resource import Resource
 from organize.utils import Template
 
-# from .common.conflict import ConflictOption
+from .common.conflict import ConflictMode, resolve_conflict
+from .common.folder_target import prepare_folder_target
 
 
 @dataclass
@@ -42,8 +42,9 @@ class Move:
     """
 
     dest: str
-    # on_conflict: ConflictOption = ConflictOption.rename_new
+    on_conflict: ConflictMode = ConflictMode.RENAME_NEW
     rename_template: str = "{name} {counter}{extension}"
+    autodetect_folder: bool = True
 
     action_config: ClassVar = ActionConfig(
         name="move",
@@ -57,39 +58,33 @@ class Move:
         self._rename_template = Template.from_string(self.rename_template)
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
-        dst = Path(self._dest.render(**res.dict()))
+        rendered = self._dest.render(**res.dict())
+
+        # fully resolve the destination for folder targets and prepare the folder
+        # structure
+        dst = prepare_folder_target(
+            src_name=res.path.name,
+            dst=rendered,
+            autodetect_folder=self.autodetect_folder,
+            simulate=simulate,
+        )
+
+        # Resolve conflicts when moving the file to the destination
+        conflict_result = resolve_conflict(
+            dst=dst,
+            res=res,
+            conflict_mode=self.on_conflict,
+            rename_template=self._rename_template,
+            simulate=simulate,
+            output=output,
+        )
+
+        if conflict_result.skip_action:
+            return
+
+        dst = conflict_result.use_dst
+
+        output.msg(res=res, msg=f"Move to {dst}", sender=self)
         if not simulate:
-            output.msg(res=res, msg=f"Move to {dst}", sender=self)
             shutil.move(src=res.path, dst=dst)
         res.path = dst
-
-        # # check for conflicts
-        # skip, dst_path = check_conflict(
-        #     src=res.path,
-        #     dest=dest,
-        #     conflict_mode=self.on_conflict,
-        #     rename_template=self._rename_template,
-        #     simulate=simulate,
-        #     output=output,
-        # )
-
-        # # use move_dir or move_file depending on src resource type
-        # move_action: Callable[[FS, str, FS, str], None]
-        # if res.path.is_dir():
-        #     move_action = partial(fs.move.move_dir, preserve_time=True)
-        # elif res.path.is_file():
-        #     move_action = partial(fs.move.move_file, preserve_time=True)
-
-        # try:
-        #     dst_fs = fs.open_fs(dst_fs, create=False, writeable=True)
-        # except (fs.errors.CreateFailed, OpenerError):
-        #     if not simulate:
-        #         dst_fs = fs.open_fs(dst_fs, create=True, writeable=True)
-        #     else:
-        #         dst_fs = SimulationFS(dst_fs)
-
-        # if not skip:
-        #     self.print("Move to %s" % safe_description(dst_fs, dst_path))
-        #     if not simulate:
-        #         dst_fs.makedirs(fs.path.dirname(dst_path), recreate=True)
-        #         move_action(src_fs, src_path, dst_fs, dst_path)

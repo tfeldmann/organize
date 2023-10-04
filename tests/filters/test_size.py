@@ -98,7 +98,7 @@ def test_python_args(testfs):
         actions:
         - delete
     """
-    core.run(config=config, working_dir=testfs, simulate=False)
+    Config.from_string(config).execute(simulate=False)
     assert read_files(testfs) == {
         "empty": "",
         "halffull": "0" * 1010,
