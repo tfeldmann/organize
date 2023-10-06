@@ -253,3 +253,15 @@ def deep_merge_inplace(base: dict, updates: dict) -> None:
             deep_merge_inplace(av, bv)
         else:
             base[bk] = bv
+            
+def deep_search(base: dict, query: list):
+    for key in query:
+        if not isinstance(base,dict):
+            # while query is not empty, base is not a dict
+            return None
+        if key not in base:
+            # query not exists in base
+            return None
+        base = base[key]
+        
+    return base
