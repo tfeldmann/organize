@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 import pytest
 from conftest import make_files, read_files
 
@@ -109,37 +107,34 @@ def test_copy_into_dir_subfolders(fs):
 
 
 @pytest.mark.parametrize(
-    "mode,files,test_txt_content",
+    "mode,result",
     [
-        ("skip", ["file.txt", "test.txt"], "old"),
-        ("overwrite", ["file.txt", "test.txt"], "new"),
-        ("rename_new", ["file.txt", "test.txt", "test 2.txt"], "old"),
-        ("rename_existing", ["file.txt", "test.txt", "test 2.txt"], "new"),
+        ("skip", {"src.txt": "src", "dst.txt": "dst"}),
+        ("overwrite", {"src.txt": "src", "dst.txt": "src"}),
+        ("rename_new", {"src.txt": "src", "dst.txt": "dst", "dst 2.txt": "src"}),
+        ("rename_existing", {"src.txt": "src", "dst.txt": "src", "dst 2.txt": "dst"}),
     ],
 )
-def test_copy_conflict(fs, mode, files, test_txt_content):
+def test_copy_conflict(fs, mode, result):
     make_files(
         {
-            "file.txt": "new",
-            "test.txt": "old",
+            "src.txt": "src",
+            "dst.txt": "dst",
         },
-        "test",
+        path="test",
     )
     config = f"""
     rules:
       - locations: "/test"
         filters:
-          - name: file
+          - name: src
         actions:
           - copy:
-              dest: "test.txt"
+              dest: "/test/dst.txt"
               on_conflict: {mode}
     """
     Config.from_string(config).execute(simulate=False)
-    assert read_files("test") == {
-        "file.txt": "new",
-        "test.txt": test_txt_content,
-    }
+    assert read_files("test") == result
 
 
 def test_does_not_create_folder_in_simulation(fs):
@@ -154,14 +149,3 @@ def test_does_not_create_folder_in_simulation(fs):
     Config.from_string(config).execute(simulate=True)
     result = read_files("test")
     assert result == FILES
-
-    # core.run(config, simulate=False, working_dir=testfs)
-    # result = read_files(testfs)
-
-    # expected = deepcopy(files)
-    # expected["new-subfolder"] = deepcopy(files)
-    # expected["new-subfolder"].pop("folder")
-    # expected["copyhere"] = deepcopy(files)
-    # expected["copyhere"].pop("folder")
-
-    # assert result == expected
