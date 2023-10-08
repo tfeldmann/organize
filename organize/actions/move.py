@@ -38,7 +38,7 @@ class Move:
             A template for renaming the file / dir in case of a conflict.
             Defaults to `{name} {counter}{extension}`.
 
-        autodetect (bool) = True
+        autodetect_folder (bool) = True
             In case you forget the ending slash "/" to indicate moving into a folder
             this settings will handle targets without a file extension as folders.
             If you really mean to move to a file without file extension, set this to
@@ -92,5 +92,5 @@ class Move:
         if not simulate:
             shutil.move(src=res.path, dst=dst)
 
-        # continue with the moved path
+        # continue with the new path
         res.path = dst

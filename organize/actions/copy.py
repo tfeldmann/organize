@@ -1,12 +1,15 @@
-from functools import partial
-from typing import Callable, ClassVar, Literal, Union
+import shutil
+from typing import ClassVar, Literal
 
 from pydantic.dataclasses import dataclass
 
 from organize.action import ActionConfig
-from organize.utils import SimulationFS, Template, fs_path_expand, safe_description
+from organize.output import Output
+from organize.resource import Resource
+from organize.utils import Template
 
-from .common.conflict import ConflictMode, check_conflict, dst_from_options
+from .common.conflict import ConflictMode, resolve_conflict
+from .common.target_path import prepare_target_path
 
 
 @dataclass
@@ -31,9 +34,15 @@ class Copy:
             A template for renaming the file / dir in case of a conflict.
             Defaults to `{name} {counter}{extension}`.
 
-        filesystem (str):
-            (Optional) A pyfilesystem opener url of the filesystem you want to copy to.
-            If this is not given, the local filesystem is used.
+        autodetect_folder (bool) = True
+            In case you forget the ending slash "/" to indicate copying into a folder
+            this settings will handle targets without a file extension as folders.
+            If you really mean to copy to a file without file extension, set this to
+            false.
+
+        continue_with (str) = "copy" | "original"
+            Continue the next action either with the path to the copy or the path the
+            original.
 
     The next action will work with the created copy.
     """
@@ -41,7 +50,8 @@ class Copy:
     dest: str
     on_conflict: ConflictMode = ConflictMode.RENAME_NEW
     rename_template: str = "{name} {counter}{extension}"
-    continue_with: Literal["copy", "original"]
+    autodetect_folder: bool = True
+    continue_with: Literal["copy", "original"] = "copy"
 
     action_config: ClassVar = ActionConfig(
         name="copy",
@@ -54,54 +64,38 @@ class Copy:
         self._dest = Template.from_string(self.dest)
         self._rename_template = Template.from_string(self.rename_template)
 
-    def pipeline(self, args: dict, simulate: bool):
-        src_fs = args["fs"]  # type: FS
-        src_path = args["fs_path"]
-        working_dir = args["working_dir"]
+    def pipeline(self, res: Resource, output: Output, simulate: bool):
+        rendered = self._dest.render(**res.dict())
 
-        # expand destination filesystem and path
-        dst_fs, dst_path = fs_path_expand(
-            filesystem=self.filesystem,
-            path=self._dest.render(**args),
-            working_dir=working_dir,
-            args=args,
+        # fully resolve the destination for folder targets and prepare the folder
+        # structure
+        dst = prepare_target_path(
+            src_name=res.path.name,
+            dst=rendered,
+            autodetect_folder=self.autodetect_folder,
+            simulate=simulate,
         )
 
-        # should we copy a dir or a file?
-        copy_action: Callable[[FS, str, FS, str], None]
-        if src_fs.isdir(src_path):
-            copy_action = partial(copy_dir, preserve_time=True)
-        elif src_fs.isfile(src_path):
-            copy_action = partial(copy_file, preserve_time=True)
-
-        # check for conflicts
-        skip, dst_path = check_conflict(
-            src_fs=src_fs,
-            src_path=src_path,
-            dst_fs=dst_fs,
-            dst_path=dst_path,
+        # Resolve conflicts before copying the file to the destination
+        skip_action, dst = resolve_conflict(
+            dst=dst,
+            res=res,
             conflict_mode=self.on_conflict,
             rename_template=self._rename_template,
             simulate=simulate,
-            print=self.print,
+            output=output,
         )
 
-        try:
-            dst_fs = open_fs(dst_fs, create=False, writeable=True)
-        except (errors.CreateFailed, OpenerError):
-            if not simulate:
-                dst_fs = open_fs(dst_fs, create=True, writeable=True)
+        if skip_action:
+            return
+
+        output.msg(res=res, msg=f"Copy to {dst}", sender=self)
+        if not simulate:
+            if res.is_dir():
+                shutil.copytree(src=res.path, dst=dst)
             else:
-                dst_fs = SimulationFS(dst_fs)
+                shutil.copy2(src=res.path, dst=dst)
 
-        if not skip:
-            self.print("Copy to %s" % safe_description(dst_fs, dst_path))
-            if not simulate:
-                dst_fs.makedirs(dirname(dst_path), recreate=True)
-                copy_action(src_fs, src_path, dst_fs, dst_path)
-
-        # the next action should work with the newly created copy
-        return {
-            "fs": dst_fs,
-            "fs_path": dst_path,
-        }
+        # continue with either the original path or the path to the copy
+        if self.continue_with == "copy":
+            res.path = dst

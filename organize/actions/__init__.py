@@ -1,5 +1,5 @@
 # from .confirm import Confirm
-# from .copy import Copy
+from .copy import Copy
 from .delete import Delete
 from .echo import Echo
 
@@ -15,7 +15,7 @@ from .write import Write
 
 ALL = (
     #     Confirm,
-    #     Copy,
+    Copy,
     Delete,
     Echo,
     #     MacOSTags,

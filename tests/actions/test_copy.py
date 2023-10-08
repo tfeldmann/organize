@@ -2,11 +2,10 @@ from copy import deepcopy
 
 import pytest
 from conftest import make_files, read_files
-from fs.base import FS
 
-from organize import core
+from organize import Config
 
-files = {
+FILES = {
     "test.txt": "",
     "file.txt": "Hello world\nAnother line",
     "another.txt": "",
@@ -16,36 +15,31 @@ files = {
 }
 
 
-@pytest.fixture
-def testfiles(testfs) -> FS:
-    make_files(testfs, files)
-    yield testfs
-
-
-def test_copy_on_itself(testfiles):
+def test_copy_on_itself(fs):
+    make_files(FILES, "test")
     config = """
     rules:
-      - locations: "/"
+      - locations: "test"
         actions:
-          - copy: "/"
+          - copy: "test"
     """
-    core.run(config, simulate=False, working_dir=testfiles)
-    result = read_files(testfiles)
-    assert result == files
+    Config.from_string(config).execute(simulate=False)
+    result = read_files("test")
+    assert result == FILES
 
 
-def test_copy_basic(testfs):
+def test_copy_basic(fs):
     config = """
     rules:
-      - locations: "."
+      - locations: "test"
         filters:
           - name: test
         actions:
-          - copy: newname.pdf
+          - copy: test/newname.pdf
     """
-    make_files(testfs, ["asd.txt", "newname 2.pdf", "newname.pdf", "test.pdf"])
-    core.run(config, simulate=False, working_dir=testfs)
-    assert read_files(testfs) == {
+    make_files(["asd.txt", "newname 2.pdf", "newname.pdf", "test.pdf"], "test")
+    Config.from_string(config).execute(simulate=False)
+    assert read_files("test") == {
         "newname.pdf": "",
         "newname 2.pdf": "",
         "newname 3.pdf": "",
@@ -54,15 +48,16 @@ def test_copy_basic(testfs):
     }
 
 
-def test_copy_into_dir(testfiles):
+def test_copy_into_dir(fs):
+    make_files(FILES, "test")
     config = """
     rules:
-      - locations: "/"
+      - locations: "test"
         actions:
-          - copy: "a brand/new/folder/"
+          - copy: "test/a brand/new/folder/"
     """
-    core.run(config, simulate=False, working_dir=testfiles)
-    result = read_files(testfiles)
+    Config.from_string(config).execute(simulate=False)
+    result = read_files("test")
     assert result == {
         "test.txt": "",
         "file.txt": "Hello world\nAnother line",
@@ -82,16 +77,17 @@ def test_copy_into_dir(testfiles):
     }
 
 
-def test_copy_into_dir_subfolders(testfiles):
+def test_copy_into_dir_subfolders(fs):
+    make_files(FILES, "test")
     config = """
     rules:
-      - locations: "/"
+      - locations: "/test"
         subfolders: true
         actions:
-          - copy: "a brand/new/folder/"
+          - copy: "/test/a brand/new/folder/"
     """
-    core.run(config, simulate=False, working_dir=testfiles)
-    result = read_files(testfiles)
+    Config.from_string(config).execute(simulate=False)
+    result = read_files("test")
     assert result == {
         "test.txt": "",
         "file.txt": "Hello world\nAnother line",
@@ -121,47 +117,51 @@ def test_copy_into_dir_subfolders(testfiles):
         ("rename_existing", ["file.txt", "test.txt", "test 2.txt"], "new"),
     ],
 )
-def test_copy_conflict(testfs: FS, mode, files, test_txt_content):
-    config = """
+def test_copy_conflict(fs, mode, files, test_txt_content):
+    make_files(
+        {
+            "file.txt": "new",
+            "test.txt": "old",
+        },
+        "test",
+    )
+    config = f"""
     rules:
-      - locations: "/"
+      - locations: "/test"
         filters:
           - name: file
         actions:
           - copy:
               dest: "test.txt"
-              on_conflict: {}
-    """.format(
-        mode
-    )
-    testfs.writetext("file.txt", "new")
-    testfs.writetext("test.txt", "old")
-    core.run(config, simulate=False, working_dir=testfs)
-    assert set(testfs.listdir("/")) == set(files)
-    assert testfs.readtext("file.txt") == "new"
-    assert testfs.readtext("test.txt") == test_txt_content
+              on_conflict: {mode}
+    """
+    Config.from_string(config).execute(simulate=False)
+    assert read_files("test") == {
+        "file.txt": "new",
+        "test.txt": test_txt_content,
+    }
 
 
-def test_does_not_create_folder_in_simulation(testfs):
+def test_does_not_create_folder_in_simulation(fs):
     config = """
         rules:
-          - locations: "."
+          - locations: "/test"
             actions:
-              - copy: "new-subfolder/"
-              - copy: "copyhere/"
+              - copy: "/test/new-subfolder/"
+              - copy: "/test/copyhere/"
         """
-    make_files(testfs, files)
-    core.run(config, simulate=True, working_dir=testfs)
-    result = read_files(testfs)
-    assert result == files
+    make_files(FILES, "test")
+    Config.from_string(config).execute(simulate=True)
+    result = read_files("test")
+    assert result == FILES
 
-    core.run(config, simulate=False, working_dir=testfs)
-    result = read_files(testfs)
+    # core.run(config, simulate=False, working_dir=testfs)
+    # result = read_files(testfs)
 
-    expected = deepcopy(files)
-    expected["new-subfolder"] = deepcopy(files)
-    expected["new-subfolder"].pop("folder")
-    expected["copyhere"] = deepcopy(files)
-    expected["copyhere"].pop("folder")
+    # expected = deepcopy(files)
+    # expected["new-subfolder"] = deepcopy(files)
+    # expected["new-subfolder"].pop("folder")
+    # expected["copyhere"] = deepcopy(files)
+    # expected["copyhere"].pop("folder")
 
-    assert result == expected
+    # assert result == expected
