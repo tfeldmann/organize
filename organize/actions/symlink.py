@@ -6,7 +6,7 @@ from fs.base import FS
 from fs.osfs import OSFS
 from typing_extensions import Literal
 
-from organize.utils import Template
+from organize.template import Template
 
 from .action import Action
 

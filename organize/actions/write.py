@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, ClassVar
 from pydantic.dataclasses import dataclass
 
 from organize.action import ActionConfig
-from organize.utils import Template
+from organize.template import Template
 
 if TYPE_CHECKING:
     from organize.output import Output

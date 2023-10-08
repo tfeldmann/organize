@@ -9,7 +9,7 @@ from organize.actions.common.conflict import (
 )
 from organize.output import JSONL
 from organize.resource import Resource
-from organize.utils import Template
+from organize.template import Template
 
 
 @pytest.mark.parametrize(

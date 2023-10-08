@@ -6,7 +6,7 @@ import simplematch as sm
 from pydantic import Field
 from typing_extensions import Literal
 
-from organize.utils import Template
+from organize.template import Template
 from organize.validators import ensure_list
 
 from .action import Action

@@ -6,7 +6,7 @@ from pydantic.dataclasses import dataclass
 from organize.action import ActionConfig
 from organize.output import Output
 from organize.resource import Resource
-from organize.utils import Template
+from organize.template import Template
 
 from .common.conflict import ConflictMode, resolve_conflict
 from .common.target_path import prepare_target_path

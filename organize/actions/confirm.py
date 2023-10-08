@@ -1,7 +1,7 @@
 from typing_extensions import Literal
 
 from organize import console
-from organize.utils import Template
+from organize.template import Template
 
 from .action import Action
 

@@ -4,8 +4,7 @@
 
 - New action: `write`.
 - New filter: `date_lastused` (macOS only).
-- Add support for FS urls as path to the config file and working dir
-  (both in the CLI and ORGANIZE_CONFIG environment variable).
+- You can now specify the timezone in all time based filters.
 - Removed hidden (deprecated) CLI option `--config-file`.
 - Lots of new tests and some bugfixes.
 - `exif` filter now supports the simplematch syntax.

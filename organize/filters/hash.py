@@ -5,7 +5,7 @@ from pydantic.dataclasses import dataclass
 from organize.filter import FilterConfig
 from organize.output import Output
 from organize.resource import Resource
-from organize.utils import Template
+from organize.template import Template
 
 
 @dataclass

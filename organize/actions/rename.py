@@ -12,7 +12,7 @@ from .common.conflict import ConflictMode, resolve_conflict
 if TYPE_CHECKING:
     from organize.output import Output
     from organize.resource import Resource
-    from organize.utils import Template
+    from organize.template import Template
 
 
 def rename(path: Path, name: str):
