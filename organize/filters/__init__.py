@@ -1,6 +1,7 @@
-# from .created import Created
-# from .date_added import DateAdded
-# from .date_lastused import DateLastUsed
+from .created import Created
+from .date_added import DateAdded
+from .date_lastused import DateLastUsed
+
 # from .duplicate import Duplicate
 from .empty import Empty
 
@@ -20,9 +21,9 @@ from .regex import Regex
 from .size import Size
 
 ALL = (
-    #     Created,
-    #     DateAdded,
-    #     DateLastUsed,
+    Created,
+    DateAdded,
+    DateLastUsed,
     #     Duplicate,
     Empty,
     #     Exif,

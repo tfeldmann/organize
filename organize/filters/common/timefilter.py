@@ -1,7 +1,9 @@
-from datetime import datetime, timedelta
-from enum import Enum
+import logging
+from datetime import datetime, tzinfo
 from typing import ClassVar, Literal, Union
 
+import arrow
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.filter import FilterConfig
@@ -9,22 +11,7 @@ from organize.output import Output
 from organize.resource import Resource
 
 
-class Mode(Enum):
-    older = "older"
-    newer = "newer"
-
-
-def age_condition_applies(
-    dt: datetime, age: timedelta, mode: Mode, reference: datetime
-):
-    """
-    Returns whether `dt` is older / newer (`mode`) than `age` as measured on `reference`
-    """
-    is_past = (dt + age).timestamp() < reference.timestamp()
-    return (mode == Mode.older) == is_past
-
-
-@dataclass
+@dataclass(config=ConfigDict(extra="forbid", arbitrary_types_allowed=True))
 class TimeFilter:
     years: int = 0
     months: int = 0
@@ -34,44 +21,61 @@ class TimeFilter:
     minutes: int = 0
     seconds: int = 0
     mode: Literal["older", "newer"] = "older"
+    timezone: Union[tzinfo, str] = "local"
 
-    filter_config: ClassVar = FilterConfig("timefilter", files=True, dirs=False)
+    filter_config: ClassVar = FilterConfig(
+        "timefilter",
+        files=True,
+        dirs=False,
+    )
 
     def __post_init__(self):
-        self._age = timedelta(
-            weeks=52 * self.years
-            + 4 * self.months
-            + self.weeks,  # quick and a bit dirty
-            days=self.days,
-            hours=self.hours,
-            minutes=self.minutes,
-            seconds=self.seconds,
+        self._has_comparison = (
+            self.years
+            or self.months
+            or self.weeks
+            or self.days
+            or self.hours
+            or self.minutes
+            or self.seconds
+        )
+        self._comparison_dt = (
+            arrow.now()
+            .shift(
+                years=-self.years,
+                months=-self.months,
+                weeks=-self.weeks,
+                days=-self.days,
+                hours=-self.hours,
+                minutes=-self.minutes,
+                seconds=-self.seconds,
+            )
+            .datetime
         )
 
     def matches_datetime(self, dt: datetime) -> bool:
-        match = True
-        if self._age.total_seconds():
-            if not dt:
-                match = False
-            else:
-                match = age_condition_applies(
-                    dt=dt,
-                    age=self._age,
-                    mode=self.mode,
-                    reference=datetime.now(),
-                )
-        return match
+        if not self._has_comparison:
+            return True
+
+        if self.mode == "older":
+            return dt < self._comparison_dt
+        elif self.mode == "newer":
+            return dt > self._comparison_dt
+        else:
+            raise ValueError(f"Unknown mode {self.mode}")
 
     def pipeline(self, res: Resource, output: Output) -> bool:
-        dt = self.get_datetime(res.path)
-        if dt is None:
+        try:
+            dt = self.get_datetime(res.path)
+        except Exception as e:
+            logging.warn(f"Cannot read datetime ({e})")
             return False
-        dt = dt.astimezone()
-        match = self.matches_datetime(dt)
-        if match:
-            res.vars[self.filter_config.name] = dt
-            return True
-        return False
 
-    def get_datetime(self, args: dict) -> Union[datetime, None]:
-        raise NotImplementedError
+        # apply timezone
+        dt = arrow.get(dt).to(self.timezone).datetime
+
+        res.vars[self.filter_config.name] = dt
+        return self.matches_datetime(dt)
+
+    def get_datetime(self, args: dict) -> datetime:
+        raise NotImplementedError()

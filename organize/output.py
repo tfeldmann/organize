@@ -67,9 +67,10 @@ class Rich:
 
     def start(self, simulate: bool, config_path: Optional[str] = None):
         self.prev_resource: Optional[Resource] = None
-        self.console.print(Panel("SIMULATION", style="simulation"))
+        if simulate:
+            self.console.print(Panel("SIMULATION", style="simulation"))
 
-        self.console.print("organize {}".format(__version__))
+        self.console.print(f"organize {__version__}")
         self.console.print(f'Config: "{config_path}"')
 
         # if working_dir != Path("."):

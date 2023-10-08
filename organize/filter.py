@@ -46,7 +46,7 @@ class All:
                     return False
             except Exception as e:
                 output.msg(res=res, level="error", msg=str(e))
-                logging.exception()
+                logging.exception(e)
                 return False
         return True
 

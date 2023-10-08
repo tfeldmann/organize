@@ -1,12 +1,20 @@
 import subprocess
 import sys
 from datetime import datetime
-from typing import Union
+from pathlib import Path
+from typing import ClassVar
 
-from fs.base import FS
-from typing_extensions import Literal
+from organize.filter import FilterConfig
 
 from .common.timefilter import TimeFilter
+
+
+def read_date_lastused(path: Path):
+    cmd = ["mdls", "-name", "kMDItemLastUsedDate", "-raw", str(path)]
+    out = subprocess.check_output(cmd, encoding="utf-8").strip()
+    if out == "(null)":
+        raise ValueError("date_lastused not available")
+    return datetime.strptime(out, "%Y-%m-%d %H:%M:%S %z")
 
 
 class DateLastUsed(TimeFilter):
@@ -32,18 +40,16 @@ class DateLastUsed(TimeFilter):
         {date_lastused}: The datetime the files / folders were added.
     """
 
-    name: Literal["date_lastused"] = "date_lastused"
+    filter_config: ClassVar = FilterConfig(
+        name="date_lastused",
+        files=True,
+        dirs=True,
+    )
 
-    def get_datetime(self, args: dict) -> Union[datetime, None]:
+    def __post_init__(self):
         if sys.platform != "darwin":
-            raise EnvironmentError("date_lastused is only available on macOS")
+            raise EnvironmentError("date_added is only available on macOS")
+        return super().__post_init__()
 
-        fs = args["fs"]  # type: FS
-        fs_path = args["fs_path"]
-
-        cmd = ["mdls", "-name", "kMDItemLastUsedDate", "-raw", fs.getsyspath(fs_path)]
-        out = subprocess.check_output(cmd, encoding="utf-8").strip()
-        if out == "(null)":
-            return None
-        dt = datetime.strptime(out, "%Y-%m-%d %H:%M:%S %z")
-        return dt
+    def get_datetime(self, path: Path) -> datetime:
+        return read_date_lastused(path)

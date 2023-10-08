@@ -1,10 +1,14 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import ClassVar
 
 from organize.filter import FilterConfig
 
 from .common.timefilter import TimeFilter
+
+
+def read_lastmodified(path: Path) -> datetime:
+    return datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
 
 
 class LastModified(TimeFilter):
@@ -28,7 +32,11 @@ class LastModified(TimeFilter):
         {lastmodified}: The datetime the files / folders was lastmodified.
     """
 
-    filter_config: ClassVar = FilterConfig(name="lastmodified", files=True, dirs=False)
+    filter_config: ClassVar = FilterConfig(
+        name="lastmodified",
+        files=True,
+        dirs=True,
+    )
 
     def get_datetime(self, path: Path) -> datetime:
-        return datetime.fromtimestamp(path.stat().st_mtime)
+        return read_lastmodified(path)
