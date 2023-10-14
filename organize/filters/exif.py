@@ -36,10 +36,10 @@ def to_datetime(key: str, value: str) -> ExifValue:
         converted_value: ExifValue = value
         if "datetime" in key:
             # value = "YYYY:MM:DD HH:MM:SS" --> convert to 'datetime.datetime'
-            converted_value = datetime.strptime(value, "%Y:%m:%d %H:%M:%S")
+            converted_value = datetime.strptime(value[:19], "%Y:%m:%d %H:%M:%S")
         elif "date" in key:
             # value = "YYYY:MM:DD" --> convert to datetime.date
-            converted_value = datetime.strptime(value, "%Y:%m:%d").date()
+            converted_value = datetime.strptime(value[:10], "%Y:%m:%d").date()
         elif "offsettime" in key:
             # value = "+HHMM" or "+HH:MM[:SS]" or "UTC+HH:MM[:SS]"
             # --> convert to 'datetime.timedelta'
