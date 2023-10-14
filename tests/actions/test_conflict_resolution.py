@@ -17,7 +17,7 @@ from organize.template import Template
     (
         ("{name}-{counter}{extension}", "file.txt", "file-2.txt"),
         ("{name}-{counter}{extension}", "file.txt", "file-2.txt"),
-        ("{name}-{'%02d' % counter}{extension}", "file.txt", "file-03.txt"),
+        (r"{name}-{'%02d' % counter}{extension}", "file.txt", "file-03.txt"),
         ("{name}{counter}{extension}", "file.txt", "file4.txt"),
         ("{name}{counter}{extension}", "other.txt", "other.txt"),
         ("{name} {counter}{extension}", "folder/test.txt", "folder/test 2.txt"),

@@ -1,14 +1,11 @@
-from typing import TYPE_CHECKING, ClassVar
+from pathlib import Path
+from typing import ClassVar
 
 from pydantic.dataclasses import dataclass
 
 from organize.action import ActionConfig
-
-if TYPE_CHECKING:
-    from pathlib import Path
-
-    from organize.output import Output
-    from organize.resource import Resource
+from organize.output import Output
+from organize.resource import Resource
 
 
 def trash(path: Path):

@@ -1,18 +1,16 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, ClassVar
+from typing import ClassVar
 
 from pydantic.dataclasses import dataclass
 
 from organize.action import ActionConfig
+from organize.output import Output
+from organize.resource import Resource
+from organize.template import Template
 
-from .common.conflict import ConflictMode, resolve_conflict
-
-if TYPE_CHECKING:
-    from organize.output import Output
-    from organize.resource import Resource
-    from organize.template import Template
+from .common.conflict import ConflictMode
 
 
 def rename(path: Path, name: str):

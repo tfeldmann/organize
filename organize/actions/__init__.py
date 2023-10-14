@@ -10,7 +10,7 @@ from .python import Python
 # from .rename import Rename
 # from .shell import Shell
 # from .symlink import Symlink
-# from .trash import Trash
+from .trash import Trash
 from .write import Write
 
 ALL = (
@@ -24,6 +24,6 @@ ALL = (
     #     Rename,
     #     Shell,
     #     Symlink,
-    #     Trash,
+    Trash,
     Write,
 )
