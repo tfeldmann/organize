@@ -1,8 +1,9 @@
 # Changelog
 
-## WIP
+## v2.4.3 (2023-10-14)
 
 - Modified filter: `exif`. Enabled datetime fields on exif data (Issue #266) (Thanks @FlorianFritz)
+- Support Exif data from Huawei and Honer phones (Thanks @HernandoR)
 
 ## v2.4.2 (2023-08-25)
 
