@@ -1,35 +1,34 @@
-import fs
 from conftest import make_files, read_files
 
-from organize.core import run
+from organize import Config
 
 
-def test_rename_issue51(testfs):
+def test_rename_issue51(fs):
     # test for issue https://github.com/tfeldmann/organize/issues/51
     files = {
         "19asd_WF_test2.PDF": "",
         "other.pdf": "",
         "18asd_WFX_test2.pdf": "",
     }
-    make_files(testfs, files)
+    make_files(files, "test")
 
-    CONFIG = """
-    rules:
-      - locations: "./"
-        filters:
-          - extension
-          - name:
-              startswith: "19"
-              contains:
-                - "_WF_"
-        actions:
-          - rename: "{name}_unread.{extension.lower()}"
-          - copy:
-              dest: "copy/"
-    """
-    run(CONFIG, simulate=False, working_dir=testfs)
-    result = read_files(testfs)
-    assert result == {
+    Config.from_string(
+        """
+        rules:
+          - locations: "/test"
+            filters:
+            - extension
+            - name:
+                startswith: "19"
+                contains:
+                    - "_WF_"
+            actions:
+            - rename: "{name}_unread.{extension.lower()}"
+            - copy:
+                dest: "copy/"
+        """
+    ).execute(simulate=False)
+    assert read_files("test") == {
         "copy": {
             "19asd_WF_test2_unread.pdf": "",
         },
@@ -39,19 +38,7 @@ def test_rename_issue51(testfs):
     }
 
 
-def test_rename_folders(testfs):
-    config = """
-    rules:
-      - name: "Renaming DVD folders"
-        locations: "/"
-        targets: dirs
-        filters:
-          - name:
-              contains: DVD
-        actions:
-          - rename:
-              name: "{name.replace('[DVD] ','').replace(' [1080p]','').replace(' ', '_')}"
-    """
+def test_rename_folders(fs):
     files = {
         "[DVD] Best Of Video 1080 [1080p]": {
             "[DVD] Best Of Video 1080 [1080p]": "",
@@ -62,9 +49,22 @@ def test_rename_folders(testfs):
             "Metadata": "",
         },
     }
-    make_files(testfs, files)
-    run(rules=config, simulate=False, working_dir=testfs)
-    assert read_files(testfs) == {
+    make_files(files, "test")
+    Config.from_string(
+        """
+        rules:
+          - name: "Renaming DVD folders"
+            locations: "/test"
+            targets: dirs
+            filters:
+            - name:
+                contains: DVD
+            actions:
+            - rename:
+                new_name: "{name.replace('[DVD] ','').replace(' [1080p]','').replace(' ', '_')}"
+        """
+    ).execute(simulate=False)
+    assert read_files("test") == {
         "Best_Of_Video_1080": {
             "[DVD] Best Of Video 1080 [1080p]": "",
             "Metadata": "",
@@ -76,18 +76,7 @@ def test_rename_folders(testfs):
     }
 
 
-def test_rename_in_subfolders(testfs):
-    config = """
-    rules:
-      - locations: "/"
-        subfolders: true
-        filters:
-          - name:
-              contains: RENAME
-          - extension
-        actions:
-          - rename: "DONE.{extension}"
-    """
+def test_rename_in_subfolders(fs):
     files = {
         "folder": {
             "FIRST-RENAME.pdf": "",
@@ -100,9 +89,21 @@ def test_rename_in_subfolders(testfs):
             "Metadata": "",
         },
     }
-    make_files(testfs, files)
-    run(rules=config, simulate=False, working_dir=testfs)
-    assert read_files(testfs) == {
+    make_files(files, "test")
+    Config.from_string(
+        """
+        rules:
+          - locations: "/test"
+            subfolders: true
+            filters:
+            - name:
+                contains: RENAME
+            - extension
+            actions:
+            - rename: "DONE.{extension}"
+        """
+    ).execute(simulate=False)
+    assert read_files("test") == {
         "folder": {
             "DONE.pdf": "",
             "Other": "",
@@ -116,15 +117,16 @@ def test_rename_in_subfolders(testfs):
     }
 
 
-def test_filename_move(tempfs):
-    config = """
+def test_filename_move(fs):
+    make_files({"test.PY": ""}, "test")
+    Config.from_string(
+        """
         rules:
-        - locations: "."
-          filters:
+          - locations: "/test"
+            filters:
             - extension
-          actions:
+            actions:
             - rename: '{path.stem}{path.stem}.{extension.lower()}'
     """
-    make_files(tempfs, {"test.PY": ""})
-    run(rules=config, simulate=False, working_dir=tempfs)
-    assert read_files(tempfs) == {"testtest.py": ""}
+    ).execute(simulate=False)
+    assert read_files("test") == {"testtest.py": ""}

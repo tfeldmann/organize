@@ -10,7 +10,8 @@ from organize.output import Output
 from organize.resource import Resource
 from organize.template import Template
 
-from .common.conflict import ConflictMode
+from .common.conflict import ConflictMode, resolve_conflict
+from .common.target_path import prepare_target_path
 
 
 def rename(path: Path, name: str):
@@ -41,6 +42,7 @@ class Rename:
     new_name: str
     on_conflict: ConflictMode = ConflictMode.RENAME_NEW
     rename_template: str = "{name} {counter}{extension}"
+    # TODO: keep_extension
 
     action_config: ClassVar = ActionConfig(
         name="rename",
@@ -60,37 +62,20 @@ class Rename:
                 "The new name cannot contain slashes. "
                 "To move files or folders use `move`."
             )
-        raise NotImplementedError()
-        # dst_path = path.join(path.dirname(src_path), new_name)
+        dst = res.path.with_name(new_name)
+        skip_action, dst = resolve_conflict(
+            dst=dst,
+            res=res,
+            conflict_mode=self.on_conflict,
+            rename_template=self._rename_template,
+            simulate=simulate,
+            output=output,
+        )
 
-        # if dst_path == src_path:
-        #     self.print("Name did not change")
-        # else:
-        #     move_action: Callable[[FS, str, FS, str], None]
-        #     if fs.isdir(src_path):
-        #         move_action = move_dir
-        #     elif fs.isfile(src_path):
-        #         move_action = move_file
+        if skip_action:
+            return
 
-        #     # check for conflicts
-        #     skip, dst_path = check_conflict(
-        #         src_fs=fs,
-        #         src_path=src_path,
-        #         dst_fs=fs,
-        #         dst_path=dst_path,
-        #         conflict_mode=self.conflict_mode,
-        #         rename_template=self._rename_template,
-        #         simulate=simulate,
-        #         print=self.print,
-        #     )
-
-        #     if not skip:
-        #         self.print("Rename to %s" % safe_description(fs, dst_path))
-        #         if not simulate:
-        #             move_action(fs, src_path, fs, dst_path)
-
-        # # the next action should work with the renamed file
-        # return {
-        #     "fs": fs,
-        #     "fs_path": "./" + dst_path,
-        # }
+        output.msg(res=res, msg=f"Renaming to {new_name}", sender=self)
+        if not simulate:
+            res.path.rename(dst)
+        res.path = dst
