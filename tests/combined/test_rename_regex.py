@@ -1,31 +1,27 @@
-import pytest
 from conftest import make_files, read_files
 
-from organize import core
+from organize import Config
 
 
-@pytest.mark.parametrize("loc", (".", "/"))
-def test_rename_files_date(testfs, loc):
+def test_rename_files_date(fs):
     # inspired by https://github.com/tfeldmann/organize/issues/43
     files = {
         "File_abc_dat20190812_xyz.pdf": "",
         "File_xyz_bar19990101_a.pdf": "",
         "File_123456_foo20000101_xyz20190101.pdf": "",
     }
-    make_files(testfs, files)
-    config = (
+    make_files(files, "test")
+    Config.from_string(
         r"""
-    rules:
-    - locations: "%s"
-      filters:
-        - regex: 'File_.*?(?P<y>\d{4})(?P<m>\d{2})(?P<d>\d{2}).*?.pdf'
-      actions:
-        - rename: "File_{regex.d}{regex.m}{regex.y}.pdf"
-    """
-        % loc
-    )
-    core.run(config, simulate=False, working_dir=testfs)
-    assert read_files(testfs) == {
+        rules:
+          - locations: "/test"
+            filters:
+            - regex: 'File_.*?(?P<y>\d{4})(?P<m>\d{2})(?P<d>\d{2}).*?.pdf'
+            actions:
+            - rename: "File_{regex.d}{regex.m}{regex.y}.pdf"
+        """
+    ).execute(simulate=False)
+    assert read_files("test") == {
         "File_12082019.pdf": "",
         "File_01011999.pdf": "",
         "File_01012000.pdf": "",

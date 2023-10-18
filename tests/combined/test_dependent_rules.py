@@ -1,17 +1,18 @@
 from conftest import make_files, read_files
 
-from organize import core
+from organize import Config
 
 
-def test_dependent_rules(testfs):
+def test_dependent_rules(fs):
     files = {
         "asd.txt": "",
         "newname 2.pdf": "",
         "newname.pdf": "",
         "test.pdf": "",
     }
-    make_files(testfs, files)
-    config = """
+    make_files(files, "test")
+    Config.from_string(
+        """
     rules:
     - locations: "."
       filters:
@@ -24,8 +25,8 @@ def test_dependent_rules(testfs):
       actions:
         - rename: test-found.pdf
     """
-    core.run(config, simulate=False, working_dir=testfs)
-    assert read_files(testfs) == {
+    ).execute(simulate=False)
+    assert read_files("test") == {
         "newname.pdf": "",
         "newname 2.pdf": "",
         "test.pdf": "",
