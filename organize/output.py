@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import json
 from typing import TYPE_CHECKING, Literal, Optional, Protocol, Union
 
+from pydantic import BaseModel
 from rich import print
 from rich.console import Console
 from rich.panel import Panel
@@ -95,12 +95,33 @@ class Rich:
         ...
 
 
-class JSONL:
+class Start(BaseModel):
+    type: Literal["START"] = "START"
+    simulate: bool
+    config_path: Optional[str] = None
+
+
+class Msg(BaseModel):
+    type: Literal["MSG"] = "MSG"
+    level: Literal["info", "warn", "error"] = "info"
+    msg: str
+    rule: str
+    basedir: str
+    path: str
+    sender: str = ""
+
+
+Event = Union[Start, Msg]
+
+
+class RawOutput:
     def start(self, simulate: bool, config_path: Optional[str] = None):
-        self._print_json(
-            type="START",
-            simulate=simulate,
-            config_path=config_path,
+        self._output(
+            Start(
+                type="START",
+                simulate=simulate,
+                config_path=config_path,
+            )
         )
 
     def msg(
@@ -110,13 +131,15 @@ class JSONL:
         level: Literal["info", "warn", "error"] = "info",
         sender: str = "",
     ):
-        self._print_json(
-            type="MSG",
-            level=level,
-            msg=msg,
-            rule=res.rule.name if res.rule else "",
-            basedir=res.basedir,
-            path=str(res.path),
+        self._output(
+            Msg(
+                type="MSG",
+                level=level,
+                msg=msg,
+                rule=res.rule.name or "" if res.rule else "",
+                basedir=res.basedir,
+                path=str(res.path),
+            )
         )
 
     def prompt(self, res: Resource, msg: str) -> str:
@@ -128,5 +151,26 @@ class JSONL:
     def end(self, success_count: int, error_count: int):
         ...
 
-    def _print_json(self, **kwargs):
-        print(json.dumps(kwargs))
+    def _output(self, item: Event):
+        ...
+
+
+class QueueOutput(RawOutput):
+    def __init__(self):
+        self.queue = []
+
+    def start(self, *args, **kwargs):
+        self.queue.clear()
+        super().start(*args, **kwargs)
+
+    def _output(self, item: Event):
+        self.queue.append(item)
+
+    @property
+    def messages(self):
+        return [x for x in self.queue if x.type == "MSG"]
+
+
+class JSONL(RawOutput):
+    def _output(self, item: Event):
+        print(item.model_dump_json())

@@ -11,8 +11,8 @@ from .extension import Extension
 # from .filecontent import FileContent
 from .hash import Hash
 from .lastmodified import LastModified
+from .macos_tags import MacOSTags
 
-# from .macos_tags import MacOSTags
 # from .mimetype import MimeType
 from .name import Name
 
@@ -31,7 +31,7 @@ ALL = (
     #     FileContent,
     Hash,
     LastModified,
-    #     MacOSTags,
+    MacOSTags,
     #     MimeType,
     Name,
     #     Python,

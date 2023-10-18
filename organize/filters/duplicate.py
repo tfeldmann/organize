@@ -19,8 +19,6 @@ from typing_extensions import Literal
 
 from organize.utils import is_same_resource
 
-from .filter import Filter, FilterResult
-
 HASH_ALGORITHM = "sha1"
 DETECTION_METHODS = ("first_seen", "name", "created", "lastmodified")
 
