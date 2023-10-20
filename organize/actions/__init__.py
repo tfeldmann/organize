@@ -8,8 +8,7 @@ from .move import Move
 from .python import Python
 from .rename import Rename
 from .shell import Shell
-
-# from .symlink import Symlink
+from .symlink import Symlink
 from .trash import Trash
 from .write import Write
 
@@ -23,7 +22,7 @@ ALL = (
     Python,
     Rename,
     Shell,
-    #     Symlink,
+    Symlink,
     Trash,
     Write,
 )
