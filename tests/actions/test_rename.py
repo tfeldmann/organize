@@ -25,7 +25,7 @@ def test_rename_issue51(fs):
             actions:
             - rename: "{name}_unread.{extension.lower()}"
             - copy:
-                dest: "copy/"
+                dest: "/test/copy/"
         """
     ).execute(simulate=False)
     assert read_files("test") == {
