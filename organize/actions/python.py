@@ -49,9 +49,9 @@ class Python:
 
         # codegen the user function with arguments as available in the resource
         kwargs = ", ".join(res.dict().keys())
-        func = f"def __usercode(print, {kwargs}):\n"
+        func = f"def __userfunc(print, {kwargs}):\n"
         func += textwrap.indent(self.code, "    ")
-        func += "\n\nself.__usercode__ = __usercode"
+        func += "\n\nself.__usercode__ = __userfunc"
         exec(func, globals().copy(), locals().copy())
         result = self.__usercode__(print=_output_msg, **res.dict())
 
@@ -60,7 +60,4 @@ class Python:
             raise ValueError("The python code must return None or a dict")
 
         if isinstance(result, dict):
-            res.vars[self.action_config.name] = deep_merge(
-                res.vars.get(self.action_config.name, dict()),
-                result,
-            )
+            res.deep_merge(key=self.action_config.name, data=result)

@@ -6,6 +6,8 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
+from organize.utils import deep_merge
+
 if TYPE_CHECKING:
     from .rule import Rule
 
@@ -33,6 +35,10 @@ class Resource:
             today=date.today,
             **self.vars,
         )
+
+    def deep_merge(self, key: str, data: Dict) -> None:
+        prev = self.vars.get(key, dict())
+        self.vars[key] = deep_merge(prev, data)
 
     # TODO: Caching for `is_file` and `is_dir`
     # TODO: provide a `from_direntry` constructor to speed things up

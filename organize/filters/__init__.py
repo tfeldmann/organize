@@ -6,16 +6,14 @@ from .empty import Empty
 
 # from .exif import Exif
 from .extension import Extension
-
-# from .filecontent import FileContent
+from .filecontent import FileContent
 from .hash import Hash
 from .lastmodified import LastModified
 from .macos_tags import MacOSTags
 
 # from .mimetype import MimeType
 from .name import Name
-
-# from .python import Python
+from .python import Python
 from .regex import Regex
 from .size import Size
 
@@ -27,13 +25,13 @@ ALL = (
     Empty,
     #     Exif,
     Extension,
-    #     FileContent,
+    FileContent,
     Hash,
     LastModified,
     MacOSTags,
     #     MimeType,
     Name,
-    #     Python,
+    Python,
     Regex,
     Size,
 )
