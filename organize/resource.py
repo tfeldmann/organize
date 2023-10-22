@@ -17,6 +17,7 @@ class Resource:
     path: Path
     basedir: Optional[Path] = None
     rule: Optional[Rule] = None
+    rule_nr: int = 0
     vars: Dict[str, Any] = field(default_factory=dict)
 
     def relative_path(self):

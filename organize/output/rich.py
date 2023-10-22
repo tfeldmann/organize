@@ -106,7 +106,10 @@ class Rich:
             self.det_location.reset()
             self.det_path.reset()
             self.console.print()
-            self.console.rule(f"[rule]:gear: {res.rule}", align="left", style="rule")
+            rule_name = f"Rule #{res.rule_nr}"
+            if res.rule.name is not None:
+                rule_name += f": {res.rule.name}"
+            self.console.rule(f"[rule]:gear: {rule_name}", align="left", style="rule")
 
         # location changed
         if self.det_location.changed(res.basedir):

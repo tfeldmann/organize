@@ -111,7 +111,7 @@ class Rule:
                 result.append(x)
         return result
 
-    def walk(self, working_dir: Union[Path, str] = "."):
+    def walk(self, working_dir: Union[Path, str] = ".", rule_nr: int = 0):
         for location in self.locations:
             # instantiate the fs walker
             exclude_files = location.system_exclude_files + location.exclude_files
@@ -141,9 +141,14 @@ class Rule:
             walk_func = _walk_funcs[self.targets]
 
             for path in walk_func(location.path):
-                yield Resource(path=Path(path), rule=self, basedir=location.path)
+                yield Resource(
+                    path=Path(path),
+                    basedir=location.path,
+                    rule=self,
+                    rule_nr=rule_nr,
+                )
 
-    def execute(self, *, simulate: bool, output: Output):
+    def execute(self, *, simulate: bool, output: Output, rule_nr: int = 0):
         if self.filter_mode == "all":
             filters = All(*self.filters)
         elif self.filter_mode == "any":
@@ -153,7 +158,7 @@ class Rule:
         else:
             raise ValueError(f"Unknown filter mode {self.filter_mode}")
 
-        for res in self.walk():
+        for res in self.walk(rule_nr=rule_nr):
             result = filters.pipeline(res, output=output)
             if result:
                 try:

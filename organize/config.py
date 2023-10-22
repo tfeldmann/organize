@@ -67,8 +67,12 @@ class Config:
     ):
         output.start(simulate=simulate, config_path=None)
         try:
-            for rule in self.rules:
+            for rule_nr, rule in enumerate(self.rules):
                 if should_execute(rule_tags=rule.tags, tags=tags, skip_tags=skip_tags):
-                    rule.execute(simulate=simulate, output=output)
+                    rule.execute(
+                        simulate=simulate,
+                        output=output,
+                        rule_nr=rule_nr,
+                    )
         finally:
             output.end(0, 0)
