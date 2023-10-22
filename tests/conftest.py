@@ -1,16 +1,7 @@
 from pathlib import Path
 from typing import Dict, List, Union
-from unittest.mock import patch
-
-import pytest
 
 ORGANIZE_DIR = Path(__file__).parent.parent
-
-
-@pytest.fixture
-def mock_echo():
-    with patch("organize.actions.Echo.print") as mck:
-        yield mck
 
 
 def make_files(structure: Union[Dict, List], path: Union[Path, str] = "."):
