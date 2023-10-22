@@ -42,7 +42,7 @@ class Rename:
     new_name: str
     on_conflict: ConflictMode = ConflictMode.RENAME_NEW
     rename_template: str = "{name} {counter}{extension}"
-    # TODO: keep_extension
+    # TODO: keep_extension?
 
     action_config: ClassVar = ActionConfig(
         name="rename",

@@ -1,13 +1,12 @@
 import logging
-from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Union
+from typing import Dict, List, Literal, Optional, Set, Union
 
 from pydantic import ConfigDict, Field, field_validator
 from pydantic.dataclasses import dataclass
 
 from .action import Action
-from .filter import All, Filter, Not
+from .filter import All, Any, Filter, Not
 from .location import Location
 from .output import Output
 from .registry import action_by_name, filter_by_name
@@ -51,17 +50,6 @@ def filter_from_dict(d: Dict):
     return Not(inst) if invert_filter else inst
 
 
-class FilterMode(str, Enum):
-    ALL = "all"
-    ANY = "any"
-    NONE = "none"
-
-
-class RuleTarget(str, Enum):
-    DIRS = "dirs"
-    FILES = "files"
-
-
 @dataclass(
     kw_only=True,
     config=ConfigDict(
@@ -72,12 +60,12 @@ class RuleTarget(str, Enum):
 class Rule:
     name: Optional[str] = None
     enabled: bool = True
-    targets: RuleTarget = RuleTarget.FILES
+    targets: Literal["files", "dirs"] = "files"
     locations: List[Location] = Field(default_factory=list)
     subfolders: bool = False
     tags: Set[str] = Field(default_factory=set)
     filters: List[Filter] = Field(default_factory=list)
-    filter_mode: FilterMode = FilterMode.ALL
+    filter_mode: Literal["all", "any", "none"] = "all"
     actions: List[Action] = Field(..., min_length=1)
 
     @field_validator("locations", mode="before")
@@ -147,8 +135,8 @@ class Rule:
 
             # whether to walk dirs or files
             _walk_funcs = {
-                RuleTarget.FILES: walker.files,
-                RuleTarget.DIRS: walker.dirs,
+                "files": walker.files,
+                "dirs": walker.dirs,
             }
             walk_func = _walk_funcs[self.targets]
 
@@ -156,8 +144,17 @@ class Rule:
                 yield Resource(path=Path(path), rule=self, basedir=location.path)
 
     def execute(self, *, simulate: bool, output: Output):
+        if self.filter_mode == "all":
+            filters = All(*self.filters)
+        elif self.filter_mode == "any":
+            filters = Any(*self.filters)
+        elif self.filter_mode == "none":
+            filters = All(*[Not(x) for x in self.filters])
+        else:
+            raise ValueError(f"Unknown filter mode {self.filter_mode}")
+
         for res in self.walk():
-            result = All(*self.filters).pipeline(res, output=output)  # TODO: Any
+            result = filters.pipeline(res, output=output)
             if result:
                 try:
                     for action in self.actions:

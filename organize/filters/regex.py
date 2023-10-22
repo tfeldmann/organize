@@ -38,9 +38,6 @@ class Regex:
     def pipeline(self, res: Resource, output: Output) -> bool:
         match = self.matches(res.path.name)
         if match:
-            vars = res.vars.get(self.filter_config.name) or dict()
-            # TODO: deep update
-            vars.update(match.groupdict())
-            res.vars[self.filter_config.name] = vars
+            res.deep_merge(key=self.filter_config.name, data=match.groupdict())
             return True
         return False

@@ -66,30 +66,9 @@ class Config:
         working_dir: Union[str, None] = ".",
     ):
         output.start(simulate=simulate, config_path=None)
-        for rule in self.rules:
-            if should_execute(rule_tags=rule.tags, tags=tags, skip_tags=skip_tags):
-                rule.execute(simulate=simulate, output=output)
-
-
-if __name__ == "__main__":
-    import sys
-
-    from rich import print
-
-    obj = load_from_string(
-        """
-        rules:
-          - locations: "."
-            subfolders: true
-            filters:
-              - name
-            actions:
-              - confirm
-              - echo: "Test {name} {extension} {size} {hash}"
-              - echo: "{mimetype}"
-        """
-    )
-    x = Config.parse_obj(obj)
-    print(x.json())
-    x.execute(simulate=True)
-    sys.exit()
+        try:
+            for rule in self.rules:
+                if should_execute(rule_tags=rule.tags, tags=tags, skip_tags=skip_tags):
+                    rule.execute(simulate=simulate, output=output)
+        finally:
+            output.end(0, 0)
