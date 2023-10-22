@@ -1,8 +1,7 @@
 from .created import Created
 from .date_added import DateAdded
 from .date_lastused import DateLastUsed
-
-# from .duplicate import Duplicate
+from .duplicate import Duplicate
 from .empty import Empty
 
 # from .exif import Exif
@@ -24,7 +23,7 @@ ALL = (
     Created,
     DateAdded,
     DateLastUsed,
-    #     Duplicate,
+    Duplicate,
     Empty,
     #     Exif,
     Extension,

@@ -1,3 +1,5 @@
+import hashlib
+from pathlib import Path
 from typing import ClassVar
 
 from pydantic.dataclasses import dataclass
@@ -6,6 +8,25 @@ from organize.filter import FilterConfig
 from organize.output import Output
 from organize.resource import Resource
 from organize.template import Template
+
+
+def hash(path: Path, algo: str, *, _bufsize=2**18) -> str:
+    # Future: for python >= 3.11 we can use hashlib.file_digest
+    h = hashlib.new(algo)
+    buf = bytearray(_bufsize)
+    view = memoryview(buf)
+    with open(path, "rb", buffering=0) as f:
+        while size := f.readinto(view):
+            h.update(view[:size])
+    return h.hexdigest()
+
+
+def hash_first_chunk(path: Path, algo: str, *, chunksize=1024) -> str:
+    h = hashlib.new(algo)
+    with path.open("rb") as f:
+        chunk = f.read(chunksize)
+        h.update(chunk)
+    return h.hexdigest()
 
 
 @dataclass
@@ -54,6 +75,6 @@ class Hash:
 
     def pipeline(self, res: Resource, output: Output) -> bool:
         algo = self._algorithm.render(**res.dict()).lower()
-        hash = res.hash(algo=algo)
-        res.vars[self.filter_config.name] = hash
+        result = hash(path=res.path, algo=algo)
+        res.vars[self.filter_config.name] = result
         return True

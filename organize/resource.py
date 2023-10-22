@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import os
 from dataclasses import dataclass, field
 from datetime import date, datetime
@@ -49,18 +48,3 @@ class Resource:
         elif self.is_dir():
             return not any(self.path.iterdir())
         raise ValueError("Unknown file type")
-
-    def hash(self, algo: str, *, _bufsize=2**18):
-        h = hashlib.new(algo)
-        buf = bytearray(_bufsize)
-        view = memoryview(buf)
-        with open(self.path, "rb", buffering=0) as f:
-            while size := f.readinto(view):
-                h.update(view[:size])
-        return h.hexdigest()
-
-    def size(self):
-        if self.is_file():
-            return self.path.stat().st_size
-        if self.is_dir():
-            return sum(f.stat().st_size for f in self.path.glob("**/*") if f.is_file())

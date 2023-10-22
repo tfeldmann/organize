@@ -66,7 +66,7 @@ class Rich:
         self.console = Console(theme=theme, highlight=False)
 
     def start(self, simulate: bool, config_path: Optional[str] = None):
-        self.prev_resource: Optional[Resource] = None
+        self.prev_res: Optional[Resource] = None
         if simulate:
             self.console.print(Panel("SIMULATION", style="simulation"))
 
@@ -83,7 +83,14 @@ class Rich:
         level: Literal["info", "warn", "error"] = "info",
         sender: Union[Filter, Action, str] = "",
     ):
-        self.console.print(f"({sender}) {level}: {msg}")
+        if not self.prev_res or self.prev_res.rule != res.rule:
+            self.console.rule(f"[rule]:gear: {res.rule}", align="left", style="rule")
+        if not self.prev_res or self.prev_res.basedir != res.basedir:
+            self.console.print(res.basedir, style="location.base")
+        if not self.prev_res or self.prev_res.path != res.path:
+            self.console.print(f"  {res.path}", style="path.base")
+        self.console.print(f"    - ({sender}) {level}: {msg}", style="pipeline.source")
+        self.prev_res = res
 
     def prompt(self, res: Resource, msg: str) -> str:
         ...

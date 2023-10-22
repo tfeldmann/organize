@@ -1,5 +1,6 @@
 import operator
 import re
+from pathlib import Path
 from typing import Callable, ClassVar, Iterable, List, Set, Tuple, Union
 
 from pydantic import field_validator
@@ -23,6 +24,22 @@ OPERATORS = {
 SIZE_REGEX = re.compile(
     r"^(?P<op>[<>=]*)(?P<num>(\d*\.)?\d+)(?P<unit>[kmgtpezy]?i?)b?$"
 )
+
+
+def read_file_size(path: Path) -> int:
+    return path.stat().st_size
+
+
+def read_dir_size(path: Path) -> int:
+    return sum(f.stat().st_size for f in res.path.glob("**/*") if f.is_file())
+
+
+def read_resource_size(res: Resource) -> int:
+    if res.is_file():
+        return read_file_size(res.path)
+    if res.is_dir():
+        return read_dir_size(res.path)
+    raise ValueError("Unknown file type")
 
 
 def create_constraints(inp: str) -> Set[Tuple[Callable[[int, int], bool], int]]:
@@ -138,7 +155,7 @@ class Size:
         return all(op(filesize, c_size) for op, c_size in self._constraints)
 
     def pipeline(self, res: Resource, output: Output) -> bool:
-        bytes = res.size()
+        bytes = read_resource_size(res=res)
         res.vars[self.filter_config.name] = {
             "bytes": bytes,
             "traditional": traditional(bytes),
