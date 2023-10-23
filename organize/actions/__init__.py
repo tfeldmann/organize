@@ -1,4 +1,4 @@
-# from .confirm import Confirm
+from .confirm import Confirm
 from .copy import Copy
 from .delete import Delete
 from .echo import Echo
@@ -13,7 +13,7 @@ from .trash import Trash
 from .write import Write
 
 ALL = (
-    #     Confirm,
+    Confirm,
     Copy,
     Delete,
     Echo,

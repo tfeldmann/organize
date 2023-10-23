@@ -1,30 +1,33 @@
-from typing_extensions import Literal
+from typing import ClassVar
 
-from organize import console
+from pydantic.dataclasses import dataclass
+
+from organize.action import ActionConfig
+from organize.output import Output
+from organize.resource import Resource
 from organize.template import Template
 
-from .action import Action
 
-
-class Confirm(Action):
+@dataclass
+class Confirm:
 
     """Ask for confirmation before continuing."""
 
-    name: Literal["confirm"] = "confirm"
     msg: str = "Continue?"
     default: bool = True
 
-    _msg: Template
+    action_config: ClassVar = ActionConfig(
+        name="confirm",
+        standalone=True,
+        files=True,
+        dirs=True,
+    )
 
-    class ParseConfig:
-        accepts_positional_arg = "msg"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __post_init__(self):
         self._msg = Template.from_string(self.msg)
 
-    def pipeline(self, args: dict, simulate: bool):
-        msg = self._msg.render(**args)
-        result = console.pipeline_confirm(self.name, msg, default=self.default)
+    def pipeline(self, res: Resource, output: Output, simulate: bool):
+        msg = self._msg.render(**res.dict())
+        result = output.confirm(res=res, msg=msg, sender=self, default=self.default)
         if not result:
             raise StopIteration("Aborted")

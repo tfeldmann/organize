@@ -22,9 +22,6 @@ class Output(Protocol):
     ):
         ...
 
-    def prompt(self, res: Resource, msg: str) -> str:
-        ...
-
     def confirm(self, res: Resource, msg: str) -> bool:
         ...
 
