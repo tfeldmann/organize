@@ -11,6 +11,7 @@ from .location import Location
 from .output import Output
 from .registry import action_by_name, filter_by_name
 from .resource import Resource
+from .validators import flatten
 
 
 def action_from_dict(d):
@@ -72,8 +73,7 @@ class Rule:
     def validate_locations(cls, locations):
         if locations is None:
             raise ValueError("Location cannot be empty")
-        if not isinstance(locations, list):
-            locations = [locations]
+        locations = flatten(locations)
         result = []
         for x in locations:
             if isinstance(x, str):
@@ -84,6 +84,7 @@ class Rule:
     @field_validator("filters", mode="before")
     def validate_filters(cls, filters):
         result = []
+        filters = flatten(filters)
         for x in filters:
             # make sure "- extension" becomes "- extension:"
             if isinstance(x, str):
@@ -99,6 +100,7 @@ class Rule:
     @field_validator("actions", mode="before")
     def validate_actions(cls, actions):
         result = []
+        actions = flatten(actions)
         for x in actions:
             # make sure "- extension" becomes "- extension:"
             if isinstance(x, str):

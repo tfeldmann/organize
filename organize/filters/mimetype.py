@@ -1,13 +1,13 @@
 import mimetypes
-from typing import List, Union
+from typing import ClassVar, List, Union
 
-from pydantic import Field
-from typing_extensions import Literal
+from pydantic import Field, field_validator
+from pydantic.dataclasses import dataclass
 
-from organize.utils import flatten
-from organize.validators import ensure_list
-
-from .filter import Filter, FilterResult
+from organize.filter import FilterConfig
+from organize.output import Output
+from organize.resource import Resource
+from organize.validators import FlatList
 
 
 def guess_mimetype(path):
@@ -15,7 +15,8 @@ def guess_mimetype(path):
     return type_
 
 
-class MimeType(Filter):
+@dataclass
+class MimeType:
 
     """Filter by MIME type associated with the file extension.
 
@@ -26,7 +27,7 @@ class MimeType(Filter):
     You can see a list of known MIME types on your system by running this oneliner:
 
     ```sh
-    python3 -c "import mimetypes as m; print('\\n'.join(sorted(set(m.common_types.values()) | set(m.types_map.values()))))"
+    python3 -m organize.filters.mimetype
     ```
 
     Args:
@@ -37,16 +38,9 @@ class MimeType(Filter):
     - `{mimetype}`: The MIME type of the file.
     """
 
-    name: Literal["mimetype"] = Field("mimetype", repr=False)
-    mimetypes: Union[List[str], str] = Field(default_factory=list)
+    mimetypes: FlatList[str] = Field(default_factory=list)
 
-    class Config:
-        anystr_lower = True
-
-    class ParseConfig:
-        accepts_positional_arg = "mimetypes"
-
-    _validate_mimetypes = ensure_list("mimetypes")
+    filter_config: ClassVar = FilterConfig(name="mimetype", files=True, dirs=False)
 
     def matches(self, mimetype) -> bool:
         if mimetype is None:
@@ -55,13 +49,13 @@ class MimeType(Filter):
             return True
         return any(mimetype.startswith(x) for x in self.mimetypes)
 
-    def pipeline(self, args: dict) -> FilterResult:
-        fs = args["fs"]
-        fs_path = args["fs_path"]
-        if fs.isdir(fs_path):
-            raise ValueError("Dirs not supported.")
-        mimetype = guess_mimetype(fs_path)
-        return FilterResult(
-            matches=self.matches(mimetype),
-            updates={self.name: mimetype},
-        )
+    def pipeline(self, res: Resource, output: Output) -> bool:
+        mimetype = guess_mimetype(res.path)
+        res.vars[self.filter_config.name] = mimetype
+        return self.matches(mimetype)
+
+
+if __name__ == "__main__":
+    all_types = set(mimetypes.common_types.values()) | set(mimetypes.types_map.values())
+    for t in sorted(all_types):
+        print(t)

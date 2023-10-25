@@ -6,7 +6,7 @@ from pydantic.dataclasses import dataclass
 from organize.filter import FilterConfig
 from organize.output import Output
 from organize.resource import Resource
-from organize.utils import flatten
+from organize.validators import flatten
 
 
 def convert_to_list(v):

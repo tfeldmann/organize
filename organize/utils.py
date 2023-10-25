@@ -47,14 +47,6 @@ def to_args(inp):
     return (flatten(ensure_list(inp)), {})
 
 
-def flatten(arr: List[Any]) -> List[Any]:
-    if arr == []:
-        return []
-    if not isinstance(arr, list):
-        return [arr]
-    return flatten(arr[0]) + flatten(arr[1:])
-
-
 def flattened_string_list(x, case_sensitive=True) -> Sequence[str]:
     x = [str(x) for x in flatten(x)]
     if not case_sensitive:

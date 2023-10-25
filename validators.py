@@ -1,4 +1,4 @@
-from typing import Any, Iterable, List, Mapping, TypeVar
+from typing import Any, Iterable, List, TypeVar
 
 from pydantic.functional_validators import BeforeValidator
 from typing_extensions import Annotated
@@ -6,28 +6,21 @@ from typing_extensions import Annotated
 T = TypeVar("T")
 
 
-def islist(x):
-    return isinstance(x, Iterable) and not isinstance(x, (str, bytes, Mapping))
-
-
 def _flatten(items):
     """Yield items from any nested iterable; see Reference."""
     for x in items:
-        if islist(x):
-            yield from _flatten(x)
+        if isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
+            for sub_x in _flatten(x):
+                yield sub_x
         else:
             yield x
 
 
-def flatten(x: Any):
-    if x is None:
-        return []
-    if not islist(x):
-        x = (x,)
+def ensure_flat(x: Any):
     return list(_flatten(x))
 
 
-FlatList = Annotated[List[T], BeforeValidator(flatten)]
+FlatList = Annotated[List[T], BeforeValidator(ensure_flat)]
 
 if __name__ == "__main__":
     from pydantic.type_adapter import TypeAdapter
@@ -35,4 +28,3 @@ if __name__ == "__main__":
     ta = TypeAdapter(FlatList[int])
     v = ta.validate_python([1, 2, [10, 11, [12, 23]], 3, [4, 5, 6]])
     print(v)
-    print(ta.validate_python(None))

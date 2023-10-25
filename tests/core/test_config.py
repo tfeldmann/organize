@@ -2,10 +2,11 @@ import pytest
 from pydantic import ValidationError
 
 from organize.config import Config
+from organize.rule import Rule
 
 
 def test_basic():
-    Config.from_string(
+    x = Config.from_string(
         """
     rules:
     - locations: '~/'
@@ -26,10 +27,11 @@ def test_basic():
           cmd: 'say {path.stem}'
     """
     )
+    print(x)
 
 
 def test_yaml_ref():
-    Config.from_string(
+    x = Config.from_string(
         """
     media: &media
       - wav
@@ -58,6 +60,7 @@ def test_yaml_ref():
           - trash
     """
     )
+    print(x)
 
 
 def test_error_filter_dict():
@@ -66,11 +69,12 @@ def test_error_filter_dict():
     - locations: '/'
       filters:
         extension: 'jpg'
+        name: test
       actions:
       - trash
     """
     with pytest.raises(ValidationError):
-        Config.from_string(STR)
+        print(Config.from_string(STR))
 
 
 # def test_error_action_dict():
@@ -88,33 +92,18 @@ def test_error_filter_dict():
 #         _ = conf.rules
 
 
-# def test_empty_filters():
-#     conf = """
-#     rules:
-#       - folders: '/'
-#         filters:
-#         actions:
-#           - trash
-#       - folders: '~/'
-#         actions:
-#           - trash
-#     """
-#     assert Config.from_string(conf).rules == [
-#         Rule(
-#             folders=["/"],
-#             filters=[],
-#             actions=[Trash()],
-#             subfolders=False,
-#             system_files=False,
-#         ),
-#         Rule(
-#             folders=["~/"],
-#             filters=[],
-#             actions=[Trash()],
-#             subfolders=False,
-#             system_files=False,
-#         ),
-#     ]
+def test_empty_filters():
+    conf = """
+    rules:
+      - locations: '/'
+        filters:
+        actions:
+          - trash
+      - locations: '~/'
+        actions:
+          - trash
+    """
+    assert Config.from_string(conf)
 
 
 # @pytest.mark.skip
