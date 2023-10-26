@@ -1,11 +1,12 @@
 import collections
+import fnmatch
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import ClassVar, Dict, Union
+from typing import ClassVar, Dict, Optional, Union
 
 import exifread
 import simplematch as sm
-from pydantic import BaseModel, PrivateAttr
+from pydantic import BaseModel
 from rich import print
 
 from organize.filter import FilterConfig
@@ -13,6 +14,7 @@ from organize.output import Output
 from organize.resource import Resource
 
 ExifValue = Union[str, datetime, date, timedelta]
+ExifDict = Dict[str, Union[ExifValue, Dict[str, ExifValue]]]
 
 
 def parse_tag(key: str, value: str) -> ExifValue:
@@ -40,9 +42,7 @@ def parse_tag(key: str, value: str) -> ExifValue:
         return value
 
 
-def parse_and_categorize(
-    tags: Dict[str, str]
-) -> Dict[str, Union[ExifValue, Dict[str, ExifValue]]]:
+def parse_and_categorize(tags: Dict[str, str]) -> ExifDict:
     result = collections.defaultdict(dict)
     for key, value in tags.items():
         if " " in key:
@@ -62,6 +62,24 @@ def read_exif_data(path: Path) -> Dict[str, str]:
     return printable
 
 
+def matches_tags(filter_tags: Dict[str, Optional[str]], data: ExifDict) -> bool:
+    if not data:
+        return False
+    for k, v in filter_tags.items():
+        try:
+            # step into the data dict by dotted notation
+            data_value = data
+            for part in k.split("."):
+                data_value = data_value[part]
+            # if v is None it's enough for the key to exist in the data.
+            # Otherwise we use a glob matcher to check for matches
+            if v is not None and not fnmatch.fnmatch(data_value.lower(), v.lower()):
+                return False
+        except KeyError:
+            return False
+    return True
+
+
 class Exif(BaseModel):
     """Filter by image EXIF data
 
@@ -78,49 +96,30 @@ class Exif(BaseModel):
         - ``{exif.interoperability}`` -- Interoperability information
     """
 
+    filter_tags: Dict
+
     filter_config: ClassVar = FilterConfig(
         name="exif",
         files=True,
         dirs=False,
     )
-    _filter_tags: Dict = PrivateAttr(default_factory=dict)
 
-    def __init__(self, **data):
-        super().__init__()
-        self._filter_tags = data
-
-    # def matches(self, exiftags: dict) -> bool:
-    #     if not exiftags:
-    #         return False
-    #     tags = {k.lower(): v for k, v in exiftags.items()}
-
-    #     # no match if tag has not expected value
-    #     normkey = lambda k: k.replace(".", " ").lower()
-    #     for key, value in self.tags.items():
-    #         key = normkey(key)
-    #         if not (key in tags and sm.match(value.lower(), tags[key].lower())):
-    #             return False
-    #     return True
-
-    def matches(self, data):
-        if not self._filter_tags:
-            return True
-        if not data:
-            return False
-        for key, val in self._filter_tags.items():
-            # TODO not working!!
-            nkey = key.replace(".", " ").lower()
-            if not (
-                key in self._filter_tags and sm.match(val.lower(), data[nkey].lower())
-            ):
-                return False
-        return True
+    def __init__(self, *args, filter_tags: Optional[Dict] = None, **kwargs):
+        # exif filter is used differently from other filters. The **kwargs are not
+        # filter parameters but all belong into the filter_tags dicttionary to filter
+        # for specific exif tags.
+        # *args are tags filtered without a value, like ["gps", "image.model"].
+        params = filter_tags or dict()
+        params.update(kwargs)
+        for arg in args:
+            params[arg] = None
+        super().__init__(filter_tags=params)
 
     def pipeline(self, res: Resource, output: Output) -> bool:
         data = read_exif_data(res.path)
         parsed = parse_and_categorize(data)
         res.vars[self.filter_config.name] = parsed
-        return self.matches(data)
+        return matches_tags(self.filter_tags, parsed)
 
 
 if __name__ == "__main__":
