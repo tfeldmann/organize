@@ -1,20 +1,18 @@
-import logging
 import sys
-from typing import List, Union
+from typing import ClassVar, List
 
 import simplematch as sm
-from pydantic import Field
-from typing_extensions import Literal
+from pydantic.dataclasses import dataclass
 
+from organize.action import ActionConfig
+from organize.output import Output
+from organize.resource import Resource
 from organize.template import Template
-from organize.validators import ensure_list
-
-from .action import Action
-
-logger = logging.getLogger(__name__)
+from organize.validators import FlatList
 
 
-class MacOSTags(Action):
+@dataclass
+class MacOSTags:
 
     """Add macOS tags.
 
@@ -31,33 +29,27 @@ class MacOSTags(Action):
     `orange`.
     """
 
-    name: Literal["macos_tags"] = Field("macos_tags", repr=False)
-    tags: Union[List[str], str]
+    tags: FlatList[str]
 
-    _tags: list
-    _validate_tags = ensure_list("tags")
+    action_config: ClassVar = ActionConfig(
+        name="macos_tags",
+        standalone=False,
+        files=True,
+        dirs=True,
+    )
 
-    class ParseConfig:
-        accepts_positional_arg = "tags"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._tags = [Template.from_string(tag) for tag in self.tags]
-
-    def pipeline(self, args: dict, simulate: bool):
-        fs = args["fs"]
-        fs_path = args["fs_path"]
-        path = fs.getsyspath(fs_path)
-
+    def __post_init__(self):
         if sys.platform != "darwin":
             raise EnvironmentError("The macos_tags action is only available on macOS")
+        self._tags = [Template.from_string(tag) for tag in self.tags]
 
+    def pipeline(self, res: Resource, output: Output, simulate: bool):
         import macos_tags
 
         COLORS = [c.name.lower() for c in macos_tags.Color]
 
         for template in self._tags:
-            tag = template.render(**args)
+            tag = template.render(**res.dict())
             name, color = self._parse_tag(tag)
 
             if color not in COLORS:
@@ -65,13 +57,17 @@ class MacOSTags(Action):
                     "color %s is unknown. (Available: %s)" % (color, " / ".join(COLORS))
                 )
 
-            self.print('Adding tag: "%s" (color: %s)' % (name, color))
+            output.msg(
+                res=res,
+                sender=self,
+                msg=f'Adding tag: "{name}" (color: {color})',
+            )
             if not simulate:
                 _tag = macos_tags.Tag(
                     name=name,
                     color=macos_tags.Color[color.upper()],
                 )  # type: ignore
-                macos_tags.add(_tag, file=str(path))
+                macos_tags.add(_tag, file=str(res.path))
 
     def _parse_tag(self, s):
         """parse a tag definition and return a tuple (name, color)"""
