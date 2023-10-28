@@ -1,4 +1,14 @@
-from organize.utils import deep_merge, deep_merge_inplace
+from organize.utils import ChangeDetector, deep_merge, deep_merge_inplace
+
+
+def test_changedetector():
+    d = ChangeDetector()
+    assert d.changed(1)
+    assert not d.changed(1)
+    assert not d.changed(1)
+    d.reset()
+    assert d.changed(1)
+    assert d.changed(2)
 
 
 def test_merges_dicts():

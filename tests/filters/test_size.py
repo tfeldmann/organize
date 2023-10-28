@@ -1,7 +1,7 @@
 import pytest
 from conftest import make_files, read_files
 
-from organize.config import Config
+from organize import Config
 from organize.filters import Size
 
 

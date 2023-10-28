@@ -11,8 +11,7 @@ from rich.text import Text
 from rich.theme import Theme
 
 from organize.__version__ import __version__
-
-from .changedetector import ChangeDetector
+from organize.utils import ChangeDetector
 
 if TYPE_CHECKING:
     from organize.action import Action
@@ -98,7 +97,7 @@ class Rich:
             self.det_path.reset()
             self.console.print()
             rule_name = f"Rule #{res.rule_nr}"
-            if res.rule.name is not None:
+            if res.rule is not None and res.rule.name is not None:
                 rule_name += f": {res.rule.name}"
             self.console.rule(f"[rule]:gear: {rule_name}", align="left", style="rule")
 

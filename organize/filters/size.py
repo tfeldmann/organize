@@ -1,15 +1,15 @@
 import operator
 import re
 from pathlib import Path
-from typing import Callable, ClassVar, Iterable, List, Set, Tuple, Union
+from typing import Callable, ClassVar, Iterable, Set, Tuple
 
-from pydantic import field_validator
+from pydantic import Field
 from pydantic.dataclasses import dataclass
 
 from organize.filter import FilterConfig
 from organize.output import Output
 from organize.resource import Resource
-from organize.utils import flattened_string_list
+from organize.validators import FlatList
 
 OPERATORS = {
     "<": operator.lt,
@@ -31,7 +31,7 @@ def read_file_size(path: Path) -> int:
 
 
 def read_dir_size(path: Path) -> int:
-    return sum(f.stat().st_size for f in res.path.glob("**/*") if f.is_file())
+    return sum(f.stat().st_size for f in path.glob("**/*") if f.is_file())
 
 
 def read_resource_size(res: Resource) -> int:
@@ -136,15 +136,9 @@ class Size:
     - `{size.decimal}`: (str) Size with unit (powers of 1000, SI prefixes)
     """
 
-    conditions: Union[List[str], str] = ""
+    conditions: FlatList[str] = Field(default_factory=list)
 
     filter_config: ClassVar = FilterConfig(name="size", files=True, dirs=True)
-
-    @field_validator("conditions", mode="before")
-    def ensure_joined_str(cls, value):
-        if not isinstance(value, List):
-            value = [str(value)]
-        return ", ".join(flattened_string_list(list(value)))
 
     def __post_init__(self):
         self._constraints = create_constraints(self.conditions)

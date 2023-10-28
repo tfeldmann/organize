@@ -44,13 +44,18 @@ class RawOutput:
         level: Literal["info", "warn", "error"] = "info",
         sender: str = "",
     ):
+        try:
+            rule = res.rule.name
+        except AttributeError:
+            rule = ""
+        basedir = res.basedir or ""
         self._output(
             Msg(
                 type="MSG",
                 level=level,
                 msg=msg,
-                rule=res.rule.name or "" if res.rule else "",
-                basedir=res.basedir,
+                rule=rule,
+                basedir=basedir,
                 path=str(res.path),
             )
         )

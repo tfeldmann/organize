@@ -1,72 +1,32 @@
-import os
-import re
+import fnmatch
 from copy import deepcopy
-from datetime import datetime
-from typing import Any, List, Sequence, Tuple, Union
-
-import jinja2
-from fs import open_fs
-from fs import path as fspath
-from fs.base import FS
-from fs.memoryfs import MemoryFS
-from jinja2 import nativetypes
+from typing import Any
 
 
-def ensure_list(inp):
-    if not isinstance(inp, list):
-        return [inp]
-    return inp
+class ChangeDetector:
+    def __init__(self):
+        self._prev = None
+        self._ready = False
+
+    def changed(self, value: Any) -> bool:
+        if not self._ready:
+            self._prev = value
+            self._ready = True
+            return True
+        else:
+            changed = value != self._prev
+            self._prev = value
+            return changed
+
+    def reset(self):
+        self._ready = False
 
 
-def ensure_dict(inp):
-    if isinstance(inp, dict):
-        return inp
-    elif isinstance(inp, str):
-        return {inp: {}}
-    raise ValueError("Cannot ensure dict: %s" % inp)
-
-
-def to_args(inp):
-    """Convert a argument into a (args, kwargs) tuple.
-
-    >>> to_args(None)
-    ([], {})
-    >>> to_args('test')
-    (['test'], {})
-    >>> to_args([1, 2, 3])
-    ([1, 2, 3], {})
-    >>> to_args({'a': {'b': 'c'}})
-    ([], {'a': {'b': 'c'}})
-    >>> to_args([[1, 2, [3, 4], [5, 6]]])
-    ([1, 2, 3, 4, 5, 6], {})
-    """
-    if inp is None:
-        return ([], {})
-    if isinstance(inp, dict):
-        return ([], inp)
-    return (flatten(ensure_list(inp)), {})
-
-
-def flattened_string_list(x, case_sensitive=True) -> Sequence[str]:
-    x = [str(x) for x in flatten(x)]
-    if not case_sensitive:
-        x = [x.lower() for x in x]
-    return x
-
-
-def flatten_all_lists_in_dict(obj):
-    """
-    >>> flatten_all_lists_in_dict({1: [[2], [3, {5: [5, 6]}]]})
-    {1: [2, 3, {5: [5, 6]}]}
-    """
-    if isinstance(obj, dict):
-        for key, value in obj.items():
-            obj[key] = flatten_all_lists_in_dict(value)
-        return obj
-    elif isinstance(obj, list):
-        return [flatten_all_lists_in_dict(x) for x in flatten(obj)]
+def glob_match(pattern: str, string: str, *, case_sensitive: bool = False):
+    if case_sensitive:
+        return fnmatch.fnmatchcase(string, pattern)
     else:
-        return obj
+        return fnmatch.fnmatch(string.lower(), pattern.lower())
 
 
 def deep_merge(a: dict, b: dict, *, add_keys=True) -> dict:
