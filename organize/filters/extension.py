@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import ClassVar, Set
 
 from pydantic import Field, field_validator
@@ -25,6 +26,15 @@ def normalize_extension(ext: str) -> str:
         return ext.lower()
 
 
+def process(path: Path, extensions: Set[str]):
+    suffix = path.suffix.lstrip(".")
+    if not extensions:
+        return (suffix, True)
+    if not suffix:
+        return (suffix, False)
+    return (suffix, normalize_extension(suffix) in extensions)
+
+
 @dataclass
 class Extension:
     """Filter by file extension
@@ -49,17 +59,12 @@ class Extension:
     @field_validator("extensions", mode="before")
     def normalize_extensions(cls, v):
         as_list = convert_to_list(v)
-        return list(map(normalize_extension, flatten(list(as_list))))
+        return set(map(normalize_extension, flatten(list(as_list))))
 
     def pipeline(self, res: Resource, output: Output) -> bool:
         if res.is_dir():
             raise ValueError("Dirs not supported")
 
-        # suffix is the extension with dot
-        suffix = res.path.suffix.lstrip(".")
+        suffix, match = process(path=res.path, extensions=self.extensions)
         res.vars[self.filter_config.name] = suffix
-        if not self.extensions:
-            return True
-        if not suffix:
-            return False
-        return normalize_extension(suffix) in self.extensions
+        return match

@@ -1,15 +1,15 @@
+from pathlib import Path
 from unittest.mock import call
 
 from conftest import make_files
-from fs import open_fs
-from fs.path import dirname
 
-from organize import core
-from organize.filters import Extension
+from organize import Config
+from organize.filters.extension import Extension, process
+from organize.resource import Resource
 
 
-def test_extension():
-    extension = Extension("JPG", ".gif", "pdf")
+def test_extension(msg_output):
+    extension = Extension(["JPG", ".gif", "pdf"])
     testpathes = [
         ("/somefile.pdf", True),
         ("/home/test/somefile.pdf.jpeg", False),
@@ -17,11 +17,10 @@ def test_extension():
         ("/home/test/txt.GIF", True),
         ("/somefile.pdf", True),
     ]
-    with open_fs("mem://", writeable=True, create=True) as mem:
-        for f, match in testpathes:
-            mem.makedirs(dirname(f), recreate=True)
-            mem.touch(f)
-            assert extension.run(fs=mem, fs_path=f).matches == match
+    for f, match in testpathes:
+        res = Resource(path=Path(f))
+        result = extension.pipeline(res=res, output=msg_output)
+        assert result == match
 
 
 def test_extension_empty():

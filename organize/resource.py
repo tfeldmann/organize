@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class Resource:
-    path: Path
+    path: Optional[Path]
     basedir: Optional[Path] = None
     rule: Optional[Rule] = None
     rule_nr: int = 0
@@ -29,7 +29,7 @@ class Resource:
             basedir=self.basedir,
             location=self.basedir,
             relative_path=self.relative_path,
-            rule=self.rule.name,
+            rule=self.rule.name if self.rule else None,
             env=os.environ,
             now=datetime.now,
             utcnow=datetime.utcnow,

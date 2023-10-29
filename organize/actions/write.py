@@ -67,16 +67,15 @@ class Write:
     def __post_init__(self):
         self._text = Template.from_string(self.text)
         self._path = Template.from_string(self.outfile)
-        self._seen = set()
+        self._known_files = set()
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
         text = self._text.render(**res.dict())
         path = Path(self._path.render(**res.dict()))
 
-        # TODO: is_first write macht nicht, was man denkt! Beim Schreiben in andere Dateien wird nicht geleert
         resolved = path.resolve()
-        if resolved not in self._seen:
-            self._seen.add(resolved)
+        if resolved not in self._known_files:
+            self._known_files.add(resolved)
 
             if not simulate:
                 resolved.parent.mkdir(parents=True, exist_ok=True)
@@ -85,7 +84,7 @@ class Write:
             if resolved.exists() and self.clear_before_first_write:
                 output.msg(res=res, msg=f"Clearing file {path}", sender=self)
                 if not simulate:
-                    resolved.touch()
+                    resolved.open("w")  # clear the file
 
         output.msg(res=res, msg=f'{path}: {self.mode} "{text}"', sender=self)
         if self.newline:

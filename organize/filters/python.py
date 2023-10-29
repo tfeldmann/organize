@@ -72,4 +72,6 @@ class Python:
 
         if isinstance(result, dict):
             res.deep_merge(key=self.filter_config.name, data=result)
+        else:
+            res.vars[self.filter_config.name] = result
         return result not in (False, None)

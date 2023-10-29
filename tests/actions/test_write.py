@@ -84,8 +84,12 @@ def test_write_clear_then_append(fs):
     make_files({"test1.txt": "", "test2.txt": ""}, "loc2")
     make_files(
         {
-            "for-test1.txt": "Previous output",
-            "for-test2.txt": "Other previous output",
+            "test1": {
+                "test1.log": "Previous output",
+            },
+            "test2": {
+                "test2.log": "Other previous output",
+            },
         },
         "out",
     )
@@ -95,7 +99,6 @@ def test_write_clear_then_append(fs):
             -   locations:
                     - "loc1"
                     - "loc2"
-                    - "loc3"
                 actions:
                     - write:
                         text: "FOUND {path}"

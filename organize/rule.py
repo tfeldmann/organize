@@ -160,6 +160,14 @@ class Rule:
         else:
             raise ValueError(f"Unknown filter mode {self.filter_mode}")
 
+        # standalone mode
+        if not self.locations:
+            res = Resource(path=None, rule_nr=rule_nr)
+            for action in self.actions:
+                action.pipeline(res, simulate=simulate, output=output)
+            return
+
+        # normal mode
         for res in self.walk(rule_nr=rule_nr):
             result = filters.pipeline(res, output=output)
             if result:

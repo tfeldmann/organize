@@ -8,6 +8,7 @@
 - Removed hidden (deprecated) CLI option `--config-file`.
 - Lots of new tests and some bugfixes.
 - `exif` filter now supports the simplematch syntax.
+- {now} must be {now()} now.
 
 ## v2.3.0 (2022-07-26)
 

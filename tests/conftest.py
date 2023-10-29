@@ -1,7 +1,22 @@
 from pathlib import Path
 from typing import Dict, List, Union
 
+import pytest
+
+from organize.output import QueueOutput
+
 ORGANIZE_DIR = Path(__file__).parent.parent
+
+
+class MsgOutput(QueueOutput):
+    @property
+    def messages(self):
+        return [x.msg for x in self.queue if x.type == "MSG"]
+
+
+@pytest.fixture
+def msg_output():
+    return MsgOutput()
 
 
 def make_files(structure: Union[Dict, List], path: Union[Path, str] = "."):

@@ -45,7 +45,7 @@ class RawOutput:
         sender: str = "",
     ):
         try:
-            rule = res.rule.name
+            rule = res.rule.name or ""
         except AttributeError:
             rule = ""
         basedir = res.basedir or ""
