@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import ClassVar, Set
+from typing import ClassVar, Set, Tuple
 
 from pydantic import Field, field_validator
 from pydantic.dataclasses import dataclass
@@ -24,15 +24,6 @@ def normalize_extension(ext: str) -> str:
         return ext[1:].lower()
     else:
         return ext.lower()
-
-
-def process(path: Path, extensions: Set[str]):
-    suffix = path.suffix.lstrip(".")
-    if not extensions:
-        return (suffix, True)
-    if not suffix:
-        return (suffix, False)
-    return (suffix, normalize_extension(suffix) in extensions)
 
 
 @dataclass
@@ -61,10 +52,18 @@ class Extension:
         as_list = convert_to_list(v)
         return set(map(normalize_extension, flatten(list(as_list))))
 
+    def suffix_match(self, path: Path) -> Tuple[str, bool]:
+        suffix = path.suffix.lstrip(".")
+        if not self.extensions:
+            return (suffix, True)
+        if not suffix:
+            return (suffix, False)
+        return (suffix, normalize_extension(suffix) in self.extensions)
+
     def pipeline(self, res: Resource, output: Output) -> bool:
         if res.is_dir():
             raise ValueError("Dirs not supported")
 
-        suffix, match = process(path=res.path, extensions=self.extensions)
+        suffix, match = self.suffix_match(path=res.path)
         res.vars[self.filter_config.name] = suffix
         return match
