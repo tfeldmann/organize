@@ -12,6 +12,7 @@ from .output import Output
 from .registry import action_by_name, filter_by_name
 from .resource import Resource
 from .validators import flatten
+from .walker import Walker
 
 
 def action_from_dict(d):
@@ -122,8 +123,6 @@ class Rule:
                 max_depth = None if self.subfolders else 0
             else:
                 max_depth = location.max_depth
-
-            from .walker import Walker
 
             walker = Walker(
                 min_depth=0,
