@@ -38,10 +38,8 @@ def action_by_name(name: str) -> Type[Action]:
         raise ValueError(f'Unknown action: "{name}"') from e
 
 
-# Register filters
+# Register filters and actions
 for x in filters.ALL:
     register_filter(x)
-
-# Register actions
 for x in actions.ALL:
     register_action(x)

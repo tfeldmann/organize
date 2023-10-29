@@ -18,6 +18,7 @@ Template = jinja2.Environment(
     variable_end_string="}",
     autoescape=False,
     finalize=finalize_placeholder,
+    undefined=jinja2.StrictUndefined,
 )
 
 

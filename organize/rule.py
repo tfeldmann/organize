@@ -164,7 +164,10 @@ class Rule:
         if not self.locations:
             res = Resource(path=None, rule_nr=rule_nr)
             for action in self.actions:
-                action.pipeline(res, simulate=simulate, output=output)
+                try:
+                    action.pipeline(res, simulate=simulate, output=output)
+                except StopIteration:
+                    break
             return
 
         # normal mode
@@ -173,7 +176,10 @@ class Rule:
             if result:
                 try:
                     for action in self.actions:
-                        action.pipeline(res, simulate=simulate, output=output)
+                        try:
+                            action.pipeline(res, simulate=simulate, output=output)
+                        except StopIteration:
+                            break
                 except Exception as e:
                     output.msg(res=res, msg=str(e), level="error")
                     logging.exception(e)
