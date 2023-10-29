@@ -2,6 +2,7 @@ import sys
 from typing import ClassVar, List
 
 import simplematch as sm
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.action import ActionConfig
@@ -11,7 +12,7 @@ from organize.template import Template
 from organize.validators import FlatList
 
 
-@dataclass
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class MacOSTags:
 
     """Add macOS tags.

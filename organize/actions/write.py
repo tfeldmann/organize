@@ -4,6 +4,7 @@ import enum
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
 
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.action import ActionConfig
@@ -20,7 +21,7 @@ class Mode(enum.StrEnum):
     OVERWRITE = "overwrite"
 
 
-@dataclass
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Write:
 
     """

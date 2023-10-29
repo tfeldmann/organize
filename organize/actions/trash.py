@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import ClassVar
 
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.action import ActionConfig
@@ -14,7 +15,7 @@ def trash(path: Path):
     send2trash(path)
 
 
-@dataclass
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Trash:
 
     """Move a file or dir into the trash."""

@@ -2,6 +2,7 @@ import hashlib
 from pathlib import Path
 from typing import ClassVar
 
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.filter import FilterConfig
@@ -29,7 +30,7 @@ def hash_first_chunk(path: Path, algo: str, *, chunksize=1024) -> str:
     return h.hexdigest()
 
 
-@dataclass
+@dataclass(config=ConfigDict(extra="forbid"))
 class Hash:
 
     """Calculates the hash of a file.

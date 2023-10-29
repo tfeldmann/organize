@@ -1,7 +1,8 @@
 import mimetypes
-from typing import ClassVar, List, Union
+from typing import ClassVar
 
-from pydantic import Field, field_validator
+from pydantic import Field
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.filter import FilterConfig
@@ -15,7 +16,7 @@ def guess_mimetype(path):
     return type_
 
 
-@dataclass
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class MimeType:
 
     """Filter by MIME type associated with the file extension.

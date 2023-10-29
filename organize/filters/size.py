@@ -1,9 +1,10 @@
 import operator
 import re
 from pathlib import Path
-from typing import Callable, ClassVar, Iterable, Set, Tuple
+from typing import ClassVar, Iterable
 
 from pydantic import Field
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.filter import FilterConfig
@@ -42,7 +43,7 @@ def read_resource_size(res: Resource) -> int:
     raise ValueError("Unknown file type")
 
 
-def create_constraints(inp: str) -> Set[Tuple[Callable[[int, int], bool], int]]:
+def create_constraints(inp: str):
     """
     Given an input string it returns a list of tuples (comparison operator,
     number of bytes).
@@ -51,7 +52,6 @@ def create_constraints(inp: str) -> Set[Tuple[Callable[[int, int], bool], int]]:
     Calculation is in bytes, even if the "b" is lowercase. If an "i" is present
     we calculate base 1024.
     """
-    result = set()  # type: Set[Tuple[Callable[[int, int], bool], int]]
     parts = str(inp).replace(" ", "").lower().split(",")
     for part in parts:
         try:
@@ -64,10 +64,9 @@ def create_constraints(inp: str) -> Set[Tuple[Callable[[int, int], bool], int]]:
                 base = 1024 if unit.endswith("i") else 1000
                 exp = "kmgtpezy".index(unit[0]) + 1 if unit else 0
                 numbytes = num * base**exp
-                result.add((op, numbytes))
+                yield (op, numbytes)
         except (AttributeError, KeyError, IndexError, ValueError, TypeError) as e:
             raise ValueError("Invalid size format: %s" % part) from e
-    return result
 
 
 def satisfies_constraints(size, constraints):
@@ -109,7 +108,7 @@ def decimal(size):
     )
 
 
-@dataclass
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Size:
     """Matches files and folders by size
 
@@ -141,7 +140,10 @@ class Size:
     filter_config: ClassVar = FilterConfig(name="size", files=True, dirs=True)
 
     def __post_init__(self):
-        self._constraints = create_constraints(self.conditions)
+        self._constraints = set()
+        for x in self.conditions:
+            for constraint in create_constraints(x):
+                self._constraints.add(constraint)
 
     def matches(self, filesize: int) -> bool:
         if not self._constraints:

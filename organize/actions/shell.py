@@ -1,6 +1,7 @@
 import subprocess
 from typing import ClassVar
 
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.action import ActionConfig
@@ -8,9 +9,10 @@ from organize.output import Output
 from organize.resource import Resource
 from organize.template import Template
 
-
 # TODO: Terminal waterfall: https://github.com/Textualize/rich/discussions/2985
-@dataclass
+
+
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Shell:
     """
     Executes a shell command

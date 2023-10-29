@@ -2,15 +2,15 @@ import logging
 import re
 from typing import Any, ClassVar
 
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.filter import FilterConfig
 from organize.output import Output
 from organize.resource import Resource
-from organize.utils import deep_merge
 
 
-@dataclass
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class FileContent:
     """Matches file content with the given regular expression
 

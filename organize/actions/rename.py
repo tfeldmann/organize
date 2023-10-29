@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import ClassVar
 
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.action import ActionConfig
@@ -11,14 +11,9 @@ from organize.resource import Resource
 from organize.template import Template
 
 from .common.conflict import ConflictMode, resolve_conflict
-from .common.target_path import prepare_target_path
 
 
-def rename(path: Path, name: str):
-    raise NotImplementedError()
-
-
-@dataclass
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Rename:
 
     """Renames a file.

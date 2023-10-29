@@ -1,15 +1,15 @@
 import textwrap
 from typing import ClassVar, Dict, Optional
 
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.action import ActionConfig
 from organize.output import Output
 from organize.resource import Resource
-from organize.utils import deep_merge
 
 
-@dataclass
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Python:
 
     """Execute python code.

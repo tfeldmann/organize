@@ -11,6 +11,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import ClassVar, Literal, Tuple
 
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.filter import FilterConfig
@@ -64,7 +65,7 @@ def detect_original(
         raise ValueError(f"Unknown original detection method: {method}")
 
 
-@dataclass
+@dataclass(config=ConfigDict(extra="forbid"))
 class Duplicate:
     """A fast duplicate file finder.
 

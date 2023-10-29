@@ -2,15 +2,14 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import ClassVar
+from typing import ClassVar, Optional
 
 from organize.filter import FilterConfig
 
 from .common.timefilter import TimeFilter
 
 
-def read_stat_created(path: Path) -> int:
-    # TODO: Performance: Reorder the commands so the last working one is on top?
+def read_stat_created(path: Path) -> Optional[int]:
     commands = (
         ["stat", "--format=%W", str(path)],  # GNU coreutils
         ["stat", "-f %B", str(path)],  # BSD

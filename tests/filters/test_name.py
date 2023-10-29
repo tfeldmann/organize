@@ -1,5 +1,7 @@
-import fs
+import pytest
+from conftest import make_files, read_files
 
+from organize import Config
 from organize.filters import Name
 
 
@@ -83,27 +85,39 @@ def test_name_list_case_sensitive():
     assert not name.matches("_a5")
 
 
-def test_name_match():
-    with fs.open_fs("mem://") as mem:
-        p = "Invoice_RE1001_2021_01_31"
-        fs_path = p + ".txt"
-        mem.touch(fs_path)
-        fn = Name("Invoice_*_{year:int}_{month}_{day}")
-        assert fn.matches(p)
-        result = fn.run(fs=mem, fs_path=fs_path)
-        assert result.matches
-        assert result.updates == {"name": {"year": 2021, "month": "01", "day": "31"}}
+def test_name_match(fs):
+    filename = "Invoice_RE1001_2021_01_31.txt"
+    make_files([filename], "test")
+    Config.from_string(
+        """
+        rules:
+          - locations: /test
+            filters:
+              - name: "Invoice_*_{year:int}_{month}_{day}"
+            actions:
+              - move: "/test/{name.year}/{name.month}/{name.day}/"
+        """
+    ).execute(simulate=False)
+    assert read_files("test") == {"2021": {"01": {"31": {filename: ""}}}}
 
 
-def test_name_match_case_insensitive():
-    with fs.open_fs("mem://") as mem:
-        p = "UPPER_MiXed_lower"
-        fs_path = p + ".txt"
-        mem.touch(fs_path)
-        case = Name("upper_{m1}_{m2}", case_sensitive=True)
-        icase = Name("upper_{m1}_{m2}", case_sensitive=False)
-        assert icase.matches(p)
-        result = icase.run(fs=mem, fs_path=fs_path)
-        assert result.matches
-        assert result.updates == {"name": {"m1": "MiXed", "m2": "lower"}}
-        assert not case.matches(p)
+def test_name_match_case_insensitive(fs):
+    filename = "UPPER_MiXed_lower.txt"
+    make_files([filename], "test")
+    Config.from_string(
+        """
+        rules:
+          - locations: /test
+            filters:
+              - name: 
+                  match: "upper_{m1}_{m2}"
+                  case_sensitive: true
+              - name: 
+                  match: "upper_{m1}_{m2}"
+                  case_sensitive: false
+            filter_mode: any
+            actions:
+              - move: "/test/{name.m1}/{name.m2}/"
+        """
+    ).execute(simulate=False)
+    assert read_files("test") == {"MiXed": {"lower": {filename: ""}}}

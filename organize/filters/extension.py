@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import ClassVar, Set, Tuple
 
 from pydantic import Field, field_validator
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.filter import FilterConfig
@@ -26,7 +27,7 @@ def normalize_extension(ext: str) -> str:
         return ext.lower()
 
 
-@dataclass
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Extension:
     """Filter by file extension
 

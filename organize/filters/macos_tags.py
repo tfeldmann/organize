@@ -1,7 +1,8 @@
 import sys
-from typing import ClassVar, List, Union
+from typing import ClassVar, List
 
 from pydantic import Field, field_validator
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.filter import FilterConfig
@@ -28,7 +29,7 @@ def matches_tags(filter_tags, file_tags) -> bool:
     return False
 
 
-@dataclass
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class MacOSTags:
     """Filter by macOS tags
 

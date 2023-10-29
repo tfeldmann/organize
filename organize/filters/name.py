@@ -1,6 +1,7 @@
 from typing import Any, ClassVar, List, Union
 
 import simplematch
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.filter import FilterConfig
@@ -8,7 +9,7 @@ from organize.output import Output
 from organize.resource import Resource
 
 
-@dataclass
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Name:
     """Match files and folders by name
 

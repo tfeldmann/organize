@@ -1,5 +1,6 @@
 from typing import ClassVar
 
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.action import ActionConfig
@@ -11,7 +12,7 @@ from .common.conflict import ConflictMode, resolve_conflict
 from .common.target_path import prepare_target_path
 
 
-@dataclass
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Symlink:
 
     """Create a symbolic link.

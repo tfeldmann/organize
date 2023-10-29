@@ -2,6 +2,7 @@ import textwrap
 from typing import ClassVar, Dict, Optional
 
 from pydantic import field_validator
+from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.filter import FilterConfig
@@ -9,7 +10,7 @@ from organize.output import Output
 from organize.resource import Resource
 
 
-@dataclass
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Python:
 
     """Use python code to filter files.
