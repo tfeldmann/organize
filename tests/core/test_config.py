@@ -38,7 +38,7 @@ def test_yaml_ref():
       - png
 
     all_folders: &all
-      - "~"
+      / "~"
       - "/"
 
     rules:
@@ -77,19 +77,18 @@ def test_error_filter_dict():
         print(Config.from_string(STR))
 
 
-# def test_error_action_dict():
-#     conf = Config.from_string(
-#         """
-#     rules:
-#     - folders: '/'
-#       filters:
-#       - extension: 'jpg'
-#       actions:
-#         Trash
-#     """
-#     )
-#     with pytest.raises(Config.ActionsNoListError):
-#         _ = conf.rules
+def test_error_action_dict():
+    config = """
+        rules:
+          - locations: '/'
+            filters:
+              - extension: 'jpg'
+            actions:
+              Trash
+              Echo
+    """
+    with pytest.raises(ValidationError):
+        Config.from_string(config)
 
 
 def test_empty_filters():
@@ -106,63 +105,64 @@ def test_empty_filters():
     assert Config.from_string(conf)
 
 
-# @pytest.mark.skip
-# def test_flatten_filters_and_actions():
-#     config = """
-#     folder_aliases:
-#       Downloads: &downloads ~/Downloads/
-#       Payables_due: &payables_due ~/PayablesDue/
-#       Payables_paid: &payables_paid ~/Accounting/Expenses/
-#       Receivables_due: &receivables_due ~/Receivables/
-#       Receivables_paid: &receivables_paid ~/Accounting/Income/
+def test_flatten_filters_and_actions():
+    config = """
+    folder_aliases:
+      Downloads: &downloads ~/Downloads/
+      Payables_due: &payables_due ~/PayablesDue/
+      Payables_paid: &payables_paid ~/Accounting/Expenses/
+      Receivables_due: &receivables_due ~/Receivables/
+      Receivables_paid: &receivables_paid ~/Accounting/Income/
 
-#     defaults:
-#       filters: &default_filters
-#         - extension: pdf
-#         - filecontent: '(?P<date>...)'
-#       actions: &default_actions
-#         - echo: 'Dated: {filecontent.date}'
-#         - echo: 'Stem of filename: {filecontent.stem}'
-#       post_actions: &default_sorting
-#         - rename: '{python.timestamp}-{filecontent.stem}.{extension.lower}'
-#         - move: '{path.parent}/{python.quarter}/'
+    defaults:
+      filters: &default_filters
+        - extension: pdf
+        - filecontent: '(?P<date>...)'
+      actions: &default_actions
+        - echo: 'Dated: {filecontent.date}'
+        - echo: 'Stem of filename: {filecontent.stem}'
+      post_actions: &default_sorting
+        - rename: '{python.timestamp}-{filecontent.stem}.{extension.lower}'
+        - move: '{path.parent}/{python.quarter}/'
 
-#     rules:
-#       - folders: *downloads
-#         filters:
-#           - *default_filters
-#           - filecontent: 'Due Date' # regex to id as payable
-#           - filecontent: '(?P<stem>...)' # regex to extract supplier
-#         actions:
-#           - *default_actions
-#           - move: *payables_due
-#           - *default_sorting
+    rules:
+      - locations: *downloads
+        filters:
+          - *default_filters
+          - filecontent: 'Due Date' # regex to id as payable
+          - filecontent: '(?P<stem>...)' # regex to extract supplier
+        actions:
+          - *default_actions
+          - move: *payables_due
+          - *default_sorting
 
-#       - folders: *downloads
-#         filters:
-#           - *default_filters
-#           - filecontent: 'Account: 000000000' # regex to id as receivables due
-#           - filecontent: '(?P<stem>...)' # regex to extract customer
-#         actions:
-#           - *default_actions
-#           - move: *receivables_due
-#           - *default_sorting
+      - locations: *downloads
+        filters:
+          - *default_filters
+          - filecontent: 'Account: 000000000' # regex to id as receivables due
+          - filecontent: '(?P<stem>...)' # regex to extract customer
+        actions:
+          - *default_actions
+          - move: *receivables_due
+          - *default_sorting
 
-#       - folders: *downloads
-#         filters:
-#           - *default_filters
-#           - filecontent: 'PAID' # regex to id as receivables paid
-#           - filecontent: '(?P<stem>...)' # regex to extract customer
-#           - filecontent: '(?P<paid>...)' # regex to extract date paid
-#           - filename:
-#               startswith: 2020
-#         actions:
-#           - *default_actions
-#           - move: *receivables_paid
-#           - *default_sorting
-#           - rename: '{filecontent.paid}_{filecontent.stem}.{extension}'
-#     """
-#     conf = Config.from_string(config)
+      - locations: *downloads
+        filters:
+          - *default_filters
+          - filecontent: 'PAID' # regex to id as receivables paid
+          - filecontent: '(?P<stem>...)' # regex to extract customer
+          - filecontent: '(?P<paid>...)' # regex to extract date paid
+          - name:
+              startswith: 2020
+        actions:
+          - *default_actions
+          - move: *receivables_paid
+          - *default_sorting
+          - rename: '{filecontent.paid}_{filecontent.stem}.{extension}'
+    """
+    Config.from_string(config)
+
+
 #     assert conf.rules == [
 #         Rule(
 #             folders=["~/Downloads/"],

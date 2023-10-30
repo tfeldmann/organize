@@ -19,7 +19,7 @@ def register_filter(filter: Type[Filter], force: bool = False):
 
 def filter_by_name(name: str) -> Type[Filter]:
     try:
-        return FILTERS[name]
+        return FILTERS[name.lower()]
     except KeyError as e:
         raise ValueError(f'Unknown filter: "{name}"') from e
 
@@ -33,7 +33,7 @@ def register_action(action: Type[Action], force: bool = False):
 
 def action_by_name(name: str) -> Type[Action]:
     try:
-        return ACTIONS[name]
+        return ACTIONS[name.lower()]
     except KeyError as e:
         raise ValueError(f'Unknown action: "{name}"') from e
 

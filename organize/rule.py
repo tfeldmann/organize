@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Literal, Optional, Set, Union
 
-from pydantic import ConfigDict, Field, field_validator
+from pydantic import ConfigDict, Field, field_validator, model_validator
 from pydantic.dataclasses import dataclass
 
 from .action import Action
@@ -113,6 +113,51 @@ class Rule:
             else:
                 result.append(x)
         return result
+
+    @model_validator(mode="after")
+    def check_target_support(self) -> "Rule":
+        # standalone mode
+        if not self.locations:
+            if self.filters:
+                raise ValueError("Filters are present but no locations are given!")
+            for action in self.actions:
+                if not action.action_config.standalone:
+                    raise ValueError(
+                        f'Action "{action.action_config.name}" does not support '
+                        "standalone mode (no rule.locations specified)."
+                    )
+        # targets dirs
+        if self.targets == "dirs":
+            for filter in self.filters:
+                if not filter.filter_config.dirs:
+                    raise ValueError(
+                        f'Filter "{filter.filter_config.name}" does not support '
+                        "folders (targets: dirs)"
+                    )
+            for action in self.actions:
+                if not action.action_config.dirs:
+                    raise ValueError(
+                        f'Action "{action.action_config.name}" does not support '
+                        "folders (targets: dirs)"
+                    )
+        # targets files
+        elif self.targets == "files":
+            for filter in self.filters:
+                if not filter.filter_config.files:
+                    raise ValueError(
+                        f'Filter "{filter.filter_config.name}" does not support '
+                        "files (targets: files)"
+                    )
+            for action in self.actions:
+                if not action.action_config.files:
+                    raise ValueError(
+                        f'Action "{action.action_config.name}" does not support '
+                        "files (targets: files)"
+                    )
+        else:
+            raise ValueError(f"Unknown target: {self.targets}")
+
+        return self
 
     def walk(self, working_dir: Union[Path, str] = ".", rule_nr: int = 0):
         for location in self.locations:
