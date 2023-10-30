@@ -14,7 +14,7 @@ def register_filter(filter: Type[Filter], force: bool = False):
     name = filter.filter_config.name
     if not force and name in FILTERS:
         raise ValueError(f'"{name}" is already registered for filter {FILTERS[name]}')
-    FILTERS[name] = filter
+    FILTERS[name.lower()] = filter
 
 
 def filter_by_name(name: str) -> Type[Filter]:
@@ -28,7 +28,7 @@ def register_action(action: Type[Action], force: bool = False):
     name = action.action_config.name
     if not force and name in ACTIONS:
         raise ValueError(f'"{name}" is already registered for action {ACTIONS[name]}')
-    ACTIONS[name] = action
+    ACTIONS[name.lower()] = action
 
 
 def action_by_name(name: str) -> Type[Action]:
