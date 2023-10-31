@@ -48,11 +48,10 @@ rules:
         ignore_errors: ...
         filter: ...
         filter_dirs: ...
-        filesystem: ...
 ```
 
 **path** (`str`)<br>
-Path to a local folder or a [Filesystem URL](#filesystems).
+Path to a local folder
 
 **max_depth** (`int` or `null`)<br>
 Maximum directory depth to search.
@@ -192,7 +191,6 @@ rules:
       - echo: "Found file! Size: {size.decimal}"
       - copy:
           dest: "{relative_path}"
-          filesystem: zip:///Users/thomas/Desktop/ftpfiles.zip
 ```
 
 !!! note

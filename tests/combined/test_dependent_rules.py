@@ -14,12 +14,12 @@ def test_dependent_rules(fs):
     Config.from_string(
         """
     rules:
-    - locations: "."
+    - locations: /test
       filters:
         - name: test
       actions:
-        - copy: newfolder/test.pdf
-    - locations: "newfolder"
+        - copy: /test/newfolder/
+    - locations: /test/newfolder
       filters:
         - name: test
       actions:
