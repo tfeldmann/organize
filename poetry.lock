@@ -1571,13 +1571,13 @@ testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (
 
 [[package]]
 name = "simplematch"
-version = "1.3"
+version = "1.4"
 description = "Minimal, super readable string pattern matching."
 optional = false
-python-versions = ">=3.6,<4.0"
+python-versions = ">=3.8,<4.0"
 files = [
-    {file = "simplematch-1.3-py3-none-any.whl", hash = "sha256:be1d9a7e5055aaf9b35d16f565d6fc198d03e2b5804e954557e1c972d2f868f9"},
-    {file = "simplematch-1.3.tar.gz", hash = "sha256:ed1d17d842799ee2222de1ea5f7fc3b4b1317464852214dc7dd197c1332a9f3c"},
+    {file = "simplematch-1.4-py3-none-any.whl", hash = "sha256:e7b898e174bc11c3bddc1b1ee36a9d70dd96037295837a879195052c92107237"},
+    {file = "simplematch-1.4.tar.gz", hash = "sha256:55a77278b3d0686cb38e3ffe5a326a5f59c2995f1ba1fa1a4f68872c17caf4cb"},
 ]
 
 [[package]]
