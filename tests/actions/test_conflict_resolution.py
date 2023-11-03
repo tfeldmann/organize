@@ -3,10 +3,7 @@ from pathlib import Path
 import pytest
 from conftest import make_files, read_files
 
-from organize.actions.common.conflict import (
-    next_free_name,
-    resolve_conflict,
-)
+from organize.actions.common.conflict import next_free_name, resolve_conflict
 from organize.output import RawOutput
 from organize.resource import Resource
 from organize.template import Template

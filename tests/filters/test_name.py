@@ -109,10 +109,10 @@ def test_name_match_case_insensitive(fs):
         rules:
           - locations: /test
             filters:
-              - name: 
+              - name:
                   match: "upper_{m1}_{m2}"
                   case_sensitive: true
-              - name: 
+              - name:
                   match: "upper_{m1}_{m2}"
                   case_sensitive: false
             filter_mode: any
