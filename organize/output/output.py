@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING, Literal, Optional, Protocol, Union
 
 if TYPE_CHECKING:
@@ -10,6 +9,10 @@ if TYPE_CHECKING:
 
 
 class Output(Protocol):
+    """
+    The protocol all of organize's outputs must adhere to.
+    """
+
     def start(self, simulate: bool, config_path: Optional[str] = None):
         ...
 
@@ -27,7 +30,3 @@ class Output(Protocol):
 
     def end(self, success_count: int, error_count: int):
         ...
-
-
-def highlight_path(path: Path, base_style: str, item_style: str):
-    return

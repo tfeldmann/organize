@@ -16,7 +16,7 @@ class MsgOutput(QueueOutput):
 
 @pytest.fixture
 def msg_output():
-    return MsgOutput()
+    yield MsgOutput()
 
 
 def make_files(structure: Union[Dict, List], path: Union[Path, str] = "."):

@@ -4,7 +4,7 @@ import pytest
 from conftest import make_files, read_files
 
 from organize.actions.common.conflict import next_free_name, resolve_conflict
-from organize.output import RawOutput
+from organize.output import JSONL
 from organize.resource import Resource
 from organize.template import Template
 
@@ -76,7 +76,7 @@ def test_resolve_overwrite_conflict(fs, mode, result, files):
         },
         "test",
     )
-    output = RawOutput()
+    output = JSONL()
     skip_action, use_dst = resolve_conflict(
         dst=Path("test/other.txt"),
         res=Resource(path=Path("test/file.txt")),
@@ -97,7 +97,7 @@ def test_conflicting_folders(fs):
         rename_template=Template.from_string("{name} {counter}{extension}"),
         conflict_mode="rename_new",
         simulate=False,
-        output=RawOutput(),
+        output=JSONL(),
     )
     assert not result.skip_action
     assert result.use_dst == Path("/test/dir1/sub1 2")

@@ -63,32 +63,35 @@ class Confirm(RichConfirm):
 
 
 class Rich:
-    def __init__(self):
-        theme = Theme(
-            {
-                "info": "dim cyan",
-                "warning": "yellow",
-                "error": "bold red",
-                "simulation": "bold green",
-                "status": "bold green",
-                "rule": "bold cyan",
-                "location.base": "green",
-                "location.main": "bold green",
-                "path.base": "dim green",
-                "path.main": "green",
-                "pipeline.source": "cyan",
-                "pipeline.msg": "",
-                "pipeline.error": "bold red",
-                "pipeline.prompt": "bold yellow",
-                "summary.done": "bold green",
-                "summary.fail": "red",
-            }
-        )
+    def __init__(self, theme: Optional[Theme] = None):
+        if theme is None:
+            theme = Theme(
+                {
+                    "info": "dim cyan",
+                    "warning": "yellow",
+                    "error": "bold red",
+                    "simulation": "bold green",
+                    "status": "bold green",
+                    "rule": "bold cyan",
+                    "location.base": "green",
+                    "location.main": "bold green",
+                    "path.base": "dim green",
+                    "path.main": "green",
+                    "pipeline.source": "cyan",
+                    "pipeline.msg": "",
+                    "pipeline.error": "bold red",
+                    "pipeline.prompt": "bold yellow",
+                    "summary.done": "bold green",
+                    "summary.fail": "red",
+                }
+            )
         self.console = Console(theme=theme, highlight=False)
+
         self.status = Status("", console=self.console)
         self.det_rule = ChangeDetector()
         self.det_location = ChangeDetector()
         self.det_path = ChangeDetector()
+        self.simulate = False
 
     def show_resource(self, res: Resource):
         # rule changed
@@ -125,10 +128,11 @@ class Rich:
         self.det_location.reset()
         self.det_path.reset()
 
-        if simulate:
+        self.simulate = simulate
+        if self.simulate:
             self.console.print(Panel("SIMULATION", style="simulation"))
 
-        self.console.print(f"organize {__version__}")
+        self.console.print(f"organize v{__version__}")
         if config_path:
             self.console.print(f'Config: "{config_path}"')
 
@@ -171,3 +175,5 @@ class Rich:
 
     def end(self, success_count: int, error_count: int):
         self.status.stop()
+        if self.simulate:
+            self.console.print(Panel("SIMULATION", style="simulation"))

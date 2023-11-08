@@ -1,7 +1,7 @@
-from .raw import Event, RawOutput
+from .jsonl import JSONL, EventType
 
 
-class QueueOutput(RawOutput):
+class QueueOutput(JSONL):
     def __init__(self):
         self.queue = []
 
@@ -9,8 +9,8 @@ class QueueOutput(RawOutput):
         self.queue.clear()
         super().start(*args, **kwargs)
 
-    def _output(self, item: Event):
-        self.queue.append(item)
+    def emit_event(self, event: EventType):
+        self.queue.append(event)
 
     @property
     def messages(self):
