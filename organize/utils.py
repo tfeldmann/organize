@@ -1,6 +1,8 @@
 import fnmatch
+import os
 from copy import deepcopy
-from typing import Any
+from pathlib import Path
+from typing import Any, Union
 
 
 class ChangeDetector:
@@ -20,6 +22,10 @@ class ChangeDetector:
 
     def reset(self):
         self._ready = False
+
+
+def expandvars(path: Union[str, Path]) -> Path:
+    return Path(os.path.expandvars(path)).expanduser()
 
 
 def glob_match(pattern: str, string: str, *, case_sensitive: bool = False):

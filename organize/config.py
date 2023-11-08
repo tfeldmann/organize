@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import textwrap
-from typing import List, Union
+from pathlib import Path
+from typing import List, Optional, Union
 
 import yaml
 from pydantic import ConfigDict
@@ -51,11 +52,19 @@ def should_execute(rule_tags, tags, skip_tags):
 class Config:
     rules: List[Rule]
 
+    _config_path: Optional[Path] = None
+
     @classmethod
     def from_string(cls, config: str):
         dedented = textwrap.dedent(config)
         as_dict = yaml.load(dedented, Loader=yaml.SafeLoader)
         return cls(**as_dict)
+
+    @classmethod
+    def from_path(cls, config_path: Path):
+        inst = cls.from_string(config_path.read_text())
+        inst._config_path = config_path
+        return inst
 
     def execute(
         self,
@@ -65,10 +74,14 @@ class Config:
         skip_tags=set(),
         working_dir: Union[str, None] = ".",
     ):
-        output.start(simulate=simulate, config_path=None)
+        output.start(simulate=simulate, config_path=self._config_path)
         try:
             for rule_nr, rule in enumerate(self.rules):
-                if should_execute(rule_tags=rule.tags, tags=tags, skip_tags=skip_tags):
+                if should_execute(
+                    rule_tags=rule.tags,
+                    tags=tags,
+                    skip_tags=skip_tags,
+                ):
                     rule.execute(
                         simulate=simulate,
                         output=output,

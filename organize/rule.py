@@ -11,6 +11,7 @@ from .location import Location
 from .output import Output
 from .registry import action_by_name, filter_by_name
 from .resource import Resource
+from .utils import expandvars
 from .validators import flatten
 from .walker import Walker
 
@@ -115,7 +116,7 @@ class Rule:
         return result
 
     @model_validator(mode="after")
-    def check_target_support(self) -> "Rule":
+    def validate_target_support(self) -> "Rule":
         # standalone mode
         if not self.locations:
             if self.filters:
@@ -161,7 +162,7 @@ class Rule:
 
     def walk(self, working_dir: Union[Path, str] = ".", rule_nr: int = 0):
         for location in self.locations:
-            # instantiate the fs walker
+            # instantiate the filesystem walker
             exclude_files = location.system_exclude_files + location.exclude_files
             exclude_dirs = location.system_exclude_dirs + location.exclude_dirs
             if location.max_depth == "inherit":
@@ -184,17 +185,32 @@ class Rule:
                 "files": walker.files,
                 "dirs": walker.dirs,
             }
-            walk_func = _walk_funcs[self.targets]
-
-            for path in walk_func(location.path):
+            expanded_path = expandvars(location.path)
+            for path in _walk_funcs[self.targets](expanded_path):
                 yield Resource(
                     path=Path(path),
-                    basedir=location.path,
+                    basedir=expanded_path,
                     rule=self,
                     rule_nr=rule_nr,
                 )
 
     def execute(self, *, simulate: bool, output: Output, rule_nr: int = 0):
+        if not self.enabled:
+            return
+
+        def action_pipeline(res: Resource):
+            for action in self.actions:
+                try:
+                    action.pipeline(res, simulate=simulate, output=output)
+                except StopIteration:
+                    break
+
+        # standalone mode
+        if not self.locations:
+            res = Resource(path=None, rule_nr=rule_nr)
+            action_pipeline(res=res)
+            return
+
         if self.filter_mode == "all":
             filters = All(*self.filters)
         elif self.filter_mode == "any":
@@ -204,26 +220,12 @@ class Rule:
         else:
             raise ValueError(f"Unknown filter mode {self.filter_mode}")
 
-        # standalone mode
-        if not self.locations:
-            res = Resource(path=None, rule_nr=rule_nr)
-            for action in self.actions:
-                try:
-                    action.pipeline(res, simulate=simulate, output=output)
-                except StopIteration:
-                    break
-            return
-
         # normal mode
         for res in self.walk(rule_nr=rule_nr):
             result = filters.pipeline(res, output=output)
             if result:
                 try:
-                    for action in self.actions:
-                        try:
-                            action.pipeline(res, simulate=simulate, output=output)
-                        except StopIteration:
-                            break
+                    action_pipeline(res=res)
                 except Exception as e:
                     output.msg(res=res, msg=str(e), level="error")
                     logging.exception(e)
