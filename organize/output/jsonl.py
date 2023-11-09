@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING, Literal, Optional, Union
 
 from pydantic import BaseModel
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
 class Start(BaseModel):
     type: Literal["START"] = "START"
     simulate: bool
-    config_path: Optional[str] = None
+    config_path: Optional[Path] = None
 
 
 class Msg(BaseModel):
@@ -30,7 +31,7 @@ EventType = Union[Start, Msg]
 
 
 class JSONL:
-    def start(self, simulate: bool, config_path: Optional[str] = None):
+    def start(self, simulate: bool, config_path: Optional[Path] = None):
         self.emit_event(
             Start(
                 type="START",

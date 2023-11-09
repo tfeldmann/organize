@@ -62,7 +62,7 @@ class Confirm(RichConfirm):
         )
 
 
-class Rich:
+class Default:
     def __init__(self, theme: Optional[Theme] = None):
         if theme is None:
             theme = Theme(

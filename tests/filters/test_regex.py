@@ -6,7 +6,7 @@ from pyfakefs.fake_filesystem import FakeFilesystem
 
 from organize import Config
 from organize.filters import Regex
-from organize.output import Rich
+from organize.output import Default
 from organize.resource import Resource
 
 TESTDATA = []
@@ -33,7 +33,7 @@ def test_regex_return(path, valid, test_result):
     assert bool(regex.matches(path)) == valid
     res = Resource(path=Path(path))
     if valid:
-        regex.pipeline(res=res, output=Rich)
+        regex.pipeline(res=res, output=Default)
         assert res.vars == {"regex": {"the_number": test_result}}
 
 

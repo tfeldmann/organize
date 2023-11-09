@@ -8,8 +8,8 @@ import yaml
 from pydantic import ConfigDict
 from pydantic.dataclasses import dataclass
 
+from organize.output import Default as RichOutput
 from organize.output import Output
-from organize.output import Rich as RichOutput
 
 from .rule import Rule
 
