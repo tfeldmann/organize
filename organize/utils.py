@@ -20,7 +20,7 @@ class ChangeDetector:
             self._prev = value
             return changed
 
-    def reset(self):
+    def reset(self) -> None:
         self._ready = False
 
 

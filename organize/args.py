@@ -4,28 +4,33 @@ organize - The file management automation tool.
 Usage:
   organize run [options] [<config>]
   organize sim [options] [<config>]
-  organize edit [<config>]
-  organize check [--verbose]
-  organize reveal [--path]
+  organize config (init|edit|check|debug|path|reveal) [<config>]
   organize docs
   organize --version
-  organize (-h | --help)
+  organize --help
 
 Commands:
-  run       Organize your files.
-  sim       Simulate organizing your files.
-  edit      Edit the config file.
-  check     Check config file validity.
-  reveal    Reveal the config file.
-  docs      Open the documentation.
+  run        Organize your files.
+  sim        Simulate organizing your files.
+  config     Do something with your config file:
+    init       Creates a default config.
+    edit       Edit the config file with $EDITOR
+    check      Check config file validity
+    debug      Shows the raw config parsing steps.
+    path       Print the full path to the config file
+    reveal     Reveal the config file in your file manager.
+  docs       Open the documentation.
 
 Options:
   <config>                        A config name or path to a config file
   -w --working-dir <dir>          The working directory
-  -f --format (default|JSONL)     The output format [Default: default]
+  -f --format (default|jsonl)     The output format [Default: default]
   --tags <tags>                   tags to run (eg. "initial,release")
   --skip-tags <tags>              tags to skip
+  -h --help                       Show this help page.
 """
+import os
+import textwrap
 from functools import partial
 from pathlib import Path
 from typing import Literal, Optional
@@ -33,7 +38,6 @@ from typing import Literal, Optional
 from __version__ import __version__
 from docopt import docopt
 from pydantic import BaseModel, Field
-from rich import print
 
 from organize import Config
 from organize.find_config import ConfigNotFound, find_config
@@ -43,21 +47,37 @@ DOCS_RTD = "https://organize.readthedocs.io"
 DOCS_GHPAGES = "https://tfeldmann.github.io/organize/"
 
 
-class CliArgs(BaseModel):
+class CliArgs(BaseModel, extra="forbid"):
+    # commands
     run: bool
     sim: bool
-    edit: bool
-    check: bool
-    reveal: bool
+    config: bool
     docs: bool
 
-    config: Optional[str] = Field(..., alias="<config>")
+    # config subcommands
+    init: bool
+    edit: bool
+    check: bool
+    debug: bool
+    path: bool
+    reveal: bool
+
+    # run / sim options
+    config_name: Optional[str] = Field(..., alias="<config>")
     working_dir: Optional[Path] = Field(..., alias="--working-dir")
     format: Literal["default", "jsonl"] = Field("default", alias="--format")
     tags: Optional[str] = Field("", alias="--tags")
     skip_tags: Optional[str] = Field("", alias="--skip-tags")
-    verbose: bool = Field(..., alias="--verbose")
-    path: bool = Field(..., alias="--path")
+
+    # docopt options
+    version: bool = Field(..., alias="--version")
+    help: bool = Field(..., alias="--help")
+
+
+def os_open(uri: str):
+    import webbrowser
+
+    webbrowser.open(uri)
 
 
 def execute(
@@ -69,28 +89,73 @@ def execute(
     simulate: bool,
 ):
     output = JSONL() if format == "jsonl" else Default()
-    try:
-        config_path = find_config(config)
-    except ConfigNotFound as e:
-        print(e)
-        return
+    config_path = find_config(name_or_path=config)
     Config.from_path(config_path).execute(simulate=simulate, output=output)
 
 
-def edit(config: str):
-    pass
+def config_init(config: str):
+    try:
+        config_path = find_config(config)
+        raise FileExistsError(f'Config "{config_path} already exists.')
+    except ConfigNotFound as e:
+        DEFAULT = textwrap.dedent(
+            f"""\
+            # organize configuration file
+            # {DOCS_RTD}
+
+            rules:
+              - locations:
+                filters:
+                actions:
+                - echo: "Hello, World!"
+            """
+        )
+        e.init_path.write_text(DEFAULT)
+        print(f'Config created at "{e.init_path}"')
 
 
-def check(verbose: bool):
-    pass
+def config_edit(config: str):
+    config_path = find_config(config)
+    editor = os.getenv("EDITOR")
+    if editor:
+        os.system(f'{editor} "{config_path}"')
+    else:
+        os_open(config_path.as_uri())
 
 
-def reveal(path: bool):
-    pass
+def config_check(config: str):
+    config_path = find_config(config)
+    Config.from_path(config_path=config_path)
+    print(f'No problems found in "{config_path}".')
+
+
+def config_debug(config: str):
+    from rich.pretty import pprint
+
+    config_path = find_config(config)
+
+    pprint(
+        Config.from_path(config_path=config_path),
+        expand_all=True,
+        indent_guides=False,
+    )
+
+
+def config_path(config: str):
+    config_path = find_config(name_or_path=config)
+    if config_path:
+        print(f"{config_path}")
+
+
+def config_reveal(config: str):
+    config_path = find_config(name_or_path=config)
+    if config_path:
+        os_open(config_path.parent.as_uri())
 
 
 def docs():
-    pass
+    print(f'Opening "{DOCS_RTD}"')
+    os_open(uri=DOCS_RTD)
 
 
 def cli():
@@ -103,7 +168,7 @@ def cli():
 
     _execute = partial(
         execute,
-        config=args.config,
+        config=args.config_name,
         working_dir=args.working_dir,
         format=args.format,
         tags=args.tags,
@@ -113,12 +178,19 @@ def cli():
         _execute(simulate=False)
     elif args.sim:
         _execute(simulate=True)
-    elif args.edit:
-        edit(config=args.config)
-    elif args.check:
-        check(verbose=args.verbose)
-    elif args.reveal:
-        reveal(path=args.path)
+    elif args.config:
+        if args.init:
+            config_init(config=args.config_name)
+        elif args.edit:
+            config_edit(config=args.config_name)
+        elif args.check:
+            config_check(config=args.config_name)
+        elif args.debug:
+            config_debug(config=args.config_name)
+        elif args.path:
+            config_path(config=args.config_name)
+        elif args.reveal:
+            config_reveal(config=args.config_name)
     elif args.docs:
         docs()
 

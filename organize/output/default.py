@@ -10,7 +10,6 @@ from rich.status import Status
 from rich.text import Text
 from rich.theme import Theme
 
-from organize.__version__ import __version__
 from organize.utils import ChangeDetector
 
 if TYPE_CHECKING:
@@ -132,11 +131,9 @@ class Default:
         if self.simulate:
             self.console.print(Panel("SIMULATION", style="simulation"))
 
-        self.console.print(f"organize v{__version__}")
         if config_path:
             self.console.print(f'Config: "{config_path}"')
-
-        # if working_dir != Path("."):
+        # if working_dir != Path("."):  # TODO
         #     console.print('Working dir: "{}"'.format(working_dir))
 
         status_verb = "simulating" if simulate else "organizing"

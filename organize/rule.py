@@ -74,7 +74,7 @@ class Rule:
     @field_validator("locations", mode="before")
     def validate_locations(cls, locations):
         if locations is None:
-            raise ValueError("Location cannot be empty")
+            return []
         locations = flatten(locations)
         result = []
         for x in locations:

@@ -3,8 +3,6 @@ from typing import Any, Iterable, List, Mapping, TypeVar
 from pydantic.functional_validators import BeforeValidator
 from typing_extensions import Annotated
 
-T = TypeVar("T")
-
 
 def islist(x):
     return isinstance(x, Iterable) and not isinstance(x, (str, bytes, Mapping))
@@ -27,12 +25,5 @@ def flatten(x: Any):
     return list(_flatten(x))
 
 
+T = TypeVar("T")
 FlatList = Annotated[List[T], BeforeValidator(flatten)]
-
-if __name__ == "__main__":
-    from pydantic.type_adapter import TypeAdapter
-
-    ta = TypeAdapter(FlatList[int])
-    v = ta.validate_python([1, 2, [10, 11, [12, 23]], 3, [4, 5, 6]])
-    print(v)
-    print(ta.validate_python(None))
