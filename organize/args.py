@@ -30,51 +30,28 @@ Options:
   -h --help                       Show this help page.
 """
 import os
+import sys
 import textwrap
 from functools import partial
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Literal, Optional, Set
 
 from __version__ import __version__
 from docopt import docopt
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
-from organize import Config
+from organize import Config, ConfigError
 from organize.find_config import ConfigNotFound, find_config
 from organize.output import JSONL, Default
 
 DOCS_RTD = "https://organize.readthedocs.io"
 DOCS_GHPAGES = "https://tfeldmann.github.io/organize/"
 
-
-class CliArgs(BaseModel, extra="forbid"):
-    # commands
-    run: bool
-    sim: bool
-    config: bool
-    docs: bool
-
-    # config subcommands
-    init: bool
-    edit: bool
-    check: bool
-    debug: bool
-    path: bool
-    reveal: bool
-
-    # run / sim options
-    config_name: Optional[str] = Field(..., alias="<config>")
-    working_dir: Optional[Path] = Field(..., alias="--working-dir")
-    format: Literal["default", "jsonl"] = Field("default", alias="--format")
-    tags: Optional[str] = Field("", alias="--tags")
-    skip_tags: Optional[str] = Field("", alias="--skip-tags")
-
-    # docopt options
-    version: bool = Field(..., alias="--version")
-    help: bool = Field(..., alias="--help")
+Tags = Set[str]
+OutputFormat = Literal["default", "jsonl"]
 
 
-def os_open(uri: str):
+def _open_uri(uri: str):
     import webbrowser
 
     webbrowser.open(uri)
@@ -83,14 +60,19 @@ def os_open(uri: str):
 def execute(
     config: str,
     working_dir: Optional[Path],
-    format: Literal["default", "jsonl"],
-    tags: str,
-    skip_tags: str,
+    format: OutputFormat,
+    tags: Tags,
+    skip_tags: Tags,
     simulate: bool,
 ):
     output = JSONL() if format == "jsonl" else Default()
     config_path = find_config(name_or_path=config)
-    Config.from_path(config_path).execute(simulate=simulate, output=output)
+    Config.from_path(config_path).execute(
+        simulate=simulate,
+        output=output,
+        tags=tags,
+        skip_tags=skip_tags,
+    )
 
 
 def config_init(config: str):
@@ -120,11 +102,12 @@ def config_edit(config: str):
     if editor:
         os.system(f'{editor} "{config_path}"')
     else:
-        os_open(config_path.as_uri())
+        _open_uri(config_path.as_uri())
 
 
 def config_check(config: str):
     config_path = find_config(config)
+    print(config_path)
     Config.from_path(config_path=config_path)
     print(f'No problems found in "{config_path}".')
 
@@ -133,7 +116,6 @@ def config_debug(config: str):
     from rich.pretty import pprint
 
     config_path = find_config(config)
-
     pprint(
         Config.from_path(config_path=config_path),
         expand_all=True,
@@ -142,20 +124,51 @@ def config_debug(config: str):
 
 
 def config_path(config: str):
-    config_path = find_config(name_or_path=config)
-    if config_path:
-        print(f"{config_path}")
+    print(find_config(name_or_path=config))
 
 
 def config_reveal(config: str):
     config_path = find_config(name_or_path=config)
-    if config_path:
-        os_open(config_path.parent.as_uri())
+    _open_uri(config_path.parent.as_uri())
 
 
 def docs():
     print(f'Opening "{DOCS_RTD}"')
-    os_open(uri=DOCS_RTD)
+    _open_uri(uri=DOCS_RTD)
+
+
+class CliArgs(BaseModel, extra="forbid"):
+    # commands
+    run: bool
+    sim: bool
+    config: bool
+    docs: bool
+
+    # config subcommands
+    init: bool
+    edit: bool
+    check: bool
+    debug: bool
+    path: bool
+    reveal: bool
+
+    # run / sim options
+    config_name: Optional[str] = Field(..., alias="<config>")
+    working_dir: Optional[Path] = Field(..., alias="--working-dir")
+    format: OutputFormat = Field("default", alias="--format")
+    tags: Optional[str] = Field(..., alias="--tags")
+    skip_tags: Optional[str] = Field(..., alias="--skip-tags")
+
+    # docopt options
+    version: bool = Field(..., alias="--version")
+    help: bool = Field(..., alias="--help")
+
+    @field_validator("tags", "skip_tags", mode="after")
+    @classmethod
+    def split_tags(cls, val) -> Set[str]:
+        if val is None:
+            return set()
+        return set(val.split(","))
 
 
 def cli():
@@ -165,7 +178,6 @@ def cli():
         default_help=True,
     )
     args = CliArgs.model_validate(arguments)
-
     _execute = partial(
         execute,
         config=args.config_name,
@@ -174,25 +186,31 @@ def cli():
         tags=args.tags,
         skip_tags=args.skip_tags,
     )
-    if args.run:
-        _execute(simulate=False)
-    elif args.sim:
-        _execute(simulate=True)
-    elif args.config:
-        if args.init:
-            config_init(config=args.config_name)
-        elif args.edit:
-            config_edit(config=args.config_name)
-        elif args.check:
-            config_check(config=args.config_name)
-        elif args.debug:
-            config_debug(config=args.config_name)
-        elif args.path:
-            config_path(config=args.config_name)
-        elif args.reveal:
-            config_reveal(config=args.config_name)
-    elif args.docs:
-        docs()
+    try:
+        if args.run:
+            _execute(simulate=False)
+        elif args.sim:
+            _execute(simulate=True)
+        elif args.config:
+            if args.init:
+                config_init(config=args.config_name)
+            elif args.edit:
+                config_edit(config=args.config_name)
+            elif args.check:
+                config_check(config=args.config_name)
+            elif args.debug:
+                config_debug(config=args.config_name)
+            elif args.path:
+                config_path(config=args.config_name)
+            elif args.reveal:
+                config_reveal(config=args.config_name)
+        elif args.docs:
+            docs()
+    except (ConfigError, ConfigNotFound) as e:
+        from rich import print
+
+        print(e)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

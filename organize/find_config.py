@@ -1,29 +1,12 @@
 import os
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional
 
 import platformdirs
 
 from organize.utils import expandvars
 
-
-class ConfigNotFound(FileNotFoundError):
-    def __init__(
-        self,
-        config: str,
-        search_pathes: Tuple[str] = tuple(),
-        init_path: Optional[Path] = None,
-    ):
-        self.config = config
-        self.search_pathes = search_pathes
-        self.init_path = init_path
-
-    def __str__(self):
-        msg = f'Cannot find config "{self.config}".'
-        if self.search_pathes:
-            path_listing = "\n".join(f' - "{path}"' for path in self.search_pathes)
-            return f"{msg}\nSearch locations:\n{path_listing}"
-        return msg
+from .errors import ConfigNotFound
 
 
 def find_config(name_or_path: Optional[str] = None) -> Path:

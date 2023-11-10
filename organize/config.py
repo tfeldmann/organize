@@ -5,12 +5,13 @@ from pathlib import Path
 from typing import List, Optional, Union
 
 import yaml
-from pydantic import ConfigDict
+from pydantic import ConfigDict, ValidationError
 from pydantic.dataclasses import dataclass
 
 from organize.output import Default as RichOutput
 from organize.output import Output
 
+from .errors import ConfigError
 from .rule import Rule
 
 
@@ -55,14 +56,18 @@ class Config:
     _config_path: Optional[Path] = None
 
     @classmethod
-    def from_string(cls, config: str):
+    def from_string(cls, config: str, config_path: Optional[Path] = None):
         dedented = textwrap.dedent(config)
         as_dict = yaml.load(dedented, Loader=yaml.SafeLoader)
-        return cls(**as_dict)
+        try:
+            return cls(**as_dict)
+        except ValidationError as e:
+            # add a config_path property to the ValidationError
+            raise ConfigError(e=e, config_path=config_path) from e
 
     @classmethod
     def from_path(cls, config_path: Path):
-        inst = cls.from_string(config_path.read_text())
+        inst = cls.from_string(config_path.read_text(), config_path=config_path)
         inst._config_path = config_path
         return inst
 
