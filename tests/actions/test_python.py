@@ -1,20 +1,30 @@
 from pathlib import Path
-from unittest.mock import patch
 
-from organize.actions import Python
+from conftest import make_files
 
-
-def test_print_substitution():
-    with patch.object(Python, "print") as mock_print:
-        python = Python("print('Hello World')")
-        python.run(path=Path.home(), simulate=False)
-        mock_print.assert_called_with("Hello World")
+from organize import Config
+from organize.output import QueueOutput
 
 
-def test_code_execution():
-    with patch.object(Python, "print") as mock_print:
-        path = Path("/some/folder")
-        python = Python("print(x)\nprint(path)")
-        python.run(path=path, x=42, simulate=False)
-        mock_print.assert_any_call(42)
-        mock_print.assert_any_call(path)
+def test_python(fs):
+    output = QueueOutput()
+    make_files({"file.txt": "File content"}, "test")
+    Config.from_string(
+        """
+        rules:
+          - locations: /test
+            actions:
+              - python: |
+                    from pathlib import Path
+
+                    Path("/test/result.txt").touch()
+                    print(f"Handling: {path}")
+                    return {"content": path.read_text()}
+              - echo: "{python.content}"
+        """
+    ).execute(simulate=False, output=output)
+    assert Path("/test/result.txt").exists()
+    assert [x.msg for x in output.messages] == [
+        "Handling: /test/file.txt",
+        "File content",
+    ]

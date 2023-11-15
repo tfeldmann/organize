@@ -1,6 +1,6 @@
 from conftest import make_files, read_files
 
-from organize import core
+from organize import Config
 
 CONTENT_SMALL = "COPY CONTENT"
 CONTENT_LARGE = "XYZ" * 300000
@@ -17,7 +17,7 @@ rules:
 """
 
 
-def test_duplicate_smallfiles(testfs):
+def test_duplicate_smallfiles(fs):
     files = {
         "unique.txt": "I'm unique.",
         "unique_too.txt": "I'm unique: too.",
@@ -31,10 +31,9 @@ def test_duplicate_smallfiles(testfs):
         "large_unique.txt": CONTENT_LARGE,
     }
 
-    make_files(testfs, files)
-    core.run(CONFIG_DEEP_DUP_DELETE, simulate=False, working_dir=testfs)
-    result = read_files(testfs)
-    testfs.tree()
+    make_files(files, "test")
+    Config.from_string(CONFIG_DEEP_DUP_DELETE).execute(simulate=False)
+    result = read_files("test")
     assert result == {
         "unique.txt": "I'm unique.",
         "unique_too.txt": "I'm unique: too.",
@@ -45,7 +44,7 @@ def test_duplicate_smallfiles(testfs):
     }
 
 
-def test_duplicate_largefiles(testfs):
+def test_duplicate_largefiles(fs):
     files = {
         "unique.txt": CONTENT_LARGE + "1",
         "unique_too.txt": CONTENT_LARGE + "2",
@@ -58,10 +57,9 @@ def test_duplicate_largefiles(testfs):
         },
     }
 
-    make_files(testfs, files)
-    core.run(CONFIG_DEEP_DUP_DELETE, simulate=False, working_dir=testfs)
-    result = read_files(testfs)
-    testfs.tree()
+    make_files(files, "test")
+    Config.from_string(CONFIG_DEEP_DUP_DELETE).execute(simulate=False)
+    result = read_files("test")
     assert result == {
         "unique.txt": CONTENT_LARGE + "1",
         "unique_too.txt": CONTENT_LARGE + "2",

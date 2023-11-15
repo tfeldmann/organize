@@ -1,30 +1,16 @@
-from unittest.mock import call
-
 from conftest import make_files, read_files
 
-from organize import core
-from organize.filters import Python
+from organize import Config
 
 
-def test_basic():
-    p = Python(
-        """
-        return "some-string"
-        """
-    )
-    result = p.run()
-    assert result.matches
-    assert result.updates == {"python": "some-string"}
-
-
-def test_python(testfs, mock_echo):
+def test_python(fs, msg_output):
     make_files(
-        testfs,
         ["student-01.jpg", "student-01.txt", "student-02.txt", "student-03.txt"],
+        "test",
     )
     config = """
         rules:
-        - locations: "."
+        - locations: /test
           filters:
             - name
             - extension: txt
@@ -33,25 +19,22 @@ def test_python(testfs, mock_echo):
           actions:
             - echo: '{python}'
         """
-    core.run(config, simulate=False, working_dir=testfs)
-    mock_echo.assert_has_calls(
-        (
-            call("100"),
-            call("200"),
-            call("300"),
-        ),
-        any_order=True,
-    )
+    Config.from_string(config).execute(simulate=False, output=msg_output)
+    assert msg_output.messages == [
+        "100",
+        "200",
+        "300",
+    ]
 
 
-def test_odd_detector(testfs, mock_echo):
+def test_odd_detector(fs, msg_output):
     make_files(
-        testfs,
         ["student-01.txt", "student-02.txt", "student-03.txt", "student-04.txt"],
+        "test",
     )
     config = """
         rules:
-        - locations: "."
+        - locations: /test
           filters:
             - name
             - python: |
@@ -59,24 +42,21 @@ def test_odd_detector(testfs, mock_echo):
           actions:
             - echo: 'Odd student numbers: {name}'
         """
-    core.run(config, simulate=False, working_dir=testfs)
-    mock_echo.assert_has_calls(
-        (
-            call("Odd student numbers: student-01"),
-            call("Odd student numbers: student-03"),
-        ),
-        any_order=True,
-    )
+    Config.from_string(config).execute(simulate=False, output=msg_output)
+    assert msg_output.messages == [
+        "Odd student numbers: student-01",
+        "Odd student numbers: student-03",
+    ]
 
 
-def test_python_dict(testfs, mock_echo):
+def test_python_dict(fs, msg_output):
     make_files(
-        testfs,
         ["foo-01.jpg", "foo-01.txt", "bar-02.txt", "baz-03.txt"],
+        "test",
     )
     config = """
         rules:
-          - locations: "."
+          - locations: /test
             filters:
             - extension: txt
             - name
@@ -88,22 +68,19 @@ def test_python_dict(testfs, mock_echo):
             actions:
             - echo: '{python.code} {python.name}'
         """
-    core.run(config, simulate=False, working_dir=testfs)
-    mock_echo.assert_has_calls(
-        (
-            call("100 foo"),
-            call("200 bar"),
-            call("300 baz"),
-        ),
-        any_order=True,
-    )
+    Config.from_string(config).execute(simulate=False, output=msg_output)
+    assert msg_output.messages == [
+        "100 foo",
+        "200 bar",
+        "300 baz",
+    ]
 
 
-def test_name_reverser(testfs):
-    make_files(testfs, ["desrever.jpg", "emanelif.txt"])
+def test_name_reverser(fs):
+    make_files(["desrever.jpg", "emanelif.txt"], "test")
     config = """
         rules:
-          - locations: "."
+          - locations: /test
             filters:
             - extension
             - name
@@ -114,14 +91,14 @@ def test_name_reverser(testfs):
             actions:
             - rename: '{python.reversed_name}.{extension}'
         """
-    core.run(config, simulate=False, working_dir=testfs)
-    assert read_files(testfs) == {
+    Config.from_string(config).execute(simulate=False)
+    assert read_files("test") == {
         "reversed.jpg": "",
         "filename.txt": "",
     }
 
 
-def test_folder_instructions(testfs):
+def test_folder_instructions(fs):
     """
     I would like to include path/folder-instructions into the filename because I have a
     lot of different files (and there are always new categories added) I don't want
@@ -147,16 +124,16 @@ def test_folder_instructions(testfs):
     """
     # inspired by: https://github.com/tfeldmann/organize/issues/52
     make_files(
-        testfs,
         [
             "2019_Jobs_CategoryA_TagB_A-Media_content-name_V01_draft_eng.docx",
             "2019_Work_CategoryC_V-Test_A-Audio_V14_final.pdf",
             "other.pdf",
         ],
+        "test",
     )
     config = r"""
         rules:
-            - locations: .
+            - locations: /test
               filters:
                 - extension:
                     - pdf
@@ -164,8 +141,8 @@ def test_folder_instructions(testfs):
                 - name:
                     contains: "_"
                 - python: |
-                    import fs
-                    parts = []
+                    import os
+                    parts = ["/test"]
                     instructions = dict()
                     for part in name.split("_"):
                         if part.startswith("A-"):
@@ -177,7 +154,7 @@ def test_folder_instructions(testfs):
                         else:
                             parts.append(part)
                     return {
-                        "new_path": fs.path.join(*parts),
+                        "new_path": os.path.join(*parts),
                         "instructions": instructions,
                     }
               actions:
@@ -186,8 +163,8 @@ def test_folder_instructions(testfs):
                 - echo: "Value of A: {python.instructions.A}"
                 - move: "{python.new_path}/{name}.{extension}"
         """
-    core.run(config, simulate=False, working_dir=testfs)
-    assert read_files(testfs) == {
+    Config.from_string(config).execute(simulate=False)
+    assert read_files("test") == {
         "other.pdf": "",
         "2019": {
             "Jobs": {

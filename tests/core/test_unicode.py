@@ -1,33 +1,33 @@
 import pytest
 from conftest import make_files, read_files
 
-from organize import core
+from organize import Config
 
 
-def test_startswith_issue74(testfs):
+def test_startswith_issue74(fs):
     # test for issue https://github.com/tfeldmann/organize/issues/74
     make_files(
-        testfs,
         {
             "Cálculo_1.pdf": "",
             "Cálculo_2.pdf": "",
             "Calculo.pdf": "",
         },
+        "test",
     )
     config = r"""
         # Cálculo PDF
         rules:
-            - locations: "."
+            - locations: /test
               filters:
                 - extension:
                     - pdf
                 - name:
                     startswith: Cálculo
               actions:
-                - move: "Cálculo Integral/Periodo #6/PDF's/"
+                - move: "/test/Cálculo Integral/Periodo #6/PDF's/"
         """
-    core.run(config, simulate=False, working_dir=testfs)
-    assert read_files(testfs) == {
+    Config.from_string(config).execute(simulate=False)
+    assert read_files("test") == {
         "Cálculo Integral": {
             "Periodo #6": {
                 "PDF's": {
