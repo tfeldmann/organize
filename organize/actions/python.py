@@ -38,14 +38,20 @@ class Python:
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
         if simulate and not self.run_in_simulation:
-            output.msg(res=res, msg="** Code not run in simulation. **", level="warn")
+            output.msg(
+                res=res,
+                msg="** Code not run in simulation. **",
+                level="warn",
+                sender=self,
+            )
             return
 
         def _output_msg(*values, sep: str = " ", end: str = ""):
             """
             the print function for the use code needs to print via the current output
             """
-            output.msg(res=res, msg=f"{sep.join(values)}{end}", sender=self)
+            msg = f"{sep.join(str(x) for x in values)}{end}"
+            output.msg(res=res, msg=msg, sender=self)
 
         # codegen the user function with arguments as available in the resource
         kwargs = ", ".join(res.dict().keys())
