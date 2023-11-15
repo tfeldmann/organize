@@ -421,8 +421,8 @@ rules:
       - size
     actions:
       - write:
+          outfile: "./sizes.txt"
           text: "{size.traditional} -- {relative_path}"
-          path: "./sizes.txt"
           mode: "append"
           clear_before_first_write: true
 ```
@@ -451,8 +451,8 @@ rules:
       - extension
     actions:
       - write:
+          outfile: "./sizes.{extension}.txt"
           text: "{size.traditional} -- {relative_path}"
-          path: "./sizes.{extension}.txt"
           mode: "prepend"
           clear_before_first_write: true
 ```
