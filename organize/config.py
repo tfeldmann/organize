@@ -1,59 +1,18 @@
+from __future__ import annotations
+
 import textwrap
-from collections import defaultdict
+from pathlib import Path
+from typing import List, Optional, Union
 
 import yaml
-from schema import And, Literal, Optional, Or, Schema
+from pydantic import ConfigDict, ValidationError
+from pydantic.dataclasses import dataclass
 
-from organize.actions import ACTIONS
-from organize.filters import FILTERS
+from organize.output import Default as RichOutput
+from organize.output import Output
 
-from .utils import flatten_all_lists_in_dict
-
-CONFIG_SCHEMA = Schema(
-    {
-        Literal("rules", description="All rules are defined here."): [
-            {
-                Optional("name", description="The name of the rule."): str,
-                Optional("enabled"): bool,
-                Optional("subfolders"): bool,
-                Optional("filter_mode", description="The filter mode."): Or(
-                    "all", "any", "none", error="Invalid filter mode"
-                ),
-                Optional("tags"): Or(str, [str]),
-                Optional(
-                    "targets",
-                    description="Whether the rule should apply to directories or folders.",
-                ): Or("dirs", "files"),
-                "locations": Or(
-                    str,
-                    [
-                        Or(
-                            str,
-                            {
-                                "path": And(str, len),
-                                Optional("max_depth"): Or(int, None),
-                                Optional("search"): Or("depth", "breadth"),
-                                Optional("exclude_files"): Or(str, [str]),
-                                Optional("exclude_dirs"): Or(str, [str]),
-                                Optional("system_exclude_files"): Or(str, [str]),
-                                Optional("system_exclude_dirs"): Or(str, [str]),
-                                Optional("filter"): Or(str, [str]),
-                                Optional("filter_dirs"): Or(str, [str]),
-                                Optional("ignore_errors"): bool,
-                                Optional("filesystem"): object,
-                            },
-                        ),
-                    ],
-                ),
-                Optional("filters"): [
-                    Optional(x.get_schema()) for x in FILTERS.values()
-                ],
-                "actions": [Optional(x.get_schema()) for x in ACTIONS.values()],
-            },
-        ],
-    },
-    name="organize rule configuration",
-)
+from .errors import ConfigError
+from .rule import Rule
 
 
 def default_yaml_cnst(loader, tag_suffix, node):
@@ -65,39 +24,73 @@ def default_yaml_cnst(loader, tag_suffix, node):
 yaml.add_multi_constructor("", default_yaml_cnst, Loader=yaml.SafeLoader)
 
 
-def load_from_string(config: str) -> dict:
-    dedented_config = textwrap.dedent(config)
-    return yaml.load(dedented_config, Loader=yaml.SafeLoader)
+def should_execute(rule_tags, tags, skip_tags):
+    """
+    returns whether the rule with `rule_tags` should be executed,
+    given `tags` and `skip_tags`
+    """
+    if not rule_tags:
+        rule_tags = set()
+    if not tags:
+        tags = set()
+    if not skip_tags:
+        skip_tags = set()
+
+    if "always" in rule_tags and "always" not in skip_tags:
+        return True
+    if "never" in rule_tags and "never" not in tags:
+        return False
+    if not tags and not skip_tags:
+        return True
+    if not rule_tags and tags:
+        return False
+    should_run = any(tag in tags for tag in rule_tags) or not tags or not rule_tags
+    should_skip = any(tag in skip_tags for tag in rule_tags)
+    return should_run and not should_skip
 
 
-def lowercase_keys(obj):
-    if isinstance(obj, dict):
-        obj = {key.lower(): value for key, value in obj.items()}
-        for key, value in obj.items():
-            if isinstance(value, list):
-                for i, item in enumerate(value):
-                    value[i] = lowercase_keys(item)
-            obj[key] = lowercase_keys(value)
-    return obj
+@dataclass(config=ConfigDict(extra="ignore"))
+class Config:
+    rules: List[Rule]
 
+    _config_path: Optional[Path] = None
 
-def cleanup(config: dict) -> dict:
-    result = defaultdict(list)
+    @classmethod
+    def from_string(cls, config: str, config_path: Optional[Path] = None):
+        dedented = textwrap.dedent(config)
+        as_dict = yaml.load(dedented, Loader=yaml.SafeLoader)
+        try:
+            return cls(**as_dict)
+        except ValidationError as e:
+            # add a config_path property to the ValidationError
+            raise ConfigError(e=e, config_path=config_path) from e
 
-    # delete every root key except "rules"
-    for rule in config.get("rules", []):
-        # delete disabled rules
-        if rule.get("enabled", True):
-            result["rules"].append(rule)
+    @classmethod
+    def from_path(cls, config_path: Path):
+        inst = cls.from_string(config_path.read_text(), config_path=config_path)
+        inst._config_path = config_path
+        return inst
 
-    if not result:
-        raise ValueError("No rules defined.")
-
-    result = lowercase_keys(result)
-
-    # flatten all lists everywhere
-    return flatten_all_lists_in_dict(dict(result))
-
-
-def validate(config: dict):
-    return CONFIG_SCHEMA.validate(config)
+    def execute(
+        self,
+        simulate: bool = True,
+        output: Output = RichOutput(),
+        tags=set(),
+        skip_tags=set(),
+        working_dir: Union[str, None] = ".",
+    ):
+        output.start(simulate=simulate, config_path=self._config_path)
+        try:
+            for rule_nr, rule in enumerate(self.rules):
+                if should_execute(
+                    rule_tags=rule.tags,
+                    tags=tags,
+                    skip_tags=skip_tags,
+                ):
+                    rule.execute(
+                        simulate=simulate,
+                        output=output,
+                        rule_nr=rule_nr,
+                    )
+        finally:
+            output.end(0, 0)
