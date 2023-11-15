@@ -1,15 +1,37 @@
-import logging
+import hashlib
+from pathlib import Path
+from typing import ClassVar
 
-from fs.base import FS
+from pydantic.config import ConfigDict
+from pydantic.dataclasses import dataclass
 
-from organize.utils import Template
+from organize.filter import FilterConfig
+from organize.output import Output
+from organize.resource import Resource
+from organize.template import Template
 
-from .filter import Filter, FilterResult
 
-logger = logging.getLogger(__name__)
+def hash(path: Path, algo: str, *, _bufsize=2**18) -> str:
+    # Future: for python >= 3.11 we can use hashlib.file_digest
+    h = hashlib.new(algo)
+    buf = bytearray(_bufsize)
+    view = memoryview(buf)
+    with open(path, "rb", buffering=0) as f:
+        while size := f.readinto(view):
+            h.update(view[:size])
+    return h.hexdigest()
 
 
-class Hash(Filter):
+def hash_first_chunk(path: Path, algo: str, *, chunksize=1024) -> str:
+    h = hashlib.new(algo)
+    with path.open("rb") as f:
+        chunk = f.read(chunksize)
+        h.update(chunk)
+    return h.hexdigest()
+
+
+@dataclass(config=ConfigDict(extra="forbid"))
+class Hash:
 
     """Calculates the hash of a file.
 
@@ -30,7 +52,10 @@ class Hash(Filter):
     ```py
     >>> import hashlib
     >>> hashlib.algorithms_available
-    {'shake_256', 'whirlpool', 'mdc2', 'blake2s', 'sha224', 'shake_128', 'sha3_512', 'sha3_224', 'sha384', 'md5', 'sha1', 'sha512_256', 'blake2b', 'sha256', 'sha512_224', 'ripemd160', 'sha3_384', 'md4', 'sm3', 'sha3_256', 'md5-sha1', 'sha512'}
+    {'shake_256', 'whirlpool', 'mdc2', 'blake2s', 'sha224', 'shake_128', 'sha3_512',
+    'sha3_224', 'sha384', 'md5', 'sha1', 'sha512_256', 'blake2b', 'sha256',
+    'sha512_224', 'ripemd160', 'sha3_384', 'md4', 'sm3', 'sha3_256', 'md5-sha1',
+    'sha512'}
     ```
 
     **Returns:**
@@ -38,21 +63,19 @@ class Hash(Filter):
     - `{hash}`:  The hash of the file.
     """
 
-    name = "hash"
-    schema_support_instance_without_args = True
+    algorithm: str = "md5"
 
-    def __init__(self, algorithm="md5"):
-        self.algorithm = Template.from_string(algorithm)
+    filter_config: ClassVar = FilterConfig(
+        name="hash",
+        files=True,
+        dirs=False,
+    )
 
-    def pipeline(self, args: dict):
-        fs = args["fs"]  # type: FS
-        fs_path = args["fs_path"]  # type: str
-        algo = self.algorithm.render(**args)
-        hash_ = fs.hash(fs_path, name=algo)
-        return FilterResult(
-            matches=True,
-            updates={self.get_name(): hash_},
-        )
+    def __post_init__(self):
+        self._algorithm = Template.from_string(self.algorithm)
 
-    def __str__(self) -> str:
-        return f"Hash(algorithm={self.algorithm})"
+    def pipeline(self, res: Resource, output: Output) -> bool:
+        algo = self._algorithm.render(**res.dict()).lower()
+        result = hash(path=res.path, algo=algo)
+        res.vars[self.filter_config.name] = result
+        return True
