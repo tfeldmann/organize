@@ -9,6 +9,8 @@
 - Lots of new tests and some bugfixes.
 - `exif` filter now supports the simplematch syntax.
 - {now} must be {now()} now.
+- multiple paths per location
+- min_depth option
 
 ## v2.4.3 (2023-10-14)
 
