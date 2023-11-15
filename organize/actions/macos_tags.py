@@ -1,5 +1,5 @@
 import sys
-from typing import ClassVar, List
+from typing import ClassVar
 
 import simplematch as sm
 from pydantic.config import ConfigDict

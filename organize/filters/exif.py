@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import ClassVar, Dict, Optional, Union
 
 import exifread
-import simplematch as sm
 from pydantic import BaseModel
 from rich import print
 

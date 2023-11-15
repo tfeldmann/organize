@@ -1,8 +1,3 @@
-import os
-
-import pytest
-from conftest import make_files
-
 # @pytest.mark.skip
 # def test_config_file(tempfs: FS):
 #     files = ["my-test-file-name.txt", "my-test-file-name.jpg", "other-file.txt"]

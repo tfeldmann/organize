@@ -2,7 +2,6 @@ import pytest
 from pydantic import ValidationError
 
 from organize.config import Config
-from organize.rule import Rule
 
 
 def test_basic():

@@ -97,7 +97,7 @@ def instantiate_location(
         options = {"path": options}
 
     # set default max depth from rule
-    if not "max_depth" in options:
+    if "max_depth" not in options:
         options["max_depth"] = default_max_depth
 
     if "walker" not in options:
