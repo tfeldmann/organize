@@ -20,6 +20,14 @@ ExifDict = Dict[str, Union[ExifValue, Dict[str, ExifValue]]]
 def parse_tag(key: str, value: str) -> ExifValue:
     """
     Try to parse `value` for the given `key`.
+
+    - If `key` contains "datetime" convert `value` to 'datetime.datetime'
+        (e.g. image.datetime, exif.datetimeoriginal, exif.datetimedigitized)
+    - If `key` contains "date" convert `value` to 'datetime.date'
+        (e.g. gps.date)
+    - If `key` contains "offsettime" convert `value` to 'datetime.timedelta'
+        (e.g. exif.offsettimeoriginal, exif.offsettimedigitized)
+    - Otherwise `value` is not converted and returned as is
     """
     _key = key.lower()
     try:
