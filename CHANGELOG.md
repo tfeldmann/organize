@@ -1,5 +1,15 @@
 # Changelog
 
+## WIP
+
+- New action: `write`.
+- New filter: `date_lastused` (macOS only).
+- You can now specify the timezone in all time based filters.
+- Removed hidden (deprecated) CLI option `--config-file`.
+- Lots of new tests and some bugfixes.
+- `exif` filter now supports the simplematch syntax.
+- {now} must be {now()} now.
+
 ## v2.4.3 (2023-10-14)
 
 - Modified filter: `exif`. Enabled datetime fields on exif data (Issue #266) (Thanks @FlorianFritz)
