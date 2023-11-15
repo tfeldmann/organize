@@ -1,29 +1,33 @@
-import logging
+from pathlib import Path
+from typing import ClassVar
 
-from .action import Action
+from pydantic.config import ConfigDict
+from pydantic.dataclasses import dataclass
 
-logger = logging.getLogger(__name__)
+from organize.action import ActionConfig
+from organize.output import Output
+from organize.resource import Resource
 
 
-class Trash(Action):
+def trash(path: Path):
+    from send2trash import send2trash
+
+    send2trash(path)
+
+
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
+class Trash:
 
     """Move a file or dir into the trash."""
 
-    name = "trash"
+    action_config: ClassVar = ActionConfig(
+        name="trash",
+        standalone=False,
+        files=True,
+        dirs=True,
+    )
 
-    @classmethod
-    def get_schema(cls):
-        return cls.name
-
-    def trash(self, path: str, simulate: bool):
-        from send2trash import send2trash
-
-        self.print(f'Trash "{path}"')
+    def pipeline(self, res: Resource, output: Output, simulate: bool):
+        output.msg(res=res, msg=f'Trash "{res.path}"', sender=self)
         if not simulate:
-            logger.info("Moving file %s into trash.", path)
-            send2trash(path)
-
-    def pipeline(self, args: dict, simulate: bool):
-        fs = args["fs"]
-        fs_path = args["fs_path"]
-        self.trash(path=fs.getsyspath(fs_path), simulate=simulate)
+            trash(res.path)

@@ -1,27 +1,31 @@
-import logging
-from typing import Union
+from __future__ import annotations
 
-from fs.base import FS
-from fs.opener import manage_fs
-from schema import Optional, Or
+import enum
+from pathlib import Path
+from typing import TYPE_CHECKING, ClassVar
 
-from organize.utils import Template
+from pydantic.config import ConfigDict
+from pydantic.dataclasses import dataclass
 
-from ._utils import open_create_fs_path
-from .action import Action
+from organize.action import ActionConfig
+from organize.template import Template
 
-logger = logging.getLogger(__name__)
-
-MODES = (
-    "prepend",
-    "append",
-    "overwrite",
-)
+if TYPE_CHECKING:
+    from organize.output import Output
+    from organize.resource import Resource
 
 
-class Write(Action):
+class Mode(enum.StrEnum):
+    PREPEND = "prepend"
+    APPEND = "append"
+    OVERWRITE = "overwrite"
 
-    """Write text to a file.
+
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
+class Write:
+
+    """
+    Write text to a file.
 
     If the specified path does not exist it will be created.
 
@@ -29,9 +33,8 @@ class Write(Action):
         text (str):
             The text that should be written. Supports templates.
 
-        file (str):
+        outfile (str):
             The file `text` should be written into. Supports templates.
-            Defaults to `organize-out.txt`
 
         mode (str):
             Can be either `append` (append text to the file), `prepend` (insert text as
@@ -44,78 +47,58 @@ class Write(Action):
 
         clear_before_first_write (bool):
             (Optional) Clears the file before first appending / prepending text to it.
-            This happens only the first time write_file is run. If the rule filters
+            This happens only the first time the file is written to. If the rule filters
             don't match anything the file is left as it is.
             Defaults to `false`.
-
-        filesystem (str):
-            (Optional) A pyfilesystem opener url of the filesystem the textfile is on.
-            If this is not given, the local filesystem is used.
     """
 
-    name = "write"
-    arg_schema = Or(
-        {
-            "text": str,
-            Optional("path"): str,
-            Optional("mode"): Or(*MODES),
-            Optional("newline"): bool,
-            Optional("clear_before_first_write"): bool,
-            Optional("filesystem"): object,
-        },
+    text: str
+    outfile: str
+    mode: Mode = Mode.APPEND
+    newline: bool = True
+    clear_before_first_write: bool = False
+
+    action_config: ClassVar = ActionConfig(
+        name="write",
+        standalone=True,
+        files=True,
+        dirs=True,
     )
 
-    def __init__(
-        self,
-        text: str,
-        path: str = "organize-out.txt",
-        mode: str = "append",
-        newline: bool = True,
-        clear_before_first_write: bool = False,
-        filesystem: Union[FS, str, None] = None,
-    ) -> None:
-        self.text = Template.from_string(text)
-        self.path = Template.from_string(path)
-        self.mode = mode.lower()
-        self.clear_before_first_write = clear_before_first_write
-        self.newline = newline
-        self.filesystem = filesystem or self.Meta.default_filesystem
+    def __post_init__(self):
+        self._text = Template.from_string(self.text)
+        self._path = Template.from_string(self.outfile)
+        self._known_files = set()
 
-        self._is_first_write = True
+    def pipeline(self, res: Resource, output: Output, simulate: bool):
+        text = self._text.render(**res.dict())
+        path = Path(self._path.render(**res.dict()))
 
-        if self.mode not in MODES:
-            raise ValueError(f"mode must be one of {', '.join(MODES)}")
+        resolved = path.resolve()
+        if resolved not in self._known_files:
+            self._known_files.add(resolved)
 
-    def pipeline(self, args: dict, simulate: bool):
-        text = self.text.render(args)
-        path = self.path.render(args)
-
-        dst_fs, dst_path = open_create_fs_path(
-            fs=self.filesystem,
-            path=path,
-            args=args,
-            simulate=simulate,
-        )
-
-        if self._is_first_write and self.clear_before_first_write:
-            self.print(f"Clearing file {dst_path}")
             if not simulate:
-                dst_fs.create(dst_path, wipe=True)
+                resolved.parent.mkdir(parents=True, exist_ok=True)
 
-        self.print(f'{path}: {self.mode} "{text}"')
+            # clear on first write
+            if resolved.exists() and self.clear_before_first_write:
+                output.msg(res=res, msg=f"Clearing file {path}", sender=self)
+                if not simulate:
+                    resolved.open("w")  # clear the file
+
+        output.msg(res=res, msg=f'{path}: {self.mode} "{text}"', sender=self)
         if self.newline:
             text += "\n"
 
         if not simulate:
-            with manage_fs(dst_fs):
-                if self.mode == "append":
-                    dst_fs.appendtext(dst_path, text)
-                elif self.mode == "prepend":
-                    content = ""
-                    if dst_fs.exists(dst_path):
-                        content = dst_fs.readtext(dst_path)
-                    dst_fs.writetext(dst_path, text + content)
-                elif self.mode == "overwrite":
-                    dst_fs.writetext(dst_path, text)
-
-        self._is_first_write = False
+            if self.mode == Mode.APPEND:
+                with open(path, "a") as f:
+                    f.write(text)
+            elif self.mode == Mode.PREPEND:
+                content = ""
+                if path.exists():
+                    content = path.read_text()
+                path.write_text(text + content)
+            elif self.mode == Mode.OVERWRITE:
+                path.write_text(text)

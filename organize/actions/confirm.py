@@ -1,40 +1,34 @@
-from rich.prompt import Prompt
-from schema import Optional, Or
+from typing import ClassVar
 
-from organize import console
-from organize.utils import Template
+from pydantic.config import ConfigDict
+from pydantic.dataclasses import dataclass
 
-from .action import Action
+from organize.action import ActionConfig
+from organize.output import Output
+from organize.resource import Resource
+from organize.template import Template
 
 
-class Confirm(Action):
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
+class Confirm:
 
     """Ask for confirmation before continuing."""
 
-    name = "confirm"
-    schema_support_instance_without_args = True
+    msg: str = "Continue?"
+    default: bool = True
 
-    arg_schema = Or(
-        str,
-        {
-            Optional("msg"): str,
-            Optional("default"): bool,
-        },
+    action_config: ClassVar = ActionConfig(
+        name="confirm",
+        standalone=True,
+        files=True,
+        dirs=True,
     )
 
-    def __init__(self, msg="Continue?", default=True):
-        self.msg = Template.from_string(msg)
-        self.default = default
+    def __post_init__(self):
+        self._msg = Template.from_string(self.msg)
 
-    def pipeline(self, args: dict, simulate: bool):
-        msg = self.msg.render(**args)
-        result = console.pipeline_confirm(
-            self.get_name(),
-            msg,
-            default=self.default,
-        )
+    def pipeline(self, res: Resource, output: Output, simulate: bool):
+        msg = self._msg.render(**res.dict())
+        result = output.confirm(res=res, msg=msg, sender=self, default=self.default)
         if not result:
             raise StopIteration("Aborted")
-
-    def __str__(self) -> str:
-        return f'Confirm(msg="{self.msg}")'
