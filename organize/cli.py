@@ -31,7 +31,6 @@ Options:
 """
 import os
 import sys
-import textwrap
 from functools import partial
 from pathlib import Path
 from typing import Literal, Optional, Set
@@ -47,6 +46,17 @@ from .__version__ import __version__
 
 DOCS_RTD = "https://organize.readthedocs.io"
 DOCS_GHPAGES = "https://tfeldmann.github.io/organize/"
+
+EXAMPLE_CONFIG = f"""\
+# organize configuration file
+# {DOCS_RTD}
+
+rules:
+  - locations:
+    filters:
+    actions:
+      - echo: "Hello, World!"
+"""
 
 Tags = Set[str]
 OutputFormat = Literal["default", "jsonl"]
@@ -81,19 +91,7 @@ def config_init(config: str):
         config_path = find_config(config)
         raise FileExistsError(f'Config "{config_path} already exists.')
     except ConfigNotFound as e:
-        DEFAULT = textwrap.dedent(
-            f"""\
-            # organize configuration file
-            # {DOCS_RTD}
-
-            rules:
-              - locations:
-                filters:
-                actions:
-                - echo: "Hello, World!"
-            """
-        )
-        e.init_path.write_text(DEFAULT)
+        e.init_path.write_text(EXAMPLE_CONFIG)
         print(f'Config created at "{e.init_path}"')
 
 
