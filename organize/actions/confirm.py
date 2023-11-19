@@ -29,11 +29,6 @@ class Confirm:
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
         msg = self._msg.render(**res.dict())
-        result = output.confirm(
-            res=res,
-            msg=msg,
-            sender=self,
-            default="y" if self.default else "n",
-        )
+        result = output.confirm(res=res, msg=msg, sender=self, default=self.default)
         if not result:
             raise StopIteration("Aborted")

@@ -7,7 +7,6 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Confirm as RichConfirm
 from rich.status import Status
-from rich.text import Text
 from rich.theme import Theme
 
 from organize.utils import ChangeDetector
@@ -17,48 +16,41 @@ if TYPE_CHECKING:
     from organize.filter import Filter
     from organize.resource import Resource
 
+    SenderType = Union[Filter, Action, str]
 
-def _highlight_path(path: Path, base_style: str, main_style: str):
+
+def _highlight_path(path: Path, base_style: str, main_style: str) -> str:
     base = str(f"{path.parent}/")
     main = str(path.name)
-
-    return Text.assemble(
-        (base, base_style),
-        (main, main_style),
-    )
+    return f"[{base_style}]{base}[/][{main_style}]{main}[/]"
 
 
-def _pipeline_source(source: Union[Filter, Action, str]):
+def _pipeline_source(source: SenderType) -> str:
     if hasattr(source, "filter_config"):
         src = source.filter_config.name
     elif hasattr(source, "action_config"):
         src = source.action_config.name
     else:
         src = str(source)
-    return Text(f"    - ({src}) ", style="pipeline.source")
+    return f"    - ([pipeline.source]{src}[/]) "
 
 
-def pipeline_message(source: str, msg: str) -> Text:
-    return Text.assemble(
-        _pipeline_source(source),
-        (msg, "pipeline.msg"),
-    )
+def pipeline_message(source: SenderType, msg: str) -> str:
+    pre = _pipeline_source(source)
+    return f"{pre}[pipeline.msg]{msg}[/]"
 
 
-def pipeline_error(source: str, msg: str) -> Text:
-    return Text.assemble(
-        _pipeline_source(source),
-        (f"ERROR! {msg}", "pipeline.error"),
-    )
+def pipeline_error(source: SenderType, msg: str) -> str:
+    src = _pipeline_source(source)
+    return f"{src}[pipeline.error]ERROR! {msg}[/]"
 
 
 class Confirm(RichConfirm):
     @classmethod
-    def set_source(cls, source) -> None:
-        cls.validate_error_message = Text.assemble(
-            _pipeline_source(source),
-            ("Please enter Y or N", "prompt.invalid"),
-        )
+    def set_source(cls, source: SenderType) -> None:
+        src = _pipeline_source(source)
+        err_msg = f"{src}[prompt.invalid]Please enter Y or N[/]"
+        cls.validate_error_message = err_msg
 
 
 class Default:
@@ -124,9 +116,9 @@ class Default:
                     "path.base",
                     "path.main",
                 )
-                self.console.print(Text.assemble("  ", path_str))
+                self.console.print(f"  {path_str}")
             else:
-                self.console.print("* standalone *")
+                self.console.print("  * standalone *")
 
     def start(self, simulate: bool, config_path: Optional[str] = None):
         self.det_rule.reset()
@@ -143,7 +135,7 @@ class Default:
         #     console.print('Working dir: "{}"'.format(working_dir))
 
         status_verb = "simulating" if simulate else "organizing"
-        self.status.update(Text(status_verb, "status"))
+        self.status.update(f"[status]{status_verb}[/]")
         self.status.start()
 
     def msg(
@@ -151,7 +143,7 @@ class Default:
         res: Resource,
         msg: str,
         level: Literal["info", "warn", "error"] = "info",
-        sender: Union[Filter, Action, str] = "",
+        sender: SenderType = "",
     ):
         self.show_resource(res)
         self.console.print(pipeline_message(source=sender, msg=msg))
@@ -160,16 +152,15 @@ class Default:
         self,
         res: Resource,
         msg: str,
-        default: str,
-        sender: Union[Filter, Action, str] = "",
+        default: bool,
+        sender: SenderType = "",
     ) -> bool:
         self.status.stop()
         self.show_resource(res)
-        line = _pipeline_source(sender)
-        line.append(msg, "pipeline.prompt")
+        src = _pipeline_source(sender)
         Confirm.set_source(sender)
         result = Confirm.ask(
-            line,
+            prompt=f"{src}[pipeline.prompt]{msg}[/]",
             console=self.console,
             default=default,
         )

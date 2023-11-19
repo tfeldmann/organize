@@ -29,7 +29,7 @@ class Output(Protocol):
         self,
         res: Resource,
         msg: str,
-        default: str,
+        default: bool,
         sender: Union[Filter, Action, str] = "",
     ) -> bool:
         ...
