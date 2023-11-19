@@ -1,7 +1,6 @@
 import pytest
-from pydantic import ValidationError
 
-from organize.config import Config
+from organize.config import Config, ConfigError
 
 
 def test_basic():
@@ -72,7 +71,7 @@ def test_error_filter_dict():
       actions:
       - trash
     """
-    with pytest.raises(ValidationError):
+    with pytest.raises(ConfigError):
         print(Config.from_string(STR))
 
 
@@ -86,7 +85,7 @@ def test_error_action_dict():
               Trash
               Echo
     """
-    with pytest.raises(ValidationError):
+    with pytest.raises(ConfigError):
         Config.from_string(config)
 
 

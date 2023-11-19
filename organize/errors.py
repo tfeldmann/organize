@@ -8,7 +8,9 @@ class ConfigError(ValueError):
     @classmethod
     def __init__(self, e: ValidationError, config_path: Optional[Path] = None):
         self.e = e
-        self.config_path = config_path.resolve()
+        self.config_path = config_path
+        if self.config_path:
+            self.config_path = config_path.resolve()
 
     def __str__(self):
         count = self.e.error_count()

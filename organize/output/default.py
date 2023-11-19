@@ -106,21 +106,27 @@ class Default:
         # location changed
         if self.det_location.changed(res.basedir):
             self.det_path.reset()
-            path_str = _highlight_path(
-                Path(res.basedir),
-                "location.base",
-                "location.main",
-            )
-            self.console.print(path_str)
+            if res.basedir:
+                path_str = _highlight_path(
+                    Path(res.basedir),
+                    "location.base",
+                    "location.main",
+                )
+                self.console.print(path_str)
+            else:
+                self.console.print("* standalone *")
 
         # path changed
         if self.det_path.changed(res.path):
-            path_str = _highlight_path(
-                Path(res.relative_path()),
-                "path.base",
-                "path.main",
-            )
-            self.console.print(Text.assemble("  ", path_str))
+            if res.path:
+                path_str = _highlight_path(
+                    Path(res.relative_path()),
+                    "path.base",
+                    "path.main",
+                )
+                self.console.print(Text.assemble("  ", path_str))
+            else:
+                self.console.print("* standalone *")
 
     def start(self, simulate: bool, config_path: Optional[str] = None):
         self.det_rule.reset()
