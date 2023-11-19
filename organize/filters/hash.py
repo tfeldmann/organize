@@ -65,7 +65,7 @@ class Hash:
 
     algorithm: str = "md5"
 
-    filter_config: ClassVar = FilterConfig(
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
         name="hash",
         files=True,
         dirs=False,

@@ -32,7 +32,7 @@ class LastModified(TimeFilter):
         {lastmodified}: The datetime the files / folders was lastmodified.
     """
 
-    filter_config: ClassVar = FilterConfig(
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
         name="lastmodified",
         files=True,
         dirs=True,

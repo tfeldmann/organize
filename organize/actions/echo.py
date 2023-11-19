@@ -22,7 +22,7 @@ class Echo:
 
     msg: str = ""
 
-    action_config: ClassVar = ActionConfig(
+    action_config: ClassVar[ActionConfig] = ActionConfig(
         name="echo",
         standalone=True,
         files=True,

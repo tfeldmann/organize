@@ -41,7 +41,9 @@ class MimeType:
 
     mimetypes: FlatList[str] = Field(default_factory=list)
 
-    filter_config: ClassVar = FilterConfig(name="mimetype", files=True, dirs=False)
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
+        name="mimetype", files=True, dirs=False
+    )
 
     def matches(self, mimetype) -> bool:
         if mimetype is None:

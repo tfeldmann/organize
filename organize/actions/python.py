@@ -23,7 +23,7 @@ class Python:
     code: str
     run_in_simulation: bool = False
 
-    action_config: ClassVar = ActionConfig(
+    action_config: ClassVar[ActionConfig] = ActionConfig(
         name="python",
         standalone=True,
         files=True,

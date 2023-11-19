@@ -17,7 +17,7 @@ class Confirm:
     msg: str = "Continue?"
     default: bool = True
 
-    action_config: ClassVar = ActionConfig(
+    action_config: ClassVar[ActionConfig] = ActionConfig(
         name="confirm",
         standalone=True,
         files=True,
@@ -29,6 +29,11 @@ class Confirm:
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
         msg = self._msg.render(**res.dict())
-        result = output.confirm(res=res, msg=msg, sender=self, default=self.default)
+        result = output.confirm(
+            res=res,
+            msg=msg,
+            sender=self,
+            default="y" if self.default else "n",
+        )
         if not result:
             raise StopIteration("Aborted")

@@ -8,8 +8,7 @@ import yaml
 from pydantic import ConfigDict, ValidationError
 from pydantic.dataclasses import dataclass
 
-from organize.output import Default as RichOutput
-from organize.output import Output
+from organize.output import Default, Output
 
 from .errors import ConfigError
 from .rule import Rule
@@ -74,7 +73,7 @@ class Config:
     def execute(
         self,
         simulate: bool = True,
-        output: Output = RichOutput(),
+        output: Output = Default(),
         tags=set(),
         skip_tags=set(),
         working_dir: Union[str, None] = ".",

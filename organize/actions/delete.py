@@ -32,7 +32,7 @@ class Delete:
     Using the `Trash` action is strongly advised for most use-cases!
     """
 
-    action_config: ClassVar = ActionConfig(
+    action_config: ClassVar[ActionConfig] = ActionConfig(
         name="delete",
         standalone=False,
         files=True,
@@ -40,6 +40,7 @@ class Delete:
     )
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
+        assert res.path is not None, "Does not support standalone mode"
         output.msg(res=res, msg=f"Deleting {res.path}", sender=self)
         if not simulate:
             delete(res.path)

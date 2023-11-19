@@ -40,7 +40,7 @@ class DateLastUsed(TimeFilter):
         {date_lastused}: The datetime the files / folders were added.
     """
 
-    filter_config: ClassVar = FilterConfig(
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
         name="date_lastused",
         files=True,
         dirs=True,

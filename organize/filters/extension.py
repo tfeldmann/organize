@@ -42,7 +42,7 @@ class Extension:
 
     extensions: Set[str] = Field(default_factory=set)
 
-    filter_config: ClassVar = FilterConfig(
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
         name="extension",
         files=True,
         dirs=False,

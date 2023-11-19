@@ -82,7 +82,7 @@ def matches_tags(filter_tags: Dict[str, Optional[str]], data: ExifDict) -> bool:
             # Otherwise we use a glob matcher to check for matches
             if v is not None and not fnmatch.fnmatch(data_value.lower(), v.lower()):
                 return False
-        except KeyError:
+        except (KeyError, AttributeError):
             return False
     return True
 
@@ -112,7 +112,7 @@ class Exif(BaseModel):
 
     filter_tags: Dict
 
-    filter_config: ClassVar = FilterConfig(
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
         name="exif",
         files=True,
         dirs=False,
@@ -130,6 +130,7 @@ class Exif(BaseModel):
         super().__init__(filter_tags=params)
 
     def pipeline(self, res: Resource, output: Output) -> bool:
+        assert res.path is not None, "Does not support standalone mode"
         data = read_exif_data(res.path)
         parsed = parse_and_categorize(data)
         res.vars[self.filter_config.name] = parsed

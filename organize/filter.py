@@ -56,6 +56,7 @@ class Any:
         self.filters = filters
 
     def pipeline(self, res: Resource, output: Output) -> bool:
+        assert res.path is not None, "Filters don't support standalone mode."
         for filter in self.filters:
             result = False
             try:
@@ -64,5 +65,5 @@ class Any:
                     result = True
             except Exception as e:
                 output.msg(res=res, level="error", msg=str(e))
-                logging.exception()
+                logging.exception(e)
         return result

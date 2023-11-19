@@ -13,7 +13,9 @@ class Empty:
 
     """Finds empty dirs and files"""
 
-    filter_config: ClassVar = FilterConfig(name="empty", files=True, dirs=True)
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
+        name="empty", files=True, dirs=True
+    )
 
     def pipeline(self, res: Resource, output: Output) -> bool:
         return res.is_empty()

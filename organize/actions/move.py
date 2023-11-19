@@ -53,7 +53,7 @@ class Move:
     rename_template: str = "{name} {counter}{extension}"
     autodetect_folder: bool = True
 
-    action_config: ClassVar = ActionConfig(
+    action_config: ClassVar[ActionConfig] = ActionConfig(
         name="move",
         standalone=False,
         files=True,
@@ -65,6 +65,7 @@ class Move:
         self._rename_template = Template.from_string(self.rename_template)
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
+        assert res.path is not None, "Does not support standalone mode"
         rendered = self._dest.render(**res.dict())
 
         # fully resolve the destination for folder targets and prepare the folder

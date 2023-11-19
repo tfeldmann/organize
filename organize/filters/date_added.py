@@ -39,7 +39,7 @@ class DateAdded(TimeFilter):
         {date_added}: The datetime the files / folders were added.
     """
 
-    filter_config: ClassVar = FilterConfig(
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
         name="date_added",
         files=True,
         dirs=True,

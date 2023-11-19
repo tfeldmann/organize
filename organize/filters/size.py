@@ -137,7 +137,9 @@ class Size:
 
     conditions: FlatList[str] = Field(default_factory=list)
 
-    filter_config: ClassVar = FilterConfig(name="size", files=True, dirs=True)
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
+        name="size", files=True, dirs=True
+    )
 
     def __post_init__(self):
         self._constraints = set()

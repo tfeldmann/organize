@@ -39,7 +39,7 @@ class Rename:
     rename_template: str = "{name} {counter}{extension}"
     # TODO: keep_extension?
 
-    action_config: ClassVar = ActionConfig(
+    action_config: ClassVar[ActionConfig] = ActionConfig(
         name="rename",
         standalone=False,
         files=True,
@@ -51,6 +51,7 @@ class Rename:
         self._rename_template = Template.from_string(self.rename_template)
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
+        assert res.path is not None, "Does not support standalone mode"
         new_name = self._new_name.render(**res.dict())
         if "/" in new_name:
             raise ValueError(

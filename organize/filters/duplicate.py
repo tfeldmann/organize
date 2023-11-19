@@ -98,7 +98,9 @@ class Duplicate:
     detect_original_by: DetectionMethod = "first_seen"
     hash_algorithm: str = "sha1"
 
-    filter_config: ClassVar = FilterConfig(name="duplicate", files=True, dirs=False)
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
+        name="duplicate", files=True, dirs=False
+    )
 
     def __post_init__(self):
         # reverse original detection order if starting with "-"
@@ -119,6 +121,7 @@ class Duplicate:
         self._hash_known = set()
 
     def pipeline(self, res: Resource, output: Output) -> bool:
+        assert res.path is not None, "Does not support standalone mode"
         # skip symlinks
         if res.path.is_symlink():
             return False

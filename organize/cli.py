@@ -91,6 +91,7 @@ def config_init(config: str):
         config_path = find_config(config)
         raise FileExistsError(f'Config "{config_path} already exists.')
     except ConfigNotFound as e:
+        assert e.init_path is not None
         e.init_path.write_text(EXAMPLE_CONFIG)
         print(f'Config created at "{e.init_path}"')
 

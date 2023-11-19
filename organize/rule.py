@@ -2,8 +2,7 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Literal, Optional, Set, Union
 
-from pydantic import ConfigDict, Field, field_validator, model_validator
-from pydantic.dataclasses import dataclass
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from .action import Action
 from .filter import All, Any, Filter, Not
@@ -53,14 +52,7 @@ def filter_from_dict(d: Dict):
     return Not(inst) if invert_filter else inst
 
 
-@dataclass(
-    kw_only=True,
-    config=ConfigDict(
-        extra="forbid",
-        arbitrary_types_allowed=True,
-    ),
-)
-class Rule:
+class Rule(BaseModel):
     name: Optional[str] = None
     enabled: bool = True
     targets: Literal["files", "dirs"] = "files"
@@ -70,6 +62,11 @@ class Rule:
     filters: List[Filter] = Field(default_factory=list)
     filter_mode: Literal["all", "any", "none"] = "all"
     actions: List[Action] = Field(..., min_length=1)
+
+    model_config = ConfigDict(
+        extra="forbid",
+        arbitrary_types_allowed=True,
+    )
 
     @field_validator("locations", mode="before")
     def validate_locations(cls, locations):

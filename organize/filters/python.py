@@ -32,7 +32,7 @@ class Python:
 
     code: str
 
-    filter_config: ClassVar = FilterConfig(
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
         name="python",
         files=True,
         dirs=True,

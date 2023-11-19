@@ -27,7 +27,7 @@ class ConflictMode(str, Enum):
 
 class ConflictResult(NamedTuple):
     skip_action: bool  # Whether to skip the current action
-    use_dst: Optional[Path] = None  # The Path to continue with
+    use_dst: Path  # The Path to continue with
 
 
 def next_free_name(dst: Path, template: Template) -> Path:
@@ -79,6 +79,8 @@ def resolve_conflict(
     """
     Handle a conflict if `dst` already exists.
     """
+    assert res.path is not None
+
     # no conflict, just continue with the action.
     if not dst.exists():
         return ConflictResult(skip_action=False, use_dst=dst)

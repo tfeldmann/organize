@@ -28,7 +28,11 @@ class Regex:
 
     expr: str
 
-    filter_config: ClassVar = FilterConfig(name="regex", files=True, dirs=True)
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
+        name="regex",
+        files=True,
+        dirs=True,
+    )
 
     def __post_init__(self):
         self._expr = re.compile(self.expr, flags=re.UNICODE)
@@ -37,6 +41,7 @@ class Regex:
         return self._expr.search(path)
 
     def pipeline(self, res: Resource, output: Output) -> bool:
+        assert res.path is not None, "Does not support standalone mode"
         match = self.matches(res.path.name)
         if match:
             res.deep_merge(key=self.filter_config.name, data=match.groupdict())

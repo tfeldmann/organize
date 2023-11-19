@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime, tzinfo
+from pathlib import Path
 from typing import ClassVar, Literal, Union
 
 import arrow
@@ -23,7 +24,7 @@ class TimeFilter:
     mode: Literal["older", "newer"] = "older"
     timezone: Union[tzinfo, str] = "local"
 
-    filter_config: ClassVar = FilterConfig(
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
         "timefilter",
         files=True,
         dirs=False,
@@ -77,5 +78,5 @@ class TimeFilter:
         res.vars[self.filter_config.name] = dt
         return self.matches_datetime(dt)
 
-    def get_datetime(self, args: dict) -> datetime:
+    def get_datetime(self, path: Path) -> datetime:
         raise NotImplementedError()

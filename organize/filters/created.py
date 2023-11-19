@@ -21,6 +21,7 @@ def read_stat_created(path: Path) -> Optional[int]:
             return timestamp
         except subprocess.CalledProcessError:
             pass
+    return None
 
 
 def read_created(path: Path) -> datetime:
@@ -73,7 +74,7 @@ class Created(TimeFilter):
         {created}: The datetime the file / folder was created.
     """
 
-    filter_config: ClassVar = FilterConfig(
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
         name="created",
         files=True,
         dirs=True,

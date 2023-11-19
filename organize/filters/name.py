@@ -37,7 +37,9 @@ class Name:
     endswith: Union[str, List[str]] = ""
     case_sensitive: bool = True
 
-    filter_config: ClassVar = FilterConfig(name="name", files=True, dirs=True)
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
+        name="name", files=True, dirs=True
+    )
 
     def __post_init__(self, *args, **kwargs):
         self._matcher = simplematch.Matcher(
@@ -61,6 +63,7 @@ class Name:
         return is_match
 
     def pipeline(self, res: Resource, output: Output) -> bool:
+        assert res.path is not None, "Does not support standalone mode"
         if res.is_dir():
             name = res.path.stem
         else:

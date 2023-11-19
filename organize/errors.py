@@ -1,16 +1,13 @@
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Iterable, Optional
 
 from pydantic import ValidationError
 
 
 class ConfigError(ValueError):
-    @classmethod
     def __init__(self, e: ValidationError, config_path: Optional[Path] = None):
         self.e = e
-        self.config_path = config_path
-        if self.config_path:
-            self.config_path = config_path.resolve()
+        self.config_path = config_path.resolve() if config_path else None
 
     def __str__(self):
         count = self.e.error_count()
@@ -38,7 +35,7 @@ class ConfigNotFound(FileNotFoundError):
     def __init__(
         self,
         config: str,
-        search_pathes: Tuple[str] = tuple(),
+        search_pathes: Iterable[Path] = tuple(),
         init_path: Optional[Path] = None,
     ):
         self.config = config

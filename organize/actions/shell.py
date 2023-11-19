@@ -40,7 +40,7 @@ class Shell:
     simulation_output: str = "** simulation **"
     simulation_returncode: int = 0
 
-    action_config: ClassVar = ActionConfig(
+    action_config: ClassVar[ActionConfig] = ActionConfig(
         name="shell",
         standalone=True,
         files=True,

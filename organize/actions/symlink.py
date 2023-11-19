@@ -43,7 +43,7 @@ class Symlink:
     rename_template: str = "{name} {counter}{extension}"
     autodetect_folder: bool = True
 
-    action_config: ClassVar = ActionConfig(
+    action_config: ClassVar[ActionConfig] = ActionConfig(
         name="symlink",
         standalone=False,
         files=True,
@@ -55,6 +55,7 @@ class Symlink:
         self._rename_template = Template.from_string(self.rename_template)
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
+        assert res.path is not None, "Does not support standalone mode"
         rendered = self._dest.render(**res.dict())
         dst = prepare_target_path(
             src_name=res.path.name,

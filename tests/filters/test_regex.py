@@ -9,8 +9,6 @@ from organize.filters import Regex
 from organize.output import Default
 from organize.resource import Resource
 
-TESTDATA = []
-
 
 def test_regex_backslash():
     regex = Regex(r"^\.pdf$")

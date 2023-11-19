@@ -47,10 +47,7 @@ class JSONL:
         level: Literal["info", "warn", "error"] = "info",
         sender: Union[Filter, Action, str] = "",
     ):
-        try:
-            rule = res.rule.name or ""
-        except AttributeError:
-            rule = ""
+        rule = res.rule.name if res.rule and res.rule.name else ""
         basedir = res.basedir or ""
         self.emit_event(
             Msg(

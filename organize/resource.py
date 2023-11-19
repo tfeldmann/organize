@@ -44,9 +44,13 @@ class Resource:
     # TODO: Caching for `is_file` and `is_dir`
     # TODO: provide a `from_direntry` constructor to speed things up
     def is_file(self):
+        if self.path is None:
+            raise ValueError("No path given")
         return self.path.is_file()
 
     def is_dir(self):
+        if self.path is None:
+            raise ValueError("No path given")
         return self.path.is_dir()
 
     def is_empty(self):

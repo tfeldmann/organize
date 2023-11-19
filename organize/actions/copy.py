@@ -54,7 +54,7 @@ class Copy:
     autodetect_folder: bool = True
     continue_with: Literal["copy", "original"] = "copy"
 
-    action_config: ClassVar = ActionConfig(
+    action_config: ClassVar[ActionConfig] = ActionConfig(
         name="copy",
         standalone=False,
         files=True,
@@ -66,6 +66,7 @@ class Copy:
         self._rename_template = Template.from_string(self.rename_template)
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
+        assert res.path is not None, "Does not support standalone mode"
         rendered = self._dest.render(**res.dict())
 
         # fully resolve the destination for folder targets and prepare the folder

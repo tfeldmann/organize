@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Set, Union
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic.dataclasses import dataclass
@@ -23,12 +23,12 @@ class Location(BaseModel):
     path: str
     max_depth: Union[Literal["inherit"], int, None] = "inherit"
     search: Literal["depth", "breadth"] = "breadth"
-    exclude_files: List[str] = Field(default_factory=list)
-    exclude_dirs: List[str] = Field(default_factory=list)
-    system_exclude_files: List[str] = Field(
+    exclude_files: Set[str] = Field(default_factory=list)
+    exclude_dirs: Set[str] = Field(default_factory=list)
+    system_exclude_files: Set[str] = Field(
         default_factory=lambda: DEFAULT_SYSTEM_EXCLUDE_FILES
     )
-    system_exclude_dirs: List[str] = Field(
+    system_exclude_dirs: Set[str] = Field(
         default_factory=lambda: DEFAULT_SYSTEM_EXCLUDE_DIRS
     )
     filter: Union[List[str], None] = None

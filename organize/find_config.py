@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Tuple
 
 import platformdirs
 
@@ -43,7 +43,7 @@ def find_config(name_or_path: Optional[str] = None) -> Path:
     if as_path.exists() and as_path.is_file():
         return as_path
 
-    search_pathes = tuple()
+    search_pathes: Tuple[Path, ...] = tuple()
     if not as_path.is_absolute():
         as_yml = Path(f"{as_path}.yml")
         as_yaml = Path(f"{as_path}.yaml")

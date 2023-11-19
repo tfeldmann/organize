@@ -22,10 +22,16 @@ class Output(Protocol):
         msg: str,
         level: Literal["info", "warn", "error"] = "info",
         sender: Union[Filter, Action, str] = "",
-    ):
+    ) -> None:
         ...
 
-    def confirm(self, res: Resource, msg: str) -> bool:
+    def confirm(
+        self,
+        res: Resource,
+        msg: str,
+        default: str,
+        sender: Union[Filter, Action, str] = "",
+    ) -> bool:
         ...
 
     def end(self, success_count: int, error_count: int):

@@ -1,5 +1,6 @@
 import logging
 import re
+from pathlib import Path
 from typing import Any, ClassVar
 
 from pydantic.config import ConfigDict
@@ -28,12 +29,16 @@ class FileContent:
 
     expr: str = r"(?P<all>.*)"
 
-    filter_config: ClassVar = FilterConfig(name="filecontent", files=True, dirs=False)
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
+        name="filecontent",
+        files=True,
+        dirs=False,
+    )
 
     def __post_init__(self):
         self._expr = re.compile(self.expr, re.MULTILINE | re.DOTALL)
 
-    def matches(self, path: str) -> Any:
+    def matches(self, path: Path) -> Any:
         try:
             import textract
 

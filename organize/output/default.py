@@ -38,14 +38,14 @@ def _pipeline_source(source: Union[Filter, Action, str]):
     return Text(f"    - ({src}) ", style="pipeline.source")
 
 
-def pipeline_message(source: str, msg: str) -> None:
+def pipeline_message(source: str, msg: str) -> Text:
     return Text.assemble(
         _pipeline_source(source),
         (msg, "pipeline.msg"),
     )
 
 
-def pipeline_error(source: str, msg: str):
+def pipeline_error(source: str, msg: str) -> Text:
     return Text.assemble(
         _pipeline_source(source),
         (f"ERROR! {msg}", "pipeline.error"),
@@ -54,7 +54,7 @@ def pipeline_error(source: str, msg: str):
 
 class Confirm(RichConfirm):
     @classmethod
-    def set_source(cls, source):
+    def set_source(cls, source) -> None:
         cls.validate_error_message = Text.assemble(
             _pipeline_source(source),
             ("Please enter Y or N", "prompt.invalid"),

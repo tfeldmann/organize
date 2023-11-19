@@ -32,7 +32,7 @@ class MacOSTags:
 
     tags: FlatList[str]
 
-    action_config: ClassVar = ActionConfig(
+    action_config: ClassVar[ActionConfig] = ActionConfig(
         name="macos_tags",
         standalone=False,
         files=True,

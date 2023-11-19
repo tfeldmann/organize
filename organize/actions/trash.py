@@ -20,7 +20,7 @@ class Trash:
 
     """Move a file or dir into the trash."""
 
-    action_config: ClassVar = ActionConfig(
+    action_config: ClassVar[ActionConfig] = ActionConfig(
         name="trash",
         standalone=False,
         files=True,
@@ -28,6 +28,7 @@ class Trash:
     )
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
+        assert res.path is not None, "Does not support standalone mode"
         output.msg(res=res, msg=f'Trash "{res.path}"', sender=self)
         if not simulate:
             trash(res.path)

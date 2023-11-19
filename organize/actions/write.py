@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import enum
 from pathlib import Path
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
@@ -13,12 +12,6 @@ from organize.template import Template
 if TYPE_CHECKING:
     from organize.output import Output
     from organize.resource import Resource
-
-
-class Mode(enum.StrEnum):
-    PREPEND = "prepend"
-    APPEND = "append"
-    OVERWRITE = "overwrite"
 
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
@@ -54,11 +47,11 @@ class Write:
 
     text: str
     outfile: str
-    mode: Mode = Mode.APPEND
+    mode: Literal["append", "prepend", "overwrite"] = "append"
     newline: bool = True
     clear_before_first_write: bool = False
 
-    action_config: ClassVar = ActionConfig(
+    action_config: ClassVar[ActionConfig] = ActionConfig(
         name="write",
         standalone=True,
         files=True,
@@ -92,13 +85,13 @@ class Write:
             text += "\n"
 
         if not simulate:
-            if self.mode == Mode.APPEND:
+            if self.mode == "append":
                 with open(path, "a") as f:
                     f.write(text)
-            elif self.mode == Mode.PREPEND:
+            elif self.mode == "prepend":
                 content = ""
                 if path.exists():
                     content = path.read_text()
                 path.write_text(text + content)
-            elif self.mode == Mode.OVERWRITE:
+            elif self.mode == "overwrite":
                 path.write_text(text)
