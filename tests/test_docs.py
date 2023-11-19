@@ -34,6 +34,9 @@ def test_examples_are_valid(location, config):
     """
     try:
         Config.from_string(config)
+    except EnvironmentError:
+        # in case filters are not supported on the test OS
+        pass
     except Exception as e:
         print(f"{location}:\n({config})")
         raise e
