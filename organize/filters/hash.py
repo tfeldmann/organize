@@ -75,6 +75,7 @@ class Hash:
         self._algorithm = Template.from_string(self.algorithm)
 
     def pipeline(self, res: Resource, output: Output) -> bool:
+        assert res.path is not None
         algo = self._algorithm.render(**res.dict()).lower()
         result = hash(path=res.path, algo=algo)
         res.vars[self.filter_config.name] = result

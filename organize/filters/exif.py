@@ -2,7 +2,7 @@ import collections
 import fnmatch
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import ClassVar, Dict, Optional, Union
+from typing import Any, ClassVar, DefaultDict, Dict, Mapping, Optional, Union
 
 import exifread
 from pydantic import BaseModel
@@ -14,6 +14,7 @@ from organize.resource import Resource
 
 ExifValue = Union[str, datetime, date, timedelta]
 ExifDict = Dict[str, Union[ExifValue, Dict[str, ExifValue]]]
+ExifDefaultDict = DefaultDict[str, Union[ExifValue, DefaultDict[str, ExifValue]]]
 
 
 def parse_tag(key: str, value: str) -> ExifValue:
@@ -50,7 +51,7 @@ def parse_tag(key: str, value: str) -> ExifValue:
 
 
 def parse_and_categorize(tags: Dict[str, str]) -> ExifDict:
-    result = collections.defaultdict(dict)
+    result: DefaultDict[str, Any] = collections.defaultdict(dict)
     for key, value in tags.items():
         if " " in key:
             category, field = key.split(" ", maxsplit=1)
@@ -75,7 +76,7 @@ def matches_tags(filter_tags: Dict[str, Optional[str]], data: ExifDict) -> bool:
     for k, v in filter_tags.items():
         try:
             # step into the data dict by dotted notation
-            data_value = data
+            data_value: Any = data
             for part in k.split("."):
                 data_value = data_value[part]
             # if v is None it's enough for the key to exist in the data.

@@ -54,6 +54,7 @@ class FileContent:
             logging.exception(e)
 
     def pipeline(self, res: Resource, output: Output) -> bool:
+        assert res.path is not None, "Does not support standalone mode"
         match = self.matches(path=res.path)
 
         if match:

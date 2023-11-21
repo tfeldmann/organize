@@ -9,7 +9,7 @@ Which was updated for python3 in:
 """
 from collections import defaultdict
 from pathlib import Path
-from typing import ClassVar, Literal, Tuple
+from typing import Any, Callable, ClassVar, Literal, NamedTuple, Tuple
 
 from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
@@ -25,6 +25,8 @@ from organize.resource import Resource
 DetectionMethod = Literal[
     "first_seen",
     "-first_seen",
+    "last_seen",
+    "-last_seen",
     "name",
     "-name",
     "created",
@@ -34,35 +36,53 @@ DetectionMethod = Literal[
 ]
 
 
+class OriginalDetectionResult(NamedTuple):
+    original: Path
+    duplicate: Path
+
+    @classmethod
+    def by_sorting(
+        cls,
+        known: Path,
+        new: Path,
+        key: Callable[[Path], Any],
+    ) -> "OriginalDetectionResult":
+        if key(known) <= key(new):
+            return cls(original=known, duplicate=new)
+        return cls(original=new, duplicate=known)
+
+    def reversed(self) -> "OriginalDetectionResult":
+        return OriginalDetectionResult(
+            original=self.duplicate,
+            duplicate=self.original,
+        )
+
+
 def detect_original(
     known: Path, new: Path, method: DetectionMethod, reverse: bool
 ) -> Tuple[Path, Path]:
     """Returns a tuple (original file, duplicate)"""
 
     if method == "first_seen":
-        return (known, new) if not reverse else (new, known)
+        result = OriginalDetectionResult(original=known, duplicate=new)
+    elif method == "last_seen":
+        result = OriginalDetectionResult(original=new, duplicate=known)
     elif method == "name":
-        return tuple(
-            sorted(
-                (known, new),
-                key=lambda x: x.name,
-                reverse=reverse,
-            )
+        result = OriginalDetectionResult.by_sorting(
+            known=known, new=new, key=lambda x: x.name
         )
     elif method == "created":
-        return tuple(
-            sorted(
-                (known, new),
-                key=lambda x: read_created(x),
-                reverse=reverse,
-            )
+        result = OriginalDetectionResult.by_sorting(
+            known=known, new=new, key=lambda x: read_created(x)
         )
     elif method == "lastmodified":
-        return tuple(
-            sorted((known, new), key=lambda x: read_lastmodified(x), reverse=reverse)
+        result = OriginalDetectionResult.by_sorting(
+            known=known, new=new, key=lambda x: read_lastmodified(x)
         )
     else:
         raise ValueError(f"Unknown original detection method: {method}")
+
+    return result.reversed() if reverse else result
 
 
 @dataclass(config=ConfigDict(extra="forbid"))

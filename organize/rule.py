@@ -5,7 +5,7 @@ from typing import Dict, List, Literal, Optional, Set, Union
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from .action import Action
-from .filter import All, Any, Filter, Not
+from .filter import All, Any, Filter, HasFilterPipeline, Not
 from .location import Location
 from .output import Output
 from .registry import action_by_name, filter_by_name
@@ -160,8 +160,8 @@ class Rule(BaseModel):
     def walk(self, working_dir: Union[Path, str] = ".", rule_nr: int = 0):
         for location in self.locations:
             # instantiate the filesystem walker
-            exclude_files = location.system_exclude_files + location.exclude_files
-            exclude_dirs = location.system_exclude_dirs + location.exclude_dirs
+            exclude_files = location.system_exclude_files | location.exclude_files
+            exclude_dirs = location.system_exclude_dirs | location.exclude_dirs
             if location.max_depth == "inherit":
                 max_depth = None if self.subfolders else 0
             else:
@@ -183,7 +183,7 @@ class Rule(BaseModel):
                 "dirs": walker.dirs,
             }
             expanded_path = expandvars(location.path)
-            for path in _walk_funcs[self.targets](expanded_path):
+            for path in _walk_funcs[self.targets](str(expanded_path)):
                 yield Resource(
                     path=Path(path),
                     basedir=expanded_path,
@@ -208,6 +208,7 @@ class Rule(BaseModel):
             action_pipeline(res=res)
             return
 
+        filters: HasFilterPipeline
         if self.filter_mode == "all":
             filters = All(*self.filters)
         elif self.filter_mode == "any":

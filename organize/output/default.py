@@ -120,7 +120,7 @@ class Default:
             else:
                 self.console.print("  * standalone *")
 
-    def start(self, simulate: bool, config_path: Optional[str] = None):
+    def start(self, simulate: bool, config_path: Optional[Path] = None):
         self.det_rule.reset()
         self.det_location.reset()
         self.det_path.reset()

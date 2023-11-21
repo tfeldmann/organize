@@ -1,5 +1,5 @@
 import logging
-from typing import ClassVar, NamedTuple, Protocol, runtime_checkable
+from typing import ClassVar, Iterable, NamedTuple, Protocol, runtime_checkable
 
 from .output import Output
 from .resource import Resource
@@ -11,27 +11,32 @@ class FilterConfig(NamedTuple):
     dirs: bool
 
 
-@runtime_checkable
-class Filter(Protocol):
-    filter_config: ClassVar[FilterConfig]
-
+class HasFilterPipeline(Protocol):
     def pipeline(self, res: Resource, output: Output) -> bool:
+        ...
+
+
+class HasFilterConfig(Protocol):
+    filter_config: FilterConfig
+
+
+@runtime_checkable
+class Filter(HasFilterPipeline, HasFilterConfig, Protocol):
+    def __init__(self, *args, **kwargs) -> None:
+        # allow any amount of args / kwargs for BaseModel and dataclasses.
         ...
 
 
 class Not:
     def __init__(self, filter: Filter):
         self.filter = filter
+        self.filter_config = self.filter.filter_config
 
     def pipeline(self, res: Resource, output: Output) -> bool:
         return not self.filter.pipeline(res=res, output=output)
 
     def __repr__(self):
         return f"Not({self.filter})"
-
-    @property
-    def filter_config(self):
-        return self.filter.filter_config
 
 
 class All:

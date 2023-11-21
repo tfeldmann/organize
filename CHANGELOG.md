@@ -11,6 +11,7 @@
 - {now} must be {now()} now.
 - multiple paths per location
 - min_depth option
+- last_seen
 
 ## v2.4.3 (2023-10-14)
 

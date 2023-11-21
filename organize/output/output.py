@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal, Optional, Protocol, Union
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from organize.action import Action
     from organize.filter import Filter
     from organize.resource import Resource
@@ -13,7 +15,7 @@ class Output(Protocol):
     The protocol all of organize's outputs must adhere to.
     """
 
-    def start(self, simulate: bool, config_path: Optional[str] = None):
+    def start(self, simulate: bool, config_path: Optional[Path] = None):
         ...
 
     def msg(

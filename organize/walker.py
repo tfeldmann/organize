@@ -1,6 +1,6 @@
 import os
 from fnmatch import fnmatch
-from typing import Generator, Iterable, List, Literal, NamedTuple, Optional, Set
+from typing import Generator, Iterable, Iterator, List, Literal, NamedTuple, Optional
 
 from pydantic import Field
 from pydantic.dataclasses import dataclass
@@ -65,10 +65,10 @@ class Walker:
     min_depth: int = 0
     max_depth: Optional[int] = None
     method: Literal["breadth", "depth"] = "breadth"
-    filter_dirs: Optional[Set[str]] = None
-    filter_files: Optional[Set[str]] = None
-    exclude_dirs: Set[str] = Field(default_factory=set)
-    exclude_files: Set[str] = Field(default_factory=set)
+    filter_dirs: Optional[Iterable[str]] = None
+    filter_files: Optional[Iterable[str]] = None
+    exclude_dirs: Iterable[str] = Field(default_factory=set)
+    exclude_files: Iterable[str] = Field(default_factory=set)
 
     def _should_yield_file(self, entry: os.DirEntry, lvl: int):
         return (
@@ -125,10 +125,10 @@ class Walker:
         else:
             raise ValueError(f'Unknown method "{self.method}"')
 
-    def files(self, dir: str) -> Generator[None, str, None]:
+    def files(self, dir: str) -> Iterator[str]:
         for entry in self.walk(dir, files=True, dirs=False):
             yield entry.path
 
-    def dirs(self, dir: str) -> Generator[None, str, None]:
+    def dirs(self, dir: str) -> Iterator[str]:
         for entry in self.walk(dir, files=False, dirs=True):
             yield entry.path

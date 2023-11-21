@@ -27,10 +27,28 @@ class Msg(BaseModel):
     sender: str = ""
 
 
-EventType = Union[Start, Msg]
+class Report(BaseModel):
+    type: Literal["REPORT"] = "REPORT"
+    success_count: int
+    error_count: int
+
+
+EventType = Union[Start, Msg, Report]
+
+
+def ask_confirm(text):
+    while True:
+        answer = input(f"{text} [y/n]: ").lower()
+        if answer in ("j", "y", "ja", "yes"):
+            return True
+        if answer in ("n", "no", "nein"):
+            return False
 
 
 class JSONL:
+    def __init__(self, auto_confirm: bool = False):
+        self.auto_confirm = auto_confirm
+
     def start(self, simulate: bool, config_path: Optional[Path] = None):
         self.emit_event(
             Start(
@@ -61,13 +79,19 @@ class JSONL:
         )
 
     def prompt(self, res: Resource, msg: str) -> str:
-        ...
+        raise ValueError("prompting not supported in JSONL output")
 
     def confirm(self, res: Resource, msg: str) -> bool:
-        ...
+        if self.auto_confirm:
+            return True
+        return ask_confirm(msg)
 
     def end(self, success_count: int, error_count: int):
-        ...
+        report = Report(
+            success_count=success_count,
+            error_count=error_count,
+        )
+        self.emit_event(report)
 
     def emit_event(self, event: EventType):
         print(event.model_dump_json())

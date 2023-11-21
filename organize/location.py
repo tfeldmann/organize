@@ -4,18 +4,18 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic.dataclasses import dataclass
 from typing_extensions import Literal
 
-DEFAULT_SYSTEM_EXCLUDE_FILES = [
+DEFAULT_SYSTEM_EXCLUDE_FILES = {
     "thumbs.db",
     "desktop.ini",
     "~$*",
     ".DS_Store",
     ".localized",
-]
+}
 
-DEFAULT_SYSTEM_EXCLUDE_DIRS = [
+DEFAULT_SYSTEM_EXCLUDE_DIRS = {
     ".git",
     ".svn",
-]
+}
 
 
 @dataclass(config=ConfigDict(extra="forbid"))
@@ -23,8 +23,8 @@ class Location(BaseModel):
     path: str
     max_depth: Union[Literal["inherit"], int, None] = "inherit"
     search: Literal["depth", "breadth"] = "breadth"
-    exclude_files: Set[str] = Field(default_factory=list)
-    exclude_dirs: Set[str] = Field(default_factory=list)
+    exclude_files: Set[str] = Field(default_factory=set)
+    exclude_dirs: Set[str] = Field(default_factory=set)
     system_exclude_files: Set[str] = Field(
         default_factory=lambda: DEFAULT_SYSTEM_EXCLUDE_FILES
     )
@@ -42,7 +42,7 @@ class Location(BaseModel):
         "system_exclude_dirs",
         mode="before",
     )
-    def ensure_list(cls, value):
+    def ensure_set(cls, value):
         if isinstance(value, str):
-            return [value]
-        return value
+            return set([value])
+        return set(value)

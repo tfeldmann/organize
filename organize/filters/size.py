@@ -36,6 +36,7 @@ def read_dir_size(path: Path) -> int:
 
 
 def read_resource_size(res: Resource) -> int:
+    assert res.path is not None
     if res.is_file():
         return read_file_size(res.path)
     if res.is_dir():
@@ -153,6 +154,7 @@ class Size:
         return all(op(filesize, c_size) for op, c_size in self._constraints)
 
     def pipeline(self, res: Resource, output: Output) -> bool:
+        assert res.path is not None
         bytes = read_resource_size(res=res)
         res.vars[self.filter_config.name] = {
             "bytes": bytes,
