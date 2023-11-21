@@ -31,20 +31,21 @@ jobs:
 
       - name: Setup Environment
         run: |
-          python3 -m pip install --upgrade pip setuptools wheel poetry
+          python3 -m pip install --upgrade pip setuptools wheel poetry lxml
 
       - name: Install dependencies
         run: |
+          poetry config virtualenvs.create false &&
           poetry install --with=dev --extras=textract
 
       - name: Version info
         run: |
-          poetry run python main.py --version
+          python main.py --version
 
       - name: Test with pytest
         run: |
-          poetry run pytest
+          pytest
 
       - name: Check with MyPy
         run: |
-          poetry run mypy organize main.py
+          mypy organize main.py
