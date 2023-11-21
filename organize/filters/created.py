@@ -38,7 +38,7 @@ def read_created(path: Path) -> datetime:
         # attributes may be available (but may be only filled out if
         # root tries to use them):
         try:
-            timestamp = stat_result.st_birthtime
+            timestamp = stat_result.st_birthtime  # type: ignore
         except AttributeError:
             pass
 
