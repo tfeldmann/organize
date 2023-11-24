@@ -1891,5 +1891,5 @@ textract = ["textract"]
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.8,<3.12"
+python-versions = ">=3.8,<3.13"
 content-hash = "0054aa7ad877deabb2da7383eea351a18a5ab377afbfbef64b287b820faf86dd"
