@@ -2,7 +2,7 @@ import collections
 import fnmatch
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Any, ClassVar, DefaultDict, Dict, Mapping, Optional, Union
+from typing import Any, ClassVar, DefaultDict, Dict, Optional, Union
 
 import exifread
 from pydantic import BaseModel

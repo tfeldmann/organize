@@ -6,7 +6,7 @@ from pydantic.dataclasses import dataclass
 from organize.action import ActionConfig
 from organize.output import Output
 from organize.resource import Resource
-from organize.template import Template
+from organize.template import Template, render
 
 
 @dataclass(config=ConfigDict(extra="forbid"))
@@ -33,5 +33,5 @@ class Echo:
         self._msg_templ = Template.from_string(self.msg)
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
-        full_msg = self._msg_templ.render(**res.dict())
+        full_msg = render(self._msg_templ, res.dict())
         output.msg(res, full_msg, sender=self.action_config.name)

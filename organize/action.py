@@ -17,8 +17,15 @@ class ActionConfig(NamedTuple):
 
 
 @runtime_checkable
-class Action(Protocol):
+class HasActionConfig(Protocol):
     action_config: ClassVar[ActionConfig]
 
+
+class HasActionPipeline(Protocol):
     def pipeline(self, res: Resource, output: Output, simulate: bool):
         ...
+
+
+@runtime_checkable
+class Action(HasActionConfig, HasActionPipeline, Protocol):
+    pass

@@ -1,8 +1,11 @@
-import logging
-from typing import ClassVar, Iterable, NamedTuple, Protocol, runtime_checkable
+from __future__ import annotations
 
-from .output import Output
-from .resource import Resource
+import logging
+from typing import TYPE_CHECKING, NamedTuple, Protocol, runtime_checkable
+
+if TYPE_CHECKING:
+    from .output import Output
+    from .resource import Resource
 
 
 class FilterConfig(NamedTuple):
@@ -11,13 +14,14 @@ class FilterConfig(NamedTuple):
     dirs: bool
 
 
+@runtime_checkable
+class HasFilterConfig(Protocol):
+    filter_config: FilterConfig
+
+
 class HasFilterPipeline(Protocol):
     def pipeline(self, res: Resource, output: Output) -> bool:
         ...
-
-
-class HasFilterConfig(Protocol):
-    filter_config: FilterConfig
 
 
 @runtime_checkable

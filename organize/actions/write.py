@@ -7,7 +7,7 @@ from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.action import ActionConfig
-from organize.template import Template
+from organize.template import Template, render
 
 if TYPE_CHECKING:
     from organize.output import Output
@@ -64,8 +64,8 @@ class Write:
         self._known_files = set()
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
-        text = self._text.render(**res.dict())
-        path = Path(self._path.render(**res.dict()))
+        text = render(self._text, res.dict())
+        path = Path(render(self._path, res.dict()))
 
         resolved = path.resolve()
         if resolved not in self._known_files:

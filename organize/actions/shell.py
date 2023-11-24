@@ -7,7 +7,7 @@ from pydantic.dataclasses import dataclass
 from organize.action import ActionConfig
 from organize.output import Output
 from organize.resource import Resource
-from organize.template import Template
+from organize.template import Template, render
 
 # TODO: Terminal waterfall: https://github.com/Textualize/rich/discussions/2985
 
@@ -52,7 +52,7 @@ class Shell:
         self._simulation_output = Template.from_string(self.simulation_output)
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
-        full_cmd = self._cmd.render(**res.dict())
+        full_cmd = render(self._cmd, res.dict())
 
         if not simulate or self.run_in_simulation:
             output.msg(res=res, msg=f"$ {full_cmd}", sender=self)
@@ -79,6 +79,6 @@ class Shell:
                 sender=self,
             )
             res.vars[self.action_config.name] = {
-                "output": self._simulation_output.render(**res.dict()),
+                "output": render(self._simulation_output, res.dict()),
                 "returncode": self.simulation_returncode,
             }

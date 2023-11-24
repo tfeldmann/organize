@@ -83,6 +83,7 @@ def execute(
         output=output,
         tags=tags,
         skip_tags=skip_tags,
+        working_dir=working_dir,
     )
 
 

@@ -9,7 +9,8 @@ from .filter import All, Any, Filter, HasFilterPipeline, Not
 from .location import Location
 from .output import Output
 from .registry import action_by_name, filter_by_name
-from .resource import Resource
+from .resource import BASIC_VARS, Resource
+from .template import render
 from .utils import expandvars
 from .validators import flatten
 from .walker import Walker
@@ -182,7 +183,7 @@ class Rule(BaseModel):
                 "files": walker.files,
                 "dirs": walker.dirs,
             }
-            expanded_path = expandvars(location.path)
+            expanded_path = render(location.path, BASIC_VARS)  # allow {env.X} etc
             for path in _walk_funcs[self.targets](str(expanded_path)):
                 yield Resource(
                     path=Path(path),

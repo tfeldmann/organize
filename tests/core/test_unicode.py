@@ -56,7 +56,7 @@ def test_normalization_regex(testfs):
           - rename: "found-regex.txt"
     """
     ).decode("utf-8")
-    core.run(config, simulate=False, working_dir=testfs)
+    Config.execute(config, simulate=False, working_dir=testfs)
     assert read_files(testfs) == {"found-regex.txt"}
 
 
@@ -76,5 +76,5 @@ def test_normalization_filename(testfs):
           - rename: "found-regex.txt"
     """
     ).decode("utf-8")
-    core.run(config, simulate=False, working_dir=testfs)
+    Config.run(config, simulate=False, working_dir=testfs)
     assert read_files(testfs) == {"found-regex.txt"}

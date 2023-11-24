@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, Optional, Protocol, Union
+from typing import TYPE_CHECKING, Literal, Optional, Protocol
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from organize.action import Action
-    from organize.filter import Filter
     from organize.resource import Resource
+
+    from ._sender import SenderType
 
 
 class Output(Protocol):
@@ -23,7 +23,7 @@ class Output(Protocol):
         res: Resource,
         msg: str,
         level: Literal["info", "warn", "error"] = "info",
-        sender: Union[Filter, Action, str] = "",
+        sender: SenderType = "",
     ) -> None:
         ...
 
@@ -32,7 +32,7 @@ class Output(Protocol):
         res: Resource,
         msg: str,
         default: bool,
-        sender: Union[Filter, Action, str] = "",
+        sender: SenderType = "",
     ) -> bool:
         ...
 

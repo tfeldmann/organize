@@ -6,7 +6,7 @@ from pydantic.dataclasses import dataclass
 from organize.action import ActionConfig
 from organize.output import Output
 from organize.resource import Resource
-from organize.template import Template
+from organize.template import Template, render
 
 from .common.conflict import ConflictMode, resolve_conflict
 from .common.target_path import prepare_target_path
@@ -56,7 +56,7 @@ class Symlink:
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
         assert res.path is not None, "Does not support standalone mode"
-        rendered = self._dest.render(**res.dict())
+        rendered = render(self._dest, res.dict())
         dst = prepare_target_path(
             src_name=res.path.name,
             dst=rendered,

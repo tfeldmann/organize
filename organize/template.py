@@ -22,7 +22,7 @@ Template = jinja2.Environment(
 )
 
 
-def expand_args(template: Union[str, jinja2.environment.Template], args=None):
+def render(template: Union[str, jinja2.environment.Template], args=None):
     if args is None:
         args = dict()
     if isinstance(template, str):

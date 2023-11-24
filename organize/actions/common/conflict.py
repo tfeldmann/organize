@@ -5,11 +5,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING, NamedTuple
 
 from organize.output import Output
-from organize.resource import Resource
+from organize.resource import BASIC_VARS, Resource
+from organize.template import render
 
 if TYPE_CHECKING:
-    from typing import Optional
-
     from jinja2 import Template
 
 
@@ -51,11 +50,13 @@ def next_free_name(dst: Path, template: Template) -> Path:
     counter = 2
     prev_candidate = None
     while True:
-        new_name = template.render(
+        args = dict(
             name=dst.stem,
             extension=dst.suffix,
             counter=counter,
+            **BASIC_VARS,
         )
+        new_name = render(template, args)
         candidate = dst.with_name(new_name)
         if not candidate.exists():
             return candidate

@@ -1,6 +1,6 @@
 import os
 from fnmatch import fnmatch
-from typing import Generator, Iterable, Iterator, List, Literal, NamedTuple, Optional
+from typing import Iterable, Iterator, List, Literal, NamedTuple, Optional
 
 from pydantic import Field
 from pydantic.dataclasses import dataclass

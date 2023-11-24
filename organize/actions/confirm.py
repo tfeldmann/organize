@@ -6,7 +6,7 @@ from pydantic.dataclasses import dataclass
 from organize.action import ActionConfig
 from organize.output import Output
 from organize.resource import Resource
-from organize.template import Template
+from organize.template import Template, render
 
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
@@ -28,7 +28,7 @@ class Confirm:
         self._msg = Template.from_string(self.msg)
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
-        msg = self._msg.render(**res.dict())
+        msg = render(self._msg, res.dict())
         result = output.confirm(res=res, msg=msg, sender=self, default=self.default)
         if not result:
             raise StopIteration("Aborted")

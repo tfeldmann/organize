@@ -8,7 +8,7 @@ from pydantic.dataclasses import dataclass
 from organize.action import ActionConfig
 from organize.output import Output
 from organize.resource import Resource
-from organize.template import Template
+from organize.template import Template, render
 from organize.validators import FlatList
 
 
@@ -51,7 +51,7 @@ class MacOSTags:
         COLORS = [c.name.lower() for c in macos_tags.Color]
 
         for template in self._tags:  # type: ignore
-            tag = template.render(**res.dict())
+            tag = render(template, res.dict())
             name, color = self._parse_tag(tag)
 
             if color not in COLORS:

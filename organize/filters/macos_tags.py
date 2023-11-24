@@ -41,7 +41,9 @@ class MacOSTags:
     tags: List[str] = Field(default_factory=list)
 
     filter_config: ClassVar[FilterConfig] = FilterConfig(
-        name="macos_tags", files=True, dirs=True
+        name="macos_tags",
+        files=True,
+        dirs=True,
     )
 
     def __post_init__(self):

@@ -9,7 +9,7 @@ from organize.filter import FilterConfig
 from .common.timefilter import TimeFilter
 
 
-def read_date_lastused(path: Path):
+def read_date_lastused(path: Path) -> datetime:
     cmd = ["mdls", "-name", "kMDItemLastUsedDate", "-raw", str(path)]
     out = subprocess.check_output(cmd, encoding="utf-8").strip()
     if out == "(null)":

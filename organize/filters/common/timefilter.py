@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime, tzinfo
 from pathlib import Path
 from typing import ClassVar, Literal, Union
@@ -69,8 +68,7 @@ class TimeFilter:
         assert res.path is not None, "Does not support standalone mode"
         try:
             dt = self.get_datetime(res.path)
-        except Exception as e:
-            logging.warn(f"Cannot read datetime ({e})")
+        except Exception:
             return False
 
         # apply timezone

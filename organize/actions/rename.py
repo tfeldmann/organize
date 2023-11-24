@@ -8,7 +8,7 @@ from pydantic.dataclasses import dataclass
 from organize.action import ActionConfig
 from organize.output import Output
 from organize.resource import Resource
-from organize.template import Template
+from organize.template import Template, render
 
 from .common.conflict import ConflictMode, resolve_conflict
 
@@ -52,7 +52,7 @@ class Rename:
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
         assert res.path is not None, "Does not support standalone mode"
-        new_name = self._new_name.render(**res.dict())
+        new_name = render(self._new_name, res.dict())
         if "/" in new_name:
             raise ValueError(
                 "The new name cannot contain slashes. "

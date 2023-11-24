@@ -5,10 +5,12 @@ from typing import TYPE_CHECKING, Literal, Optional, Union
 
 from pydantic import BaseModel
 
+from ._sender import sender_name
+
 if TYPE_CHECKING:
-    from organize.action import Action
-    from organize.filter import Filter
     from organize.resource import Resource
+
+    from ._sender import SenderType
 
 
 class Start(BaseModel):
@@ -63,7 +65,7 @@ class JSONL:
         res: Resource,
         msg: str,
         level: Literal["info", "warn", "error"] = "info",
-        sender: Union[Filter, Action, str] = "",
+        sender: SenderType = "",
     ):
         rule = res.rule.name if res.rule and res.rule.name else ""
         basedir = res.basedir or ""
@@ -75,6 +77,7 @@ class JSONL:
                 rule=rule,
                 basedir=str(basedir),
                 path=str(res.path),
+                sender=sender_name(sender),
             )
         )
 

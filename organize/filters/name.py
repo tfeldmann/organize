@@ -38,7 +38,9 @@ class Name:
     case_sensitive: bool = True
 
     filter_config: ClassVar[FilterConfig] = FilterConfig(
-        name="name", files=True, dirs=True
+        name="name",
+        files=True,
+        dirs=True,
     )
 
     def __post_init__(self, *args, **kwargs):

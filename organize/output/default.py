@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal, Optional, Union
+from typing import TYPE_CHECKING, Literal, Optional
 
 from rich.console import Console
 from rich.panel import Panel
@@ -11,12 +11,12 @@ from rich.theme import Theme
 
 from organize.utils import ChangeDetector
 
+from ._sender import sender_name
+
 if TYPE_CHECKING:
-    from organize.action import Action
-    from organize.filter import Filter
     from organize.resource import Resource
 
-    SenderType = Union[Filter, Action, str]
+    from ._sender import SenderType
 
 
 def _highlight_path(path: Path, base_style: str, main_style: str) -> str:
@@ -25,30 +25,29 @@ def _highlight_path(path: Path, base_style: str, main_style: str) -> str:
     return f"[{base_style}]{base}[/][{main_style}]{main}[/]"
 
 
-def _pipeline_source(source: SenderType) -> str:
-    if hasattr(source, "filter_config"):
-        src = source.filter_config.name
-    elif hasattr(source, "action_config"):
-        src = source.action_config.name
-    else:
-        src = str(source)
-    return f"    - ([pipeline.source]{src}[/]) "
+def _format_sender(sender: SenderType) -> str:
+    return f"    - ([pipeline.source]{sender_name(sender)}[/]) "
 
 
-def pipeline_message(source: SenderType, msg: str) -> str:
-    pre = _pipeline_source(source)
+def format_info(sender: SenderType, msg: str) -> str:
+    pre = _format_sender(sender)
     return f"{pre}[pipeline.msg]{msg}[/]"
 
 
-def pipeline_error(source: SenderType, msg: str) -> str:
-    src = _pipeline_source(source)
-    return f"{src}[pipeline.error]ERROR! {msg}[/]"
+def format_warn(sender: SenderType, msg: str) -> str:
+    pre = _format_sender(sender)
+    return f"{pre}[pipeline.warn]{msg}[/]"
+
+
+def format_error(sender: SenderType, msg: str) -> str:
+    pre = _format_sender(sender)
+    return f"{pre}[pipeline.error]ERROR! {msg}[/]"
 
 
 class Confirm(RichConfirm):
     @classmethod
     def set_source(cls, source: SenderType) -> None:
-        src = _pipeline_source(source)
+        src = _format_sender(source)
         err_msg = f"{src}[prompt.invalid]Please enter Y or N[/]"
         cls.validate_error_message = err_msg
 
@@ -70,6 +69,7 @@ class Default:
                     "path.main": "green",
                     "pipeline.source": "cyan",
                     "pipeline.msg": "",
+                    "pipeline.warn": "yellow",
                     "pipeline.error": "bold red",
                     "pipeline.prompt": "bold yellow",
                     "summary.done": "bold green",
@@ -146,7 +146,12 @@ class Default:
         sender: SenderType = "",
     ):
         self.show_resource(res)
-        self.console.print(pipeline_message(source=sender, msg=msg))
+        if level == "info":
+            self.console.print(format_info(sender=sender, msg=msg))
+        elif level == "error":
+            self.console.print(format_error(sender=sender, msg=msg))
+        elif level == "warn":
+            self.console.print(format_warn(sender=sender, msg=msg))
 
     def confirm(
         self,
@@ -157,7 +162,7 @@ class Default:
     ) -> bool:
         self.status.stop()
         self.show_resource(res)
-        src = _pipeline_source(sender)
+        src = _format_sender(sender)
         Confirm.set_source(sender)
         result = Confirm.ask(
             prompt=f"{src}[pipeline.prompt]{msg}[/]",

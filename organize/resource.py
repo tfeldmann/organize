@@ -11,6 +11,13 @@ from organize.utils import deep_merge
 if TYPE_CHECKING:
     from .rule import Rule
 
+BASIC_VARS = dict(
+    env=os.environ,
+    now=datetime.now,
+    utcnow=datetime.utcnow,
+    today=date.today,
+)
+
 
 @dataclass
 class Resource:
@@ -30,10 +37,7 @@ class Resource:
             location=self.basedir,
             relative_path=self.relative_path,
             rule=self.rule.name if self.rule else None,
-            env=os.environ,
-            now=datetime.now,
-            utcnow=datetime.utcnow,
-            today=date.today,
+            **BASIC_VARS,
             **self.vars,
         )
 

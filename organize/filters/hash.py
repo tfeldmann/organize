@@ -8,7 +8,7 @@ from pydantic.dataclasses import dataclass
 from organize.filter import FilterConfig
 from organize.output import Output
 from organize.resource import Resource
-from organize.template import Template
+from organize.template import Template, render
 
 
 def hash(path: Path, algo: str, *, _bufsize=2**18) -> str:
@@ -76,7 +76,7 @@ class Hash:
 
     def pipeline(self, res: Resource, output: Output) -> bool:
         assert res.path is not None
-        algo = self._algorithm.render(**res.dict()).lower()
+        algo = render(self._algorithm, res.dict()).lower()
         result = hash(path=res.path, algo=algo)
         res.vars[self.filter_config.name] = result
         return True
