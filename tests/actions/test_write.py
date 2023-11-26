@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 from conftest import make_files, read_files
 
@@ -109,6 +111,10 @@ def test_write_clear_then_append(fs):
         """
     ).execute(simulate=False)
     assert read_files("/out") == {
-        "test1": {"test1.log": "FOUND loc1/test1.txt\nFOUND loc2/test1.txt\n"},
-        "test2": {"test2.log": "FOUND loc1/test2.txt\nFOUND loc2/test2.txt\n"},
+        "test1": {
+            "test1.log": f"FOUND {Path('loc1/test1.txt')}\nFOUND {Path('loc2/test1.txt')}\n"
+        },
+        "test2": {
+            "test2.log": f"FOUND {Path('loc1/test2.txt')}\nFOUND {Path('loc2/test2.txt')}\n"
+        },
     }

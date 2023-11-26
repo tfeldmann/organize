@@ -8,7 +8,7 @@ def test_shell(tmp_path, testoutput):
     Config.from_string(
         f"""
         rules:
-          - locations: "{tmp_path}"
+          - locations: '{tmp_path}'
             actions:
               - shell: 'touch {{path}}.bak'
         """

@@ -23,6 +23,6 @@ def test_python(fs, testoutput):
     ).execute(simulate=False, output=testoutput)
     assert Path("/test/result.txt").exists()
     assert testoutput.messages == [
-        "Handling: /test/file.txt",
+        f"Handling: {Path('/test/file.txt')}",
         "File content",
     ]
