@@ -28,4 +28,6 @@ class HasActionPipeline(Protocol):
 
 @runtime_checkable
 class Action(HasActionConfig, HasActionPipeline, Protocol):
-    pass
+    def __init__(self, *args, **kwargs) -> None:
+        # allow any amount of args / kwargs for BaseModel and dataclasses.
+        ...

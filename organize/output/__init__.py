@@ -1,11 +1,11 @@
 from .default import Default
 from .jsonl import JSONL
 from .output import Output
-from .queue import QueueOutput
+from .saving import SavingOutput
 
 __all__ = (
     "JSONL",
     "Output",
-    "QueueOutput",
+    "SavingOutput",
     "Default",
 )

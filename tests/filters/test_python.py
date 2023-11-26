@@ -3,7 +3,7 @@ from conftest import make_files, read_files
 from organize import Config
 
 
-def test_python(fs, msg_output):
+def test_python(fs, testoutput):
     make_files(
         ["student-01.jpg", "student-01.txt", "student-02.txt", "student-03.txt"],
         "test",
@@ -19,15 +19,15 @@ def test_python(fs, msg_output):
           actions:
             - echo: '{python}'
         """
-    Config.from_string(config).execute(simulate=False, output=msg_output)
-    assert msg_output.messages == [
+    Config.from_string(config).execute(simulate=False, output=testoutput)
+    assert testoutput.messages == [
         "100",
         "200",
         "300",
     ]
 
 
-def test_odd_detector(fs, msg_output):
+def test_odd_detector(fs, testoutput):
     make_files(
         ["student-01.txt", "student-02.txt", "student-03.txt", "student-04.txt"],
         "test",
@@ -42,14 +42,14 @@ def test_odd_detector(fs, msg_output):
           actions:
             - echo: 'Odd student numbers: {name}'
         """
-    Config.from_string(config).execute(simulate=False, output=msg_output)
-    assert msg_output.messages == [
+    Config.from_string(config).execute(simulate=False, output=testoutput)
+    assert testoutput.messages == [
         "Odd student numbers: student-01",
         "Odd student numbers: student-03",
     ]
 
 
-def test_python_dict(fs, msg_output):
+def test_python_dict(fs, testoutput):
     make_files(
         ["foo-01.jpg", "foo-01.txt", "bar-02.txt", "baz-03.txt"],
         "test",
@@ -68,8 +68,8 @@ def test_python_dict(fs, msg_output):
             actions:
             - echo: '{python.code} {python.name}'
         """
-    Config.from_string(config).execute(simulate=False, output=msg_output)
-    assert msg_output.messages == [
+    Config.from_string(config).execute(simulate=False, output=testoutput)
+    assert testoutput.messages == [
         "100 foo",
         "200 bar",
         "300 baz",

@@ -12,6 +12,7 @@ from organize.output import Default, Output
 
 from .errors import ConfigError
 from .rule import Rule
+from .utils import ReportSummary
 
 
 def default_yaml_cnst(loader, tag_suffix, node):
@@ -79,6 +80,7 @@ class Config:
         working_dir: Union[str, None] = ".",
     ):
         output.start(simulate=simulate, config_path=self._config_path)
+        summary = ReportSummary()
         try:
             for rule_nr, rule in enumerate(self.rules):
                 if should_execute(
@@ -86,10 +88,11 @@ class Config:
                     tags=tags,
                     skip_tags=skip_tags,
                 ):
-                    rule.execute(
+                    rule_summary = rule.execute(
                         simulate=simulate,
                         output=output,
                         rule_nr=rule_nr,
                     )
+                    summary += rule_summary
         finally:
-            output.end(0, 0)
+            output.end(summary.success, summary.errors)

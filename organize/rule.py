@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Set, Union
+from typing import Dict, Iterable, List, Literal, Optional, Set, Union
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -11,11 +11,23 @@ from .output import Output
 from .registry import action_by_name, filter_by_name
 from .resource import Resource
 from .template import render
+from .utils import ReportSummary
 from .validators import flatten
 from .walker import Walker
 
+FilterMode = Literal["all", "any", "none"]
 
-def action_from_dict(d):
+
+def action_from_dict(d: Dict) -> Action:
+    """
+    :param d:
+        A dict in the forms of
+        { "action_name": None }
+        { "action_name": "value" }
+        { "action_name": {"param": "value"} }
+    :returns:
+        An instantiated action.
+    """
     if not len(d.keys()) == 1:
         raise ValueError("Action definition must have only one key")
     name, value = next(iter(d.items()))
@@ -28,7 +40,15 @@ def action_from_dict(d):
         return ActionCls(value)
 
 
-def filter_from_dict(d: Dict):
+def filter_from_dict(d: Dict) -> Filter:
+    """
+    :param d:
+        A dict in the forms of ("not" prefix is optional)
+        { "[not] filter_name": None }
+        { "[not] filter_name": "value" }
+        { "[not] filter_name": {"param": "value"} }
+    :returns: An instantiated filter.
+    """
     if not len(d.keys()) == 1:
         raise ValueError("Filter definition must have a single key")
     name, value = next(iter(d.items()))
@@ -52,6 +72,37 @@ def filter_from_dict(d: Dict):
     return Not(inst) if invert_filter else inst
 
 
+def filter_pipeline(
+    filters: Iterable[Filter],
+    filter_mode: FilterMode,
+    res: Resource,
+    output: Output,
+) -> bool:
+    collection: HasFilterPipeline
+    if filter_mode == "all":
+        collection = All(*filters)
+    elif filter_mode == "any":
+        collection = Any(*filters)
+    elif filter_mode == "none":
+        collection = All(*[Not(x) for x in filters])
+    else:
+        raise ValueError(f"Unknown filter mode {filter_mode}")
+    return collection.pipeline(res, output=output)
+
+
+def action_pipeline(
+    actions: Iterable[Action],
+    res: Resource,
+    simulate: bool,
+    output: Output,
+) -> None:
+    for action in actions:
+        try:
+            action.pipeline(res=res, simulate=simulate, output=output)
+        except StopIteration:
+            break
+
+
 class Rule(BaseModel):
     name: Optional[str] = None
     enabled: bool = True
@@ -60,7 +111,7 @@ class Rule(BaseModel):
     subfolders: bool = False
     tags: Set[str] = Field(default_factory=set)
     filters: List[Filter] = Field(default_factory=list)
-    filter_mode: Literal["all", "any", "none"] = "all"
+    filter_mode: FilterMode = "all"
     actions: List[Action] = Field(..., min_length=1)
 
     model_config = ConfigDict(
@@ -191,39 +242,51 @@ class Rule(BaseModel):
                     rule_nr=rule_nr,
                 )
 
-    def execute(self, *, simulate: bool, output: Output, rule_nr: int = 0):
+    def execute(
+        self, *, simulate: bool, output: Output, rule_nr: int = 0
+    ) -> ReportSummary:
         if not self.enabled:
-            return
-
-        def action_pipeline(res: Resource):
-            for action in self.actions:
-                try:
-                    action.pipeline(res, simulate=simulate, output=output)
-                except StopIteration:
-                    break
+            return ReportSummary()
 
         # standalone mode
         if not self.locations:
             res = Resource(path=None, rule_nr=rule_nr)
-            action_pipeline(res=res)
-            return
-
-        filters: HasFilterPipeline
-        if self.filter_mode == "all":
-            filters = All(*self.filters)
-        elif self.filter_mode == "any":
-            filters = Any(*self.filters)
-        elif self.filter_mode == "none":
-            filters = All(*[Not(x) for x in self.filters])
-        else:
-            raise ValueError(f"Unknown filter mode {self.filter_mode}")
+            try:
+                action_pipeline(
+                    actions=self.actions,
+                    res=res,
+                    simulate=simulate,
+                    output=output,
+                )
+                return ReportSummary(success=1)
+            except Exception as e:
+                logging.exception(e)
+                return ReportSummary(errors=1)
 
         # normal mode
+        summary = ReportSummary()
+        skip_pathes: Set[Path] = set()
         for res in self.walk(rule_nr=rule_nr):
-            result = filters.pipeline(res, output=output)
+            if res.path in skip_pathes:
+                continue
+            result = filter_pipeline(
+                filters=self.filters,
+                filter_mode=self.filter_mode,
+                res=res,
+                output=output,
+            )
             if result:
                 try:
-                    action_pipeline(res=res)
+                    action_pipeline(
+                        actions=self.actions,
+                        res=res,
+                        simulate=simulate,
+                        output=output,
+                    )
+                    skip_pathes = skip_pathes.union(res.walker_skip_pathes)
+                    summary.success += 1
                 except Exception as e:
                     output.msg(res=res, msg=str(e), level="error")
                     logging.exception(e)
+                    summary.errors += 1
+        return summary

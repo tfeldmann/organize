@@ -3,20 +3,14 @@ from typing import Dict, List, Union
 
 import pytest
 
-from organize.output import QueueOutput
+from organize.output import SavingOutput
 
 ORGANIZE_DIR = Path(__file__).parent.parent
 
 
-class MsgOutput(QueueOutput):
-    @property
-    def messages(self):
-        return [x.msg for x in self.queue if x.type == "MSG"]
-
-
 @pytest.fixture
-def msg_output():
-    yield MsgOutput()
+def testoutput():
+    yield SavingOutput()
 
 
 def make_files(structure: Union[Dict, List], path: Union[Path, str] = "."):

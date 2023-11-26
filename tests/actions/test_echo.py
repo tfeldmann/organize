@@ -6,29 +6,29 @@ from conftest import make_files
 from organize import Config
 
 
-def test_echo_basic(msg_output):
+def test_echo_basic(testoutput):
     Config.from_string(
         """
         rules:
           - actions:
               - echo: "Hello World"
         """
-    ).execute(simulate=False, output=msg_output)
-    assert msg_output.messages == ["Hello World"]
+    ).execute(simulate=False, output=testoutput)
+    assert testoutput.messages == ["Hello World"]
 
 
-def test_echo_args(msg_output):
+def test_echo_args(testoutput):
     Config.from_string(
         """
         rules:
           - actions:
               - echo: "Date formatting: {now().strftime('%Y')}"
         """
-    ).execute(simulate=False, output=msg_output)
-    assert msg_output.messages == [f"Date formatting: {datetime.now().year}"]
+    ).execute(simulate=False, output=testoutput)
+    assert testoutput.messages == [f"Date formatting: {datetime.now().year}"]
 
 
-def test_echo_path(fs, msg_output):
+def test_echo_path(fs, testoutput):
     make_files(["fileA.txt", "fileB.txt"], "test")
     Config.from_string(
         """
@@ -37,5 +37,5 @@ def test_echo_path(fs, msg_output):
             actions:
               - echo: "{path.stem}"
         """
-    ).execute(simulate=False, output=msg_output)
-    assert Counter(msg_output.messages) == Counter(["fileA", "fileB"])
+    ).execute(simulate=False, output=testoutput)
+    assert Counter(testoutput.messages) == Counter(["fileA", "fileB"])

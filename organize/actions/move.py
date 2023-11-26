@@ -91,6 +91,7 @@ class Move:
             return
 
         output.msg(res=res, msg=f"Move to {dst}", sender=self)
+        res.walker_skip_pathes.add(dst)
         if not simulate:
             shutil.move(src=res.path, dst=dst)
 

@@ -92,6 +92,7 @@ class Copy:
             return
 
         output.msg(res=res, msg=f"Copy to {dst}", sender=self)
+        res.walker_skip_pathes.add(dst)
         if not simulate:
             if res.is_dir():
                 shutil.copytree(src=res.path, dst=dst)

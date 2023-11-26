@@ -1,8 +1,21 @@
 import fnmatch
 import os
 from copy import deepcopy
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Union
+
+
+@dataclass
+class ReportSummary:
+    success: int = 0
+    errors: int = 0
+
+    def __add__(self, other: "ReportSummary") -> "ReportSummary":
+        return ReportSummary(
+            success=self.success + other.success,
+            errors=self.errors + other.errors,
+        )
 
 
 class ChangeDetector:

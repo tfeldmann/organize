@@ -4,7 +4,6 @@ import pytest
 
 from organize import Config
 from organize.filters.macos_tags import list_tags, matches_tags
-from organize.output import QueueOutput
 
 
 def test_macos_tags_matching():
@@ -27,7 +26,7 @@ def test_macos_tags_matching():
 
 
 @pytest.mark.skipif(sys.platform != "darwin", reason="runs only on macOS")
-def test_macos_filter(tmp_path):
+def test_macos_filter(tmp_path, testoutput):
     import macos_tags
 
     testdir = tmp_path / "test"
@@ -48,7 +47,6 @@ def test_macos_filter(tmp_path):
     macos_tags.add(macos_tags.Tag("Pictures", macos_tags.Color.BLUE), file=pic)
     assert list_tags(pic) == ["Pictures (blue)"]
 
-    output = QueueOutput()
     Config.from_string(
         f"""
         rules:
@@ -60,8 +58,6 @@ def test_macos_filter(tmp_path):
             actions:
             - echo: "{{','.join(macos_tags)}}"
         """
-    ).execute(simulate=False, output=output)
+    ).execute(simulate=False, output=testoutput)
 
-    assert set([x.msg for x in output.messages]) == set(
-        ["Invoice (red)", "Urgent (green)"]
-    )
+    assert set(testoutput.messages) == set(["Invoice (red)", "Urgent (green)"])

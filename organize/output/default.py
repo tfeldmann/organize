@@ -171,5 +171,14 @@ class Default:
 
     def end(self, success_count: int, error_count: int):
         self.status.stop()
+        self.console.print()
+        if success_count == 0 and error_count == 0:
+            self.console.print("[summary.done]Nothing to do[/]")
+        else:
+            msg = (
+                f"[summary.done]success {success_count}[/] / "
+                f"[summary.fail]fail {error_count}[/]"
+            )
+            self.console.print(msg)
         if self.simulate:
             self.console.print(Panel("SIMULATION", style="simulation"))

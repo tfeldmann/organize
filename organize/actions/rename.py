@@ -75,3 +75,4 @@ class Rename:
         if not simulate:
             res.path.rename(dst)
         res.path = dst
+        res.walker_skip_pathes.add(dst)

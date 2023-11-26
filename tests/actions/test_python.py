@@ -3,11 +3,9 @@ from pathlib import Path
 from conftest import make_files
 
 from organize import Config
-from organize.output import QueueOutput
 
 
-def test_python(fs):
-    output = QueueOutput()
+def test_python(fs, testoutput):
     make_files({"file.txt": "File content"}, "test")
     Config.from_string(
         """
@@ -22,9 +20,9 @@ def test_python(fs):
                     return {"content": path.read_text()}
               - echo: "{python.content}"
         """
-    ).execute(simulate=False, output=output)
+    ).execute(simulate=False, output=testoutput)
     assert Path("/test/result.txt").exists()
-    assert [x.msg for x in output.messages] == [
+    assert testoutput.messages == [
         "Handling: /test/file.txt",
         "File content",
     ]

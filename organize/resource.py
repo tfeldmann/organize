@@ -27,7 +27,7 @@ class Resource:
     :param vars:
         Filters and actions may add values to this dict which are then available for
         other filters and actions in the pipeline.
-    :param ignore_files:
+    :param walker_skip_files:
         Filters and actions may add pathes to this set which are then ignored for the
         rest of the rule.
     """
@@ -37,7 +37,7 @@ class Resource:
     rule: Optional[Rule] = None
     rule_nr: int = 0
     vars: Dict[str, Any] = field(default_factory=dict)
-    ignore_files: Set[Path] = field(default_factory=set)
+    walker_skip_pathes: Set[Path] = field(default_factory=set)
 
     def relative_path(self) -> Optional[Path]:
         if self.basedir is None:

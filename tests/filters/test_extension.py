@@ -30,7 +30,7 @@ def test_extension_empty():
     assert match
 
 
-def test_filename_move(fs, msg_output):
+def test_filename_move(fs, testoutput):
     files = {
         "test.jpg": "",
         "asd.JPG": "",
@@ -49,8 +49,8 @@ def test_filename_move(fs, msg_output):
           actions:
             - echo: 'Found JPG file: {name}'
         """
-    Config.from_string(config).execute(simulate=False, output=msg_output)
-    msg_output.messages == [
+    Config.from_string(config).execute(simulate=False, output=testoutput)
+    testoutput.messages == [
         "Found JPG file: test",
         "Found JPG file: asd",
         "Found JPG file: camel",

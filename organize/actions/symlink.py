@@ -76,5 +76,6 @@ class Symlink:
             return
 
         output.msg(res=res, msg=f"Creating symlink at {dst}", sender=self)
+        res.walker_skip_pathes.add(dst)
         if not simulate:
             dst.symlink_to(target=res.path, target_is_directory=res.is_dir())

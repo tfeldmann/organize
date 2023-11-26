@@ -4,7 +4,6 @@ from conftest import make_files
 
 from organize import Config
 from organize.filters.hash import hash, hash_first_chunk
-from organize.output import QueueOutput
 
 
 def test_full_hash(fs):
@@ -39,8 +38,7 @@ def test_first_chunk(fs):
     assert hash_foo == hash_first_chunk(long_foo, algo="sha1")
 
 
-def test_hash(fs):
-    output = QueueOutput()
+def test_hash(fs, testoutput):
     make_files({"hello.txt": "Hello world\n"}, "test")
     Config.from_string(
         """
@@ -51,7 +49,5 @@ def test_hash(fs):
             actions:
               - echo: "File hash: {hash}"
         """
-    ).execute(simulate=False, output=output)
-    assert [x.msg for x in output.messages] == [
-        "File hash: f0ef7081e1539ac00ef5b761b4fb01b3"
-    ]
+    ).execute(simulate=False, output=testoutput)
+    assert testoutput.messages == ["File hash: f0ef7081e1539ac00ef5b761b4fb01b3"]
