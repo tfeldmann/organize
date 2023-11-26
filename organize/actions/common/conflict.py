@@ -1,27 +1,17 @@
 from __future__ import annotations
 
-from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING, NamedTuple
+from typing import TYPE_CHECKING, Literal, NamedTuple
 
 from organize.output import Output
-from organize.resource import BASIC_VARS, Resource
+from organize.resource import Resource
 from organize.template import render
 
 if TYPE_CHECKING:
     from jinja2 import Template
 
-
-class ConflictMode(str, Enum):
-    SKIP = "skip"
-    OVERWRITE = "overwrite"
-    TRASH = "trash"
-    RENAME_NEW = "rename_new"
-    RENAME_EXISTING = "rename_existing"
-    # TODO: keep_newer
-    # TODO: keep_older
-    # TODO: keep_bigger
-    # TODO: keep_smaller
+# TODO: keep_newer, keep_older, keep_bigger, keep_smaller
+ConflictMode = Literal["skip", "overwrite", "trash", "rename_new", "rename_existing"]
 
 
 class ConflictResult(NamedTuple):
@@ -54,7 +44,6 @@ def next_free_name(dst: Path, template: Template) -> Path:
             name=dst.stem,
             extension=dst.suffix,
             counter=counter,
-            **BASIC_VARS,
         )
         new_name = render(template, args)
         candidate = dst.with_name(new_name)
@@ -95,7 +84,7 @@ def resolve_conflict(
         _print("Same resource: Skipped.")
         return ConflictResult(skip_action=True, use_dst=res.path)
 
-    if conflict_mode == ConflictMode.TRASH:
+    if conflict_mode == "trash":
         _print(f'Trash "{dst}"')
         if not simulate:
             from organize.actions.trash import trash
@@ -103,11 +92,11 @@ def resolve_conflict(
             trash(path=dst)
         return ConflictResult(skip_action=False, use_dst=dst)
 
-    elif conflict_mode == ConflictMode.SKIP:
+    elif conflict_mode == "skip":
         _print("Skipped.")
         return ConflictResult(skip_action=True, use_dst=res.path)
 
-    elif conflict_mode == ConflictMode.OVERWRITE:
+    elif conflict_mode == "overwrite":
         _print(f"Overwriting {dst}.")
         if not simulate:
             from organize.actions.delete import delete
@@ -115,14 +104,14 @@ def resolve_conflict(
             delete(path=dst)
         return ConflictResult(skip_action=False, use_dst=dst)
 
-    elif conflict_mode == ConflictMode.RENAME_NEW:
+    elif conflict_mode == "rename_new":
         new_path = next_free_name(
             dst=dst,
             template=rename_template,
         )
         return ConflictResult(skip_action=False, use_dst=new_path)
 
-    elif conflict_mode == ConflictMode.RENAME_EXISTING:
+    elif conflict_mode == "rename_existing":
         new_path = next_free_name(
             dst=dst,
             template=rename_template,

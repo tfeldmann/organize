@@ -35,7 +35,7 @@ class Rename:
     """
 
     new_name: str
-    on_conflict: ConflictMode = ConflictMode.RENAME_NEW
+    on_conflict: ConflictMode = "rename_new"
     rename_template: str = "{name} {counter}{extension}"
     # TODO: keep_extension?
 

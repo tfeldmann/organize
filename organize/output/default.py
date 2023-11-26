@@ -110,12 +110,9 @@ class Default:
 
         # path changed
         if self.det_path.changed(res.path):
-            if res.path:
-                path_str = _highlight_path(
-                    Path(res.relative_path()),
-                    "path.base",
-                    "path.main",
-                )
+            relative_path = res.relative_path()
+            if relative_path is not None:
+                path_str = _highlight_path(relative_path, "path.base", "path.main")
                 self.console.print(f"  {path_str}")
             else:
                 self.console.print("  * standalone *")

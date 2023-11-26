@@ -1,7 +1,16 @@
 import os
+from datetime import date, datetime
 from typing import Union
 
 import jinja2
+
+# variables that should be always available in a template
+BASIC_VARS = dict(
+    env=os.environ,
+    now=datetime.now,
+    utcnow=datetime.utcnow,
+    today=date.today,
+)
 
 
 def finalize_placeholder(x):
@@ -26,9 +35,9 @@ def render(template: Union[str, jinja2.environment.Template], args=None):
     if args is None:
         args = dict()
     if isinstance(template, str):
-        text = Template.from_string(template).render(**args)
+        text = Template.from_string(template).render(**args, **BASIC_VARS)
     else:
-        text = template.render(**args)
+        text = template.render(**args, **BASIC_VARS)
 
     # expand user and fill environment vars
     text = os.path.expanduser(text)

@@ -49,7 +49,7 @@ class Move:
     """
 
     dest: str
-    on_conflict: ConflictMode = ConflictMode.RENAME_NEW
+    on_conflict: ConflictMode = "rename_new"
     rename_template: str = "{name} {counter}{extension}"
     autodetect_folder: bool = True
 
