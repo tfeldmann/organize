@@ -65,3 +65,21 @@ def test_multiple_pathes_single_location(fs, testoutput):
         """
     ).execute(simulate=False, output=testoutput)
     assert testoutput.messages == ["foo.txt", "bar.txt"] * 2
+
+
+def test_multiple_dirs(fs, testoutput):
+    make_files(["foo.txt", "bar.txt"], "/test")
+    make_files(["foo.txt", "bar.txt"], "/test2")
+    Config.from_string(
+        """
+        rules:
+          - locations:
+              - path:
+                - /test
+                - /test2
+            targets: dirs
+            actions:
+              - echo: '{path.name}'
+        """
+    ).execute(simulate=False, output=testoutput)
+    assert testoutput.messages == []

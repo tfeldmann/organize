@@ -7,7 +7,6 @@ from pydantic.dataclasses import dataclass
 
 
 def pattern_match(name, patterns):
-    # TODO: This can be more performant!
     return any(fnmatch(name, pat) for pat in patterns)
 
 
@@ -126,6 +125,8 @@ class Walker:
             raise ValueError(f'Unknown method "{self.method}"')
 
     def files(self, dir: str) -> Iterator[str]:
+        if os.path.isfile(dir):
+            yield dir
         for entry in self.walk(dir, files=True, dirs=False):
             yield entry.path
 
