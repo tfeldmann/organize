@@ -12,12 +12,17 @@ from organize.template import Template, render
 
 
 def hash(path: Path, algo: str, *, _bufsize=2**18) -> str:
-    # Future: for python >= 3.11 we can use hashlib.file_digest
+    # for python >= 3.11 we can use hashlib.file_digest
+    if hasattr(hashlib, "file_digest"):
+        with path.open("rb") as f:
+            return hashlib.file_digest(f, algo, _bufsize=_bufsize).hexdigest()
+
+    # otherwise we have to use our own backported implementation:
     h = hashlib.new(algo)
     buf = bytearray(_bufsize)
     view = memoryview(buf)
-    with open(path, "rb", buffering=0) as f:
-        while size := f.readinto(view):
+    with path.open("rb", buffering=0) as f:
+        while size := f.readinto(buf):
             h.update(view[:size])
     return h.hexdigest()
 

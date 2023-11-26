@@ -7,21 +7,31 @@ from organize.filters.hash import hash, hash_first_chunk
 
 
 def test_full_hash(fs):
+    """
+    Reference hashsums:
+
+    ```sh
+    python3 -c 'from pathlib import Path; Path("hello.txt").write_text("Hello world")'
+    md5 hello.txt && shasum -a1 hello.txt && shasum -a256 hello.txt
+    ```
+
+    Do not use newlines in the textfiles. In windows a newline is \r\n, unix: \n.
+    """
     hello = Path("hello.txt")
-    hello.write_text("Hello world\n")
-    assert hash(hello, algo="md5") == "f0ef7081e1539ac00ef5b761b4fb01b3"
-    assert hash(hello, algo="sha1") == "33ab5639bfd8e7b95eb1d8d0b87781d4ffea4d5d"
+    hello.write_text("Hello world")
+    assert hash(hello, algo="md5") == "3e25960a79dbc69b674cd4ec67a72c62"
+    assert hash(hello, algo="sha1") == "7b502c3a1f48c8609ae212cdfb639dee39673f5e"
     assert (
         hash(hello, algo="sha256")
-        == "1894a19c85ba153acbf743ac4e43fc004c891604b26f8c69e1e83ea2afc7c48f"
+        == "64ec88ca00b268e5ba1a35678a1b5316d212f4f366b2477232534a8aeca37f3c"
     )
 
 
 def test_first_chunk(fs):
     hello = Path("hello.txt")
-    hello.write_text("Hello world\n")
+    hello.write_text("Hello world")
     hash_hello = hash_first_chunk(hello, algo="md5")
-    assert hash_hello == "f0ef7081e1539ac00ef5b761b4fb01b3"
+    assert hash_hello == "3e25960a79dbc69b674cd4ec67a72c62"
 
     long_asd = Path("long_asd.txt")
     long_asd.write_text("asd" * 10000)
@@ -39,7 +49,7 @@ def test_first_chunk(fs):
 
 
 def test_hash(fs, testoutput):
-    make_files({"hello.txt": "Hello world\n"}, "test")
+    make_files({"hello.txt": "Hello world"}, "test")
     Config.from_string(
         """
         rules:
@@ -50,4 +60,4 @@ def test_hash(fs, testoutput):
               - echo: "File hash: {hash}"
         """
     ).execute(simulate=False, output=testoutput)
-    assert testoutput.messages == ["File hash: f0ef7081e1539ac00ef5b761b4fb01b3"]
+    assert testoutput.messages == ["File hash: 3e25960a79dbc69b674cd4ec67a72c62"]
