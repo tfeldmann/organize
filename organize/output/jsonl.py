@@ -48,10 +48,10 @@ def ask_confirm(text):
 
 
 class JSONL:
-    def __init__(self, auto_confirm: bool = False):
+    def __init__(self, auto_confirm: bool = False) -> None:
         self.auto_confirm = auto_confirm
 
-    def start(self, simulate: bool, config_path: Optional[Path] = None):
+    def start(self, simulate: bool, config_path: Optional[Path] = None) -> None:
         self.emit_event(
             Start(
                 type="START",
@@ -66,7 +66,7 @@ class JSONL:
         msg: str,
         level: Literal["info", "warn", "error"] = "info",
         sender: SenderType = "",
-    ):
+    ) -> None:
         rule = res.rule.name if res.rule and res.rule.name else ""
         basedir = res.basedir or ""
         self.emit_event(
@@ -89,12 +89,12 @@ class JSONL:
             return True
         return ask_confirm(msg)
 
-    def end(self, success_count: int, error_count: int):
+    def end(self, success_count: int, error_count: int) -> None:
         report = Report(
             success_count=success_count,
             error_count=error_count,
         )
         self.emit_event(report)
 
-    def emit_event(self, event: EventType):
+    def emit_event(self, event: EventType) -> None:
         print(event.model_dump_json())

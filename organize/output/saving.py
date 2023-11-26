@@ -8,17 +8,17 @@ class SavingOutput(JSONL):
     Saves all the incoming event messages of the latest run.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.queue: List[EventType] = []
 
-    def start(self, *args, **kwargs):
+    def start(self, *args, **kwargs) -> None:
         self.queue.clear()
         super().start(*args, **kwargs)
 
-    def emit_event(self, event: EventType):
+    def emit_event(self, event: EventType) -> None:
         self.queue.append(event)
 
-    def _messages_of_kind(self, kind: str):
+    def _messages_of_kind(self, kind: str) -> List:
         return [x for x in self.queue if x.type == kind]
 
     @property
