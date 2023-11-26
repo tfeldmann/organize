@@ -201,8 +201,6 @@ class Duplicate:
             if known != original:
                 self._file_for_hash[hash_] = original
 
-            resource_changed_reason = "duplicate of" if known != original else None
-
             res.path = duplicate
             res.vars[self.filter_config.name] = {"original": original}
             return True

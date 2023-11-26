@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Literal, Optional, Union
 from pydantic import BaseModel
 
 from ._sender import sender_name
+from .output import Level
 
 if TYPE_CHECKING:
     from organize.resource import Resource
@@ -21,12 +22,24 @@ class Start(BaseModel):
 
 class Msg(BaseModel):
     type: Literal["MSG"] = "MSG"
-    level: Literal["info", "warn", "error"] = "info"
-    msg: str
-    rule: str
-    basedir: str
+    level: Level = "info"
     path: str
-    sender: str = ""
+    basedir: str
+    sender: str
+    msg: str
+    rule_nr: int
+    rule_name: str
+
+
+class Confirm(BaseModel):
+    type: Literal["CONFIRM"] = "CONFIRM"
+    path: str
+    basedir: str
+    sender: str
+    msg: str
+    default: bool
+    rule_nr: int
+    rule_name: str
 
 
 class Report(BaseModel):
@@ -35,16 +48,7 @@ class Report(BaseModel):
     error_count: int
 
 
-EventType = Union[Start, Msg, Report]
-
-
-def ask_confirm(text):
-    while True:
-        answer = input(f"{text} [y/n]: ").lower()
-        if answer in ("j", "y", "ja", "yes"):
-            return True
-        if answer in ("n", "no", "nein"):
-            return False
+EventType = Union[Start, Msg, Confirm, Report]
 
 
 class JSONL:
@@ -54,7 +58,6 @@ class JSONL:
     def start(self, simulate: bool, config_path: Optional[Path] = None) -> None:
         self.emit_event(
             Start(
-                type="START",
                 simulate=simulate,
                 config_path=config_path,
             )
@@ -64,30 +67,47 @@ class JSONL:
         self,
         res: Resource,
         msg: str,
-        level: Literal["info", "warn", "error"] = "info",
-        sender: SenderType = "",
+        sender: SenderType,
+        level: Level = "info",
     ) -> None:
-        rule = res.rule.name if res.rule and res.rule.name else ""
-        basedir = res.basedir or ""
         self.emit_event(
             Msg(
-                type="MSG",
                 level=level,
-                msg=msg,
-                rule=rule,
-                basedir=str(basedir),
                 path=str(res.path),
+                basedir=str(res.basedir or ""),
                 sender=sender_name(sender),
+                msg=msg,
+                rule_nr=res.rule_nr,
+                rule_name=res.rule.name if res.rule and res.rule.name else "",
             )
         )
 
-    def prompt(self, res: Resource, msg: str) -> str:
-        raise ValueError("prompting not supported in JSONL output")
-
-    def confirm(self, res: Resource, msg: str) -> bool:
+    def confirm(
+        self,
+        res: Resource,
+        msg: str,
+        default: bool,
+        sender: SenderType = "",
+    ) -> bool:
         if self.auto_confirm:
             return True
-        return ask_confirm(msg)
+        self.emit_event(
+            Confirm(
+                path=str(res.path),
+                basedir=str(res.basedir or ""),
+                sender=sender_name(sender),
+                msg=msg,
+                default=default,
+                rule_nr=res.rule_nr,
+                rule_name=res.rule.name if res.rule and res.rule.name else "",
+            )
+        )
+        answer = input().lower()
+        if answer == "":
+            return default
+        elif answer in ("j", "y", "ja", "yes", "1"):
+            return True
+        return False
 
     def end(self, success_count: int, error_count: int) -> None:
         report = Report(

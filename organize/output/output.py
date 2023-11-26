@@ -10,6 +10,9 @@ if TYPE_CHECKING:
     from ._sender import SenderType
 
 
+Level = Literal["info", "warn", "error"]
+
+
 class Output(Protocol):
     """
     The protocol all of organize's outputs must adhere to.
@@ -22,7 +25,7 @@ class Output(Protocol):
         self,
         res: Resource,
         msg: str,
-        level: Literal["info", "warn", "error"] = "info",
+        level: Level = "info",
         sender: SenderType = "",
     ) -> None:
         ...

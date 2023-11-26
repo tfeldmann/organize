@@ -12,6 +12,7 @@ from rich.theme import Theme
 from organize.utils import ChangeDetector
 
 from ._sender import sender_name
+from .output import Level
 
 if TYPE_CHECKING:
     from organize.resource import Resource
@@ -139,7 +140,7 @@ class Default:
         self,
         res: Resource,
         msg: str,
-        level: Literal["info", "warn", "error"] = "info",
+        level: Level = "info",
         sender: SenderType = "",
     ):
         self.show_resource(res)
