@@ -1,4 +1,5 @@
 from collections import Counter
+from pathlib import Path
 
 import pytest
 from pyfakefs.fake_filesystem import FakeFilesystem
@@ -10,6 +11,10 @@ def counter(items):
     return Counter(str(x) for x in items)
 
 
+def fmt_path(path: str) -> str:
+    return f"{Path(path)}"
+
+
 def test_location(fs):
     fs.create_file("test/folder/file.txt")
     fs.create_file("test/folder/subfolder/another.pdf")
@@ -18,18 +23,18 @@ def test_location(fs):
     fs.create_file("test/.hidden/some.pdf")
 
     assert list(Walker().files("test")) == [
-        "test/folder/file.txt",
-        "test/folder/subfolder/another.pdf",
-        "test/hi/there",
-        "test/hi/.other",
-        "test/.hidden/some.pdf",
+        fmt_path("test/folder/file.txt"),
+        fmt_path("test/folder/subfolder/another.pdf"),
+        fmt_path("test/hi/there"),
+        fmt_path("test/hi/.other"),
+        fmt_path("test/.hidden/some.pdf"),
     ]
     assert list(Walker(method="depth").files("test")) == [
-        "test/folder/subfolder/another.pdf",
-        "test/folder/file.txt",
-        "test/hi/there",
-        "test/hi/.other",
-        "test/.hidden/some.pdf",
+        fmt_path("test/folder/subfolder/another.pdf"),
+        fmt_path("test/folder/file.txt"),
+        fmt_path("test/hi/there"),
+        fmt_path("test/hi/.other"),
+        fmt_path("test/.hidden/some.pdf"),
     ]
 
 
@@ -46,20 +51,20 @@ def test_walk(fs: FakeFilesystem, method):
 
     assert counter(Walker(method=method).files("/test")) == counter(
         [
-            "/test/d1/f1.txt",
-            "/test/d1/d1/f1.txt",
-            "/test/d1/d1/f2.txt",
-            "/test/d1/d1/d1/f1.txt",
-            "/test/f1.txt",
+            fmt_path("/test/d1/f1.txt"),
+            fmt_path("/test/d1/d1/f1.txt"),
+            fmt_path("/test/d1/d1/f2.txt"),
+            fmt_path("/test/d1/d1/d1/f1.txt"),
+            fmt_path("/test/f1.txt"),
         ]
     )
 
     assert counter(Walker(method=method, min_depth=1).files("/test/")) == counter(
         [
-            "/test/d1/f1.txt",
-            "/test/d1/d1/f1.txt",
-            "/test/d1/d1/f2.txt",
-            "/test/d1/d1/d1/f1.txt",
+            fmt_path("/test/d1/f1.txt"),
+            fmt_path("/test/d1/d1/f1.txt"),
+            fmt_path("/test/d1/d1/f2.txt"),
+            fmt_path("/test/d1/d1/d1/f1.txt"),
         ]
     )
 
@@ -67,9 +72,9 @@ def test_walk(fs: FakeFilesystem, method):
         Walker(method=method, min_depth=1, max_depth=2).files("/test/")
     ) == counter(
         [
-            "/test/d1/f1.txt",
-            "/test/d1/d1/f1.txt",
-            "/test/d1/d1/f2.txt",
+            fmt_path("/test/d1/f1.txt"),
+            fmt_path("/test/d1/d1/f1.txt"),
+            fmt_path("/test/d1/d1/f2.txt"),
         ]
     )
 
@@ -77,8 +82,8 @@ def test_walk(fs: FakeFilesystem, method):
         Walker(method=method, min_depth=2, max_depth=2).files("/test/")
     ) == counter(
         [
-            "/test/d1/d1/f1.txt",
-            "/test/d1/d1/f2.txt",
+            fmt_path("/test/d1/d1/f1.txt"),
+            fmt_path("/test/d1/d1/f2.txt"),
         ]
     )
 
@@ -89,22 +94,22 @@ def test_walk(fs: FakeFilesystem, method):
         ).dirs("/test/")
     ) == counter(
         [
-            "/test/d1",
-            "/test/d1/d1",
-            "/test/d1/d1/d1",
-            "/test/d1/d2",
-            "/test/d1/d3",
-            "/test/d1/d1/d2",
+            fmt_path("/test/d1"),
+            fmt_path("/test/d1/d1"),
+            fmt_path("/test/d1/d1/d1"),
+            fmt_path("/test/d1/d2"),
+            fmt_path("/test/d1/d3"),
+            fmt_path("/test/d1/d1/d2"),
         ]
     )
 
     assert counter(Walker(method=method, min_depth=1).dirs("/test/")) == counter(
         [
-            "/test/d1/d1",
-            "/test/d1/d1/d1",
-            "/test/d1/d2",
-            "/test/d1/d3",
-            "/test/d1/d1/d2",
+            fmt_path("/test/d1/d1"),
+            fmt_path("/test/d1/d1/d1"),
+            fmt_path("/test/d1/d2"),
+            fmt_path("/test/d1/d3"),
+            fmt_path("/test/d1/d1/d2"),
         ]
     )
 
@@ -112,11 +117,11 @@ def test_walk(fs: FakeFilesystem, method):
         Walker(method=method, min_depth=1, max_depth=2).dirs("/test/")
     ) == counter(
         [
-            "/test/d1/d1",
-            "/test/d1/d1/d1",
-            "/test/d1/d2",
-            "/test/d1/d3",
-            "/test/d1/d1/d2",
+            fmt_path("/test/d1/d1"),
+            fmt_path("/test/d1/d1/d1"),
+            fmt_path("/test/d1/d2"),
+            fmt_path("/test/d1/d3"),
+            fmt_path("/test/d1/d1/d2"),
         ]
     )
 
@@ -124,7 +129,7 @@ def test_walk(fs: FakeFilesystem, method):
         Walker(method=method, min_depth=2, max_depth=2).dirs("/test/")
     ) == counter(
         [
-            "/test/d1/d1/d1",
-            "/test/d1/d1/d2",
+            fmt_path("/test/d1/d1/d1"),
+            fmt_path("/test/d1/d1/d2"),
         ]
     )
