@@ -9,8 +9,8 @@ ORGANIZE_DIR = Path(__file__).parent.parent
 
 
 @pytest.fixture
-def testoutput():
-    yield SavingOutput()
+def testoutput() -> SavingOutput:
+    return SavingOutput()
 
 
 def make_files(structure: Union[Dict, List], path: Union[Path, str] = "."):

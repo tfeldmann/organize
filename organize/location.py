@@ -4,6 +4,8 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic.dataclasses import dataclass
 from typing_extensions import Literal
 
+from .validators import FlatList
+
 DEFAULT_SYSTEM_EXCLUDE_FILES = {
     "thumbs.db",
     "desktop.ini",
@@ -20,7 +22,7 @@ DEFAULT_SYSTEM_EXCLUDE_DIRS = {
 
 @dataclass(config=ConfigDict(extra="forbid"))
 class Location(BaseModel):
-    path: str
+    path: FlatList[str]
     max_depth: Union[Literal["inherit"], int, None] = "inherit"
     search: Literal["depth", "breadth"] = "breadth"
     exclude_files: Set[str] = Field(default_factory=set)
@@ -42,6 +44,7 @@ class Location(BaseModel):
         "system_exclude_dirs",
         mode="before",
     )
+    @classmethod
     def ensure_set(cls, value):
         if isinstance(value, str):
             return set([value])

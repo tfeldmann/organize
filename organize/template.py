@@ -31,7 +31,7 @@ Template = jinja2.Environment(
 )
 
 
-def render(template: Union[str, jinja2.environment.Template], args=None):
+def render(template: Union[str, jinja2.environment.Template], args=None) -> str:
     if args is None:
         args = dict()
     if isinstance(template, str):

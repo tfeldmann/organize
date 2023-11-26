@@ -23,7 +23,10 @@ class SavingOutput(JSONL):
 
     @property
     def msg_start(self):
-        return self._messages_of_kind("START")
+        result = self._messages_of_kind("START")
+        if len(result) != 1:
+            raise ValueError("Multiple start events found")
+        return result[0]
 
     @property
     def msg_msg(self):
@@ -31,7 +34,10 @@ class SavingOutput(JSONL):
 
     @property
     def msg_report(self):
-        return self._messages_of_kind("REPORT")
+        result = self._messages_of_kind("REPORT")
+        if len(result) != 1:
+            raise ValueError("Multiple reports found")
+        return result[0]
 
     @property
     def messages(self):

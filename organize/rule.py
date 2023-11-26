@@ -12,7 +12,7 @@ from .registry import action_by_name, filter_by_name
 from .resource import Resource
 from .template import render
 from .utils import ReportSummary
-from .validators import flatten
+from .validators import FlatList, flatten
 from .walker import Walker
 
 FilterMode = Literal["all", "any", "none"]
@@ -107,7 +107,7 @@ class Rule(BaseModel):
     name: Optional[str] = None
     enabled: bool = True
     targets: Literal["files", "dirs"] = "files"
-    locations: List[Location] = Field(default_factory=list)
+    locations: FlatList[Location] = Field(default_factory=list)
     subfolders: bool = False
     tags: Set[str] = Field(default_factory=set)
     filters: List[Filter] = Field(default_factory=list)
@@ -233,14 +233,15 @@ class Rule(BaseModel):
                 "files": walker.files,
                 "dirs": walker.dirs,
             }
-            expanded_path = render(location.path)
-            for path in _walk_funcs[self.targets](str(expanded_path)):
-                yield Resource(
-                    path=Path(path),
-                    basedir=expanded_path,
-                    rule=self,
-                    rule_nr=rule_nr,
-                )
+            for loc_path in location.path:
+                expanded_path = render(loc_path)
+                for path in _walk_funcs[self.targets](expanded_path):
+                    yield Resource(
+                        path=Path(path),
+                        basedir=Path(expanded_path),
+                        rule=self,
+                        rule_nr=rule_nr,
+                    )
 
     def execute(
         self, *, simulate: bool, output: Output, rule_nr: int = 0
