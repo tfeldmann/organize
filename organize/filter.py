@@ -65,9 +65,8 @@ class Any:
         self.filters = filters
 
     def pipeline(self, res: Resource, output: Output) -> bool:
-        assert res.path is not None, "Filters don't support standalone mode."
+        result = False
         for filter in self.filters:
-            result = False
             try:
                 match = filter.pipeline(res, output=output)
                 if match:

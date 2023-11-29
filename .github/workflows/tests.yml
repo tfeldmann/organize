@@ -20,6 +20,11 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.9", "3.10", "3.11"]
       fail-fast: false
+
+    # https://github.com/python-poetry/poetry/issues/8623
+    env:
+      PYTHON_KEYRING_BACKEND: keyring.backends.null.Keyring
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -32,6 +37,7 @@ jobs:
       - name: Setup Environment
         run: |
           python3 -m pip install --upgrade pip poetry lxml
+          python3 -m keyring --disable
 
       - name: Install dependencies
         run: |
@@ -48,4 +54,4 @@ jobs:
 
       - name: Check with MyPy
         run: |
-          mypy organize main.py
+          mypy .

@@ -74,7 +74,7 @@ class Name:
                 name = ext
         result = self.matches(name)
         m = self._matcher.match(name)
-        if m == {}:
+        if not m:
             m = name
 
         res.vars[self.filter_config.name] = m
