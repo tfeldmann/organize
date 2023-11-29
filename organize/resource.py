@@ -34,7 +34,7 @@ class Resource:
 
     path: Optional[Path]
     basedir: Optional[Path] = None
-    rule: Optional[Rule] = None
+    rule: Optional[Rule] = None  # TODO: not optional?
     rule_nr: int = 0
     vars: Dict[str, Any] = field(default_factory=dict)
     walker_skip_pathes: Set[Path] = field(default_factory=set)
@@ -53,6 +53,7 @@ class Resource:
             location=self.basedir,
             relative_path=self.relative_path(),
             rule=self.rule.name if self.rule else None,
+            rule_nr=self.rule_nr,
             **self.vars,
         )
 
