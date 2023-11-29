@@ -254,15 +254,22 @@ class Rule(BaseModel):
         if not self.locations:
             res = Resource(path=None, rule_nr=rule_nr)
             try:
-                action_pipeline(
+                for action in action_pipeline(
                     actions=self.actions,
                     res=res,
                     simulate=simulate,
                     output=output,
-                )
+                ):
+                    pass
                 return ReportSummary(success=1)
             except Exception as e:
-                logging.exception(e)
+                output.msg(
+                    res=res,
+                    msg=str(e),
+                    level="error",
+                    sender=action,
+                )
+                # logging.exception(e)
                 return ReportSummary(errors=1)
 
         # normal mode

@@ -34,4 +34,4 @@ class Echo:
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
         full_msg = render(self._msg_templ, res.dict())
-        output.msg(res, full_msg, sender=self.action_config.name)
+        output.msg(res, full_msg, sender=self)

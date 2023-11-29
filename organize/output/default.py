@@ -26,31 +26,28 @@ def _highlight_path(path: Path, base_style: str, main_style: str) -> str:
     return f"[{base_style}]{base}[/][{main_style}]{main}[/]"
 
 
-def _format_sender(sender: SenderType) -> str:
-    return f"    - ([pipeline.source]{sender_name(sender)}[/]) "
+def format_sender(sender: SenderType, standalone: bool) -> str:
+    if not standalone:
+        return f"    - ([pipeline.source]{sender_name(sender)}[/]) "
+    return f"([pipeline.source]{sender_name(sender)}[/]) "
 
 
-def format_info(sender: SenderType, msg: str) -> str:
-    pre = _format_sender(sender)
-    return f"{pre}[pipeline.msg]{msg}[/]"
+def format_info(msg: str) -> str:
+    return f"[pipeline.msg]{msg}[/]"
 
 
-def format_warn(sender: SenderType, msg: str) -> str:
-    pre = _format_sender(sender)
-    return f"{pre}[pipeline.warn]{msg}[/]"
+def format_warn(msg: str) -> str:
+    return f"[pipeline.warn]{msg}[/]"
 
 
-def format_error(sender: SenderType, msg: str) -> str:
-    pre = _format_sender(sender)
-    return f"{pre}[pipeline.error]ERROR! {msg}[/]"
+def format_error(msg: str) -> str:
+    return f"[pipeline.error]ERROR! {msg}[/]"
 
 
 class Confirm(RichConfirm):
     @classmethod
-    def set_source(cls, source: SenderType) -> None:
-        src = _format_sender(source)
-        err_msg = f"{src}[prompt.invalid]Please enter Y or N[/]"
-        cls.validate_error_message = err_msg
+    def set_error_msg(cls, msg: str) -> None:
+        cls.validate_error_message = msg
 
 
 class Default:
@@ -106,8 +103,6 @@ class Default:
                     "location.main",
                 )
                 self.console.print(path_str)
-            else:
-                self.console.print("* standalone *")
 
         # path changed
         if self.det_path.changed(res.path):
@@ -115,8 +110,6 @@ class Default:
             if relative_path is not None:
                 path_str = _highlight_path(relative_path, "path.base", "path.main")
                 self.console.print(f"  {path_str}")
-            else:
-                self.console.print("  * standalone *")
 
     def start(
         self,
@@ -149,26 +142,28 @@ class Default:
         level: Level = "info",
     ) -> None:
         self.show_resource(res)
+        msg_pre = format_sender(sender=sender, standalone=res.path is None)
         if level == "info":
-            self.console.print(format_info(sender=sender, msg=msg))
+            self.console.print(f"{msg_pre}{format_info(msg=msg)}")
         elif level == "error":
-            self.console.print(format_error(sender=sender, msg=msg))
+            self.console.print(f"{msg_pre}{format_error(msg=msg)}")
         elif level == "warn":
-            self.console.print(format_warn(sender=sender, msg=msg))
+            self.console.print(f"{msg_pre}{format_warn(msg=msg)}")
 
     def confirm(
         self,
         res: Resource,
         msg: str,
         default: bool,
-        sender: SenderType = "",
+        sender: SenderType,
     ) -> bool:
         self.status.stop()
         self.show_resource(res)
-        src = _format_sender(sender)
-        Confirm.set_source(sender)
+        msg_pre = format_sender(sender=sender, standalone=res.path is None)
+        error_msg = f"{msg_pre}[prompt.invalid]Please enter Y or N[/]"
+        Confirm.set_error_msg(msg=error_msg)
         result = Confirm.ask(
-            prompt=f"{src}[pipeline.prompt]{msg}[/]",
+            prompt=f"{msg_pre}[pipeline.prompt]{msg}[/]",
             console=self.console,
             default=default,
         )

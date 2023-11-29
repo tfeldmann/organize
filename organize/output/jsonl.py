@@ -17,15 +17,15 @@ if TYPE_CHECKING:
 class Start(BaseModel):
     type: Literal["START"] = "START"
     simulate: bool
-    config_path: Optional[str]
-    working_dir: str
+    config_path: Optional[Path]
+    working_dir: Path
 
 
 class Msg(BaseModel):
     type: Literal["MSG"] = "MSG"
     level: Level = "info"
-    path: str
-    basedir: str
+    path: Optional[Path]
+    basedir: Optional[Path]
     sender: str
     msg: str
     rule_nr: int
@@ -34,8 +34,8 @@ class Msg(BaseModel):
 
 class Confirm(BaseModel):
     type: Literal["CONFIRM"] = "CONFIRM"
-    path: str
-    basedir: str
+    path: Optional[Path]
+    basedir: Optional[Path]
     sender: str
     msg: str
     default: bool
@@ -65,8 +65,8 @@ class JSONL:
         self.emit_event(
             Start(
                 simulate=simulate,
-                config_path=str(config_path.resolve()) if config_path else None,
-                working_dir=str(working_dir.resolve()),
+                config_path=config_path.resolve() if config_path else None,
+                working_dir=working_dir.resolve(),
             )
         )
 
@@ -80,8 +80,8 @@ class JSONL:
         self.emit_event(
             Msg(
                 level=level,
-                path=str(res.path),
-                basedir=str(res.basedir or ""),
+                path=res.path,
+                basedir=res.basedir,
                 sender=sender_name(sender),
                 msg=msg,
                 rule_nr=res.rule_nr,
@@ -94,14 +94,14 @@ class JSONL:
         res: Resource,
         msg: str,
         default: bool,
-        sender: SenderType = "",
+        sender: SenderType,
     ) -> bool:
         if self.auto_confirm:
             return True
         self.emit_event(
             Confirm(
-                path=str(res.path),
-                basedir=str(res.basedir or ""),
+                path=res.path,
+                basedir=res.basedir,
                 sender=sender_name(sender),
                 msg=msg,
                 default=default,

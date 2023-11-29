@@ -40,7 +40,7 @@ class Output(Protocol):
         res: Resource,
         msg: str,
         default: bool,
-        sender: SenderType = "",
+        sender: SenderType,
     ) -> bool:
         ...
 
