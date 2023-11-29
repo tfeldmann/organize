@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Dict, Iterable, List, Literal, Optional, Set, Union
+from typing import Dict, Iterable, List, Literal, Optional, Set
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -95,9 +95,10 @@ def action_pipeline(
     res: Resource,
     simulate: bool,
     output: Output,
-) -> None:
+) -> Iterable[Action]:
     for action in actions:
         try:
+            yield action
             action.pipeline(res=res, simulate=simulate, output=output)
         except StopIteration:
             break
@@ -208,7 +209,7 @@ class Rule(BaseModel):
 
         return self
 
-    def walk(self, working_dir: Union[Path, str] = ".", rule_nr: int = 0):
+    def walk(self, rule_nr: int = 0):
         for location in self.locations:
             # instantiate the filesystem walker
             exclude_files = location.system_exclude_files | location.exclude_files
@@ -278,16 +279,22 @@ class Rule(BaseModel):
             )
             if result:
                 try:
-                    action_pipeline(
+                    for action in action_pipeline(
                         actions=self.actions,
                         res=res,
                         simulate=simulate,
                         output=output,
-                    )
+                    ):
+                        pass
                     skip_pathes = skip_pathes.union(res.walker_skip_pathes)
                     summary.success += 1
                 except Exception as e:
-                    output.msg(res=res, msg=str(e), level="error")
-                    logging.exception(e)
+                    output.msg(
+                        res=res,
+                        msg=str(e),
+                        level="error",
+                        sender=action,
+                    )
+                    # logging.exception(e)
                     summary.errors += 1
         return summary

@@ -118,7 +118,12 @@ class Default:
             else:
                 self.console.print("  * standalone *")
 
-    def start(self, simulate: bool, config_path: Optional[Path] = None):
+    def start(
+        self,
+        simulate: bool,
+        config_path: Optional[Path],
+        working_dir: Path,
+    ) -> None:
         self.det_rule.reset()
         self.det_location.reset()
         self.det_path.reset()
@@ -127,10 +132,10 @@ class Default:
         if self.simulate:
             self.console.print(Panel("SIMULATION", style="simulation"))
 
+        if working_dir.resolve() != Path(".").resolve():
+            self.console.print(f'Working dir: "{working_dir}"')
         if config_path:
             self.console.print(f'Config: "{config_path}"')
-        # if working_dir != Path("."):  # TODO
-        #     console.print('Working dir: "{}"'.format(working_dir))
 
         status_verb = "simulating" if simulate else "organizing"
         self.status.update(f"[status]{status_verb}[/]")
@@ -140,9 +145,9 @@ class Default:
         self,
         res: Resource,
         msg: str,
+        sender: SenderType,
         level: Level = "info",
-        sender: SenderType = "",
-    ):
+    ) -> None:
         self.show_resource(res)
         if level == "info":
             self.console.print(format_info(sender=sender, msg=msg))

@@ -31,13 +31,17 @@ Template = jinja2.Environment(
 )
 
 
-def render(template: Union[str, jinja2.environment.Template], args=None) -> str:
+def render(template: Union[str, jinja2.Template], args=None) -> str:
     if args is None:
         args = dict()
-    if isinstance(template, str):
-        text = Template.from_string(template).render(**args, **BASIC_VARS)
-    else:
-        text = template.render(**args, **BASIC_VARS)
+    try:
+        if isinstance(template, jinja2.Template):
+            text = template.render(**args, **BASIC_VARS)
+        else:
+            text = Template.from_string(template).render(**args, **BASIC_VARS)
+    except jinja2.UndefinedError as e:
+        msg = f"Missing value for template: {e}. Maybe you forgot a filter?"
+        raise ValueError(msg) from e
 
     # expand user and fill environment vars
     text = os.path.expanduser(text)

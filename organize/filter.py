@@ -54,7 +54,7 @@ class All:
                 if not match:
                     return False
             except Exception as e:
-                output.msg(res=res, level="error", msg=str(e))
+                output.msg(res=res, level="error", msg=str(e), sender=filter)
                 logging.exception(e)
                 return False
         return True
@@ -72,6 +72,6 @@ class Any:
                 if match:
                     result = True
             except Exception as e:
-                output.msg(res=res, level="error", msg=str(e))
+                output.msg(res=res, level="error", msg=str(e), sender=filter)
                 logging.exception(e)
         return result

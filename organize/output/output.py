@@ -18,15 +18,20 @@ class Output(Protocol):
     The protocol all of organize's outputs must adhere to.
     """
 
-    def start(self, simulate: bool, config_path: Optional[Path] = None):
+    def start(
+        self,
+        simulate: bool,
+        config_path: Optional[Path],
+        working_dir: Path,
+    ) -> None:
         ...
 
     def msg(
         self,
         res: Resource,
         msg: str,
+        sender: SenderType,
         level: Level = "info",
-        sender: SenderType = "",
     ) -> None:
         ...
 

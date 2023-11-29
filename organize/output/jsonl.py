@@ -17,7 +17,8 @@ if TYPE_CHECKING:
 class Start(BaseModel):
     type: Literal["START"] = "START"
     simulate: bool
-    config_path: Optional[Path] = None
+    config_path: Optional[str]
+    working_dir: str
 
 
 class Msg(BaseModel):
@@ -55,11 +56,17 @@ class JSONL:
     def __init__(self, auto_confirm: bool = False) -> None:
         self.auto_confirm = auto_confirm
 
-    def start(self, simulate: bool, config_path: Optional[Path] = None) -> None:
+    def start(
+        self,
+        simulate: bool,
+        config_path: Optional[Path],
+        working_dir: Path,
+    ) -> None:
         self.emit_event(
             Start(
                 simulate=simulate,
-                config_path=config_path,
+                config_path=str(config_path.resolve()) if config_path else None,
+                working_dir=str(working_dir.resolve()),
             )
         )
 

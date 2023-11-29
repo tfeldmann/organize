@@ -23,10 +23,10 @@ Commands:
 
 Options:
   <config>                        A config name or path to a config file
-  -w --working-dir <dir>          The working directory
-  -f --format (default|jsonl)     The output format [Default: default]
-  --tags <tags>                   tags to run (eg. "initial,release")
-  --skip-tags <tags>              tags to skip
+  -W --working-dir <dir>          The working directory
+  -F --format (default|jsonl)     The output format [Default: default]
+  -T --tags <tags>                   tags to run (eg. "initial,release")
+  -S --skip-tags <tags>              tags to skip
   -h --help                       Show this help page.
 """
 import os
@@ -36,7 +36,7 @@ from pathlib import Path
 from typing import Literal, Optional, Set
 
 from docopt import docopt
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from organize import Config, ConfigError
 from organize.find_config import ConfigNotFound, find_config
@@ -83,7 +83,7 @@ def execute(
         output=output,
         tags=tags,
         skip_tags=skip_tags,
-        working_dir=working_dir,
+        working_dir=working_dir or Path("."),
     )
 
 
@@ -173,21 +173,23 @@ class CliArgs(BaseModel, extra="forbid"):
 
 
 def cli():
+    from rich import print
+
     arguments = docopt(
         __doc__,
         version=f"organize v{__version__}",
         default_help=True,
     )
-    args = CliArgs.model_validate(arguments)
-    _execute = partial(
-        execute,
-        config=args.config_name,
-        working_dir=args.working_dir,
-        format=args.format,
-        tags=args.tags,
-        skip_tags=args.skip_tags,
-    )
     try:
+        args = CliArgs.model_validate(arguments)
+        _execute = partial(
+            execute,
+            config=args.config_name,
+            working_dir=args.working_dir,
+            format=args.format,
+            tags=args.tags,
+            skip_tags=args.skip_tags,
+        )
         if args.run:
             _execute(simulate=False)
         elif args.sim:
@@ -208,10 +210,11 @@ def cli():
         elif args.docs:
             docs()
     except (ConfigError, ConfigNotFound) as e:
-        from rich import print
-
         print(e)
         sys.exit(1)
+    except ValidationError as e:
+        print(e)
+        sys.exit(2)
 
 
 if __name__ == "__main__":

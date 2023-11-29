@@ -1,18 +1,21 @@
 from __future__ import annotations
 
+import os
 import textwrap
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Iterable, List, Optional, Union
 
 import yaml
 from pydantic import ConfigDict, ValidationError
 from pydantic.dataclasses import dataclass
 
-from organize.output import Default, Output
-
 from .errors import ConfigError
+from .output import Default, Output
 from .rule import Rule
+from .template import render
 from .utils import ReportSummary
+
+Tags = Iterable[str]
 
 
 def default_yaml_cnst(loader, tag_suffix, node):
@@ -24,7 +27,7 @@ def default_yaml_cnst(loader, tag_suffix, node):
 yaml.add_multi_constructor("", default_yaml_cnst, Loader=yaml.SafeLoader)
 
 
-def should_execute(rule_tags, tags, skip_tags):
+def should_execute(rule_tags: Tags, tags: Tags, skip_tags: Tags) -> bool:
     """
     returns whether the rule with `rule_tags` should be executed,
     given `tags` and `skip_tags`
@@ -75,11 +78,17 @@ class Config:
         self,
         simulate: bool = True,
         output: Output = Default(),
-        tags=set(),
-        skip_tags=set(),
-        working_dir: Union[str, None] = ".",
+        tags: Tags = set(),
+        skip_tags: Tags = set(),
+        working_dir: Union[str, Path] = ".",
     ):
-        output.start(simulate=simulate, config_path=self._config_path)
+        working_path = Path(render(str(working_dir)))
+        os.chdir(working_path)
+        output.start(
+            simulate=simulate,
+            config_path=self._config_path,
+            working_dir=working_path,
+        )
         summary = ReportSummary()
         try:
             for rule_nr, rule in enumerate(self.rules):
