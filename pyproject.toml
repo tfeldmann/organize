@@ -31,7 +31,7 @@ classifiers = [
 organize = "organize.cli:cli"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.12"
+python = ">=3.8,<3.13"
 fs = ">=2.4.16"
 rich = "^13.4.2"
 PyYAML = "^6.0"
