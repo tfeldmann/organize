@@ -260,6 +260,22 @@ rules:
           on_conflict: "overwrite"
 ```
 
+Use a placeholder to move all .pdf files into a "PDF" folder and all .jpg files into a
+"JPG" folder. Existing files will be overwritten only if they are larger than the existing file.
+
+```yaml
+rules:
+  - locations: ~/Desktop
+    filters:
+      - extension:
+          - pdf
+          - jpg
+    actions:
+      - move:
+          dest: "~/Desktop/{extension.upper()}/"
+          on_conflict: "overwrite_smaller"
+```
+
 Move pdfs into the folder `Invoices`. Keep the filename but do not overwrite existing files. To prevent overwriting files, an index is added to the filename, so `somefile.jpg` becomes `somefile 2.jpg`.
 
 ```yaml

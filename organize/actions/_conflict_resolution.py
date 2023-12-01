@@ -15,6 +15,7 @@ from .trash import Trash
 CONFLICT_OPTIONS = (
     "skip",
     "overwrite",
+    "overwrite_smaller",
     "trash",
     "rename_new",
     "rename_existing",
@@ -97,6 +98,21 @@ def resolve_overwrite_conflict(
             elif dst_fs.isfile(dst_path):
                 dst_fs.remove(dst_path)
         return dst_path
+
+    elif conflict_mode == "overwrite_smaller":
+        print(f"Overwrite Smaller {safe_description(dst_fs, dst_path)}.")
+        src_file_larger = src_fs.getsize(src_path) > dst_fs.getsize(dst_path)
+        if not simulate:
+            if dst_fs.isdir(dst_path):
+                dst_fs.removedir(dst_path)
+            elif dst_fs.isfile(dst_path):
+                if src_file_larger:
+                    dst_fs.remove(dst_path)
+        if src_file_larger:
+            return dst_path
+        else:
+            print("Skipped.")
+            return None
 
     elif conflict_mode == "rename_new":
         stem, ext = splitext(dst_path)
