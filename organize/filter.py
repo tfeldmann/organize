@@ -21,14 +21,14 @@ class HasFilterConfig(Protocol):
 
 class HasFilterPipeline(Protocol):
     def pipeline(self, res: Resource, output: Output) -> bool:
-        ...
+        ...  # pragma: no cover
 
 
 @runtime_checkable
 class Filter(HasFilterPipeline, HasFilterConfig, Protocol):
     def __init__(self, *args, **kwargs) -> None:
         # allow any amount of args / kwargs for BaseModel and dataclasses.
-        ...
+        ...  # pragma: no cover
 
 
 class Not:

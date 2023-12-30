@@ -76,6 +76,9 @@ pyfakefs = "^5.3.1"
 [tool.coverage.run]
 source = ['organize']
 
+[tool.coverage.report]
+exclude_also = ["pragma: no cover", "if TYPE_CHECKING:"]
+
 [tool.mypy]
 python_version = "3.9"
 plugins = ["pydantic.mypy"]
