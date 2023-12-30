@@ -20,7 +20,7 @@ class Copy:
 
     If the specified path does not exist it will be created.
 
-    Args:
+    Attributes:
         dest (str):
             The destination where the file / dir should be copied to.
             If `dest` ends with a slash, it is assumed to be a target directory
@@ -35,15 +35,17 @@ class Copy:
             A template for renaming the file / dir in case of a conflict.
             Defaults to `{name} {counter}{extension}`.
 
-        autodetect_folder (bool) = True
+        autodetect_folder (bool):
             In case you forget the ending slash "/" to indicate copying into a folder
             this settings will handle targets without a file extension as folders.
             If you really mean to copy to a file without file extension, set this to
             false.
+            Defaults to True.
 
-        continue_with (str) = "copy" | "original"
+        continue_with (str) = "copy" | "original":
             Continue the next action either with the path to the copy or the path the
             original.
+            Defaults to "copy".
 
     The next action will work with the created copy.
     """

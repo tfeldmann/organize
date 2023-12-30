@@ -31,7 +31,7 @@ class MimeType:
     python3 -m organize.filters.mimetype
     ```
 
-    Args:
+    Attributes:
         *mimetypes (list(str) or str): The MIME types to filter for.
 
     **Returns:**

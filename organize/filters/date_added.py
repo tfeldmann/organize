@@ -22,7 +22,7 @@ class DateAdded(TimeFilter):
 
     **`date_added` is only available on macOS!**
 
-    Args:
+    Attributes:
         years (int): specify number of years
         months (int): specify number of months
         weeks (float): specify number of weeks
@@ -36,7 +36,7 @@ class DateAdded(TimeFilter):
             time. (default = 'older')
 
     Returns:
-        {date_added}: The datetime the files / folders were added.
+        `{date_added}`: The datetime the files / folders were added.
     """
 
     filter_config: ClassVar[FilterConfig] = FilterConfig(

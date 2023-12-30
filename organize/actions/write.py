@@ -22,7 +22,7 @@ class Write:
 
     If the specified path does not exist it will be created.
 
-    Args:
+    Attributes:
         text (str):
             The text that should be written. Supports templates.
 

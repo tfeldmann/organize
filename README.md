@@ -28,9 +28,6 @@
 
 ## **organize v2 is released!**
 
-This is a huge update with lots of improvements.
-Please backup all your important stuff before running and use the simulate option!
-
 - [See the changelog](https://organize.readthedocs.io/en/latest/changelog/#v200-2022-02-07) for all the new
   features!
 - [Migration guide](https://organize.readthedocs.io/en/latest/updating-from-v1/) from organize v1
@@ -48,22 +45,19 @@ or File Juggler (Windows).
 
 Some highlights include:
 
-- Free and open source. Please donate if it is useful for you!
-- Works on macOS, Windows and Linux
-- Safe moving, renaming, copying of files and folders with conflict resolution options
-- Fast duplicate file detection
-- Exif tags extraction
-- Categorization via text extracted from PDF, DOCX and many more
-- Supports remote file locations like FTP, WebDAV, S3 Buckets, SSH and many more
-- Powerful template engine
-- Inline python and shell commands as filters and actions for maximum flexibility
+- Safe moving, renaming, copying of files and folders with conflict resolution options.
+- Fast duplicate file detection.
+- Exif tags extraction.
+- Categorization via text extracted from PDF, DOCX and many more.
+- Powerful template engine.
+- Inline python and shell commands as filters and actions for maximum flexibility.
 - Everything can be simulated before touching your files.
+- Works on macOS, Windows and Linux.
+- Free and open source software.
 
 ## Getting started
 
 ### Installation
-
-organize works on macOS, Windows and Linux.
 
 Only python 3.8+ is needed.
 Install it via your package manager or from [python.org](https://python.org).
@@ -213,25 +207,42 @@ You'll find many more examples in the <a href="https://tfeldmann.github.io/organ
 
 ## Command line interface
 
-```sh
-Usage: organize [OPTIONS] COMMAND [ARGS]...
+```txt
+organize - The file management automation tool.
 
-  organize
-
-  The file management automation tool.
-
-Options:
-  --version   Show the version and exit.
-  -h, --help  Show this message and exit.
+Usage:
+  organize run   [options] [<config>]
+  organize sim   [options] [<config>]
+  organize new   [<config>]
+  organize edit  [<config>]
+  organize check [<config>]
+  organize debug [<config>]
+  organize show  [--path|--reveal] [<config>]
+  organize list
+  organize docs
+  organize --version
+  organize --help
 
 Commands:
-  run     Organizes your files according to your rules.
-  sim     Simulates a run (does not touch your files).
-  edit    Edit the rules.
-  check   Checks whether a given config file is valid.
-  reveal  Reveals the default config file.
-  schema  Prints the json schema for config files.
-  docs    Opens the documentation.
+  run        Organize your files.
+  sim        Simulate organizing your files.
+  new        Creates a new config.
+  edit       Edit the config file with $EDITOR.
+  check      Check whether the config file is valid.
+  debug      Shows the raw config parsing steps.
+  show       Print the config to stdout.
+               Use --reveal to reveal the file in your file manager
+               Use --path to show the path to the file
+  list       Lists config files found in the default locations.
+  docs       Open the documentation.
+
+Options:
+  <config>                        A config name or path to a config file
+  -W --working-dir <dir>          The working directory
+  -F --format (default|jsonl)     The output format [Default: default]
+  -T --tags <tags>                Tags to run (eg. "initial,release")
+  -S --skip-tags <tags>           Tags to skip
+  -h --help                       Show this help page.
 ```
 
 ## Other donation options:

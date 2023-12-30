@@ -23,7 +23,7 @@ def next_free_name(dst: Path, template: Template) -> Path:
     """
     Increments {counter} in the template until the given resource does not exist.
 
-    Args:
+    Attributes:
         dst (Path):
             The destination path.
         template (jinja2.Template):

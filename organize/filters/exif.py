@@ -121,7 +121,7 @@ class Exif(BaseModel):
 
     def __init__(self, *args, filter_tags: Optional[Dict] = None, **kwargs):
         # exif filter is used differently from other filters. The **kwargs are not
-        # filter parameters but all belong into the filter_tags dicttionary to filter
+        # filter parameters but all belong into the filter_tags dictionary to filter
         # for specific exif tags.
         # *args are tags filtered without a value, like ["gps", "image.model"].
         params = filter_tags or dict()

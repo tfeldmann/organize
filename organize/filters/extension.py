@@ -31,7 +31,7 @@ def normalize_extension(ext: str) -> str:
 class Extension:
     """Filter by file extension
 
-    Args:
+    Attributes:
         *extensions (list(str) or str):
             The file extensions to match (does not need to start with a colon).
 

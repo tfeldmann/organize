@@ -13,7 +13,7 @@ from organize.resource import Resource
 class Name:
     """Match files and folders by name
 
-    Args:
+    Attributes:
         match (str):
             A matching string in [simplematch-syntax](https://github.com/tfeldmann/simplematch)
 

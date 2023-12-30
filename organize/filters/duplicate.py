@@ -92,7 +92,7 @@ class Duplicate:
     This filter compares files byte by byte and finds identical files with potentially
     different filenames.
 
-    Args:
+    Attributes:
         detect_original_by (str):
             Detection method to distinguish between original and duplicate.
             Possible values are:

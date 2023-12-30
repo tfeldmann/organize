@@ -15,7 +15,7 @@ class LastModified(TimeFilter):
 
     """Matches files by last modified date
 
-    Args:
+    Attributes:
         years (int): specify number of years
         months (int): specify number of months
         weeks (float): specify number of weeks

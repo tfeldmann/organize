@@ -40,7 +40,7 @@ class Hash:
 
     """Calculates the hash of a file.
 
-    Args:
+    Attributes:
         algorithm (str): Any hashing algorithm available to python's `hashlib`.
             `md5` by default.
 

@@ -57,7 +57,7 @@ def read_created(path: Path) -> datetime:
 class Created(TimeFilter):
     """Matches files / folders by created date
 
-    Args:
+    Attributes:
         years (int): specify number of years
         months (int): specify number of months
         weeks (float): specify number of weeks
@@ -71,7 +71,7 @@ class Created(TimeFilter):
             time. (default = 'older')
 
     Returns:
-        {created}: The datetime the file / folder was created.
+        `{created}` (datetime): The datetime the file / folder was created.
     """
 
     filter_config: ClassVar[FilterConfig] = FilterConfig(

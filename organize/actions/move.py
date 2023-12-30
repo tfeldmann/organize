@@ -24,7 +24,7 @@ class Move:
     If you only want to rename the file and keep the folder, it is
     easier to use the `rename` action.
 
-    Args:
+    Attributes:
         dest (str):
             The destination where the file / dir should be moved to.
             If `dest` ends with a slash, it is assumed to be a target directory
@@ -39,11 +39,12 @@ class Move:
             A template for renaming the file / dir in case of a conflict.
             Defaults to `{name} {counter}{extension}`.
 
-        autodetect_folder (bool) = True
+        autodetect_folder (bool):
             In case you forget the ending slash "/" to indicate moving into a folder
             this settings will handle targets without a file extension as folders.
             If you really mean to move to a file without file extension, set this to
             false.
+            Default: True
 
     The next action will work with the moved file / dir.
     """

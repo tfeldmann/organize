@@ -17,7 +17,7 @@ class MacOSTags:
 
     """Add macOS tags.
 
-    Args:
+    Attributes:
         *tags (str): A list of tags or a single tag.
 
     The color can be specified in brackets after the tag name, for example:

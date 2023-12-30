@@ -14,7 +14,7 @@ class Python:
 
     """Execute python code.
 
-    Args:
+    Attributes:
         code (str): The python code to execute.
         run_in_simulation (bool):
             Whether to execute this code in simulation mode (Default false).

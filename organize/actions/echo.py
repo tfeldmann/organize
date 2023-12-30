@@ -16,7 +16,7 @@ class Echo:
     This can be useful to test your rules, especially in combination with placeholder
     variables.
 
-    Args:
+    Attributes:
         msg (str): The message to print. Accepts placeholder variables.
     """
 

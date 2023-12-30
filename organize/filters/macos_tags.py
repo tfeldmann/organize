@@ -33,7 +33,7 @@ def matches_tags(filter_tags, file_tags) -> bool:
 class MacOSTags:
     """Filter by macOS tags
 
-    Args:
+    Attributes:
         tags (list(str) or str):
             The tags to filter by
     """

@@ -113,7 +113,7 @@ def decimal(size):
 class Size:
     """Matches files and folders by size
 
-    Args:
+    Attributes:
         *conditions (list(str) or str):
             The size constraints.
 

@@ -15,7 +15,7 @@ class Python:
 
     """Use python code to filter files.
 
-    Args:
+    Attributes:
         code (str):
             The python code to execute. The code must contain a `return` statement.
 

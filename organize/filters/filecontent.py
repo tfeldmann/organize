@@ -15,7 +15,7 @@ from organize.resource import Resource
 class FileContent:
     """Matches file content with the given regular expression
 
-    Args:
+    Attributes:
         expr (str): The regular expression to be matched.
 
     Any named groups (`(?P<groupname>.*)`) in your regular expression will

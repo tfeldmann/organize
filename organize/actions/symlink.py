@@ -17,7 +17,7 @@ class Symlink:
 
     """Create a symbolic link.
 
-    Args:
+    Attributes:
         dest (str):
             The symlink destination. If **dest** ends with a slash `/``, create the
             symlink in the given directory. Can contain placeholders.
@@ -31,11 +31,12 @@ class Symlink:
             A template for renaming the file / dir in case of a conflict.
             Defaults to `{name} {counter}{extension}`.
 
-        autodetect_folder (bool) = True
+        autodetect_folder (bool):
             In case you forget the ending slash "/" to indicate copying into a folder
             this settings will handle targets without a file extension as folders.
             If you really mean to copy to a file without file extension, set this to
             false.
+            Default: true
     """
 
     dest: str

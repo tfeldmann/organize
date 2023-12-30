@@ -17,7 +17,7 @@ class Shell:
     """
     Executes a shell command
 
-    Args:
+    Attributes:
         cmd (str): The command to execute.
         run_in_simulation (bool):
             Whether to execute in simulation mode (default = false)

@@ -18,7 +18,7 @@ class Rename:
 
     """Renames a file.
 
-    Args:
+    Attributes:
         name (str):
             The new name for the file / dir.
 

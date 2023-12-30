@@ -23,7 +23,7 @@ class DateLastUsed(TimeFilter):
 
     **`date_lastused` is only available on macOS!**
 
-    Args:
+    Attributes:
         years (int): specify number of years
         months (int): specify number of months
         weeks (float): specify number of weeks

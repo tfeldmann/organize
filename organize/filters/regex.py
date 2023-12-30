@@ -14,7 +14,7 @@ class Regex:
 
     """Matches filenames with the given regular expression
 
-    Args:
+    Attributes:
         expr (str): The regular expression to be matched.
 
     **Returns:**
