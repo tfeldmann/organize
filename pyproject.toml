@@ -78,6 +78,7 @@ source = ['organize']
 
 [tool.mypy]
 python_version = "3.9"
+plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
 module = [

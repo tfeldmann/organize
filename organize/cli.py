@@ -2,9 +2,14 @@ __doc__ = """
 organize - The file management automation tool.
 
 Usage:
-  organize run [options] [<config>]
-  organize sim [options] [<config>]
-  organize config (init|edit|check|debug|path|reveal) [<config>]
+  organize run   [options] [<config>]
+  organize sim   [options] [<config>]
+  organize new   [<config>]
+  organize edit  [<config>]
+  organize check [<config>]
+  organize debug [<config>]
+  organize show  [--path|--reveal] [<config>]
+  organize list
   organize docs
   organize --version
   organize --help
@@ -12,21 +17,22 @@ Usage:
 Commands:
   run        Organize your files.
   sim        Simulate organizing your files.
-  config     Do something with your config file:
-    init       Creates a default config.
-    edit       Edit the config file with $EDITOR
-    check      Check config file validity
-    debug      Shows the raw config parsing steps.
-    path       Print the full path to the config file
-    reveal     Reveal the config file in your file manager.
+  new        Creates a default config.
+  edit       Edit the config file with $EDITOR
+  check      Check config file validity
+  debug      Shows the raw config parsing steps.
+  show       Print the config to stdout.
+               Use --reveal to reveal the file in your file manager
+               Use --path to show the path to the file
+  list       Lists config files found in the default locations.
   docs       Open the documentation.
 
 Options:
   <config>                        A config name or path to a config file
   -W --working-dir <dir>          The working directory
   -F --format (default|jsonl)     The output format [Default: default]
-  -T --tags <tags>                   tags to run (eg. "initial,release")
-  -S --skip-tags <tags>              tags to skip
+  -T --tags <tags>                Tags to run (eg. "initial,release")
+  -S --skip-tags <tags>           Tags to skip
   -h --help                       Show this help page.
 """
 import os
@@ -37,9 +43,12 @@ from typing import Literal, Optional, Set
 
 from docopt import docopt
 from pydantic import BaseModel, Field, ValidationError, field_validator
+from rich.console import Console
+from rich.syntax import Syntax
+from rich.table import Table
 
 from organize import Config, ConfigError
-from organize.find_config import ConfigNotFound, find_config
+from organize.find_config import ConfigNotFound, find_config, list_configs
 from organize.output import JSONL, Default
 
 from .__version__ import __version__
@@ -60,6 +69,8 @@ rules:
 
 Tags = Set[str]
 OutputFormat = Literal["default", "jsonl"]
+
+console = Console()
 
 
 def _open_uri(uri: str):
@@ -87,17 +98,20 @@ def execute(
     )
 
 
-def config_init(config: str):
+def new(config: str):
     try:
         config_path = find_config(config)
-        raise FileExistsError(f'Config "{config_path} already exists.')
+        console.print(
+            f'Config "{config_path}" already exists.\n'
+            'Use "organize new \[name]" to create a config in the default location.'
+        )
     except ConfigNotFound as e:
         assert e.init_path is not None
         e.init_path.write_text(EXAMPLE_CONFIG)
-        print(f'Config created at "{e.init_path}"')
+        console.print(f'Config "{e.init_path.stem}" created at "{e.init_path}"')
 
 
-def config_edit(config: str):
+def edit(config: str):
     config_path = find_config(config)
     editor = os.getenv("EDITOR")
     if editor:
@@ -106,14 +120,13 @@ def config_edit(config: str):
         _open_uri(config_path.as_uri())
 
 
-def config_check(config: str):
+def check(config: str):
     config_path = find_config(config)
-    print(config_path)
     Config.from_path(config_path=config_path)
-    print(f'No problems found in "{config_path}".')
+    console.print(f'No problems found in "{config_path}".')
 
 
-def config_debug(config: str):
+def debug(config: str):
     from rich.pretty import pprint
 
     config_path = find_config(config)
@@ -124,13 +137,24 @@ def config_debug(config: str):
     )
 
 
-def config_path(config: str):
-    print(find_config(name_or_path=config))
-
-
-def config_reveal(config: str):
+def show(config: str, path: bool, reveal: bool):
     config_path = find_config(name_or_path=config)
-    _open_uri(config_path.parent.as_uri())
+    if path:
+        print(config_path)
+    elif reveal:
+        _open_uri(config_path.parent.as_uri())
+    else:
+        syntax = Syntax(config_path.read_text(), "yaml")
+        console.print(syntax)
+
+
+def list_():
+    table = Table()
+    table.add_column("Config")
+    table.add_column("Path", no_wrap=True, style="dim")
+    for path in list_configs():
+        table.add_row(path.stem, str(path))
+    console.print(table)
 
 
 def docs():
@@ -142,16 +166,13 @@ class CliArgs(BaseModel, extra="forbid"):
     # commands
     run: bool
     sim: bool
-    config: bool
-    docs: bool
-
-    # config subcommands
-    init: bool
+    new: bool
     edit: bool
     check: bool
     debug: bool
-    path: bool
-    reveal: bool
+    show: bool
+    list: bool
+    docs: bool
 
     # run / sim options
     config_name: Optional[str] = Field(..., alias="<config>")
@@ -159,6 +180,10 @@ class CliArgs(BaseModel, extra="forbid"):
     format: OutputFormat = Field("default", alias="--format")
     tags: Optional[str] = Field(..., alias="--tags")
     skip_tags: Optional[str] = Field(..., alias="--skip-tags")
+
+    # show options
+    path: bool = Field(False, alias="--path")
+    reveal: bool = Field(False, alias="--reveal")
 
     # docopt options
     version: bool = Field(..., alias="--version")
@@ -194,19 +219,18 @@ def cli():
             _execute(simulate=False)
         elif args.sim:
             _execute(simulate=True)
-        elif args.config:
-            if args.init:
-                config_init(config=args.config_name)
-            elif args.edit:
-                config_edit(config=args.config_name)
-            elif args.check:
-                config_check(config=args.config_name)
-            elif args.debug:
-                config_debug(config=args.config_name)
-            elif args.path:
-                config_path(config=args.config_name)
-            elif args.reveal:
-                config_reveal(config=args.config_name)
+        elif args.new:
+            new(config=args.config_name)
+        elif args.edit:
+            edit(config=args.config_name)
+        elif args.check:
+            check(config=args.config_name)
+        elif args.debug:
+            debug(config=args.config_name)
+        elif args.show:
+            show(config=args.config_name, path=args.path, reveal=args.reveal)
+        elif args.list:
+            list_()
         elif args.docs:
             docs()
     except (ConfigError, ConfigNotFound) as e:

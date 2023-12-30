@@ -50,7 +50,7 @@ class MacOSTags:
 
         COLORS = [c.name.lower() for c in macos_tags.Color]
 
-        for template in self._tags:  # type: ignore
+        for template in self._tags:
             tag = render(template, res.dict())
             name, color = self._parse_tag(tag)
 

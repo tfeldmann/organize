@@ -41,11 +41,10 @@ def expandvars(path: Union[str, Path]) -> Path:
     return Path(os.path.expandvars(path)).expanduser()
 
 
-def glob_match(pattern: str, string: str, *, case_sensitive: bool = False):
+def glob_match(pattern: str, string: str, *, case_sensitive: bool = False) -> bool:
     if case_sensitive:
         return fnmatch.fnmatchcase(string, pattern)
-    else:
-        return fnmatch.fnmatch(string.lower(), pattern.lower())
+    return fnmatch.fnmatch(string.lower(), pattern.lower())
 
 
 def deep_merge(a: dict, b: dict, *, add_keys=True) -> dict:

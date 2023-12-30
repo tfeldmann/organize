@@ -9,7 +9,7 @@ from organize.filter import FilterConfig
 from .common.timefilter import TimeFilter
 
 
-def read_date_added(path: Path):
+def read_date_added(path: Path) -> datetime:
     cmd = ["mdls", "-name", "kMDItemDateAdded", "-raw", str(path)]
     out = subprocess.check_output(cmd, encoding="utf-8").strip()
     dt = datetime.strptime(out, "%Y-%m-%d %H:%M:%S %z")
