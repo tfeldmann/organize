@@ -30,7 +30,7 @@ Commands:
 Options:
   <config>                        A config name or path to a config file
   -W --working-dir <dir>          The working directory
-  -F --format (default|jsonl)     The output format [Default: default]
+  -F --format (DEFAULT|JSONL)     The output format [Default: DEFAULT]
   -T --tags <tags>                Tags to run (eg. "initial,release")
   -S --skip-tags <tags>           Tags to skip
   -h --help                       Show this help page.
@@ -42,10 +42,13 @@ from pathlib import Path
 from typing import Literal, Optional, Set
 
 from docopt import docopt
-from pydantic import BaseModel, Field, ValidationError, field_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
+from pydantic.functional_validators import BeforeValidator
 from rich.console import Console
 from rich.syntax import Syntax
 from rich.table import Table
+from typing_extensions import Annotated
+from yaml.scanner import ScannerError
 
 from organize import Config, ConfigError
 from organize.find_config import ConfigNotFound, find_config, list_configs
@@ -68,7 +71,9 @@ rules:
 """
 
 Tags = Set[str]
-OutputFormat = Literal["default", "jsonl"]
+OutputFormat = Annotated[
+    Literal["default", "jsonl"], BeforeValidator(lambda v: v.lower())
+]
 
 console = Console()
 
@@ -162,7 +167,9 @@ def docs():
     _open_uri(uri=DOCS_RTD)
 
 
-class CliArgs(BaseModel, extra="forbid"):
+class CliArgs(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     # commands
     run: bool
     sim: bool
@@ -198,8 +205,6 @@ class CliArgs(BaseModel, extra="forbid"):
 
 
 def cli():
-    from rich import print
-
     arguments = docopt(
         __doc__,
         version=f"organize v{__version__}",
@@ -234,11 +239,14 @@ def cli():
         elif args.docs:
             docs()
     except (ConfigError, ConfigNotFound) as e:
-        print(e)
+        console.print(f"[red]Error: Config problem[/]\n{e}")
         sys.exit(1)
     except ValidationError as e:
-        print(e)
+        console.print(f"[red]Error: Invalid CLI arguments[/]\n{e}")
         sys.exit(2)
+    except ScannerError as e:
+        console.print(f"[red]Error: YAML syntax error[/]\n{e}")
+        sys.exit(3)
 
 
 if __name__ == "__main__":
