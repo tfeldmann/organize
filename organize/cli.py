@@ -54,7 +54,7 @@ from organize import Config, ConfigError
 from organize.find_config import ConfigNotFound, find_config, list_configs
 from organize.output import JSONL, Default
 
-from .__version__ import __version__
+from .__version__ import __is_prerelease__, __version__
 
 DOCS_RTD = "https://organize.readthedocs.io"
 DOCS_GHPAGES = "https://tfeldmann.github.io/organize/"
@@ -85,13 +85,13 @@ def _open_uri(uri: str):
 
 
 def execute(
-    config: str,
+    config: Optional[str],
     working_dir: Optional[Path],
     format: OutputFormat,
     tags: Tags,
     skip_tags: Tags,
     simulate: bool,
-):
+) -> None:
     output = JSONL() if format == "jsonl" else Default()
     config_path = find_config(name_or_path=config)
     Config.from_path(config_path).execute(
@@ -103,7 +103,7 @@ def execute(
     )
 
 
-def new(config: str):
+def new(config: Optional[str]) -> None:
     try:
         config_path = find_config(config)
         console.print(
@@ -116,7 +116,7 @@ def new(config: str):
         console.print(f'Config "{e.init_path.stem}" created at "{e.init_path}"')
 
 
-def edit(config: str):
+def edit(config: Optional[str]) -> None:
     config_path = find_config(config)
     editor = os.getenv("EDITOR")
     if editor:
@@ -125,13 +125,13 @@ def edit(config: str):
         _open_uri(config_path.as_uri())
 
 
-def check(config: str):
+def check(config: Optional[str]) -> None:
     config_path = find_config(config)
     Config.from_path(config_path=config_path)
     console.print(f'No problems found in "{config_path}".')
 
 
-def debug(config: str):
+def debug(config: Optional[str]) -> None:
     from rich.pretty import pprint
 
     config_path = find_config(config)
@@ -142,7 +142,7 @@ def debug(config: str):
     )
 
 
-def show(config: str, path: bool, reveal: bool):
+def show(config: Optional[str], path: bool, reveal: bool) -> None:
     config_path = find_config(name_or_path=config)
     if path:
         print(config_path)
@@ -153,7 +153,7 @@ def show(config: str, path: bool, reveal: bool):
         console.print(syntax)
 
 
-def list_():
+def list_() -> None:
     table = Table()
     table.add_column("Config")
     table.add_column("Path", no_wrap=True, style="dim")
@@ -162,9 +162,10 @@ def list_():
     console.print(table)
 
 
-def docs():
-    print(f'Opening "{DOCS_RTD}"')
-    _open_uri(uri=DOCS_RTD)
+def docs() -> None:
+    uri = DOCS_GHPAGES if __is_prerelease__ else DOCS_RTD
+    print(f'Opening "{uri}"')
+    _open_uri(uri=uri)
 
 
 class CliArgs(BaseModel):
@@ -182,7 +183,7 @@ class CliArgs(BaseModel):
     docs: bool
 
     # run / sim options
-    config_name: Optional[str] = Field(..., alias="<config>")
+    config: Optional[str] = Field(..., alias="<config>")
     working_dir: Optional[Path] = Field(..., alias="--working-dir")
     format: OutputFormat = Field("default", alias="--format")
     tags: Optional[str] = Field(..., alias="--tags")
@@ -204,7 +205,7 @@ class CliArgs(BaseModel):
         return set(val.split(","))
 
 
-def cli():
+def cli() -> None:
     arguments = docopt(
         __doc__,
         version=f"organize v{__version__}",
@@ -214,7 +215,7 @@ def cli():
         args = CliArgs.model_validate(arguments)
         _execute = partial(
             execute,
-            config=args.config_name,
+            config=args.config,
             working_dir=args.working_dir,
             format=args.format,
             tags=args.tags,
@@ -225,15 +226,15 @@ def cli():
         elif args.sim:
             _execute(simulate=True)
         elif args.new:
-            new(config=args.config_name)
+            new(config=args.config)
         elif args.edit:
-            edit(config=args.config_name)
+            edit(config=args.config)
         elif args.check:
-            check(config=args.config_name)
+            check(config=args.config)
         elif args.debug:
-            debug(config=args.config_name)
+            debug(config=args.config)
         elif args.show:
-            show(config=args.config_name, path=args.path, reveal=args.reveal)
+            show(config=args.config, path=args.path, reveal=args.reveal)
         elif args.list:
             list_()
         elif args.docs:
