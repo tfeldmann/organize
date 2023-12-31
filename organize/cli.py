@@ -108,7 +108,7 @@ def new(config: Optional[str]) -> None:
         config_path = find_config(config)
         console.print(
             f'Config "{config_path}" already exists.\n'
-            'Use "organize new \[name]" to create a config in the default location.'
+            r'Use "organize new \[name]" to create a config in the default location.'
         )
     except ConfigNotFound as e:
         assert e.init_path is not None

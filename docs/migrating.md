@@ -10,7 +10,7 @@ Please open a issue on Github if you need help migrating your config file!
 
 <hr>
 
-## Coming from organize v2
+## Migrating from v2 to v3
 
 ### Locations
 
@@ -18,7 +18,14 @@ In organize v3 remote filesystems are no longer supported. You have to remove al
 `filesystem` parameters from your config and cannot longer use pyfilesystem URLs
 your `location`.
 
+### Placeholders
+
+- Use `{now()}` instead of `{now}`.
+- Use `{utcnow()}` instead of `{utcnow}`.
+- The placeholders `{fs}` and `{fs_path}` are no longer available.
+
 ### Command line interface
+
 The command line interface changed quite a bit! Update any scripts using the CLI
 to the new options:
 
@@ -28,9 +35,13 @@ to the new options:
 - `organize schema` is not longer supported.
 - The already deprecated `--config-file` option is now removed.
 
+
+That's it. If you encounter any other bugs or problems during the migration, please
+reach out!
+
 <hr>
 
-## Coming from organize v1
+## Migrating from v1 to v2
 
 
 ### Folders

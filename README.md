@@ -26,11 +26,24 @@
 <a href="https://organize.readthedocs.io/" target="_blank">Full documentation at Read the docs</a>
 </p>
 
-## **organize v2 is released!**
 
-- [See the changelog](https://organize.readthedocs.io/en/latest/changelog/#v200-2022-02-07) for all the new
-  features!
-- [Migration guide](https://organize.readthedocs.io/en/latest/updating-from-v1/) from organize v1
+## Testers needed! Help testing the v3-alpha
+
+A prerelease of organize v3 is available. To install:
+
+```sh
+# Installs the pre release!
+pip install -U organize-tool --pre
+
+# Installs the pre release with text extraction utils.
+pip install -U organize-tool[textract] --pre
+```
+
+The new version should be *much* faster and fixes a lot of bugs. It also comes with
+a some new actions, filters and options.
+
+- [See the changelog](https://tfeldmann.github.io/organize/changelog/)
+- [Migration guide](https://tfeldmann.github.io/organize/migrating/#migrating-from-v2-to-v3).
 
 ## About
 
@@ -79,7 +92,7 @@ This command can also be used to update to the newest version. Now you can run `
 
 ### Create your first rule
 
-In your shell, run `organize edit` to edit the configuration:
+In your shell, run `organize new` and then `organize edit` to edit the configuration:
 
 ```yaml
 rules:
@@ -93,7 +106,7 @@ rules:
       - echo: "Found PDF!"
 ```
 
-> If you have problems editing the configuration you can run `organize reveal` to reveal the configuration folder in your file manager. You can then edit the `config.yaml` in your favourite editor.
+> If you have problems editing the configuration you can run `organize show --reveal` to reveal the configuration folder in your file manager. You can then edit the `config.yaml` in your favourite editor.
 
 save your config file and run:
 
