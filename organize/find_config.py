@@ -14,23 +14,25 @@ USER_CONFIG_DIR = platformdirs.user_config_path(appname="organize")
 XDG_CONFIG_DIR = expandvars(os.environ.get("XDG_CONFIG_HOME", "~/.config")) / "organize"
 
 
-def find_config(name_or_path: Optional[str] = None) -> Path:
-    if name_or_path is None:
-        if ENV_ORGANIZE_CONFIG is not None:
-            # if the `ORGANIZE_CONFIG` env variable is defined we only check this
-            # specific location
-            result = expandvars(ENV_ORGANIZE_CONFIG)
-            if result.exists() and result.is_file():
-                return result
-            else:
-                raise ConfigNotFound(str(result), init_path=result)
-        # no name and no ORGANIZE_CONFIG env variable given:
-        # -> check only the default config
-        result = USER_CONFIG_DIR / "config.yaml"
+def find_default_config() -> Path:
+    # if the `ORGANIZE_CONFIG` env variable is set we only check this specific location
+    if ENV_ORGANIZE_CONFIG is not None:
+        result = expandvars(ENV_ORGANIZE_CONFIG)
         if result.exists() and result.is_file():
             return result
-        else:
-            raise ConfigNotFound(str(result), init_path=result)
+        raise ConfigNotFound(str(result), init_path=result)
+
+    # no ORGANIZE_CONFIG env variable given:
+    # -> check the default config location
+    result = USER_CONFIG_DIR / "config.yaml"
+    if result.exists() and result.is_file():
+        return result
+    raise ConfigNotFound(str(result), init_path=result)
+
+
+def find_config(name_or_path: Optional[str] = None) -> Path:
+    if name_or_path is None:
+        return find_default_config()
 
     # otherwise we try:
     # 0. The full path if applicable
@@ -59,10 +61,15 @@ def find_config(name_or_path: Optional[str] = None) -> Path:
         for path in search_pathes:
             if path.exists() and path.is_file():
                 return path
+
+    if str(as_path).lower().endswith((".yaml", ".yml")):
+        init_path = as_path
+    else:
+        init_path = USER_CONFIG_DIR / as_yaml
     raise ConfigNotFound(
         config=name_or_path,
         search_pathes=search_pathes,
-        init_path=USER_CONFIG_DIR / as_yaml,
+        init_path=init_path,
     )
 
 
