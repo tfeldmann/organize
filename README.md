@@ -37,6 +37,9 @@ pip install -U organize-tool --pre
 
 # Installs the pre release with text extraction utils.
 pip install -U organize-tool[textract] --pre
+
+# If you use pipx (which is awesome) you can run:
+pipx install --pip-args="--pre" --force organize-tool
 ```
 
 The new version should be *much* faster and fixes a lot of bugs. It also comes with
