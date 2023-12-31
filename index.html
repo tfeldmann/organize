@@ -43,7 +43,7 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href=".">Home</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#beta-testers-needed-help-testing-the-v3-alpha">Beta testers needed! Help testing the v3-alpha</a>
+    <li class="toctree-l2"><a class="reference internal" href="#testers-needed-help-testing-the-v3-alpha">Testers needed! Help testing the v3-alpha</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#about">About</a>
     </li>
@@ -147,11 +147,19 @@
 <a href="https://organize.readthedocs.io/" target="_blank">Full documentation at Read the docs</a>
 </p>
 
-<h2 id="beta-testers-needed-help-testing-the-v3-alpha">Beta testers needed! Help testing the v3-alpha<a class="headerlink" href="#beta-testers-needed-help-testing-the-v3-alpha" title="Permanent link">#</a></h2>
+<h2 id="testers-needed-help-testing-the-v3-alpha">Testers needed! Help testing the v3-alpha<a class="headerlink" href="#testers-needed-help-testing-the-v3-alpha" title="Permanent link">#</a></h2>
+<p>A prerelease of organize v3 is available. To install:</p>
+<pre><code class="language-sh"># Installs the pre release!
+pip install -U organize-tool --pre
+
+# Installs the pre release with text extraction utils.
+pip install -U organize-tool[textract] --pre
+</code></pre>
+<p>The new version should be <em>much</em> faster and fixes a lot of bugs. It also comes with
+a some new actions, filters and options.</p>
 <ul>
-<li><a href="https://tfeldmann.github.io/organize/changelog/">See the changelog</a> for all the new
-  features!</li>
-<li><a href="https://organize.readthedocs.io/en/latest/updating-from-v1/">Migration guide</a> from organize v1</li>
+<li><a href="https://tfeldmann.github.io/organize/changelog/">See the changelog</a></li>
+<li><a href="https://tfeldmann.github.io/organize/migrating/#migrating-from-v2-to-v3">Migration guide</a>.</li>
 </ul>
 <h2 id="about">About<a class="headerlink" href="#about" title="Permanent link">#</a></h2>
 <p>Your desktop is a mess? You cannot find anything in your downloads and
@@ -185,7 +193,7 @@ qoutes are important):</p>
 </code></pre>
 <p>This command can also be used to update to the newest version. Now you can run <code>organize --help</code> to check if the installation was successful.</p>
 <h3 id="create-your-first-rule">Create your first rule<a class="headerlink" href="#create-your-first-rule" title="Permanent link">#</a></h3>
-<p>In your shell, run <code>organize edit</code> to edit the configuration:</p>
+<p>In your shell, run <code>organize new</code> and then <code>organize edit</code> to edit the configuration:</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Find PDFs&quot;
     locations:
@@ -197,7 +205,7 @@ qoutes are important):</p>
       - echo: &quot;Found PDF!&quot;
 </code></pre>
 <blockquote>
-<p>If you have problems editing the configuration you can run <code>organize reveal</code> to reveal the configuration folder in your file manager. You can then edit the <code>config.yaml</code> in your favourite editor.</p>
+<p>If you have problems editing the configuration you can run <code>organize show --reveal</code> to reveal the configuration folder in your file manager. You can then edit the <code>config.yaml</code> in your favourite editor.</p>
 </blockquote>
 <p>save your config file and run:</p>
 <pre><code class="language-sh">organize run
@@ -389,5 +397,5 @@ Options:
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2023-12-31 18:06:17.449593+00:00
+Build Date UTC : 2023-12-31 18:47:10.706939+00:00
 -->

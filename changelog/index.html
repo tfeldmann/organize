@@ -67,7 +67,7 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">Changelog</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#wip">WIP</a>
+    <li class="toctree-l2"><a class="reference internal" href="#v300a0-2023-12-31">v3.0.0a0 (2023-12-31)</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#v243-2023-10-14">v2.4.3 (2023-10-14)</a>
     </li>
@@ -198,18 +198,26 @@
               
                 <!-- BEGIN INCLUDE ../CHANGELOG.md -->
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">#</a></h1>
-<h2 id="wip">WIP<a class="headerlink" href="#wip" title="Permanent link">#</a></h2>
+<h2 id="v300a0-2023-12-31">v3.0.0a0 (2023-12-31)<a class="headerlink" href="#v300a0-2023-12-31" title="Permanent link">#</a></h2>
 <ul>
-<li>New action: <code>write</code>.</li>
+<li>New action: <code>write</code> to write lines into a file.</li>
 <li>New filter: <code>date_lastused</code> (macOS only).</li>
 <li>You can now specify the timezone in all time based filters.</li>
 <li>Removed hidden (deprecated) CLI option <code>--config-file</code>.</li>
 <li>Lots of new tests and some bugfixes.</li>
 <li><code>exif</code> filter now supports the simplematch syntax.</li>
-<li>{now} must be {now()} now.</li>
-<li>multiple paths per location</li>
-<li>min_depth option</li>
-<li>last_seen</li>
+<li>Placeholder<code>{now}</code> must be <code>{now()}</code> now.</li>
+<li>Multiple <code>path</code>s per location are now supported.</li>
+<li>Locations now support a <code>min_depth</code> option</li>
+<li>Duplicate filter: <code>detect_original_by</code> now supports <code>last_seen</code>.</li>
+<li>New command line interface (added <code>new</code>, <code>show</code> and <code>list</code> commands).</li>
+<li><code>JSONL</code> output (<code>organize run --format=JSONL</code>)</li>
+<li><code>move</code> and <code>copy</code> now intelligently autodetect if you mean to move to a folder
+  (This autodetection can be deactivated).</li>
+<li><code>copy</code> action: You can now specify whether you want to continue with the original
+  or with the copy.</li>
+<li>Completely removes the <code>pyfilesystem</code> dependency.</li>
+<li>At least a 4x speed up. Often more than 10x.</li>
 </ul>
 <h2 id="v243-2023-10-14">v2.4.3 (2023-10-14)<a class="headerlink" href="#v243-2023-10-14" title="Permanent link">#</a></h2>
 <ul>

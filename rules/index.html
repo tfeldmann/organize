@@ -167,15 +167,11 @@ All your environment variables. You can access individual env vars like this: <c
 The full path to the current file / folder on the local harddrive.
 This is not available for remote locations - in this case use <code>fs</code> and <code>fs_path</code>.</p>
 <p><code>{relative_path}</code> (<code>str</code>)<br>
-the relative path of the current file in <code>{fs}</code>.</p>
+the relative path of the current file or dir.</p>
 <p><code>{now}</code> (<code>datetime</code>)<br>
 The current datetime in the local timezone.</p>
 <p><code>{utcnow}</code> (<code>datetime</code>)<br>
 The current UTC datetime.</p>
-<p><code>{fs}</code> (<code>FS</code>)<br>
-The filesystem of the current location. Normally you should not need this.</p>
-<p><code>{fs_path}</code> (<code>str</code>)<br>
-The path of the current file / folder in related to <code>fs</code>. Normally you should not need this.</p>
 <p>In addition to that nearly all filters add new placeholders with information about
 the currently handled file / folder.</p>
 <p>Example on how to access the size and hash of a file:</p>
