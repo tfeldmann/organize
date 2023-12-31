@@ -1,13 +1,13 @@
 from pathlib import Path
 
-from organize import core
-from organize.filters import Regex
+import pytest
+from conftest import make_files
+from pyfakefs.fake_filesystem import FakeFilesystem
 
-TESTDATA = [
-    ("RG123456123456-sig.pdf", True, "123456123456"),
-    ("RG002312321542-sig.pdf", True, "002312321542"),
-    ("RG002312321542.pdf", False, None),
-]
+from organize import Config
+from organize.filters import Regex
+from organize.output import Default
+from organize.resource import Resource
 
 
 def test_regex_backslash():
@@ -18,34 +18,35 @@ def test_regex_backslash():
     assert not regex.matches("\\pdf")
 
 
-def test_regex_basic():
-    regex = Regex(r"^RG(\d{12})-sig\.pdf$")
-    for path, match, _ in TESTDATA:
-        assert bool(regex.matches(path)) == match
-
-
-def test_regex_return():
+@pytest.mark.parametrize(
+    "path,valid,test_result",
+    (
+        ("RG123456123456-sig.pdf", True, "123456123456"),
+        ("RG002312321542-sig.pdf", True, "002312321542"),
+        ("RG002312321542.pdf", False, None),
+    ),
+)
+def test_regex_return(path, valid, test_result):
     regex = Regex(r"^RG(?P<the_number>\d{12})-sig\.pdf$")
-    for path, valid, test_result in TESTDATA:
-        if valid:
-            result = regex.run(fs_path=path)
-            assert result.updates == {"regex": {"the_number": test_result}}
-            assert result.matches == True
+    assert bool(regex.matches(path)) == valid
+    res = Resource(path=Path(path))
+    if valid:
+        regex.pipeline(res=res, output=Default)
+        assert res.vars == {"regex": {"the_number": test_result}}
 
 
 def test_regex_umlaut():
     regex = Regex(r"^Erträgnisaufstellung-(?P<year>\d*)\.pdf")
     doc = "Erträgnisaufstellung-1998.pdf"
     assert regex.matches(doc)
-    result = regex.run(fs_path=doc)
-    assert result.updates == {"regex": {"year": "1998"}}
-    assert result.matches
 
 
-def test_multiple_regex_placeholders(testfs):
+def test_multiple_regex_placeholders(fs: FakeFilesystem):
+    make_files(["test-123.jpg", "other-456.pdf"], "test")
+
     config = """
     rules:
-      - locations: "."
+      - locations: /test/
         filters:
           - regex: (?P<word>\w+)-(?P<number>\d+).*
           - regex: (?P<all>.+?)\.\w{3}
@@ -53,11 +54,9 @@ def test_multiple_regex_placeholders(testfs):
         actions:
           - write:
                text: '{regex.word} {regex.number} {regex.all} {extension}'
-               path: out.txt
+               outfile: /test/out.txt
     """
-    testfs.touch("test-123.jpg")
-    testfs.touch("other-456.pdf")
-    core.run(config, simulate=False, working_dir=testfs)
-    out = testfs.readtext("out.txt")
+    Config.from_string(config).execute(simulate=False)
+    out = Path("/test/out.txt").read_text()
     assert "test 123 test-123 jpg" in out
     assert "other 456 other-456 pdf" in out

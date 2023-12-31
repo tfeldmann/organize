@@ -1,15 +1,21 @@
-from datetime import datetime
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import ClassVar
 
-from fs.base import FS
+from organize.filter import FilterConfig
 
-from ._timefilter import TimeFilter
+from .common.timefilter import TimeFilter
+
+
+def read_lastmodified(path: Path) -> datetime:
+    return datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
 
 
 class LastModified(TimeFilter):
 
     """Matches files by last modified date
 
-    Args:
+    Attributes:
         years (int): specify number of years
         months (int): specify number of months
         weeks (float): specify number of weeks
@@ -26,18 +32,11 @@ class LastModified(TimeFilter):
         {lastmodified}: The datetime the files / folders was lastmodified.
     """
 
-    name = "lastmodified"
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
+        name="lastmodified",
+        files=True,
+        dirs=True,
+    )
 
-    def get_datetime(self, args: dict) -> datetime:
-        fs = args["fs"]  # type: FS
-        fs_path = args["fs_path"]
-        modified = fs.getmodified(fs_path)
-        if not modified:
-            raise EnvironmentError("lastmodified date is not available")
-        return modified
-
-    def __str__(self):
-        return "[LastModified] All files / folders last modified %s than %s" % (
-            self._mode,
-            self.timedelta,
-        )
+    def get_datetime(self, path: Path) -> datetime:
+        return read_lastmodified(path)

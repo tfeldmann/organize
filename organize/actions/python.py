@@ -1,60 +1,69 @@
-import logging
 import textwrap
-from typing import Any, Dict, Iterable
-from typing import Optional as tyOptional
+from typing import ClassVar, Dict, Optional
 
-from schema import Optional, Or
+from pydantic.config import ConfigDict
+from pydantic.dataclasses import dataclass
 
-from .action import Action
+from organize.action import ActionConfig
+from organize.output import Output
+from organize.resource import Resource
 
-logger = logging.getLogger(__name__)
 
-
-class Python(Action):
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
+class Python:
 
     """Execute python code.
 
-    Args:
+    Attributes:
         code (str): The python code to execute.
         run_in_simulation (bool):
             Whether to execute this code in simulation mode (Default false).
     """
 
-    name = "python"
-    arg_schema = Or(
-        str,
-        {
-            "code": str,
-            Optional("run_in_simulation"): bool,
-        },
+    code: str
+    run_in_simulation: bool = False
+
+    action_config: ClassVar[ActionConfig] = ActionConfig(
+        name="python",
+        standalone=True,
+        files=True,
+        dirs=True,
     )
 
-    def __init__(self, code, run_in_simulation=False) -> None:
-        self.code = textwrap.dedent(code)
-        self.run_in_simulation = run_in_simulation
+    def __post_init__(self):
+        self.code = textwrap.dedent(self.code)
 
-    def usercode(self, *args, **kwargs):
-        pass  # will be overwritten by `create_method`
+    def __usercode__(self, print, **kwargs) -> Optional[Dict]:
+        raise NotImplementedError()
 
-    def create_method(self, name: str, argnames: Iterable[str], code: str) -> None:
-        globals_ = globals().copy()
-        globals_["print"] = self.print
-        locals_ = locals().copy()
-        funccode = "def {fnc}__({arg}):\n{cod}\n\nself.{fnc} = {fnc}__\n".format(
-            fnc=name,
-            arg=", ".join(argnames),
-            cod=textwrap.indent(textwrap.dedent(code), " " * 4),
-        )
-        exec(funccode, globals_, locals_)  # pylint: disable=exec-used
-
-    def pipeline(self, args: dict, simulate: bool) -> tyOptional[Dict[str, Any]]:
+    def pipeline(self, res: Resource, output: Output, simulate: bool):
         if simulate and not self.run_in_simulation:
-            self.print("** Code not run in simulation. **")
-            return None
+            output.msg(
+                res=res,
+                msg="** Code not run in simulation. **",
+                level="warn",
+                sender=self,
+            )
+            return
 
-        logger.info('Executing python:\n"""\n%s\n"""', self.code)
-        self.create_method(name="usercode", argnames=args.keys(), code=self.code)
-        self.print("Running python script.")
+        def _output_msg(*values, sep: str = " ", end: str = ""):
+            """
+            the print function for the use code needs to print via the current output
+            """
+            msg = f"{sep.join(str(x) for x in values)}{end}"
+            output.msg(res=res, msg=msg, sender=self)
 
-        result = self.usercode(**args)  # pylint: disable=assignment-from-no-return
-        return result
+        # codegen the user function with arguments as available in the resource
+        kwargs = ", ".join(res.dict().keys())
+        func = f"def __userfunc(print, {kwargs}):\n"
+        func += textwrap.indent(self.code, "    ")
+        func += "\n\nself.__usercode__ = __userfunc"
+        exec(func, globals().copy(), locals().copy())
+        result = self.__usercode__(print=_output_msg, **res.dict())
+
+        # deep merge the resulting dict
+        if not (result is None or isinstance(result, dict)):
+            raise ValueError("The python code must return None or a dict")
+
+        if isinstance(result, dict):
+            res.deep_merge(key=self.action_config.name, data=result)

@@ -1,18 +1,21 @@
 import textwrap
-from typing import Any
-from typing import Optional as tyOpt
-from typing import Sequence
+from typing import ClassVar, Dict, Optional
 
-from schema import Or
+from pydantic import field_validator
+from pydantic.config import ConfigDict
+from pydantic.dataclasses import dataclass
 
-from .filter import Filter, FilterResult
+from organize.filter import FilterConfig
+from organize.output import Output
+from organize.resource import Resource
 
 
-class Python(Filter):
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
+class Python:
 
     """Use python code to filter files.
 
-    Args:
+    Attributes:
         code (str):
             The python code to execute. The code must contain a `return` statement.
 
@@ -27,33 +30,49 @@ class Python(Filter):
         `{python.nested.k}`.
     """
 
-    name = "python"
+    code: str
 
-    arg_schema = Or(str, {"code": str})
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
+        name="python",
+        files=True,
+        dirs=True,
+    )
 
-    def __init__(self, code) -> None:
-        self.code = textwrap.dedent(code)
-        if "return" not in self.code:
+    @field_validator("code", mode="after")
+    @classmethod
+    def must_have_return_statement(cls, value):
+        if "return" not in value:
             raise ValueError("No return statement found in your code!")
+        return value
 
-    def usercode(self, *args, **kwargs) -> tyOpt[Any]:
-        pass  # will be overwritten by `create_method`
+    def __post_init__(self):
+        self.code = textwrap.dedent(self.code)
 
-    def create_method(self, name: str, argnames: Sequence[str], code: str) -> None:
-        globals_ = globals().copy()
-        globals_["print"] = self.print
-        locals_ = locals().copy()
-        locals_["self"] = self
-        funccode = "def {fnc}__({arg}):\n{cod}\n\nself.{fnc} = {fnc}__\n".format(
-            fnc=name,
-            arg=", ".join(argnames),
-            cod=textwrap.indent(textwrap.dedent(code), " " * 4),
-        )
-        exec(funccode, globals_, locals_)  # pylint: disable=exec-used
+    def __usercode__(self, print, **kwargs) -> Optional[Dict]:
+        raise NotImplementedError()
 
-    def pipeline(self, args) -> FilterResult:
-        self.create_method(name="usercode", argnames=args.keys(), code=self.code)
-        result = self.usercode(**args)  # pylint: disable=assignment-from-no-return
-        if result not in (False, None):
-            return FilterResult(matches=True, updates={self.get_name(): result})
-        return FilterResult(matches=False, updates={})
+    def pipeline(self, res: Resource, output: Output) -> bool:
+        def _output_msg(*values, sep: str = " ", end: str = ""):
+            """
+            the print function for the use code needs to print via the current output
+            """
+            output.msg(
+                res=res,
+                msg=f"{sep.join(str(x) for x in values)}{end}",
+                sender="python",
+            )
+
+        # codegen the user function with arguments as available in the resource
+        kwargs = ", ".join(res.dict().keys())
+        func = f"def __userfunc(print, {kwargs}):\n"
+        func += textwrap.indent(self.code, "    ")
+        func += "\n\nself.__usercode__ = __userfunc"
+
+        exec(func, globals().copy(), locals().copy())
+        result = self.__usercode__(print=_output_msg, **res.dict())
+
+        if isinstance(result, dict):
+            res.deep_merge(key=self.filter_config.name, data=result)
+        else:
+            res.vars[self.filter_config.name] = result
+        return result not in (False, None)

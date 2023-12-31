@@ -1,5 +1,26 @@
 # Changelog
 
+## v3.0.0a0 (2023-12-31)
+
+- New action: `write` to write lines into a file.
+- New filter: `date_lastused` (macOS only).
+- You can now specify the timezone in all time based filters.
+- Removed hidden (deprecated) CLI option `--config-file`.
+- Lots of new tests and some bugfixes.
+- `exif` filter now supports the simplematch syntax.
+- Placeholder`{now}` must be `{now()}` now.
+- Multiple `path`s per location are now supported.
+- Locations now support a `min_depth` option
+- Duplicate filter: `detect_original_by` now supports `last_seen`.
+- New command line interface (added `new`, `show` and `list` commands).
+- `JSONL` output (`organize run --format=JSONL`)
+- `move` and `copy` now intelligently autodetect if you mean to move to a folder
+  (This autodetection can be deactivated).
+- `copy` action: You can now specify whether you want to continue with the original
+  or with the copy.
+- Completely removes the `pyfilesystem` dependency.
+- At least a 4x speed up. Often more than 10x.
+
 ## v2.4.3 (2023-10-14)
 
 - Modified filter: `exif`. Enabled datetime fields on exif data (Issue #266) (Thanks @FlorianFritz)

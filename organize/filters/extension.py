@@ -1,16 +1,37 @@
-from typing import Union
+from pathlib import Path
+from typing import ClassVar, Set, Tuple
 
-from fs.base import FS
+from pydantic import Field, field_validator
+from pydantic.config import ConfigDict
+from pydantic.dataclasses import dataclass
 
-from organize.utils import flatten
+from organize.filter import FilterConfig
+from organize.output import Output
+from organize.resource import Resource
+from organize.validators import flatten
 
-from .filter import Filter, FilterResult
+
+def convert_to_list(v):
+    if not v:
+        return []
+    if isinstance(v, str):
+        return v.split()
+    return v
 
 
-class Extension(Filter):
+def normalize_extension(ext: str) -> str:
+    """strip colon and convert to lowercase"""
+    if ext.startswith("."):
+        return ext[1:].lower()
+    else:
+        return ext.lower()
+
+
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
+class Extension:
     """Filter by file extension
 
-    Args:
+    Attributes:
         *extensions (list(str) or str):
             The file extensions to match (does not need to start with a colon).
 
@@ -19,40 +40,32 @@ class Extension(Filter):
     - `{extension}`: the original file extension (without colon)
     """
 
-    name = "extension"
-    schema_support_instance_without_args = True
+    extensions: Set[str] = Field(default_factory=set)
 
-    def __init__(self, *extensions) -> None:
-        self.extensions = list(map(self.normalize_extension, flatten(list(extensions))))
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
+        name="extension",
+        files=True,
+        dirs=False,
+    )
 
-    @staticmethod
-    def normalize_extension(ext: str) -> str:
-        """strip colon and convert to lowercase"""
-        if ext.startswith("."):
-            return ext[1:].lower()
-        else:
-            return ext.lower()
+    @field_validator("extensions", mode="before")
+    def normalize_extensions(cls, v):
+        as_list = convert_to_list(v)
+        return set(map(normalize_extension, flatten(list(as_list))))
 
-    def matches(self, ext: str) -> Union[bool, str]:
+    def suffix_match(self, path: Path) -> Tuple[str, bool]:
+        suffix = path.suffix.lstrip(".")
         if not self.extensions:
-            return True
-        if not ext:
-            return False
-        return self.normalize_extension(ext) in self.extensions
+            return (suffix, True)
+        if not suffix:
+            return (suffix, False)
+        return (suffix, normalize_extension(suffix) in self.extensions)
 
-    def pipeline(self, args: dict) -> FilterResult:
-        fs = args["fs"]  # type: FS
-        fs_path = args["fs_path"]
-        if fs.isdir(fs_path):
+    def pipeline(self, res: Resource, output: Output) -> bool:
+        assert res.path is not None, "Does not support standalone mode"
+        if res.is_dir():
             raise ValueError("Dirs not supported")
 
-        # suffix is the extension with dot
-        suffix = fs.getinfo(fs_path).suffix
-        ext = suffix[1:]
-        return FilterResult(
-            matches=bool(self.matches(ext)),
-            updates={self.get_name(): ext},
-        )
-
-    def __str__(self):
-        return f"Extension({', '.join(self.extensions)})"
+        suffix, match = self.suffix_match(path=res.path)
+        res.vars[self.filter_config.name] = suffix
+        return match

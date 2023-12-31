@@ -1,15 +1,20 @@
 import re
+from typing import ClassVar
 
-from fs.path import basename
+from pydantic.config import ConfigDict
+from pydantic.dataclasses import dataclass
 
-from .filter import Filter, FilterResult
+from organize.filter import FilterConfig
+from organize.output import Output
+from organize.resource import Resource
 
 
-class Regex(Filter):
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
+class Regex:
 
     """Matches filenames with the given regular expression
 
-    Args:
+    Attributes:
         expr (str): The regular expression to be matched.
 
     **Returns:**
@@ -21,22 +26,24 @@ class Regex(Filter):
 
     """
 
-    name = "regex"
+    expr: str
 
-    arg_schema = str
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
+        name="regex",
+        files=True,
+        dirs=True,
+    )
 
-    def __init__(self, expr) -> None:
-        self.expr = re.compile(expr, flags=re.UNICODE)
+    def __post_init__(self):
+        self._expr = re.compile(self.expr, flags=re.UNICODE)
 
     def matches(self, path: str):
-        return self.expr.search(path)
+        return self._expr.search(path)
 
-    def pipeline(self, args: dict) -> FilterResult:
-        fs_path = args["fs_path"]
-        match = self.matches(basename(fs_path))
-        return FilterResult(
-            matches=bool(match),
-            updates={
-                self.get_name(): match.groupdict() if match else "",
-            },
-        )
+    def pipeline(self, res: Resource, output: Output) -> bool:
+        assert res.path is not None, "Does not support standalone mode"
+        match = self.matches(res.path.name)
+        if match:
+            res.deep_merge(key=self.filter_config.name, data=match.groupdict())
+            return True
+        return False

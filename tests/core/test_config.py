@@ -1,19 +1,11 @@
 import pytest
-from fs import open_fs
-from schema import SchemaError
 
-from organize import config, core
-
-
-def validate_config(string: str):
-    conf = config.load_from_string(string)
-    conf = config.cleanup(conf)
-    config.validate(conf)
-    return conf
+from organize.config import Config, ConfigError
 
 
 def test_basic():
-    STR = """
+    x = Config.from_string(
+        """
     rules:
     - locations: '~/'
       filters:
@@ -32,17 +24,19 @@ def test_basic():
       - shell:
           cmd: 'say {path.stem}'
     """
-    validate_config(STR)
+    )
+    print(x)
 
 
 def test_yaml_ref():
-    STR = """
+    x = Config.from_string(
+        """
     media: &media
       - wav
       - png
 
     all_folders: &all
-      - "~"
+      / "~"
       - "/"
 
     rules:
@@ -63,7 +57,8 @@ def test_yaml_ref():
         actions:
           - trash
     """
-    validate_config(STR)
+    )
+    print(x)
 
 
 def test_error_filter_dict():
@@ -72,114 +67,100 @@ def test_error_filter_dict():
     - locations: '/'
       filters:
         extension: 'jpg'
+        name: test
       actions:
       - trash
     """
-    with pytest.raises(SchemaError):
-        validate_config(STR)
+    with pytest.raises(ConfigError):
+        print(Config.from_string(STR))
 
 
-# def test_error_action_dict():
-#     conf = Config.from_string(
-#         """
-#     rules:
-#     - folders: '/'
-#       filters:
-#       - extension: 'jpg'
-#       actions:
-#         Trash
-#     """
-#     )
-#     with pytest.raises(Config.ActionsNoListError):
-#         _ = conf.rules
+def test_error_action_dict():
+    config = """
+        rules:
+          - locations: '/'
+            filters:
+              - extension: 'jpg'
+            actions:
+              Trash
+              Echo
+    """
+    with pytest.raises(ConfigError):
+        Config.from_string(config)
 
 
-# def test_empty_filters():
-#     conf = """
-#     rules:
-#       - folders: '/'
-#         filters:
-#         actions:
-#           - trash
-#       - folders: '~/'
-#         actions:
-#           - trash
-#     """
-#     assert Config.from_string(conf).rules == [
-#         Rule(
-#             folders=["/"],
-#             filters=[],
-#             actions=[Trash()],
-#             subfolders=False,
-#             system_files=False,
-#         ),
-#         Rule(
-#             folders=["~/"],
-#             filters=[],
-#             actions=[Trash()],
-#             subfolders=False,
-#             system_files=False,
-#         ),
-#     ]
+def test_empty_filters():
+    conf = """
+    rules:
+      - locations: '/'
+        filters:
+        actions:
+          - trash
+      - locations: '~/'
+        actions:
+          - trash
+    """
+    assert Config.from_string(conf)
 
 
-# @pytest.mark.skip
-# def test_flatten_filters_and_actions():
-#     config = """
-#     folder_aliases:
-#       Downloads: &downloads ~/Downloads/
-#       Payables_due: &payables_due ~/PayablesDue/
-#       Payables_paid: &payables_paid ~/Accounting/Expenses/
-#       Receivables_due: &receivables_due ~/Receivables/
-#       Receivables_paid: &receivables_paid ~/Accounting/Income/
+def test_flatten_filters_and_actions():
+    config = """
+    folder_aliases:
+      Downloads: &downloads ~/Downloads/
+      Payables_due: &payables_due ~/PayablesDue/
+      Payables_paid: &payables_paid ~/Accounting/Expenses/
+      Receivables_due: &receivables_due ~/Receivables/
+      Receivables_paid: &receivables_paid ~/Accounting/Income/
 
-#     defaults:
-#       filters: &default_filters
-#         - extension: pdf
-#         - filecontent: '(?P<date>...)'
-#       actions: &default_actions
-#         - echo: 'Dated: {filecontent.date}'
-#         - echo: 'Stem of filename: {filecontent.stem}'
-#       post_actions: &default_sorting
-#         - rename: '{python.timestamp}-{filecontent.stem}.{extension.lower}'
-#         - move: '{path.parent}/{python.quarter}/'
+    defaults:
+      filters: &default_filters
+        - extension: pdf
+        - filecontent: '(?P<date>...)'
+      actions: &default_actions
+        - echo: 'Dated: {filecontent.date}'
+        - echo: 'Stem of filename: {filecontent.stem}'
+      post_actions: &default_sorting
+        - rename: '{python.timestamp}-{filecontent.stem}.{extension.lower}'
+        - move: '{path.parent}/{python.quarter}/'
 
-#     rules:
-#       - folders: *downloads
-#         filters:
-#           - *default_filters
-#           - filecontent: 'Due Date' # regex to id as payable
-#           - filecontent: '(?P<stem>...)' # regex to extract supplier
-#         actions:
-#           - *default_actions
-#           - move: *payables_due
-#           - *default_sorting
+    rules:
+      - locations: *downloads
+        filters:
+          - *default_filters
+          - filecontent: 'Due Date' # regex to id as payable
+          - filecontent: '(?P<stem>...)' # regex to extract supplier
+        actions:
+          - *default_actions
+          - move: *payables_due
+          - *default_sorting
 
-#       - folders: *downloads
-#         filters:
-#           - *default_filters
-#           - filecontent: 'Account: 000000000' # regex to id as receivables due
-#           - filecontent: '(?P<stem>...)' # regex to extract customer
-#         actions:
-#           - *default_actions
-#           - move: *receivables_due
-#           - *default_sorting
+      - locations: *downloads
+        filters:
+          - *default_filters
+          - filecontent: 'Account: 000000000' # regex to id as receivables due
+          - filecontent: '(?P<stem>...)' # regex to extract customer
+        actions:
+          - *default_actions
+          - move: *receivables_due
+          - *default_sorting
 
-#       - folders: *downloads
-#         filters:
-#           - *default_filters
-#           - filecontent: 'PAID' # regex to id as receivables paid
-#           - filecontent: '(?P<stem>...)' # regex to extract customer
-#           - filecontent: '(?P<paid>...)' # regex to extract date paid
-#           - filename:
-#               startswith: 2020
-#         actions:
-#           - *default_actions
-#           - move: *receivables_paid
-#           - *default_sorting
-#           - rename: '{filecontent.paid}_{filecontent.stem}.{extension}'
-#     """
-#     conf = Config.from_string(config)
+      - locations: *downloads
+        filters:
+          - *default_filters
+          - filecontent: 'PAID' # regex to id as receivables paid
+          - filecontent: '(?P<stem>...)' # regex to extract customer
+          - filecontent: '(?P<paid>...)' # regex to extract date paid
+          - name:
+              startswith: 2020
+        actions:
+          - *default_actions
+          - move: *receivables_paid
+          - *default_sorting
+          - rename: '{filecontent.paid}_{filecontent.stem}.{extension}'
+    """
+    Config.from_string(config)
+
+
 #     assert conf.rules == [
 #         Rule(
 #             folders=["~/Downloads/"],

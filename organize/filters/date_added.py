@@ -1,10 +1,19 @@
 import subprocess
 import sys
 from datetime import datetime
+from pathlib import Path
+from typing import ClassVar
 
-from fs.base import FS
+from organize.filter import FilterConfig
 
-from ._timefilter import TimeFilter
+from .common.timefilter import TimeFilter
+
+
+def read_date_added(path: Path) -> datetime:
+    cmd = ["mdls", "-name", "kMDItemDateAdded", "-raw", str(path)]
+    out = subprocess.check_output(cmd, encoding="utf-8").strip()
+    dt = datetime.strptime(out, "%Y-%m-%d %H:%M:%S %z")
+    return dt
 
 
 class DateAdded(TimeFilter):
@@ -13,7 +22,7 @@ class DateAdded(TimeFilter):
 
     **`date_added` is only available on macOS!**
 
-    Args:
+    Attributes:
         years (int): specify number of years
         months (int): specify number of months
         weeks (float): specify number of weeks
@@ -27,25 +36,19 @@ class DateAdded(TimeFilter):
             time. (default = 'older')
 
     Returns:
-        {date_added}: The datetime the files / folders were added.
+        `{date_added}`: The datetime the files / folders were added.
     """
 
-    name = "date_added"
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
+        name="date_added",
+        files=True,
+        dirs=True,
+    )
 
-    def get_datetime(self, args: dict) -> datetime:
+    def __post_init__(self):
         if sys.platform != "darwin":
             raise EnvironmentError("date_added is only available on macOS")
+        return super().__post_init__()
 
-        fs = args["fs"]  # type: FS
-        fs_path = args["fs_path"]
-
-        cmd = ["mdls", "-name", "kMDItemDateAdded", "-raw", fs.getsyspath(fs_path)]
-        out = subprocess.check_output(cmd, encoding="utf-8").strip()
-        dt = datetime.strptime(out, "%Y-%m-%d %H:%M:%S %z")
-        return dt
-
-    def __str__(self):
-        return "[DateAdded] All files / folders added %s than %s" % (
-            self._mode,
-            self.timedelta,
-        )
+    def get_datetime(self, path: Path) -> datetime:
+        return read_date_added(path)

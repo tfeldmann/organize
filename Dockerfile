@@ -2,29 +2,28 @@ FROM python:3.12-slim as base
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PYTHONUNBUFFERED=1 \
-    POETRY_VERSION=1.5.1 \
-    VIRTUAL_ENV="/venv" \
-    PATH="${VIRTUAL_ENV}/bin:$PATH"
+    VIRTUAL_ENV="/venv"
+ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
 
 WORKDIR /app
+COPY pyproject.toml poetry.lock ./
 
 
 FROM base as pydeps
 
-RUN pip install "poetry==${POETRY_VERSION}" && \
+RUN pip install "poetry==1.7.1" && \
     python -m venv ${VIRTUAL_ENV}
 
-COPY pyproject.toml poetry.lock ./
-RUN poetry install --no-interaction --compile --only=main --extras=textract --no-root
+RUN poetry install --only=main --extras=textract --no-interaction
 
 
 FROM base as final
 
-ENV PATH="${VIRTUAL_ENV}/bin:$PATH" \
-    ORGANIZE_CONFIG=/config/config.yml
+ENV ORGANIZE_CONFIG=/config/config.yml
 
-RUN mkdir /config
+RUN mkdir /config && touch ./README.md
 COPY --from=pydeps ${VIRTUAL_ENV} ${VIRTUAL_ENV}
-COPY . .
+COPY ./organize ./organize
+RUN python -m pip install .
 
-ENTRYPOINT ["python", "main.py"]
+ENTRYPOINT ["organize"]

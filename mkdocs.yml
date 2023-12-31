@@ -4,13 +4,13 @@ edit_uri: edit/main/docs/
 site_author: "Thomas Feldmann"
 nav:
   - Home: index.md
-  - Updating from organize v1.x: updating-from-v1.md
   - Configuration: configuration.md
   - Rules: rules.md
   - Locations: locations.md
   - Filters: filters.md
   - Actions: actions.md
   - Changelog: changelog.md
+  - Migrating from older versions: migrating.md
 plugins:
   - search
   - include-markdown
@@ -19,15 +19,14 @@ plugins:
       default_handler: python
       handlers:
         python:
-          selection:
-            members: false
-          rendering:
+          options:
             show_bases: false
             show_root_toc_entry: false
             show_root_heading: false
-            show_source: false
-      watch:
-        - organize
+            show_source: true
+watch:
+  - organize
+  - docs
 
 markdown_extensions:
   - admonition

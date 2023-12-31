@@ -4,95 +4,95 @@ Duplicate detection filter.
 Based on this stackoverflow answer:
     https://stackoverflow.com/a/36113168/300783
 
-Which I updated for python3 in:
+Which was updated for python3 in:
     https://gist.github.com/tfeldmann/fc875e6630d11f2256e746f67a09c1ae
 """
-import hashlib
 from collections import defaultdict
-from typing import Dict, NamedTuple, Set, Union
+from pathlib import Path
+from typing import Any, Callable, ClassVar, Literal, NamedTuple, Tuple
 
-from fs.base import FS
-from fs.errors import NoSysPath, NoURL
-from fs.path import basename
+from pydantic.config import ConfigDict
+from pydantic.dataclasses import dataclass
 
-from organize.utils import is_same_resource
+from organize.filter import FilterConfig
+from organize.filters.created import read_created
+from organize.filters.hash import hash, hash_first_chunk
+from organize.filters.lastmodified import read_lastmodified
+from organize.filters.size import read_file_size
+from organize.output import Output
+from organize.resource import Resource
 
-from .filter import Filter, FilterResult
-
-HASH_ALGORITHM = "sha1"
-DETECTION_METHODS = ("first_seen", "name", "created", "lastmodified")
-DETECTION_METHOD_REGEX = r"(-?)\s*?({})".format("|".join(DETECTION_METHODS))
-
-
-class File(NamedTuple):
-    fs: FS
-    path: str
-    base_path: str
-
-    @property
-    def lastmodified(self):
-        return self.fs.getmodified(self.path)
-
-    @property
-    def created(self):
-        return self.fs.getinfo(self.path, namespaces=["details"]).created
-
-    @property
-    def name(self):
-        return basename(self.path)
-
-    @property
-    def ident(self):
-        try:
-            return self.fs.getsyspath(self.path)
-        except NoSysPath:
-            pass
-        try:
-            return self.fs.geturl(self.path)
-        except NoURL:
-            pass
-        return f"{self.path},{id(self.fs)}"
+DetectionMethod = Literal[
+    "first_seen",
+    "-first_seen",
+    "last_seen",
+    "-last_seen",
+    "name",
+    "-name",
+    "created",
+    "-created",
+    "lastmodified",
+    "-lastmodified",
+]
 
 
-def getsize(f: File):
-    return f.fs.getsize(f.path)
+class OriginalDetectionResult(NamedTuple):
+    original: Path
+    duplicate: Path
+
+    @classmethod
+    def by_sorting(
+        cls,
+        known: Path,
+        new: Path,
+        key: Callable[[Path], Any],
+    ) -> "OriginalDetectionResult":
+        if key(known) <= key(new):
+            return cls(original=known, duplicate=new)
+        return cls(original=new, duplicate=known)
+
+    def reversed(self) -> "OriginalDetectionResult":
+        return OriginalDetectionResult(
+            original=self.duplicate,
+            duplicate=self.original,
+        )
 
 
-def full_hash(f: File):
-    return f.fs.hash(f.path, name=HASH_ALGORITHM)
-
-
-def first_chunk_hash(f: File):
-    hash_object = hashlib.new(HASH_ALGORITHM)
-    with f.fs.openbin(f.path) as file_:
-        hash_object.update(file_.read(1024))
-    return hash_object.hexdigest()
-
-
-def detect_original(known: File, new: File, method: str, reverse: bool):
+def detect_original(
+    known: Path, new: Path, method: DetectionMethod, reverse: bool
+) -> Tuple[Path, Path]:
     """Returns a tuple (original file, duplicate)"""
 
     if method == "first_seen":
-        return (known, new) if not reverse else (new, known)
+        result = OriginalDetectionResult(original=known, duplicate=new)
+    elif method == "last_seen":
+        result = OriginalDetectionResult(original=new, duplicate=known)
     elif method == "name":
-        return tuple(sorted((known, new), key=lambda x: x.name, reverse=reverse))
+        result = OriginalDetectionResult.by_sorting(
+            known=known, new=new, key=lambda x: x.name
+        )
     elif method == "created":
-        return tuple(sorted((known, new), key=lambda x: x.created, reverse=reverse))
+        result = OriginalDetectionResult.by_sorting(
+            known=known, new=new, key=lambda x: read_created(x)
+        )
     elif method == "lastmodified":
-        return tuple(
-            sorted((known, new), key=lambda x: x.lastmodified, reverse=reverse)
+        result = OriginalDetectionResult.by_sorting(
+            known=known, new=new, key=lambda x: read_lastmodified(x)
         )
     else:
         raise ValueError(f"Unknown original detection method: {method}")
 
+    return result.reversed() if reverse else result
 
-class Duplicate(Filter):
+
+@dataclass(config=ConfigDict(extra="forbid"))
+class Duplicate:
     """A fast duplicate file finder.
 
     This filter compares files byte by byte and finds identical files with potentially
     different filenames.
 
-    Args:
+    Attributes:
         detect_original_by (str):
             Detection method to distinguish between original and duplicate.
             Possible values are:
@@ -101,7 +101,8 @@ class Duplicate(Filter):
               depends on the order of your location entries.
             - `"name"`: The first entry sorted by name is the original.
             - `"created"`: The first entry sorted by creation date is the original.
-            - `"lastmodified"`: The first file sorted by date of last modification is the original.
+            - `"lastmodified"`: The first file sorted by date of last modification is
+               the original.
 
     You can reverse the sorting method by prefixing a `-`.
 
@@ -114,49 +115,49 @@ class Duplicate(Filter):
     `{duplicate.original}` - The path to the original
     """
 
-    name = "duplicate"
-    schema_support_instance_without_args = True
+    detect_original_by: DetectionMethod = "first_seen"
+    hash_algorithm: str = "sha1"
 
-    def __init__(self, detect_original_by="first_seen"):
-        if detect_original_by.startswith("-"):
-            self.detect_original_by = detect_original_by[1:]
-            self.select_orignal_reverse = True
-        else:
-            self.detect_original_by = detect_original_by
-            self.select_orignal_reverse = False
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
+        name="duplicate", files=True, dirs=False
+    )
 
-        self.files_for_size = defaultdict(list)
-        self.files_for_chunk = defaultdict(list)
-        self.file_for_hash = dict()
+    def __post_init__(self):
+        # reverse original detection order if starting with "-"
+        self._detect_original_by = self.detect_original_by
+        self._detect_original_reverse = False
+        if self.detect_original_by.startswith("-"):
+            self._detect_original_by = self.detect_original_by[1:]
+            self._detect_original_reverse = True
+
+        self._files_for_size = defaultdict(list)
+        self._files_for_chunk = defaultdict(list)
+        self._file_for_hash = dict()
 
         # we keep track of the files we already computed the hashes for so we only do
         # that once.
-        self.seen_files = set()  # type: Set[File]
-        self.first_chunk_known = set()  # type: Set[File]
-        self.hash_known = set()  # type: Set[File]
+        self._seen_files = set()
+        self._first_chunk_known = set()
+        self._hash_known = set()
 
-    def matches(self, fs: FS, path: str, base_path: str):
-        file_ = File(fs=fs, path=path, base_path=base_path)
-
+    def pipeline(self, res: Resource, output: Output) -> bool:
+        assert res.path is not None, "Does not support standalone mode"
         # skip symlinks
-        if fs.islink(path):
+        if res.path.is_symlink():
             return False
 
         # the exact same path has already been handled. This happens if multiple
         # locations emit this file in a single rule or if we follow symlinks.
         # We skip these.
-        if file_ in self.seen_files or any(
-            is_same_resource(file_.fs, file_.path, x.fs, x.path)
-            for x in self.seen_files
-        ):
+        if res.path in self._seen_files:
             return False
 
-        self.seen_files.add(file_)
+        self._seen_files.add(res.path)
 
         # check for files with equal size
-        file_size = getsize(file_)
-        same_size = self.files_for_size[file_size]
-        same_size.append(file_)
+        file_size = read_file_size(path=res.path)
+        same_size = self._files_for_size[file_size]
+        same_size.append(res.path)
         if len(same_size) == 1:
             # the file is unique in size and cannot be a duplicate
             return False
@@ -164,16 +165,16 @@ class Duplicate(Filter):
         # for all other files with the same file size:
         # make sure we know their hash of their first 1024 byte chunk
         for f in same_size[:-1]:
-            if f not in self.first_chunk_known:
-                chunk_hash = first_chunk_hash(f)
-                self.first_chunk_known.add(f)
-                self.files_for_chunk[chunk_hash].append(f)
+            if f not in self._first_chunk_known:
+                chunk_hash = hash_first_chunk(f, algo=self.hash_algorithm)
+                self._first_chunk_known.add(f)
+                self._files_for_chunk[chunk_hash].append(f)
 
         # check first chunk hash collisions with the current file
-        chunk_hash = first_chunk_hash(file_)
-        same_first_chunk = self.files_for_chunk[chunk_hash]
-        same_first_chunk.append(file_)
-        self.first_chunk_known.add(file_)
+        chunk_hash = hash_first_chunk(res.path, algo=self.hash_algorithm)
+        same_first_chunk = self._files_for_chunk[chunk_hash]
+        same_first_chunk.append(res.path)
+        self._first_chunk_known.add(res.path)
         if len(same_first_chunk) == 1:
             # the file has a unique small hash and cannot be a duplicate
             return False
@@ -181,50 +182,27 @@ class Duplicate(Filter):
         # Ensure we know the full hashes of all files with the same first chunk as
         # the investigated file
         for f in same_first_chunk[:-1]:
-            if f not in self.hash_known:
-                hash_ = full_hash(f)
-                self.hash_known.add(f)
-                self.file_for_hash[hash_] = f
+            if f not in self._hash_known:
+                hash_ = hash(f, algo=self.hash_algorithm)
+                self._hash_known.add(f)
+                self._file_for_hash[hash_] = f
 
         # check full hash collisions with the current file
-        hash_ = full_hash(file_)
-        self.hash_known.add(file_)
-        known = self.file_for_hash.get(hash_)
+        hash_ = hash(res.path, algo=self.hash_algorithm)
+        self._hash_known.add(res.path)
+        known = self._file_for_hash.get(hash_)
         if known:
             original, duplicate = detect_original(
                 known=known,
-                new=file_,
-                method=self.detect_original_by,
-                reverse=self.select_orignal_reverse,
+                new=res.path,
+                method=self._detect_original_by,
+                reverse=self._detect_original_reverse,
             )
             if known != original:
-                self.file_for_hash[hash_] = original
+                self._file_for_hash[hash_] = original
 
-            resource_changed_reason = "duplicate of" if known != original else None
-            from organize.core import syspath_or_exception
-
-            return {
-                "fs": duplicate.fs,
-                "fs_path": duplicate.path,
-                "fs_base_path": duplicate.base_path,
-                "resource_changed": resource_changed_reason,
-                self.get_name(): {
-                    "original": syspath_or_exception(original.fs, original.path)
-                },
-            }
+            res.path = duplicate
+            res.vars[self.filter_config.name] = {"original": original}
+            return True
 
         return False
-
-    def pipeline(self, args):
-        fs = args["fs"]
-        fs_path = args["fs_path"]
-        fs_base_path = args["fs_base_path"]
-        if fs.isdir(fs_path):
-            raise EnvironmentError("Dirs are not supported")
-        result = self.matches(fs=fs, path=fs_path, base_path=fs_base_path)
-        if result is False:
-            return FilterResult(matches=False, updates={})
-        return FilterResult(matches=True, updates=result)
-
-    def __str__(self) -> str:
-        return "Duplicate()"

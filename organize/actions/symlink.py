@@ -1,46 +1,82 @@
-import logging
-import os
+from typing import ClassVar
 
-from fs import path
-from fs.base import FS
-from fs.osfs import OSFS
+from pydantic.config import ConfigDict
+from pydantic.dataclasses import dataclass
 
-from organize.utils import Template
+from organize.action import ActionConfig
+from organize.output import Output
+from organize.resource import Resource
+from organize.template import Template, render
 
-from .action import Action
+from .common.conflict import ConflictMode, resolve_conflict
+from .common.target_path import prepare_target_path
 
-logger = logging.getLogger(__name__)
 
-
-class Symlink(Action):
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
+class Symlink:
 
     """Create a symbolic link.
 
-    Args:
+    Attributes:
         dest (str):
             The symlink destination. If **dest** ends with a slash `/``, create the
             symlink in the given directory. Can contain placeholders.
 
-    Only the local filesystem is supported.
+        on_conflict (str):
+            What should happen in case **dest** already exists.
+            One of `skip`, `overwrite`, `trash`, `rename_new` and `rename_existing`.
+            Defaults to `rename_new`.
+
+        rename_template (str):
+            A template for renaming the file / dir in case of a conflict.
+            Defaults to `{name} {counter}{extension}`.
+
+        autodetect_folder (bool):
+            In case you forget the ending slash "/" to indicate copying into a folder
+            this settings will handle targets without a file extension as folders.
+            If you really mean to copy to a file without file extension, set this to
+            false.
+            Default: true
     """
 
-    name = "symlink"
+    dest: str
+    on_conflict: ConflictMode = "rename_new"
+    rename_template: str = "{name} {counter}{extension}"
+    autodetect_folder: bool = True
 
-    def __init__(self, dest):
-        self._dest = Template.from_string(dest)
+    action_config: ClassVar[ActionConfig] = ActionConfig(
+        name="symlink",
+        standalone=False,
+        files=True,
+        dirs=True,
+    )
 
-    def pipeline(self, args: dict, simulate: bool):
-        fs = args["fs"]  # type: FS
-        fs_path = args["fs_path"]  # type: str
+    def __post_init__(self):
+        self._dest = Template.from_string(self.dest)
+        self._rename_template = Template.from_string(self.rename_template)
 
-        if not isinstance(fs, OSFS):
-            raise EnvironmentError("Symlinks only work on the local filesystem.")
+    def pipeline(self, res: Resource, output: Output, simulate: bool):
+        assert res.path is not None, "Does not support standalone mode"
+        rendered = render(self._dest, res.dict())
+        dst = prepare_target_path(
+            src_name=res.path.name,
+            dst=rendered,
+            autodetect_folder=self.autodetect_folder,
+            simulate=simulate,
+        )
 
-        dest = os.path.expanduser(self._dest.render(**args))
-        if dest.endswith("/"):
-            dest = path.join(dest, path.basename(fs_path))
+        skip_action, dst = resolve_conflict(
+            dst=dst,
+            res=res,
+            conflict_mode=self.on_conflict,
+            rename_template=self._rename_template,
+            simulate=simulate,
+            output=output,
+        )
+        if skip_action:
+            return
 
-        self.print(f"Creating symlink: {dest}")
+        output.msg(res=res, msg=f"Creating symlink at {dst}", sender=self)
+        res.walker_skip_pathes.add(dst)
         if not simulate:
-            os.makedirs(os.path.dirname(dest), exist_ok=True)
-            os.symlink(fs.getsyspath(fs_path), dest)
+            dst.symlink_to(target=res.path, target_is_directory=res.is_dir())

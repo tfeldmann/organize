@@ -1,13 +1,50 @@
-# Updating from organize v1.x
+# Migrating from older versions
 
 First of all, thank you for being a long time user of `organize`!
 
 I tried to keep the amount of breaking changes small but could not avoid them
-completely. Feel free to pin organize to v1.x, but then you're missing the party.
+completely. Feel free to pin organize whatever version you need, but then you're
+missing the party.
 
 Please open a issue on Github if you need help migrating your config file!
 
-## Folders
+<hr>
+
+## Migrating from v2 to v3
+
+### Locations
+
+In organize v3 remote filesystems are no longer supported. You have to remove all
+`filesystem` parameters from your config and cannot longer use pyfilesystem URLs
+your `location`.
+
+### Placeholders
+
+- Use `{now()}` instead of `{now}`.
+- Use `{utcnow()}` instead of `{utcnow}`.
+- The placeholders `{fs}` and `{fs_path}` are no longer available.
+
+### Command line interface
+
+The command line interface changed quite a bit! Update any scripts using the CLI
+to the new options:
+
+- `organize check --debug` becomes `organize debug`
+- `organize reveal` becomes `organize show --reveal`
+- `organize reveal --path` becomes `organize show --path`
+- `organize schema` is not longer supported.
+- The already deprecated `--config-file` option is now removed.
+
+
+That's it. If you encounter any other bugs or problems during the migration, please
+reach out!
+
+<hr>
+
+## Migrating from v1 to v2
+
+
+### Folders
 
 Folders have become [Locations](locations.md) in organize v2.
 
@@ -18,7 +55,7 @@ Folders have become [Locations](locations.md) in organize v2.
   See [Location options](locations.md#location-options).
 - All keys (filter names, action names, option names) now must be lowercase.
 
-## Placeholders
+### Placeholders
 
 organize v2 uses the Jinja template engine. You may need to change some of your
 placeholders.
@@ -44,7 +81,7 @@ If you need to left pad other numbers you can now use the following syntax:
 "{ '{:02}'.format(your_variable) }"
 ```
 
-## Filters
+### Filters
 
 - [`filename`](filters.md#name) is renamed to `name`.
 - [`filesize`](filters.md#size) is renamed to `size`.
@@ -53,7 +90,7 @@ If you need to left pad other numbers you can now use the following syntax:
 - [`extension`](filters.md#extension) `lower` and `upper` are now functions and must be called like this:
   `"{extension.upper()}"` and `"{extension.lower()}"`.
 
-## Actions
+### Actions
 
 The copy, move and rename actions got a whole lot more powerful. You now have several
 conflict options and can specify exactly how a file should be renamed in case of a
@@ -95,7 +132,7 @@ rules:
 
 If you used `move`, `copy` or `rename` without arguments, nothing changes for you.
 
-## Settings
+### Settings
 
 The `system_files` setting has been removed. In order to include system files in your
 search, overwrite the default [`system_exclude_files`](locations.md#location-options)

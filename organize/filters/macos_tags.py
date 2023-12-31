@@ -1,58 +1,62 @@
 import sys
-from typing import Iterable, Union
+from typing import ClassVar, List
 
-import simplematch as sm
+from pydantic import Field, field_validator
+from pydantic.config import ConfigDict
+from pydantic.dataclasses import dataclass
 
-from organize.utils import flatten
+from organize.filter import FilterConfig
+from organize.output import Output
+from organize.resource import Resource
+from organize.utils import glob_match
 
-from .filter import Filter, FilterResult
 
-
-def list_tags(path):
+def list_tags(path) -> List[str]:
     import macos_tags
 
     tags = macos_tags.get_all(path)
-    return [f"{tag.name} ({tag.color.name.lower()})" for tag in tags]
+    return ["{} ({})".format(tag.name, tag.color.name.lower()) for tag in tags]
 
 
-class MacOSTags(Filter):
+def matches_tags(filter_tags, file_tags) -> bool:
+    if not filter_tags:
+        return True
+    if not file_tags:
+        return False
+    for tag in file_tags:
+        if any(glob_match(filter_tag, tag) for filter_tag in filter_tags):
+            return True
+    return False
+
+
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
+class MacOSTags:
     """Filter by macOS tags
 
-    Args:
-        *tags (list(str) or str):
+    Attributes:
+        tags (list(str) or str):
             The tags to filter by
     """
 
-    name = "macos_tags"
-    schema_support_instance_without_args = True
+    tags: List[str] = Field(default_factory=list)
 
-    def __init__(self, *tags) -> None:
-        self.filter_tags = list(flatten(list(tags)))
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
+        name="macos_tags",
+        files=True,
+        dirs=True,
+    )
 
-    def matches(self, tags: Iterable[str]) -> Union[bool, str]:
-        if not self.filter_tags:
-            return True
-        if not tags:
-            return False
-        for tag in tags:
-            if any(sm.test(filter_tag, tag) for filter_tag in self.filter_tags):
-                return True
-        return False
-
-    def pipeline(self, args: dict) -> FilterResult:
-        fs = args["fs"]
-        fs_path = args["fs_path"]
-        path = fs.getsyspath(fs_path)
-
+    def __post_init__(self):
         if sys.platform != "darwin":
             raise EnvironmentError("The macos_tags filter is only available on macOS")
 
-        tags = list_tags(path)
+    @field_validator("tags", mode="before")
+    def ensure_list(cls, v):
+        if isinstance(v, str):
+            return [v]
+        return v
 
-        return FilterResult(
-            matches=bool(self.matches(tags)),
-            updates={self.get_name(): tags},
-        )
-
-    def __str__(self):
-        return f"MacOSTags(tags={', '.join(self.filter_tags)})"
+    def pipeline(self, res: Resource, output: Output) -> bool:
+        file_tags = list_tags(res.path)
+        res.vars[self.filter_config.name] = file_tags
+        return matches_tags(filter_tags=self.tags, file_tags=file_tags)

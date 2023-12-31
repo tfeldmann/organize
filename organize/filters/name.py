@@ -1,16 +1,19 @@
-from typing import Any, Dict, List, Union
+from typing import Any, ClassVar, List, Union
 
 import simplematch
-from fs import path
-from schema import Optional, Or
+from pydantic.config import ConfigDict
+from pydantic.dataclasses import dataclass
 
-from .filter import Filter, FilterResult
+from organize.filter import FilterConfig
+from organize.output import Output
+from organize.resource import Resource
 
 
-class Name(Filter):
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
+class Name:
     """Match files and folders by name
 
-    Args:
+    Attributes:
         match (str):
             A matching string in [simplematch-syntax](https://github.com/tfeldmann/simplematch)
 
@@ -28,64 +31,54 @@ class Name(Filter):
             case insensitive matching.
     """
 
-    name = "name"
-    schema_support_instance_without_args = True
+    match: str = "*"
+    startswith: Union[str, List[str]] = ""
+    contains: Union[str, List[str]] = ""
+    endswith: Union[str, List[str]] = ""
+    case_sensitive: bool = True
 
-    arg_schema = Or(
-        str,
-        {
-            Optional("match"): str,
-            Optional("startswith"): Or(str, [str]),
-            Optional("contains"): Or(str, [str]),
-            Optional("endswith"): Or(str, [str]),
-            Optional("case_sensitive"): bool,
-        },
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
+        name="name",
+        files=True,
+        dirs=True,
     )
 
-    def __init__(
-        self,
-        match="*",
-        *,
-        startswith="",
-        contains="",
-        endswith="",
-        case_sensitive=True,
-    ) -> None:
-        self.matcher = simplematch.Matcher(match, case_sensitive=case_sensitive)
-        self.startswith = self.create_list(startswith, case_sensitive)
-        self.contains = self.create_list(contains, case_sensitive)
-        self.endswith = self.create_list(endswith, case_sensitive)
-        self.case_sensitive = case_sensitive
+    def __post_init__(self, *args, **kwargs):
+        self._matcher = simplematch.Matcher(
+            self.match,
+            case_sensitive=self.case_sensitive,
+        )
+        self.startswith = self.create_list(self.startswith, self.case_sensitive)
+        self.contains = self.create_list(self.contains, self.case_sensitive)
+        self.endswith = self.create_list(self.endswith, self.case_sensitive)
 
     def matches(self, name: str) -> bool:
         if not self.case_sensitive:
             name = name.lower()
 
         is_match = (
-            self.matcher.test(name)
+            self._matcher.test(name)
             and any(x in name for x in self.contains)
             and any(name.startswith(x) for x in self.startswith)
             and any(name.endswith(x) for x in self.endswith)
         )
         return is_match
 
-    def pipeline(self, args: Dict) -> FilterResult:
-        fs = args["fs"]
-        fs_path = args["fs_path"]
-        if fs.isdir(fs_path):
-            name = path.basename(fs_path)
+    def pipeline(self, res: Resource, output: Output) -> bool:
+        assert res.path is not None, "Does not support standalone mode"
+        if res.is_dir():
+            name = res.path.stem
         else:
-            name, ext = path.splitext(path.basename(fs_path))
+            name, ext = res.path.stem, res.path.suffix
             if not name:
                 name = ext
         result = self.matches(name)
-        m = self.matcher.match(name)
-        if m == {}:
+        m = self._matcher.match(name)
+        if not m:
             m = name
-        return FilterResult(
-            matches=result,
-            updates={self.get_name(): m},
-        )
+
+        res.vars[self.filter_config.name] = m
+        return result
 
     @staticmethod
     def create_list(x: Union[int, str, List[Any]], case_sensitive: bool) -> List[str]:

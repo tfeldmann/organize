@@ -1,6 +1,6 @@
 import pytest
 
-from organize.core import should_execute
+from organize.config import should_execute
 
 
 @pytest.mark.parametrize(

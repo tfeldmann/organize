@@ -48,11 +48,10 @@ rules:
         ignore_errors: ...
         filter: ...
         filter_dirs: ...
-        filesystem: ...
 ```
 
 **path** (`str`)<br>
-Path to a local folder or a [Filesystem URL](#filesystems).
+Path to a local folder
 
 **max_depth** (`int` or `null`)<br>
 Maximum directory depth to search.
@@ -137,68 +136,6 @@ rules:
     actions:
       - echo: "{path}"
 ```
-
-## Remote filesystems and archives
-
-Locations in organize can include:
-
-- Folders on the harddrive
-- ZIP archives
-- TAR archives
-- FTP servers
-- S3 Buckets
-- SSH and SMB connections
-- IMAP servers
-- WebDAV storages
-- Dropbox / OneDrive / Google Drive storage (no need to install the client)
-- Azure Datalake / Google Cloud Storage
-- [and many more!](https://www.pyfilesystem.org/page/index-of-filesystems)
-
-You can uses these just like the local harddrive, move/copy files or folders between
-them or organize them however you want.
-
-Filesystem URLs are formatted like this:
-
-```sh
-<protocol>://<username>:<password>@<resource>
-
-# Examples:
-ftp://ftp.example.org/pub
-ftps://will:daffodil@ftp.example.org/private
-zip://projects.zip
-s3://mybucket
-dropbox://dropbox.com?access_token=<dropbox access token>
-ssh://[user[:password]@]host[:port]
-```
-
-!!! note
-
-    The ZIP, TAR, FTP and AppFS filesystems are builtin.
-    For all other filesystems you need to
-    [install the appropriate library](https://www.pyfilesystem.org/page/index-of-filesystems).
-
-**FTP Example**
-
-Show the size of all JPGs on a remote FTP server and put them into a local ZIP file.
-
-```yaml
-rules:
-  - locations: "ftps://demo:{env.FTP_PASSWORD}@demo.wftpserver.com"
-    subfolders: true
-    filters:
-      - size
-      - extension: jpg
-    actions:
-      - echo: "Found file! Size: {size.decimal}"
-      - copy:
-          dest: "{relative_path}"
-          filesystem: zip:///Users/thomas/Desktop/ftpfiles.zip
-```
-
-!!! note
-
-    You should never include a password in a config file. Better pass them in via an
-    environment variable (`{env.FTP_PASSWORD}`) as you can see above.
 
 ## Relative locations
 

@@ -1,19 +1,21 @@
 import logging
 import re
-from typing import Any
+from pathlib import Path
+from typing import Any, ClassVar
 
-from fs.base import FS
-from fs.errors import NoSysPath
+from pydantic.config import ConfigDict
+from pydantic.dataclasses import dataclass
 
-from .filter import Filter, FilterResult
+from organize.filter import FilterConfig
+from organize.output import Output
+from organize.resource import Resource
 
-logger = logging.getLogger(__name__)
 
-
-class FileContent(Filter):
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
+class FileContent:
     """Matches file content with the given regular expression
 
-    Args:
+    Attributes:
         expr (str): The regular expression to be matched.
 
     Any named groups (`(?P<groupname>.*)`) in your regular expression will
@@ -25,21 +27,23 @@ class FileContent(Filter):
       `(?P<groupname>)`
     """
 
-    name = "filecontent"
-    schema_support_instance_without_args = True
+    expr: str = r"(?P<all>.*)"
 
-    def __init__(self, expr="(?P<all>.*)") -> None:
-        self.expr = re.compile(expr, re.MULTILINE | re.DOTALL)
+    filter_config: ClassVar[FilterConfig] = FilterConfig(
+        name="filecontent",
+        files=True,
+        dirs=False,
+    )
 
-    def matches(self, path: str) -> Any:
+    def __post_init__(self):
+        self._expr = re.compile(self.expr, re.MULTILINE | re.DOTALL)
+
+    def matches(self, path: Path) -> Any:
         try:
             import textract
 
-            content = textract.process(
-                str(path),
-                errors="ignore",
-            )
-            match = self.expr.search(content.decode("utf-8", errors="ignore"))
+            content = textract.process(str(path), errors="ignore")
+            match = self._expr.search(content.decode("utf-8", errors="ignore"))
             return match
         except ImportError as e:
             raise ImportError(
@@ -47,25 +51,12 @@ class FileContent(Filter):
                 "Install with pip install organize-tool[textract]"
             ) from e
         except textract.exceptions.CommandLineError as e:
-            pass
+            logging.exception(e)
 
-    def pipeline(self, args: dict) -> FilterResult:
-        fs = args["fs"]  # type: FS
-        fs_path = args["fs_path"]
-        if fs.isdir(fs_path):
-            raise ValueError("Dirs not supported")
-        try:
-            syspath = fs.getsyspath(fs_path)
-        except NoSysPath as e:
-            raise EnvironmentError(
-                "filecontent only supports the local filesystem"
-            ) from e
-        match = self.matches(path=syspath)
+    def pipeline(self, res: Resource, output: Output) -> bool:
+        assert res.path is not None, "Does not support standalone mode"
+        match = self.matches(path=res.path)
+
         if match:
-            updates = {self.get_name(): match.groupdict()}
-        else:
-            updates = {}
-        return FilterResult(
-            matches=bool(match),
-            updates=updates,
-        )
+            res.deep_merge(self.filter_config.name, match.groupdict())
+        return bool(match)

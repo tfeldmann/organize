@@ -1,7 +1,7 @@
 import pytest
 from conftest import make_files, read_files
 
-from organize import core
+from organize import Config
 from organize.filters import Size
 
 
@@ -32,38 +32,37 @@ def test_other():
     assert Size(["<100 Mb", ">= 0 Tb"]).matches(20)
 
 
-def test_size_zero(testfs):
-    files = {"1": "", "2": "", "3": ""}
-    make_files(testfs, files)
+def test_size_zero(fs):
+    make_files(["1", "2", "3"], "test")
     config = """
         rules:
-        - locations: "."
+        - locations: "test"
           filters:
             - size: 0
           actions:
             - echo: '{path.name}'
             - delete
         """
-    core.run(config, simulate=False, working_dir=testfs)
-    assert read_files(testfs) == {}
+    Config.from_string(config).execute(simulate=False)
+    assert read_files("test") == {}
 
 
-def test_basic(testfs):
+def test_basic(fs):
     files = {
         "empty": "",
         "full": "0" * 2000,
         "halffull": "0" * 1010,
         "two_thirds.txt": "0" * 666,
     }
-    make_files(testfs, files)
+    make_files(files, "test")
     config = """
         rules:
-        - locations: "."
+        - locations: "test"
           filters:
             - size: '> 1kb, <= 1.0 KiB'
           actions:
             - echo: '{path.name} {size.bytes}'
-        - locations: "."
+        - locations: "test"
           filters:
             - not size:
               - '> 0.5 kb'
@@ -71,8 +70,8 @@ def test_basic(testfs):
           actions:
             - delete
         """
-    core.run(config, simulate=False, working_dir=testfs)
-    assert read_files(testfs) == {
+    Config.from_string(config).execute(simulate=False)
+    assert read_files("test") == {
         "halffull": "0" * 1010,
         "two_thirds.txt": "0" * 666,
     }
@@ -99,7 +98,7 @@ def test_python_args(testfs):
         actions:
         - delete
     """
-    core.run(config=config, working_dir=testfs, simulate=False)
+    Config.from_string(config).execute(simulate=False)
     assert read_files(testfs) == {
         "empty": "",
         "halffull": "0" * 1010,
