@@ -40,10 +40,9 @@ class MacOSTags:
     )
 
     def __post_init__(self):
+        self._tags = [Template.from_string(tag) for tag in self.tags]
         if sys.platform != "darwin":
             raise EnvironmentError("The macos_tags action is only available on macOS")
-
-        self._tags = [Template.from_string(tag) for tag in self.tags]
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
         import macos_tags

@@ -18,6 +18,8 @@
   (This autodetection can be deactivated).
 - `copy` action: You can now specify whether you want to continue with the original
   or with the copy.
+- Completely removes the `pyfilesystem` dependency.
+- At least a 4x speed up. Often more than 10x.
 
 ## v2.4.3 (2023-10-14)
 
