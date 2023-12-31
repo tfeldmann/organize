@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Thomas Feldmann" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Updating from organize v1.x - organize</title>
+    <title>Migrating from older versions - organize</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Updating from organize v1.x";
-        var mkdocs_page_input_path = "updating-from-v1.md";
+        var mkdocs_page_name = "Migrating from older versions";
+        var mkdocs_page_input_path = "migrating.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -44,22 +44,6 @@
                 <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
                 </li>
               </ul>
-              <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="./">Updating from organize v1.x</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#folders">Folders</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#placeholders">Placeholders</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#filters">Filters</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#actions">Actions</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#settings">Settings</a>
-    </li>
-    </ul>
-                </li>
-              </ul>
               <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
                 </li>
@@ -84,6 +68,36 @@
                 <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
                 </li>
               </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Migrating from older versions</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#migrating-from-v2-to-v3">Migrating from v2 to v3</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#locations">Locations</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#placeholders">Placeholders</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#command-line-interface">Command line interface</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#migrating-from-v1-to-v2">Migrating from v1 to v2</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#folders">Folders</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#placeholders_1">Placeholders</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#filters">Filters</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#actions">Actions</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#settings">Settings</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
       </div>
     </div>
     </nav>
@@ -97,10 +111,10 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
-      <li class="breadcrumb-item active">Updating from organize v1.x</li>
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Migrating from older versions</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/tfeldmann/organize/edit/main/docs/updating-from-v1.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/tfeldmann/organize/edit/main/docs/migrating.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -108,12 +122,39 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="updating-from-organize-v1x">Updating from organize v1.x<a class="headerlink" href="#updating-from-organize-v1x" title="Permanent link">#</a></h1>
+                <h1 id="migrating-from-older-versions">Migrating from older versions<a class="headerlink" href="#migrating-from-older-versions" title="Permanent link">#</a></h1>
 <p>First of all, thank you for being a long time user of <code>organize</code>!</p>
 <p>I tried to keep the amount of breaking changes small but could not avoid them
-completely. Feel free to pin organize to v1.x, but then you're missing the party.</p>
+completely. Feel free to pin organize whatever version you need, but then you're
+missing the party.</p>
 <p>Please open a issue on Github if you need help migrating your config file!</p>
-<h2 id="folders">Folders<a class="headerlink" href="#folders" title="Permanent link">#</a></h2>
+<hr>
+
+<h2 id="migrating-from-v2-to-v3">Migrating from v2 to v3<a class="headerlink" href="#migrating-from-v2-to-v3" title="Permanent link">#</a></h2>
+<h3 id="locations">Locations<a class="headerlink" href="#locations" title="Permanent link">#</a></h3>
+<p>In organize v3 remote filesystems are no longer supported. You have to remove all
+<code>filesystem</code> parameters from your config and cannot longer use pyfilesystem URLs
+your <code>location</code>.</p>
+<h3 id="placeholders">Placeholders<a class="headerlink" href="#placeholders" title="Permanent link">#</a></h3>
+<ul>
+<li>Use <code>{now()}</code> instead of <code>{now}</code>.</li>
+<li>Use <code>{utcnow()}</code> instead of <code>{utcnow}</code>.</li>
+<li>The placeholders <code>{fs}</code> and <code>{fs_path}</code> are no longer available.</li>
+</ul>
+<h3 id="command-line-interface">Command line interface<a class="headerlink" href="#command-line-interface" title="Permanent link">#</a></h3>
+<p>The command line interface changed quite a bit! Update any scripts using the CLI
+to the new options:</p>
+<ul>
+<li><code>organize check --debug</code> becomes <code>organize debug</code></li>
+<li><code>organize reveal</code> becomes <code>organize show --reveal</code></li>
+<li><code>organize reveal --path</code> becomes <code>organize show --path</code></li>
+<li><code>organize schema</code> is not longer supported.</li>
+<li>The already deprecated <code>--config-file</code> option is now removed.</li>
+</ul>
+<hr>
+
+<h2 id="migrating-from-v1-to-v2">Migrating from v1 to v2<a class="headerlink" href="#migrating-from-v1-to-v2" title="Permanent link">#</a></h2>
+<h3 id="folders">Folders<a class="headerlink" href="#folders" title="Permanent link">#</a></h3>
 <p>Folders have become <a href="../locations/">Locations</a> in organize v2.</p>
 <ul>
 <li><code>folders</code> must be renamed to <code>locations</code> in your config.</li>
@@ -123,7 +164,7 @@ completely. Feel free to pin organize to v1.x, but then you're missing the party
   See <a href="../locations/#location-options">Location options</a>.</li>
 <li>All keys (filter names, action names, option names) now must be lowercase.</li>
 </ul>
-<h2 id="placeholders">Placeholders<a class="headerlink" href="#placeholders" title="Permanent link">#</a></h2>
+<h3 id="placeholders_1">Placeholders<a class="headerlink" href="#placeholders_1" title="Permanent link">#</a></h3>
 <p>organize v2 uses the Jinja template engine. You may need to change some of your
 placeholders.</p>
 <ul>
@@ -140,7 +181,7 @@ placeholders.</p>
 # or
 &quot;{ '{:02}'.format(your_variable) }&quot;
 </code></pre>
-<h2 id="filters">Filters<a class="headerlink" href="#filters" title="Permanent link">#</a></h2>
+<h3 id="filters">Filters<a class="headerlink" href="#filters" title="Permanent link">#</a></h3>
 <ul>
 <li><a href="../filters/#name"><code>filename</code></a> is renamed to <code>name</code>.</li>
 <li><a href="../filters/#size"><code>filesize</code></a> is renamed to <code>size</code>.</li>
@@ -149,7 +190,7 @@ placeholders.</p>
 <li><a href="../filters/#extension"><code>extension</code></a> <code>lower</code> and <code>upper</code> are now functions and must be called like this:
   <code>"{extension.upper()}"</code> and <code>"{extension.lower()}"</code>.</li>
 </ul>
-<h2 id="actions">Actions<a class="headerlink" href="#actions" title="Permanent link">#</a></h2>
+<h3 id="actions">Actions<a class="headerlink" href="#actions" title="Permanent link">#</a></h3>
 <p>The copy, move and rename actions got a whole lot more powerful. You now have several
 conflict options and can specify exactly how a file should be renamed in case of a
 conflict.</p>
@@ -182,7 +223,7 @@ conflict.</p>
           rename_template: &quot;{name}-{counter}{extension}&quot;
 </code></pre>
 <p>If you used <code>move</code>, <code>copy</code> or <code>rename</code> without arguments, nothing changes for you.</p>
-<h2 id="settings">Settings<a class="headerlink" href="#settings" title="Permanent link">#</a></h2>
+<h3 id="settings">Settings<a class="headerlink" href="#settings" title="Permanent link">#</a></h3>
 <p>The <code>system_files</code> setting has been removed. In order to include system files in your
 search, overwrite the default <a href="../locations/#location-options"><code>system_exclude_files</code></a>
 with an empty list:</p>
@@ -201,8 +242,7 @@ with an empty list:</p>
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../configuration/" class="btn btn-neutral float-right" title="Configuration">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../changelog/" class="btn btn-neutral float-left" title="Changelog"><span class="icon icon-circle-arrow-left"></span> Previous</a>
     </div>
 
   <hr/>
@@ -229,10 +269,8 @@ with an empty list:</p>
         </span>
     
     
-      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../changelog/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
-    
-      <span><a href="../configuration/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

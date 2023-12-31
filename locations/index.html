@@ -45,10 +45,6 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../updating-from-v1/">Updating from organize v1.x</a>
-                </li>
-              </ul>
-              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
                 </li>
               </ul>
@@ -69,8 +65,6 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#environment-variables-in-locations">Environment variables in locations</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#remote-filesystems-and-archives">Remote filesystems and archives</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#relative-locations">Relative locations</a>
     </li>
     </ul>
@@ -88,6 +82,10 @@
                 <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
                 </li>
               </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../migrating/">Migrating from older versions</a>
+                </li>
+              </ul>
       </div>
     </div>
     </nav>
@@ -101,7 +99,7 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Locations</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/tfeldmann/organize/edit/main/docs/locations.md" class="icon icon-github"> Edit on GitHub</a>
@@ -149,10 +147,9 @@ You can set multiple locations for each rule if you want.</p>
         ignore_errors: ...
         filter: ...
         filter_dirs: ...
-        filesystem: ...
 </code></pre>
 <p><strong>path</strong> (<code>str</code>)<br>
-Path to a local folder or a <a href="#filesystems">Filesystem URL</a>.</p>
+Path to a local folder</p>
 <p><strong>max_depth</strong> (<code>int</code> or <code>null</code>)<br>
 Maximum directory depth to search.</p>
 <p><strong>search</strong> (<code>"breadth"</code> or <code>"depth"</code>)<br>
@@ -215,59 +212,6 @@ placeholder or prefix them with a dollar sign.</p>
     actions:
       - echo: &quot;{path}&quot;
 </code></pre>
-<h2 id="remote-filesystems-and-archives">Remote filesystems and archives<a class="headerlink" href="#remote-filesystems-and-archives" title="Permanent link">#</a></h2>
-<p>Locations in organize can include:</p>
-<ul>
-<li>Folders on the harddrive</li>
-<li>ZIP archives</li>
-<li>TAR archives</li>
-<li>FTP servers</li>
-<li>S3 Buckets</li>
-<li>SSH and SMB connections</li>
-<li>IMAP servers</li>
-<li>WebDAV storages</li>
-<li>Dropbox / OneDrive / Google Drive storage (no need to install the client)</li>
-<li>Azure Datalake / Google Cloud Storage</li>
-<li><a href="https://www.pyfilesystem.org/page/index-of-filesystems">and many more!</a></li>
-</ul>
-<p>You can uses these just like the local harddrive, move/copy files or folders between
-them or organize them however you want.</p>
-<p>Filesystem URLs are formatted like this:</p>
-<pre><code class="language-sh">&lt;protocol&gt;://&lt;username&gt;:&lt;password&gt;@&lt;resource&gt;
-
-# Examples:
-ftp://ftp.example.org/pub
-ftps://will:daffodil@ftp.example.org/private
-zip://projects.zip
-s3://mybucket
-dropbox://dropbox.com?access_token=&lt;dropbox access token&gt;
-ssh://[user[:password]@]host[:port]
-</code></pre>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The ZIP, TAR, FTP and AppFS filesystems are builtin.
-For all other filesystems you need to
-<a href="https://www.pyfilesystem.org/page/index-of-filesystems">install the appropriate library</a>.</p>
-</div>
-<p><strong>FTP Example</strong></p>
-<p>Show the size of all JPGs on a remote FTP server and put them into a local ZIP file.</p>
-<pre><code class="language-yaml">rules:
-  - locations: &quot;ftps://demo:{env.FTP_PASSWORD}@demo.wftpserver.com&quot;
-    subfolders: true
-    filters:
-      - size
-      - extension: jpg
-    actions:
-      - echo: &quot;Found file! Size: {size.decimal}&quot;
-      - copy:
-          dest: &quot;{relative_path}&quot;
-          filesystem: zip:///Users/thomas/Desktop/ftpfiles.zip
-</code></pre>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>You should never include a password in a config file. Better pass them in via an
-environment variable (<code>{env.FTP_PASSWORD}</code>) as you can see above.</p>
-</div>
 <h2 id="relative-locations">Relative locations<a class="headerlink" href="#relative-locations" title="Permanent link">#</a></h2>
 <p>Locations can be relative. This allows you to create simple one-off rules that can be
 copied between projects.</p>

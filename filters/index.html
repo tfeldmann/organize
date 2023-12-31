@@ -45,10 +45,6 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../updating-from-v1/">Updating from organize v1.x</a>
-                </li>
-              </ul>
-              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
                 </li>
               </ul>
@@ -108,6 +104,10 @@
                 <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
                 </li>
               </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../migrating/">Migrating from older versions</a>
+                </li>
+              </ul>
       </div>
     </div>
     </nav>
@@ -121,7 +121,7 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Filters</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/tfeldmann/organize/edit/main/docs/filters.md" class="icon icon-github"> Edit on GitHub</a>
@@ -185,11 +185,11 @@
   </colgroup>
   <tbody valign="top">
     <tr class="field">
-      <th class="field-name">Parameters:</th>
+      <th class="field-name">Attributes:</th>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b>years</b>
+              <b><code>years</code></b>
                   (<code>int</code>)
               –
               <div class="doc-md-description">
@@ -197,7 +197,7 @@
               </div>
             </li>
             <li>
-              <b>months</b>
+              <b><code>months</code></b>
                   (<code>int</code>)
               –
               <div class="doc-md-description">
@@ -205,7 +205,7 @@
               </div>
             </li>
             <li>
-              <b>weeks</b>
+              <b><code>weeks</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -213,7 +213,7 @@
               </div>
             </li>
             <li>
-              <b>days</b>
+              <b><code>days</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -221,7 +221,7 @@
               </div>
             </li>
             <li>
-              <b>hours</b>
+              <b><code>hours</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -229,7 +229,7 @@
               </div>
             </li>
             <li>
-              <b>minutes</b>
+              <b><code>minutes</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -237,7 +237,7 @@
               </div>
             </li>
             <li>
-              <b>seconds</b>
+              <b><code>seconds</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -245,13 +245,13 @@
               </div>
             </li>
             <li>
-              <b>mode</b>
+              <b><code>mode</code></b>
                   (<code>str</code>)
               –
               <div class="doc-md-description">
-                <p>either 'older' or 'newer'. 'older' matches files / folders created before the given
-time, 'newer' matches files / folders created within the given time.
-(default = 'older')</p>
+                <p>either 'older' or 'newer'. 'older' matches files / folders created before
+the given time, 'newer' matches files / folders created within the given
+time. (default = 'older')</p>
               </div>
             </li>
         </ul>
@@ -274,7 +274,7 @@ time, 'newer' matches files / folders created within the given time.
           <li>
             –
             <div class="doc-md-description">
-              <p>{created}: The datetime the file / folder was created.</p>
+              <p><code>{created}</code> (datetime): The datetime the file / folder was created.</p>
             </div>
           </li>
       </ul>
@@ -282,6 +282,65 @@ time, 'newer' matches files / folders created within the given time.
     </tr>
   </tbody>
 </table>
+            <details class="quote">
+              <summary>Source code in <code>organize/filters/created.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Created</span><span class="p">(</span><span class="n">TimeFilter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Matches files / folders by created date</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        years (int): specify number of years</span>
+<span class="sd">        months (int): specify number of months</span>
+<span class="sd">        weeks (float): specify number of weeks</span>
+<span class="sd">        days (float): specify number of days</span>
+<span class="sd">        hours (float): specify number of hours</span>
+<span class="sd">        minutes (float): specify number of minutes</span>
+<span class="sd">        seconds (float): specify number of seconds</span>
+<span class="sd">        mode (str):</span>
+<span class="sd">            either &#39;older&#39; or &#39;newer&#39;. &#39;older&#39; matches files / folders created before</span>
+<span class="sd">            the given time, &#39;newer&#39; matches files / folders created within the given</span>
+<span class="sd">            time. (default = &#39;older&#39;)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        `{created}` (datetime): The datetime the file / folder was created.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">filter_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">FilterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;created&quot;</span><span class="p">,</span>
+        <span class="n">files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dirs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_datetime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">read_created</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
 
   
 
@@ -367,11 +426,11 @@ time, 'newer' matches files / folders created within the given time.
   </colgroup>
   <tbody valign="top">
     <tr class="field">
-      <th class="field-name">Parameters:</th>
+      <th class="field-name">Attributes:</th>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b>years</b>
+              <b><code>years</code></b>
                   (<code>int</code>)
               –
               <div class="doc-md-description">
@@ -379,7 +438,7 @@ time, 'newer' matches files / folders created within the given time.
               </div>
             </li>
             <li>
-              <b>months</b>
+              <b><code>months</code></b>
                   (<code>int</code>)
               –
               <div class="doc-md-description">
@@ -387,7 +446,7 @@ time, 'newer' matches files / folders created within the given time.
               </div>
             </li>
             <li>
-              <b>weeks</b>
+              <b><code>weeks</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -395,7 +454,7 @@ time, 'newer' matches files / folders created within the given time.
               </div>
             </li>
             <li>
-              <b>days</b>
+              <b><code>days</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -403,7 +462,7 @@ time, 'newer' matches files / folders created within the given time.
               </div>
             </li>
             <li>
-              <b>hours</b>
+              <b><code>hours</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -411,7 +470,7 @@ time, 'newer' matches files / folders created within the given time.
               </div>
             </li>
             <li>
-              <b>minutes</b>
+              <b><code>minutes</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -419,7 +478,7 @@ time, 'newer' matches files / folders created within the given time.
               </div>
             </li>
             <li>
-              <b>seconds</b>
+              <b><code>seconds</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -427,7 +486,7 @@ time, 'newer' matches files / folders created within the given time.
               </div>
             </li>
             <li>
-              <b>mode</b>
+              <b><code>mode</code></b>
                   (<code>str</code>)
               –
               <div class="doc-md-description">
@@ -456,7 +515,7 @@ time. (default = 'older')</p>
           <li>
             –
             <div class="doc-md-description">
-              <p>{date_added}: The datetime the files / folders were added.</p>
+              <p><code>{date_added}</code>: The datetime the files / folders were added.</p>
             </div>
           </li>
       </ul>
@@ -464,6 +523,81 @@ time. (default = 'older')</p>
     </tr>
   </tbody>
 </table>
+            <details class="quote">
+              <summary>Source code in <code>organize/filters/date_added.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">DateAdded</span><span class="p">(</span><span class="n">TimeFilter</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Matches files by the time the file was added to a folder.</span>
+
+<span class="sd">    **`date_added` is only available on macOS!**</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        years (int): specify number of years</span>
+<span class="sd">        months (int): specify number of months</span>
+<span class="sd">        weeks (float): specify number of weeks</span>
+<span class="sd">        days (float): specify number of days</span>
+<span class="sd">        hours (float): specify number of hours</span>
+<span class="sd">        minutes (float): specify number of minutes</span>
+<span class="sd">        seconds (float): specify number of seconds</span>
+<span class="sd">        mode (str):</span>
+<span class="sd">            either &#39;older&#39; or &#39;newer&#39;. &#39;older&#39; matches files / folders last modified before</span>
+<span class="sd">            the given time, &#39;newer&#39; matches files / folders last modified within the given</span>
+<span class="sd">            time. (default = &#39;older&#39;)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        `{date_added}`: The datetime the files / folders were added.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">filter_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">FilterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;date_added&quot;</span><span class="p">,</span>
+        <span class="n">files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dirs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">!=</span> <span class="s2">&quot;darwin&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">EnvironmentError</span><span class="p">(</span><span class="s2">&quot;date_added is only available on macOS&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">get_datetime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">read_date_added</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
 
   
 
@@ -516,11 +650,11 @@ time. (default = 'older')</p>
   </colgroup>
   <tbody valign="top">
     <tr class="field">
-      <th class="field-name">Parameters:</th>
+      <th class="field-name">Attributes:</th>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b>years</b>
+              <b><code>years</code></b>
                   (<code>int</code>)
               –
               <div class="doc-md-description">
@@ -528,7 +662,7 @@ time. (default = 'older')</p>
               </div>
             </li>
             <li>
-              <b>months</b>
+              <b><code>months</code></b>
                   (<code>int</code>)
               –
               <div class="doc-md-description">
@@ -536,7 +670,7 @@ time. (default = 'older')</p>
               </div>
             </li>
             <li>
-              <b>weeks</b>
+              <b><code>weeks</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -544,7 +678,7 @@ time. (default = 'older')</p>
               </div>
             </li>
             <li>
-              <b>days</b>
+              <b><code>days</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -552,7 +686,7 @@ time. (default = 'older')</p>
               </div>
             </li>
             <li>
-              <b>hours</b>
+              <b><code>hours</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -560,7 +694,7 @@ time. (default = 'older')</p>
               </div>
             </li>
             <li>
-              <b>minutes</b>
+              <b><code>minutes</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -568,7 +702,7 @@ time. (default = 'older')</p>
               </div>
             </li>
             <li>
-              <b>seconds</b>
+              <b><code>seconds</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -576,7 +710,7 @@ time. (default = 'older')</p>
               </div>
             </li>
             <li>
-              <b>mode</b>
+              <b><code>mode</code></b>
                   (<code>str</code>)
               –
               <div class="doc-md-description">
@@ -613,6 +747,81 @@ time. (default = 'older')</p>
     </tr>
   </tbody>
 </table>
+            <details class="quote">
+              <summary>Source code in <code>organize/filters/date_lastused.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">DateLastUsed</span><span class="p">(</span><span class="n">TimeFilter</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Matches files by the time the file was last used.</span>
+
+<span class="sd">    **`date_lastused` is only available on macOS!**</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        years (int): specify number of years</span>
+<span class="sd">        months (int): specify number of months</span>
+<span class="sd">        weeks (float): specify number of weeks</span>
+<span class="sd">        days (float): specify number of days</span>
+<span class="sd">        hours (float): specify number of hours</span>
+<span class="sd">        minutes (float): specify number of minutes</span>
+<span class="sd">        seconds (float): specify number of seconds</span>
+<span class="sd">        mode (str):</span>
+<span class="sd">            either &#39;older&#39; or &#39;newer&#39;. &#39;older&#39; matches files / folders last used before</span>
+<span class="sd">            the given time, &#39;newer&#39; matches files / folders last used within the given</span>
+<span class="sd">            time. (default = &#39;older&#39;)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        {date_lastused}: The datetime the files / folders were added.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">filter_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">FilterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;date_lastused&quot;</span><span class="p">,</span>
+        <span class="n">files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dirs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">!=</span> <span class="s2">&quot;darwin&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">EnvironmentError</span><span class="p">(</span><span class="s2">&quot;date_added is only available on macOS&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">get_datetime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">read_date_lastused</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
 
   
 
@@ -666,14 +875,12 @@ different filenames.</p>
   </colgroup>
   <tbody valign="top">
     <tr class="field">
-      <th class="field-name">Parameters:</th>
+      <th class="field-name">Attributes:</th>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b>detect_original_by</b>
-                  (<code>str</code>, default:
-                      <code>&#39;first_seen&#39;</code>
-)
+              <b><code>detect_original_by</code></b>
+                  (<code>str</code>)
               –
               <div class="doc-md-description">
                 <p>Detection method to distinguish between original and duplicate.
@@ -683,7 +890,8 @@ Possible values are:</p>
   depends on the order of your location entries.</li>
 <li><code>"name"</code>: The first entry sorted by name is the original.</li>
 <li><code>"created"</code>: The first entry sorted by creation date is the original.</li>
-<li><code>"lastmodified"</code>: The first file sorted by date of last modification is the original.</li>
+<li><code>"lastmodified"</code>: The first file sorted by date of last modification is
+   the original.</li>
 </ul>
               </div>
             </li>
@@ -698,6 +906,251 @@ example <code>"-first_seen"</code>, <code>"-name"</code>, <code>"-created"</code
 <p><strong>Returns:</strong></p>
 <p><code>{duplicate.original}</code> - The path to the original</p>
 
+            <details class="quote">
+              <summary>Source code in <code>organize/filters/duplicate.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
+<span class="k">class</span> <span class="nc">Duplicate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A fast duplicate file finder.</span>
+
+<span class="sd">    This filter compares files byte by byte and finds identical files with potentially</span>
+<span class="sd">    different filenames.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        detect_original_by (str):</span>
+<span class="sd">            Detection method to distinguish between original and duplicate.</span>
+<span class="sd">            Possible values are:</span>
+
+<span class="sd">            - `&quot;first_seen&quot;`: Whatever file is visited first is the original. This</span>
+<span class="sd">              depends on the order of your location entries.</span>
+<span class="sd">            - `&quot;name&quot;`: The first entry sorted by name is the original.</span>
+<span class="sd">            - `&quot;created&quot;`: The first entry sorted by creation date is the original.</span>
+<span class="sd">            - `&quot;lastmodified&quot;`: The first file sorted by date of last modification is</span>
+<span class="sd">               the original.</span>
+
+<span class="sd">    You can reverse the sorting method by prefixing a `-`.</span>
+
+<span class="sd">    So with `detect_original_by: &quot;-created&quot;` the file with the older creation date is</span>
+<span class="sd">    the original and the younger file is the duplicate. This works on all methods, for</span>
+<span class="sd">    example `&quot;-first_seen&quot;`, `&quot;-name&quot;`, `&quot;-created&quot;`, `&quot;-lastmodified&quot;`.</span>
+
+<span class="sd">    **Returns:**</span>
+
+<span class="sd">    `{duplicate.original}` - The path to the original</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">detect_original_by</span><span class="p">:</span> <span class="n">DetectionMethod</span> <span class="o">=</span> <span class="s2">&quot;first_seen&quot;</span>
+    <span class="n">hash_algorithm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sha1&quot;</span>
+
+    <span class="n">filter_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">FilterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;duplicate&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dirs</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># reverse original detection order if starting with &quot;-&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_detect_original_by</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">detect_original_by</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_detect_original_reverse</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">detect_original_by</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_detect_original_by</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">detect_original_by</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_detect_original_reverse</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_files_for_size</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_files_for_chunk</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file_for_hash</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="c1"># we keep track of the files we already computed the hashes for so we only do</span>
+        <span class="c1"># that once.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_seen_files</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_first_chunk_known</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hash_known</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Does not support standalone mode&quot;</span>
+        <span class="c1"># skip symlinks</span>
+        <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">is_symlink</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># the exact same path has already been handled. This happens if multiple</span>
+        <span class="c1"># locations emit this file in a single rule or if we follow symlinks.</span>
+        <span class="c1"># We skip these.</span>
+        <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seen_files</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_seen_files</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="c1"># check for files with equal size</span>
+        <span class="n">file_size</span> <span class="o">=</span> <span class="n">read_file_size</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">same_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_files_for_size</span><span class="p">[</span><span class="n">file_size</span><span class="p">]</span>
+        <span class="n">same_size</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">same_size</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># the file is unique in size and cannot be a duplicate</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># for all other files with the same file size:</span>
+        <span class="c1"># make sure we know their hash of their first 1024 byte chunk</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">same_size</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">f</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_first_chunk_known</span><span class="p">:</span>
+                <span class="n">chunk_hash</span> <span class="o">=</span> <span class="n">hash_first_chunk</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">algo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hash_algorithm</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_first_chunk_known</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_files_for_chunk</span><span class="p">[</span><span class="n">chunk_hash</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="c1"># check first chunk hash collisions with the current file</span>
+        <span class="n">chunk_hash</span> <span class="o">=</span> <span class="n">hash_first_chunk</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">algo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hash_algorithm</span><span class="p">)</span>
+        <span class="n">same_first_chunk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_files_for_chunk</span><span class="p">[</span><span class="n">chunk_hash</span><span class="p">]</span>
+        <span class="n">same_first_chunk</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_first_chunk_known</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">same_first_chunk</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># the file has a unique small hash and cannot be a duplicate</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Ensure we know the full hashes of all files with the same first chunk as</span>
+        <span class="c1"># the investigated file</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">same_first_chunk</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">f</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hash_known</span><span class="p">:</span>
+                <span class="n">hash_</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">algo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hash_algorithm</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_hash_known</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_file_for_hash</span><span class="p">[</span><span class="n">hash_</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
+
+        <span class="c1"># check full hash collisions with the current file</span>
+        <span class="n">hash_</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">algo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hash_algorithm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hash_known</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">known</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_for_hash</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hash_</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">known</span><span class="p">:</span>
+            <span class="n">original</span><span class="p">,</span> <span class="n">duplicate</span> <span class="o">=</span> <span class="n">detect_original</span><span class="p">(</span>
+                <span class="n">known</span><span class="o">=</span><span class="n">known</span><span class="p">,</span>
+                <span class="n">new</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_detect_original_by</span><span class="p">,</span>
+                <span class="n">reverse</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_detect_original_reverse</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">known</span> <span class="o">!=</span> <span class="n">original</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_file_for_hash</span><span class="p">[</span><span class="n">hash_</span><span class="p">]</span> <span class="o">=</span> <span class="n">original</span>
+
+            <span class="n">res</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">duplicate</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_config</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;original&quot;</span><span class="p">:</span> <span class="n">original</span><span class="p">}</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span>
+</code></pre></div></td></tr></table></div>
+            </details>
 
   
 
@@ -755,6 +1208,35 @@ example <code>"-first_seen"</code>, <code>"-name"</code>, <code>"-created"</code
   
       <p>Finds empty dirs and files</p>
 
+            <details class="quote">
+              <summary>Source code in <code>organize/filters/empty.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
+<span class="k">class</span> <span class="nc">Empty</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finds empty dirs and files&quot;&quot;&quot;</span>
+
+    <span class="n">filter_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">FilterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;empty&quot;</span><span class="p">,</span>
+        <span class="n">files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dirs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">is_empty</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
 
   
 
@@ -800,6 +1282,12 @@ example <code>"-first_seen"</code>, <code>"-name"</code>, <code>"-created"</code
       <p>Filter by image EXIF data</p>
 <p>The <code>exif</code> filter can be used as a filter as well as a way to get exif information
 into your actions.</p>
+<p>Exif fields which contain "datetime", "date" or "offsettime" in their fieldname
+will have their value converted to 'datetime.datetime', 'datetime.date' and
+'datetime.timedelta' respectivly.
+- <code>datetime.datetime</code> : exif.image.datetime, exif.exif.datetimeoriginal, ...
+- <code>datetime.date</code> : exif.gps.date, ...
+- <code>datetime.timedelta</code> : exif.exif.offsettimeoriginal, exif.exif.offsettimedigitized, ...</p>
 <p>:returns:
     <code>{exif}</code> -- a dict of all the collected exif inforamtion available in the
     file. Typically it consists of the following tags (if present in the file):</p>
@@ -809,6 +1297,105 @@ into your actions.</p>
 - ``{exif.interoperability}`` -- Interoperability information
 </code></pre>
 
+            <details class="quote">
+              <summary>Source code in <code>organize/filters/exif.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Exif</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Filter by image EXIF data</span>
+
+<span class="sd">    The `exif` filter can be used as a filter as well as a way to get exif information</span>
+<span class="sd">    into your actions.</span>
+
+<span class="sd">    Exif fields which contain &quot;datetime&quot;, &quot;date&quot; or &quot;offsettime&quot; in their fieldname</span>
+<span class="sd">    will have their value converted to &#39;datetime.datetime&#39;, &#39;datetime.date&#39; and</span>
+<span class="sd">    &#39;datetime.timedelta&#39; respectivly.</span>
+<span class="sd">    - `datetime.datetime` : exif.image.datetime, exif.exif.datetimeoriginal, ...</span>
+<span class="sd">    - `datetime.date` : exif.gps.date, ...</span>
+<span class="sd">    - `datetime.timedelta` : exif.exif.offsettimeoriginal, exif.exif.offsettimedigitized, ...</span>
+
+<span class="sd">    :returns:</span>
+<span class="sd">        ``{exif}`` -- a dict of all the collected exif inforamtion available in the</span>
+<span class="sd">        file. Typically it consists of the following tags (if present in the file):</span>
+
+<span class="sd">        - ``{exif.image}`` -- information related to the main image</span>
+<span class="sd">        - ``{exif.exif}`` -- Exif information</span>
+<span class="sd">        - ``{exif.gps}`` -- GPS information</span>
+<span class="sd">        - ``{exif.interoperability}`` -- Interoperability information</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">filter_tags</span><span class="p">:</span> <span class="n">Dict</span>
+
+    <span class="n">filter_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">FilterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;exif&quot;</span><span class="p">,</span>
+        <span class="n">files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dirs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">filter_tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># exif filter is used differently from other filters. The **kwargs are not</span>
+        <span class="c1"># filter parameters but all belong into the filter_tags dictionary to filter</span>
+        <span class="c1"># for specific exif tags.</span>
+        <span class="c1"># *args are tags filtered without a value, like [&quot;gps&quot;, &quot;image.model&quot;].</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">filter_tags</span> <span class="ow">or</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="n">arg</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filter_tags</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Does not support standalone mode&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">read_exif_data</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="n">parse_and_categorize</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_config</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">parsed</span>
+        <span class="k">return</span> <span class="n">matches_tags</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_tags</span><span class="p">,</span> <span class="n">parsed</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
 
   
 
@@ -898,14 +1485,12 @@ accordingly:</p>
   </colgroup>
   <tbody valign="top">
     <tr class="field">
-      <th class="field-name">Parameters:</th>
+      <th class="field-name">Attributes:</th>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b>*extensions</b>
-                  (<code>list(str) or str</code>, default:
-                      <code>()</code>
-)
+              <b><code>*extensions</code></b>
+                  (<code>list(str) or str</code>)
               –
               <div class="doc-md-description">
                 <p>The file extensions to match (does not need to start with a colon).</p>
@@ -920,6 +1505,93 @@ accordingly:</p>
 <li><code>{extension}</code>: the original file extension (without colon)</li>
 </ul>
 
+            <details class="quote">
+              <summary>Source code in <code>organize/filters/extension.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
+<span class="k">class</span> <span class="nc">Extension</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Filter by file extension</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        *extensions (list(str) or str):</span>
+<span class="sd">            The file extensions to match (does not need to start with a colon).</span>
+
+<span class="sd">    **Returns:**</span>
+
+<span class="sd">    - `{extension}`: the original file extension (without colon)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">extensions</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>
+
+    <span class="n">filter_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">FilterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;extension&quot;</span><span class="p">,</span>
+        <span class="n">files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dirs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;extensions&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">normalize_extensions</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="n">as_list</span> <span class="o">=</span> <span class="n">convert_to_list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">normalize_extension</span><span class="p">,</span> <span class="n">flatten</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">as_list</span><span class="p">))))</span>
+
+    <span class="k">def</span> <span class="nf">suffix_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">extensions</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">suffix</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">normalize_extension</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">extensions</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Does not support standalone mode&quot;</span>
+        <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dirs not supported&quot;</span><span class="p">)</span>
+
+        <span class="n">suffix</span><span class="p">,</span> <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix_match</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_config</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">suffix</span>
+        <span class="k">return</span> <span class="n">match</span>
+</code></pre></div></td></tr></table></div>
+            </details>
 
   
 
@@ -1012,14 +1684,12 @@ rules:
   </colgroup>
   <tbody valign="top">
     <tr class="field">
-      <th class="field-name">Parameters:</th>
+      <th class="field-name">Attributes:</th>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b>expr</b>
-                  (<code>str</code>, default:
-                      <code>&#39;(?P&lt;all&gt;.*)&#39;</code>
-)
+              <b><code>expr</code></b>
+                  (<code>str</code>)
               –
               <div class="doc-md-description">
                 <p>The regular expression to be matched.</p>
@@ -1037,6 +1707,107 @@ be returned like this:</p>
   <code>(?P&lt;groupname&gt;)</code></li>
 </ul>
 
+            <details class="quote">
+              <summary>Source code in <code>organize/filters/filecontent.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
+<span class="k">class</span> <span class="nc">FileContent</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Matches file content with the given regular expression</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        expr (str): The regular expression to be matched.</span>
+
+<span class="sd">    Any named groups (`(?P&lt;groupname&gt;.*)`) in your regular expression will</span>
+<span class="sd">    be returned like this:</span>
+
+<span class="sd">    **Returns:**</span>
+
+<span class="sd">    - `{filecontent.groupname}`: The text matched with the named group</span>
+<span class="sd">      `(?P&lt;groupname&gt;)`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">expr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(?P&lt;all&gt;.*)&quot;</span>
+
+    <span class="n">filter_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">FilterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;filecontent&quot;</span><span class="p">,</span>
+        <span class="n">files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dirs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expr</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">textract</span>
+
+            <span class="n">content</span> <span class="o">=</span> <span class="n">textract</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expr</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">match</span>
+        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+                <span class="s2">&quot;textract is not installed. &quot;</span>
+                <span class="s2">&quot;Install with pip install organize-tool[textract]&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+        <span class="k">except</span> <span class="n">textract</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">CommandLineError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Does not support standalone mode&quot;</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">deep_merge</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_config</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">())</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
 
   
 
@@ -1120,14 +1891,12 @@ be returned like this:</p>
   </colgroup>
   <tbody valign="top">
     <tr class="field">
-      <th class="field-name">Parameters:</th>
+      <th class="field-name">Attributes:</th>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b>algorithm</b>
-                  (<code>str</code>, default:
-                      <code>&#39;md5&#39;</code>
-)
+              <b><code>algorithm</code></b>
+                  (<code>str</code>)
               –
               <div class="doc-md-description">
                 <p>Any hashing algorithm available to python's <code>hashlib</code>.
@@ -1147,13 +1916,119 @@ hash algorithms to chose from.</p>
 interpreter:</p>
 <pre><code class="language-py">&gt;&gt;&gt; import hashlib
 &gt;&gt;&gt; hashlib.algorithms_available
-{'shake_256', 'whirlpool', 'mdc2', 'blake2s', 'sha224', 'shake_128', 'sha3_512', 'sha3_224', 'sha384', 'md5', 'sha1', 'sha512_256', 'blake2b', 'sha256', 'sha512_224', 'ripemd160', 'sha3_384', 'md4', 'sm3', 'sha3_256', 'md5-sha1', 'sha512'}
+{'shake_256', 'whirlpool', 'mdc2', 'blake2s', 'sha224', 'shake_128', 'sha3_512',
+'sha3_224', 'sha384', 'md5', 'sha1', 'sha512_256', 'blake2b', 'sha256',
+'sha512_224', 'ripemd160', 'sha3_384', 'md4', 'sm3', 'sha3_256', 'md5-sha1',
+'sha512'}
 </code></pre>
 <p><strong>Returns:</strong></p>
 <ul>
 <li><code>{hash}</code>:  The hash of the file.</li>
 </ul>
 
+            <details class="quote">
+              <summary>Source code in <code>organize/filters/hash.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
+<span class="k">class</span> <span class="nc">Hash</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the hash of a file.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        algorithm (str): Any hashing algorithm available to python&#39;s `hashlib`.</span>
+<span class="sd">            `md5` by default.</span>
+
+<span class="sd">    Algorithms guaranteed to be available are</span>
+<span class="sd">    `shake_256`, `sha3_256`, `sha1`, `sha3_224`, `sha384`, `sha512`, `blake2b`,</span>
+<span class="sd">    `blake2s`, `sha256`, `sha224`, `shake_128`, `sha3_512`, `sha3_384` and `md5`.</span>
+
+<span class="sd">    Depending on your python installation and installed libs there may be additional</span>
+<span class="sd">    hash algorithms to chose from.</span>
+
+<span class="sd">    To list the available algorithms on your installation run this in a python</span>
+<span class="sd">    interpreter:</span>
+
+<span class="sd">    ```py</span>
+<span class="sd">    &gt;&gt;&gt; import hashlib</span>
+<span class="sd">    &gt;&gt;&gt; hashlib.algorithms_available</span>
+<span class="sd">    {&#39;shake_256&#39;, &#39;whirlpool&#39;, &#39;mdc2&#39;, &#39;blake2s&#39;, &#39;sha224&#39;, &#39;shake_128&#39;, &#39;sha3_512&#39;,</span>
+<span class="sd">    &#39;sha3_224&#39;, &#39;sha384&#39;, &#39;md5&#39;, &#39;sha1&#39;, &#39;sha512_256&#39;, &#39;blake2b&#39;, &#39;sha256&#39;,</span>
+<span class="sd">    &#39;sha512_224&#39;, &#39;ripemd160&#39;, &#39;sha3_384&#39;, &#39;md4&#39;, &#39;sm3&#39;, &#39;sha3_256&#39;, &#39;md5-sha1&#39;,</span>
+<span class="sd">    &#39;sha512&#39;}</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    **Returns:**</span>
+
+<span class="sd">    - `{hash}`:  The hash of the file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">algorithm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;md5&quot;</span>
+
+    <span class="n">filter_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">FilterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;hash&quot;</span><span class="p">,</span>
+        <span class="n">files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dirs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_algorithm</span> <span class="o">=</span> <span class="n">Template</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">algo</span> <span class="o">=</span> <span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_algorithm</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">algo</span><span class="o">=</span><span class="n">algo</span><span class="p">)</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_config</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="k">return</span> <span class="kc">True</span>
+</code></pre></div></td></tr></table></div>
+            </details>
 
   
 
@@ -1206,11 +2081,11 @@ interpreter:</p>
   </colgroup>
   <tbody valign="top">
     <tr class="field">
-      <th class="field-name">Parameters:</th>
+      <th class="field-name">Attributes:</th>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b>years</b>
+              <b><code>years</code></b>
                   (<code>int</code>)
               –
               <div class="doc-md-description">
@@ -1218,7 +2093,7 @@ interpreter:</p>
               </div>
             </li>
             <li>
-              <b>months</b>
+              <b><code>months</code></b>
                   (<code>int</code>)
               –
               <div class="doc-md-description">
@@ -1226,7 +2101,7 @@ interpreter:</p>
               </div>
             </li>
             <li>
-              <b>weeks</b>
+              <b><code>weeks</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -1234,7 +2109,7 @@ interpreter:</p>
               </div>
             </li>
             <li>
-              <b>days</b>
+              <b><code>days</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -1242,7 +2117,7 @@ interpreter:</p>
               </div>
             </li>
             <li>
-              <b>hours</b>
+              <b><code>hours</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -1250,7 +2125,7 @@ interpreter:</p>
               </div>
             </li>
             <li>
-              <b>minutes</b>
+              <b><code>minutes</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -1258,7 +2133,7 @@ interpreter:</p>
               </div>
             </li>
             <li>
-              <b>seconds</b>
+              <b><code>seconds</code></b>
                   (<code>float</code>)
               –
               <div class="doc-md-description">
@@ -1266,7 +2141,7 @@ interpreter:</p>
               </div>
             </li>
             <li>
-              <b>mode</b>
+              <b><code>mode</code></b>
                   (<code>str</code>)
               –
               <div class="doc-md-description">
@@ -1303,6 +2178,67 @@ time. (default = 'older')</p>
     </tr>
   </tbody>
 </table>
+            <details class="quote">
+              <summary>Source code in <code>organize/filters/lastmodified.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LastModified</span><span class="p">(</span><span class="n">TimeFilter</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Matches files by last modified date</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        years (int): specify number of years</span>
+<span class="sd">        months (int): specify number of months</span>
+<span class="sd">        weeks (float): specify number of weeks</span>
+<span class="sd">        days (float): specify number of days</span>
+<span class="sd">        hours (float): specify number of hours</span>
+<span class="sd">        minutes (float): specify number of minutes</span>
+<span class="sd">        seconds (float): specify number of seconds</span>
+<span class="sd">        mode (str):</span>
+<span class="sd">            either &#39;older&#39; or &#39;newer&#39;. &#39;older&#39; matches files / folders last modified before</span>
+<span class="sd">            the given time, &#39;newer&#39; matches files / folders last modified within the given</span>
+<span class="sd">            time. (default = &#39;older&#39;)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        {lastmodified}: The datetime the files / folders was lastmodified.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">filter_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">FilterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;lastmodified&quot;</span><span class="p">,</span>
+        <span class="n">files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dirs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_datetime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">read_lastmodified</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
 
   
 
@@ -1385,14 +2321,12 @@ time. (default = 'older')</p>
   </colgroup>
   <tbody valign="top">
     <tr class="field">
-      <th class="field-name">Parameters:</th>
+      <th class="field-name">Attributes:</th>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b>*tags</b>
-                  (<code>list(str) or str</code>, default:
-                      <code>()</code>
-)
+              <b><code>tags</code></b>
+                  (<code>list(str) or str</code>)
               –
               <div class="doc-md-description">
                 <p>The tags to filter by</p>
@@ -1403,6 +2337,71 @@ time. (default = 'older')</p>
     </tr>
   </tbody>
 </table>
+            <details class="quote">
+              <summary>Source code in <code>organize/filters/macos_tags.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
+<span class="k">class</span> <span class="nc">MacOSTags</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Filter by macOS tags</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        tags (list(str) or str):</span>
+<span class="sd">            The tags to filter by</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">tags</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="n">filter_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">FilterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;macos_tags&quot;</span><span class="p">,</span>
+        <span class="n">files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dirs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">!=</span> <span class="s2">&quot;darwin&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">EnvironmentError</span><span class="p">(</span><span class="s2">&quot;The macos_tags filter is only available on macOS&quot;</span><span class="p">)</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">ensure_list</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">v</span>
+
+    <span class="k">def</span> <span class="nf">pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">file_tags</span> <span class="o">=</span> <span class="n">list_tags</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_config</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">file_tags</span>
+        <span class="k">return</span> <span class="n">matches_tags</span><span class="p">(</span><span class="n">filter_tags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="n">file_tags</span><span class="o">=</span><span class="n">file_tags</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
 
   
 
@@ -1473,7 +2472,7 @@ time. (default = 'older')</p>
 The types don't need to be fully specified, for example "audio" matches everything
 from "audio/midi" to "audio/quicktime".</p>
 <p>You can see a list of known MIME types on your system by running this oneliner:</p>
-<pre><code class="language-sh">python3 -c &quot;import mimetypes as m; print('\n'.join(sorted(set(m.common_types.values()) | set(m.types_map.values()))))&quot;
+<pre><code class="language-sh">python3 -m organize.filters.mimetype
 </code></pre>
 
 
@@ -1485,14 +2484,12 @@ from "audio/midi" to "audio/quicktime".</p>
   </colgroup>
   <tbody valign="top">
     <tr class="field">
-      <th class="field-name">Parameters:</th>
+      <th class="field-name">Attributes:</th>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b>*mimetypes</b>
-                  (<code>list(str) or str</code>, default:
-                      <code>()</code>
-)
+              <b><code>*mimetypes</code></b>
+                  (<code>list(str) or str</code>)
               –
               <div class="doc-md-description">
                 <p>The MIME types to filter for.</p>
@@ -1507,6 +2504,93 @@ from "audio/midi" to "audio/quicktime".</p>
 <li><code>{mimetype}</code>: The MIME type of the file.</li>
 </ul>
 
+            <details class="quote">
+              <summary>Source code in <code>organize/filters/mimetype.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
+<span class="k">class</span> <span class="nc">MimeType</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Filter by MIME type associated with the file extension.</span>
+
+<span class="sd">    Supports a single string or list of MIME type strings as argument.</span>
+<span class="sd">    The types don&#39;t need to be fully specified, for example &quot;audio&quot; matches everything</span>
+<span class="sd">    from &quot;audio/midi&quot; to &quot;audio/quicktime&quot;.</span>
+
+<span class="sd">    You can see a list of known MIME types on your system by running this oneliner:</span>
+
+<span class="sd">    ```sh</span>
+<span class="sd">    python3 -m organize.filters.mimetype</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        *mimetypes (list(str) or str): The MIME types to filter for.</span>
+
+<span class="sd">    **Returns:**</span>
+
+<span class="sd">    - `{mimetype}`: The MIME type of the file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mimetypes</span><span class="p">:</span> <span class="n">FlatList</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="n">filter_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">FilterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mimetype&quot;</span><span class="p">,</span>
+        <span class="n">files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dirs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mimetype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mimetype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mimetypes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">mimetype</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mimetypes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">mimetype</span> <span class="o">=</span> <span class="n">guess_mimetype</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_config</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">mimetype</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">mimetype</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
 
   
 
@@ -1587,54 +2671,44 @@ from "audio/midi" to "audio/quicktime".</p>
   </colgroup>
   <tbody valign="top">
     <tr class="field">
-      <th class="field-name">Parameters:</th>
+      <th class="field-name">Attributes:</th>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b>match</b>
-                  (<code>str</code>, default:
-                      <code>&#39;*&#39;</code>
-)
+              <b><code>match</code></b>
+                  (<code>str</code>)
               –
               <div class="doc-md-description">
                 <p>A matching string in <a href="https://github.com/tfeldmann/simplematch">simplematch-syntax</a></p>
               </div>
             </li>
             <li>
-              <b>startswith</b>
-                  (<code>str</code>, default:
-                      <code>&#39;&#39;</code>
-)
+              <b><code>startswith</code></b>
+                  (<code>str</code>)
               –
               <div class="doc-md-description">
                 <p>The filename must begin with the given string</p>
               </div>
             </li>
             <li>
-              <b>contains</b>
-                  (<code>str</code>, default:
-                      <code>&#39;&#39;</code>
-)
+              <b><code>contains</code></b>
+                  (<code>str</code>)
               –
               <div class="doc-md-description">
                 <p>The filename must contain the given string</p>
               </div>
             </li>
             <li>
-              <b>endswith</b>
-                  (<code>str</code>, default:
-                      <code>&#39;&#39;</code>
-)
+              <b><code>endswith</code></b>
+                  (<code>str</code>)
               –
               <div class="doc-md-description">
                 <p>The filename (without extension) must end with the given string</p>
               </div>
             </li>
             <li>
-              <b>case_sensitive</b>
-                  (<code>bool</code>, default:
-                      <code>True</code>
-)
+              <b><code>case_sensitive</code></b>
+                  (<code>bool</code>)
               –
               <div class="doc-md-description">
                 <p>By default, the matching is case sensitive. Change this to False to use
@@ -1646,6 +2720,171 @@ case insensitive matching.</p>
     </tr>
   </tbody>
 </table>
+            <details class="quote">
+              <summary>Source code in <code>organize/filters/name.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
+<span class="k">class</span> <span class="nc">Name</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Match files and folders by name</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        match (str):</span>
+<span class="sd">            A matching string in [simplematch-syntax](https://github.com/tfeldmann/simplematch)</span>
+
+<span class="sd">        startswith (str):</span>
+<span class="sd">            The filename must begin with the given string</span>
+
+<span class="sd">        contains (str):</span>
+<span class="sd">            The filename must contain the given string</span>
+
+<span class="sd">        endswith (str):</span>
+<span class="sd">            The filename (without extension) must end with the given string</span>
+
+<span class="sd">        case_sensitive (bool):</span>
+<span class="sd">            By default, the matching is case sensitive. Change this to False to use</span>
+<span class="sd">            case insensitive matching.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">match</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
+    <span class="n">startswith</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">contains</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">endswith</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">case_sensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">filter_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">FilterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span>
+        <span class="n">files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dirs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_matcher</span> <span class="o">=</span> <span class="n">simplematch</span><span class="o">.</span><span class="n">Matcher</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="p">,</span>
+            <span class="n">case_sensitive</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">case_sensitive</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startswith</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">startswith</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">case_sensitive</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contains</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contains</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">case_sensitive</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endswith</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endswith</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">case_sensitive</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">case_sensitive</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="n">is_match</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_matcher</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">x</span> <span class="ow">in</span> <span class="n">name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contains</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">startswith</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">endswith</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">is_match</span>
+
+    <span class="k">def</span> <span class="nf">pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Does not support standalone mode&quot;</span>
+        <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">stem</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">stem</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">suffix</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">ext</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="n">res</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_config</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">create_list</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">case_sensitive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">case_sensitive</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">x</span>
+</code></pre></div></td></tr></table></div>
+            </details>
 
   
 
@@ -1726,11 +2965,11 @@ case insensitive matching.</p>
   </colgroup>
   <tbody valign="top">
     <tr class="field">
-      <th class="field-name">Parameters:</th>
+      <th class="field-name">Attributes:</th>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b>code</b>
+              <b><code>code</code></b>
                   (<code>str</code>)
               –
               <div class="doc-md-description">
@@ -1751,6 +2990,141 @@ case insensitive matching.</p>
     <code>{python.nested.k}</code>.</li>
 </ul>
 
+            <details class="quote">
+              <summary>Source code in <code>organize/filters/python.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
+<span class="k">class</span> <span class="nc">Python</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Use python code to filter files.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        code (str):</span>
+<span class="sd">            The python code to execute. The code must contain a `return` statement.</span>
+
+
+<span class="sd">    **Returns:**</span>
+
+<span class="sd">    - If your code returns `False` or `None` the file is filtered out,</span>
+<span class="sd">        otherwise the file is passed on to the next filters.</span>
+<span class="sd">    - `{python}` contains the returned value. If you return a dictionary (for</span>
+<span class="sd">        example `return {&quot;some_key&quot;: some_value, &quot;nested&quot;: {&quot;k&quot;: 2}}`) it will be</span>
+<span class="sd">        accessible via dot syntax in your actions: `{python.some_key}`,</span>
+<span class="sd">        `{python.nested.k}`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">code</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="n">filter_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">FilterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+        <span class="n">files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dirs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;code&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">must_have_return_statement</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;return&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No return statement found in your code!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__usercode__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">print</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">_output_msg</span><span class="p">(</span><span class="o">*</span><span class="n">values</span><span class="p">,</span> <span class="n">sep</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            the print function for the use code needs to print via the current output</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="n">res</span><span class="o">=</span><span class="n">res</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">values</span><span class="p">)</span><span class="si">}{</span><span class="n">end</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">sender</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># codegen the user function with arguments as available in the resource</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;def __userfunc(print, </span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2">):</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">func</span> <span class="o">+=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="s2">&quot;    &quot;</span><span class="p">)</span>
+        <span class="n">func</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">self.__usercode__ = __userfunc&quot;</span>
+
+        <span class="n">exec</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="nb">locals</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__usercode__</span><span class="p">(</span><span class="nb">print</span><span class="o">=</span><span class="n">_output_msg</span><span class="p">,</span> <span class="o">**</span><span class="n">res</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">deep_merge</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_config</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_config</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="k">return</span> <span class="n">result</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
 
   
 
@@ -1846,11 +3220,11 @@ and then renaming the files with the output of your python script.</p>
   </colgroup>
   <tbody valign="top">
     <tr class="field">
-      <th class="field-name">Parameters:</th>
+      <th class="field-name">Attributes:</th>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b>expr</b>
+              <b><code>expr</code></b>
                   (<code>str</code>)
               –
               <div class="doc-md-description">
@@ -1868,6 +3242,85 @@ and then renaming the files with the output of your python script.</p>
   group <code>(?P&lt;groupname&gt;.*)</code></li>
 </ul>
 
+            <details class="quote">
+              <summary>Source code in <code>organize/filters/regex.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
+<span class="k">class</span> <span class="nc">Regex</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Matches filenames with the given regular expression</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        expr (str): The regular expression to be matched.</span>
+
+<span class="sd">    **Returns:**</span>
+
+<span class="sd">    Any named groups in your regular expression will be returned like this:</span>
+
+<span class="sd">    - `{regex.groupname}`: The text matched with the named</span>
+<span class="sd">      group `(?P&lt;groupname&gt;.*)`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">expr</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="n">filter_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">FilterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;regex&quot;</span><span class="p">,</span>
+        <span class="n">files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dirs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expr</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">UNICODE</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expr</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Does not support standalone mode&quot;</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">deep_merge</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_config</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">())</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+</code></pre></div></td></tr></table></div>
+            </details>
 
   
 
@@ -1929,14 +3382,12 @@ group <code>the_number</code>.</p>
   </colgroup>
   <tbody valign="top">
     <tr class="field">
-      <th class="field-name">Parameters:</th>
+      <th class="field-name">Attributes:</th>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b>*conditions</b>
-                  (<code>list(str) or str</code>, default:
-                      <code>()</code>
-)
+              <b><code>*conditions</code></b>
+                  (<code>list(str) or str</code>)
               –
               <div class="doc-md-description">
                 <p>The size constraints.</p>
@@ -1964,6 +3415,117 @@ conditions are satisfied.</p>
 <li><code>{size.decimal}</code>: (str) Size with unit (powers of 1000, SI prefixes)</li>
 </ul>
 
+            <details class="quote">
+              <summary>Source code in <code>organize/filters/size.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
+<span class="k">class</span> <span class="nc">Size</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Matches files and folders by size</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        *conditions (list(str) or str):</span>
+<span class="sd">            The size constraints.</span>
+
+<span class="sd">    Accepts file size conditions, e.g: `&quot;&gt;= 500 MB&quot;`, `&quot;&lt; 20k&quot;`, `&quot;&gt;0&quot;`,</span>
+<span class="sd">    `&quot;= 10 KiB&quot;`.</span>
+
+<span class="sd">    It is possible to define both lower and upper conditions like this:</span>
+<span class="sd">    `&quot;&gt;20k, &lt; 1 TB&quot;`, `&quot;&gt;= 20 Mb, &lt;25 Mb&quot;`. The filter will match if all given</span>
+<span class="sd">    conditions are satisfied.</span>
+
+<span class="sd">    - Accepts all units from KB to YB.</span>
+<span class="sd">    - If no unit is given, kilobytes are assumend.</span>
+<span class="sd">    - If binary prefix is given (KiB, GiB) the size is calculated using base 1024.</span>
+
+<span class="sd">    **Returns:**</span>
+
+<span class="sd">    - `{size.bytes}`: (int) Size in bytes</span>
+<span class="sd">    - `{size.traditional}`: (str) Size with unit (powers of 1024, JDEC prefixes)</span>
+<span class="sd">    - `{size.binary}`: (str) Size with unit (powers of 1024, IEC prefixes)</span>
+<span class="sd">    - `{size.decimal}`: (str) Size with unit (powers of 1000, SI prefixes)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">conditions</span><span class="p">:</span> <span class="n">FlatList</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="n">filter_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">FilterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dirs</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_constraints</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">constraint</span> <span class="ow">in</span> <span class="n">create_constraints</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_constraints</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">constraint</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filesize</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_constraints</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">op</span><span class="p">(</span><span class="n">filesize</span><span class="p">,</span> <span class="n">c_size</span><span class="p">)</span> <span class="k">for</span> <span class="n">op</span><span class="p">,</span> <span class="n">c_size</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_constraints</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="nb">bytes</span> <span class="o">=</span> <span class="n">read_resource_size</span><span class="p">(</span><span class="n">res</span><span class="o">=</span><span class="n">res</span><span class="p">)</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_config</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;bytes&quot;</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
+            <span class="s2">&quot;traditional&quot;</span><span class="p">:</span> <span class="n">traditional</span><span class="p">(</span><span class="nb">bytes</span><span class="p">),</span>
+            <span class="s2">&quot;binary&quot;</span><span class="p">:</span> <span class="n">binary</span><span class="p">(</span><span class="nb">bytes</span><span class="p">),</span>
+            <span class="s2">&quot;decimal&quot;</span><span class="p">:</span> <span class="n">decimal</span><span class="p">(</span><span class="nb">bytes</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
 
   
 

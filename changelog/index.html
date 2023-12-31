@@ -45,10 +45,6 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../updating-from-v1/">Updating from organize v1.x</a>
-                </li>
-              </ul>
-              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
                 </li>
               </ul>
@@ -71,7 +67,13 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">Changelog</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#v241-2023-08-19">v2.4.1 (2023-08-19)</a>
+    <li class="toctree-l2"><a class="reference internal" href="#wip">WIP</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v243-2023-10-14">v2.4.3 (2023-10-14)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v242-2023-08-25">v2.4.2 (2023-08-25)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v241-2023-08-25">v2.4.1 (2023-08-25)</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#v240-2022-09-05">v2.4.0 (2022-09-05)</a>
     </li>
@@ -166,6 +168,10 @@
     </ul>
                 </li>
               </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../migrating/">Migrating from older versions</a>
+                </li>
+              </ul>
       </div>
     </div>
     </nav>
@@ -179,7 +185,7 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Changelog</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/tfeldmann/organize/edit/main/docs/changelog.md" class="icon icon-github"> Edit on GitHub</a>
@@ -192,7 +198,29 @@
               
                 <!-- BEGIN INCLUDE ../CHANGELOG.md -->
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">#</a></h1>
-<h2 id="v241-2023-08-19">v2.4.1 (2023-08-19)<a class="headerlink" href="#v241-2023-08-19" title="Permanent link">#</a></h2>
+<h2 id="wip">WIP<a class="headerlink" href="#wip" title="Permanent link">#</a></h2>
+<ul>
+<li>New action: <code>write</code>.</li>
+<li>New filter: <code>date_lastused</code> (macOS only).</li>
+<li>You can now specify the timezone in all time based filters.</li>
+<li>Removed hidden (deprecated) CLI option <code>--config-file</code>.</li>
+<li>Lots of new tests and some bugfixes.</li>
+<li><code>exif</code> filter now supports the simplematch syntax.</li>
+<li>{now} must be {now()} now.</li>
+<li>multiple paths per location</li>
+<li>min_depth option</li>
+<li>last_seen</li>
+</ul>
+<h2 id="v243-2023-10-14">v2.4.3 (2023-10-14)<a class="headerlink" href="#v243-2023-10-14" title="Permanent link">#</a></h2>
+<ul>
+<li>Modified filter: <code>exif</code>. Enabled datetime fields on exif data (Issue #266) (Thanks @FlorianFritz)</li>
+<li>Support Exif data from Huawei and Honer phones (Thanks @HernandoR)</li>
+</ul>
+<h2 id="v242-2023-08-25">v2.4.2 (2023-08-25)<a class="headerlink" href="#v242-2023-08-25" title="Permanent link">#</a></h2>
+<ul>
+<li>Fix reading exif data for HEIC images (Issue #267)</li>
+</ul>
+<h2 id="v241-2023-08-25">v2.4.1 (2023-08-25)<a class="headerlink" href="#v241-2023-08-25" title="Permanent link">#</a></h2>
 <ul>
 <li>Fix unicode bug in logging (Issue #294) (Thanks @xdhmoore)</li>
 <li>Updated dependencies (Thanks @gaby)</li>
@@ -279,7 +307,7 @@
 <h2 id="v200-2022-02-07">v2.0.0 (2022-02-07)<a class="headerlink" href="#v200-2022-02-07" title="Permanent link">#</a></h2>
 <p>This is a huge update with lots of improvements.
 Please backup all your important stuff before running and use the simulate option!</p>
-<p><a href="../updating-from-v1/"><strong>Migration Guide</strong></a></p>
+<p><a href="updating-from-v1.md"><strong>Migration Guide</strong></a></p>
 <h3 id="whats-new">what's new<a class="headerlink" href="#whats-new" title="Permanent link">#</a></h3>
 <ul>
 <li>You can now <a href="../rules/#targeting-directories">target directories</a> with your rules
@@ -476,6 +504,7 @@ Please backup all your important stuff before running and use the simulate optio
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../actions/" class="btn btn-neutral float-left" title="Actions"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../migrating/" class="btn btn-neutral float-right" title="Migrating from older versions">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -504,6 +533,8 @@ Please backup all your important stuff before running and use the simulate optio
     
       <span><a href="../actions/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
+    
+      <span><a href="../migrating/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
