@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.7
+    rev: v0.1.9
     hooks:
       - id: ruff
         args: [--fix]
@@ -14,17 +14,17 @@ repos:
           - --fix=lf
       - id: trailing-whitespace
   - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
+    rev: 5.13.2
     hooks:
       - id: isort
         name: isort (python)
         args: ["--profile=black"]
   - repo: https://github.com/psf/black
-    rev: 23.11.0
+    rev: 23.12.1
     hooks:
       - id: black
   - repo: https://github.com/python-poetry/poetry
-    rev: "1.7.1"
+    rev: "1.7.0"
     hooks:
       - id: poetry-check
       - id: poetry-lock
