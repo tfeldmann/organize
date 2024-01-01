@@ -35,6 +35,8 @@ jobs:
           python-version: "${{ matrix.python-version }}"
 
       - name: Setup Environment
+        env:
+          PYTHON_KEYRING_BACKEND: keyring.backends.null.Keyring
         run: |
           python3 -m pip install -U pip setuptools
           python3 -m pip install poetry==1.7.1 lxml
