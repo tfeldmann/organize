@@ -13,7 +13,7 @@ RE_CONFIG = re.compile(r"```yaml\n(?P<config>rules:(?:.*?\n)+?)```", re.MULTILIN
 
 def _list_examples():
     for f in DOCS_DIR.rglob("*.md"):
-        text = f.read_text()
+        text = f.read_text(encoding="utf-8")
         for n, match in enumerate(RE_CONFIG.findall(text)):
             yield (f"{f} #{n}", match)
 
@@ -43,7 +43,7 @@ def test_examples_are_valid(location, config):
 
 
 def test_all_filters_documented():
-    filter_docs = (DOCS_DIR / "filters.md").read_text()
+    filter_docs = (DOCS_DIR / "filters.md").read_text(encoding="utf-8")
     for name in FILTERS.keys():
         assert (
             "## {}".format(name) in filter_docs
@@ -51,7 +51,7 @@ def test_all_filters_documented():
 
 
 def test_all_actions_documented():
-    action_docs = (DOCS_DIR / "actions.md").read_text()
+    action_docs = (DOCS_DIR / "actions.md").read_text(encoding="utf-8")
     for name in ACTIONS.keys():
         assert (
             "## {}".format(name) in action_docs

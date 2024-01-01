@@ -1,4 +1,9 @@
 # Changelog
+
+## WIP
+
+- Default to UTF-8 encoding when reading and writing config files for windows users
+  who don't use python in UTF-8 mode (env variable `PYTHONUTF8=1`).
 - `write`-action: Allow setting the text encoding.
 
 ## v3.0.0a0 (2023-12-31)

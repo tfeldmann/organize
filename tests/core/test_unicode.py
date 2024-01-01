@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 from conftest import make_files, read_files
 
@@ -38,6 +40,23 @@ def test_startswith_issue74(fs):
         },
         "Calculo.pdf": "",
     }
+
+
+def test_folder_umlauts(fs):
+    make_files(["file1", "file2"], "Erträge")
+
+    conf = Path("config.yaml")
+    conf.write_text(
+        """
+    rules:
+      - locations: "Erträge"
+        actions:
+          - delete
+    """,
+        encoding="utf-8",
+    )
+    Config.from_path(conf).execute(simulate=False)
+    assert read_files("Erträge") == {}
 
 
 @pytest.mark.skip(reason="TODO")

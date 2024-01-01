@@ -63,15 +63,17 @@ class Config:
         dedented = textwrap.dedent(config)
         as_dict = yaml.load(dedented, Loader=yaml.SafeLoader)
         try:
-            return cls(**as_dict)
+            inst = cls(**as_dict)
+            inst._config_path = config_path
+            return inst
         except ValidationError as e:
             # add a config_path property to the ValidationError
             raise ConfigError(e=e, config_path=config_path) from e
 
     @classmethod
     def from_path(cls, config_path: Path):
-        inst = cls.from_string(config_path.read_text(), config_path=config_path)
-        inst._config_path = config_path
+        text = config_path.read_text(encoding="utf-8")
+        inst = cls.from_string(text, config_path=config_path)
         return inst
 
     def execute(

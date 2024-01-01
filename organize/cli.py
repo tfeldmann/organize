@@ -112,7 +112,7 @@ def new(config: Optional[str]) -> None:
         )
     except ConfigNotFound as e:
         assert e.init_path is not None
-        e.init_path.write_text(EXAMPLE_CONFIG)
+        e.init_path.write_text(EXAMPLE_CONFIG, encoding="utf-8")
         console.print(f'Config "{e.init_path.stem}" created at "{e.init_path}"')
 
 
@@ -149,7 +149,7 @@ def show(config: Optional[str], path: bool, reveal: bool) -> None:
     elif reveal:
         _open_uri(config_path.parent.as_uri())
     else:
-        syntax = Syntax(config_path.read_text(), "yaml")
+        syntax = Syntax(config_path.read_text(encoding="utf-8"), "yaml")
         console.print(syntax)
 
 
