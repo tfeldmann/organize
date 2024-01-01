@@ -1,4 +1,5 @@
 # Changelog
+- `write`-action: Allow setting the text encoding.
 
 ## v3.0.0a0 (2023-12-31)
 

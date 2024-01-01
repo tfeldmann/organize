@@ -34,6 +34,9 @@ class Write:
             first line) or `overwrite` (overwrite content with text).
             Defaults to `append`.
 
+        encoding (str):
+            The text encoding to use. Default: "utf-8".
+
         newline (str):
             (Optional) Whether to append a newline to the given `text`.
             Defaults to `true`.
@@ -48,6 +51,7 @@ class Write:
     text: str
     outfile: str
     mode: Literal["append", "prepend", "overwrite"] = "append"
+    encoding: str = "utf-8"
     newline: bool = True
     clear_before_first_write: bool = False
 
@@ -86,12 +90,12 @@ class Write:
 
         if not simulate:
             if self.mode == "append":
-                with open(path, "a") as f:
+                with open(path, "a", encoding=self.encoding) as f:
                     f.write(text)
             elif self.mode == "prepend":
                 content = ""
                 if path.exists():
-                    content = path.read_text()
-                path.write_text(text + content)
+                    content = path.read_text(encoding=self.encoding)
+                path.write_text(text + content, encoding=self.encoding)
             elif self.mode == "overwrite":
-                path.write_text(text)
+                path.write_text(text, encoding=self.encoding)
