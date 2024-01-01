@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from conftest import make_files
 
 from organize import Config
@@ -83,3 +85,22 @@ def test_multiple_dirs(fs, testoutput):
         """
     ).execute(simulate=False, output=testoutput)
     assert testoutput.messages == []
+
+
+def test_at_sign_in_path(fs):
+    # https://github.com/tfeldmann/organize/issues/332
+
+    test_path = "/CloudStorage/ProtonDrive-xxxx@xxxx.xx/Documents.copy/"
+
+    make_files(["foo.txt", "bar.txt"], "test")
+    Config.from_string(
+        f"""
+        rules:
+          - locations: test
+            actions:
+              - copy: '{test_path}'
+        """
+    ).execute(simulate=False)
+
+    assert (Path(test_path) / "foo.txt").exists()
+    assert (Path(test_path) / "bar.txt").exists()
