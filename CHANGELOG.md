@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Nothing.
+
+## v3.0.0a2 (2024-01-02)
+
 - Fix bug on first run of `organize new`. Create the organize config directory if it
   does not exist. (thanks @white-gecko)
 - Adds action `hardlink`.
