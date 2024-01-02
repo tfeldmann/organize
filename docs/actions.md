@@ -165,6 +165,10 @@ rules:
       - echo: "Relative: {relative_path}"
 ```
 
+## hardlink
+
+::: organize.actions.Hardlink
+
 ## macos_tags
 
 ::: organize.actions.MacOSTags

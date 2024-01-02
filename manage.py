@@ -27,7 +27,8 @@ def set_version(args):
     - reads and validates version number
     - updates __version__.py
     - updates pyproject.toml
-    - Searches for 'WIP' in changelog and replaces it with current version and date
+    - Searches for '[Unreleased]' in changelog and replaces it with current version and
+      date
     """
     from organize.__version__ import __version__ as current_version
 
@@ -66,10 +67,12 @@ def set_version(args):
         changelog = f.read()
 
     # check if WIP section is in changelog
-    wip_regex = re.compile(r"## WIP\n(.*?)(?=\n##)", re.MULTILINE | re.DOTALL)
+    wip_regex = re.compile(
+        r"## \[Unreleased\]\n(.*?)(?=\n##)", re.MULTILINE | re.DOTALL
+    )
     match = wip_regex.search(changelog)
     if not match:
-        print('No "## WIP" section found in changelog')
+        print('No "## [Unreleased]" section found in changelog')
         return
 
     # change WIP to version number and date

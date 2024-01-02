@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 from typing import ClassVar
 
 from pydantic.config import ConfigDict
@@ -12,15 +14,20 @@ from .common.conflict import ConflictMode, resolve_conflict
 from .common.target_path import prepare_target_path
 
 
-@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
-class Symlink:
+def create_hardlink(target: Path, link: Path) -> None:
+    # Path.hardlink_to needs Python >= 3.10
+    os.link(src=target, dst=link)  # create a hardlink pointing to src named dst
 
-    """Create a symbolic link.
+
+@dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
+class Hardlink:
+
+    """Create a hardlink.
 
     Attributes:
         dest (str):
-            The symlink destination. If **dest** ends with a slash `/``, create the
-            symlink in the given directory. Can contain placeholders.
+            The hardlink destination. If **dest** ends with a slash `/``, create the
+            hardlink in the given directory. Can contain placeholders.
 
         on_conflict (str):
             What should happen in case **dest** already exists.
@@ -32,10 +39,10 @@ class Symlink:
             Defaults to `{name} {counter}{extension}`.
 
         autodetect_folder (bool):
-            In case you forget the ending slash "/" to indicate creating the
-            link inside the destination folder this settings will handle targets
-            without a file extension as folders.  If you really mean to copy to
-            a file without file extension, set this to false.
+            In case you forget the ending slash "/" to indicate copying into a folder
+            this settings will handle targets without a file extension as folders.
+            If you really mean to copy to a file without file extension, set this to
+            false.
             Default: true
     """
 
@@ -45,7 +52,7 @@ class Symlink:
     autodetect_folder: bool = True
 
     action_config: ClassVar[ActionConfig] = ActionConfig(
-        name="symlink",
+        name="hardlink",
         standalone=False,
         files=True,
         dirs=True,
@@ -76,7 +83,7 @@ class Symlink:
         if skip_action:
             return
 
-        output.msg(res=res, msg=f"Creating symlink at {dst}", sender=self)
-        res.walker_skip_pathes.add(dst)
+        output.msg(res=res, msg=f"Creating hardlink at {dst}", sender=self)
         if not simulate:
-            dst.symlink_to(target=res.path, target_is_directory=res.is_dir())
+            create_hardlink(target=res.path, link=dst)
+        res.walker_skip_pathes.add(dst)

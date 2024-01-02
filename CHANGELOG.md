@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-- Fix bug on first run of `organize new`. Create the organize config directory if it does not exist.
+- Fix bug on first run of `organize new`. Create the organize config directory if it
+  does not exist. (thanks @white-gecko)
+- Adds action `hardlink`.
 
 ## v3.0.0a1 (2024-01-01)
 

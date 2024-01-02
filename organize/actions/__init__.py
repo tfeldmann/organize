@@ -2,6 +2,7 @@ from .confirm import Confirm
 from .copy import Copy
 from .delete import Delete
 from .echo import Echo
+from .hardlink import Hardlink
 from .macos_tags import MacOSTags
 from .move import Move
 from .python import Python
@@ -16,6 +17,7 @@ ALL = (
     Copy,
     Delete,
     Echo,
+    Hardlink,
     MacOSTags,
     Move,
     Python,
