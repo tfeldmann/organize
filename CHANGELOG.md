@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+
+- Fix bug on first run of `organize new`. Create the organize config directory if it does not exist.
+
 ## v3.0.0a1 (2024-01-01)
 
 - Default to UTF-8 encoding when reading and writing config files for windows users

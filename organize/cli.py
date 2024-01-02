@@ -112,6 +112,7 @@ def new(config: Optional[str]) -> None:
         )
     except ConfigNotFound as e:
         assert e.init_path is not None
+        e.init_path.parent.mkdir(parents=True, exist_ok=True)
         e.init_path.write_text(EXAMPLE_CONFIG, encoding="utf-8")
         console.print(f'Config "{e.init_path.stem}" created at "{e.init_path}"')
 
