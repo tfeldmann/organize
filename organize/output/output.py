@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, Optional, Protocol
+from typing import TYPE_CHECKING, Literal, Optional, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 Level = Literal["info", "warn", "error"]
 
 
+@runtime_checkable
 class Output(Protocol):
     """
     The protocol all of organize's outputs must adhere to.
@@ -44,5 +45,5 @@ class Output(Protocol):
     ) -> bool:
         ...
 
-    def end(self, success_count: int, error_count: int):
+    def end(self, success_count: int, error_count: int) -> None:
         ...

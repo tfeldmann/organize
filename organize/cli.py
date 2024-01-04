@@ -52,7 +52,7 @@ from yaml.scanner import ScannerError
 
 from organize import Config, ConfigError
 from organize.find_config import ConfigNotFound, find_config, list_configs
-from organize.output import JSONL, Default
+from organize.output import JSONL, Default, Output
 
 from .__version__ import __is_prerelease__, __version__
 
@@ -93,6 +93,7 @@ def execute(
     simulate: bool,
 ) -> None:
     output = JSONL() if format == "jsonl" else Default()
+    assert isinstance(output, Output)
     config_path = find_config(name_or_path=config)
     Config.from_path(config_path).execute(
         simulate=simulate,

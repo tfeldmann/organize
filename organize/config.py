@@ -59,7 +59,7 @@ class Config:
     _config_path: Optional[Path] = None
 
     @classmethod
-    def from_string(cls, config: str, config_path: Optional[Path] = None):
+    def from_string(cls, config: str, config_path: Optional[Path] = None) -> "Config":
         dedented = textwrap.dedent(config)
         as_dict = yaml.load(dedented, Loader=yaml.SafeLoader)
         try:
@@ -71,7 +71,7 @@ class Config:
             raise ConfigError(e=e, config_path=config_path) from e
 
     @classmethod
-    def from_path(cls, config_path: Path):
+    def from_path(cls, config_path: Path) -> "Config":
         text = config_path.read_text(encoding="utf-8")
         inst = cls.from_string(text, config_path=config_path)
         return inst
@@ -83,7 +83,7 @@ class Config:
         tags: Tags = set(),
         skip_tags: Tags = set(),
         working_dir: Union[str, Path] = ".",
-    ):
+    ) -> None:
         working_path = Path(render(str(working_dir)))
         os.chdir(working_path)
         output.start(
