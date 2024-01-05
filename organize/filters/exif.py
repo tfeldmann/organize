@@ -17,6 +17,7 @@ from organize.filter import FilterConfig
 from organize.output import Output
 from organize.resource import Resource
 
+ExifStrDict = Dict[str, Dict[str, str]]
 ExifValue = Union[str, datetime, date, timedelta]
 ExifDict = Dict[str, Dict[str, ExifValue]]
 ExifDefaultDict = DefaultDict[str, DefaultDict[str, ExifValue]]
@@ -118,7 +119,7 @@ def convert_recursive(data):
     return result
 
 
-def exifread_read(path: Path) -> ExifDict:
+def exifread_read(path: Path) -> ExifStrDict:
     """
     Uses the `exifread` library to read the EXIF data
     """
@@ -131,7 +132,7 @@ def exifread_read(path: Path) -> ExifDict:
     return grouped
 
 
-def exiftool_read(path: Path) -> ExifDict:
+def exiftool_read(path: Path) -> ExifStrDict:
     """
     Uses the `exiftool` tool by Phil Harvey to read the EXIF data
     """
