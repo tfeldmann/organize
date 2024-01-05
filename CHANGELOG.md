@@ -7,8 +7,8 @@
 ## v3.0.0 (2024-01-05)
 
 - Supports `exiftool` in the `exif` filter by setting the `ORGANIZE_EXIFTOOL_PATH` env
-  var.
-- Fixes the `min_depth` location parameter.
+  var. (thanks to @HernandoR for working on qtff support)
+- Fixes the `min_depth` location parameter. (thanks to @danielklim for working on this)
 
 ## v3.0.0a2 (2024-01-02)
 

@@ -1,6 +1,6 @@
 <p align="center">
   <!--<img width="623" height="168" src="https://github.com/tfeldmann/organize/raw/gh-pages/img/organize.svg?sanitize=true" alt="organize logo">-->
-  <img width="100%" src="https://github.com/tfeldmann/organize/blob/main/docs/img/organize-v3.jpg?raw=true" alt="organize v3 is out">
+  <a href="https://tfeldmann.github.io/organize/changelog/" target="_blank"><img width="100%" src="https://github.com/tfeldmann/organize/blob/main/docs/img/organize-v3.jpg?raw=true" alt="organize v3 is out"></a>
 </p>
 
 <div align="center">
