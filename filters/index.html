@@ -1282,13 +1282,43 @@ example <code>"-first_seen"</code>, <code>"-name"</code>, <code>"-created"</code
       <p>Filter by image EXIF data</p>
 <p>The <code>exif</code> filter can be used as a filter as well as a way to get exif information
 into your actions.</p>
+<p>By default this library uses the <code>exifread</code> library. If your image format is not
+supported you can install <code>exiftool</code> (exiftool.org) and set the environment variable:</p>
+<pre><code>ORGANIZE_EXIFTOOL_PATH=&quot;exiftool&quot;
+</code></pre>
+<p>organize will then use <code>exiftool</code> to extract the EXIF data.</p>
 <p>Exif fields which contain "datetime", "date" or "offsettime" in their fieldname
 will have their value converted to 'datetime.datetime', 'datetime.date' and
 'datetime.timedelta' respectivly.
 - <code>datetime.datetime</code> : exif.image.datetime, exif.exif.datetimeoriginal, ...
 - <code>datetime.date</code> : exif.gps.date, ...
 - <code>datetime.timedelta</code> : exif.exif.offsettimeoriginal, exif.exif.offsettimedigitized, ...</p>
-<p>:returns:
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Attributes:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>lowercase_keys</code></b>
+                  (<code>bool</code>)
+              –
+              <div class="doc-md-description">
+                <p>Whether to lowercase all EXIF keys (Default: true)</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>      <p>:returns:
     <code>{exif}</code> -- a dict of all the collected exif inforamtion available in the
     file. Typically it consists of the following tags (if present in the file):</p>
 <pre><code>- ``{exif.image}`` -- information related to the main image
@@ -1299,58 +1329,98 @@ will have their value converted to 'datetime.datetime', 'datetime.date' and
 
             <details class="quote">
               <summary>Source code in <code>organize/filters/exif.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Exif</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Exif</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Filter by image EXIF data</span>
 
 <span class="sd">    The `exif` filter can be used as a filter as well as a way to get exif information</span>
 <span class="sd">    into your actions.</span>
+
+<span class="sd">    By default this library uses the `exifread` library. If your image format is not</span>
+<span class="sd">    supported you can install `exiftool` (exiftool.org) and set the environment variable:</span>
+
+<span class="sd">    ```</span>
+<span class="sd">    ORGANIZE_EXIFTOOL_PATH=&quot;exiftool&quot;</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    organize will then use `exiftool` to extract the EXIF data.</span>
 
 <span class="sd">    Exif fields which contain &quot;datetime&quot;, &quot;date&quot; or &quot;offsettime&quot; in their fieldname</span>
 <span class="sd">    will have their value converted to &#39;datetime.datetime&#39;, &#39;datetime.date&#39; and</span>
@@ -1358,6 +1428,9 @@ will have their value converted to 'datetime.datetime', 'datetime.date' and
 <span class="sd">    - `datetime.datetime` : exif.image.datetime, exif.exif.datetimeoriginal, ...</span>
 <span class="sd">    - `datetime.date` : exif.gps.date, ...</span>
 <span class="sd">    - `datetime.timedelta` : exif.exif.offsettimeoriginal, exif.exif.offsettimedigitized, ...</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        lowercase_keys (bool): Whether to lowercase all EXIF keys (Default: true)</span>
 
 <span class="sd">    :returns:</span>
 <span class="sd">        ``{exif}`` -- a dict of all the collected exif inforamtion available in the</span>
@@ -1370,6 +1443,7 @@ will have their value converted to 'datetime.datetime', 'datetime.date' and
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">filter_tags</span><span class="p">:</span> <span class="n">Dict</span>
+    <span class="n">lowercase_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="n">filter_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">FilterConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterConfig</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;exif&quot;</span><span class="p">,</span>
@@ -1377,23 +1451,41 @@ will have their value converted to 'datetime.datetime', 'datetime.date' and
         <span class="n">dirs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">filter_tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">filter_tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">lowercase_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="c1"># exif filter is used differently from other filters. The **kwargs are not</span>
         <span class="c1"># filter parameters but all belong into the filter_tags dictionary to filter</span>
         <span class="c1"># for specific exif tags.</span>
-        <span class="c1"># *args are tags filtered without a value, like [&quot;gps&quot;, &quot;image.model&quot;].</span>
         <span class="n">params</span> <span class="o">=</span> <span class="n">filter_tags</span> <span class="ow">or</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># *args are tags filtered without a value, like [&quot;gps&quot;, &quot;image.model&quot;].</span>
         <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
             <span class="n">params</span><span class="p">[</span><span class="n">arg</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filter_tags</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filter_tags</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">lowercase_keys</span><span class="o">=</span><span class="n">lowercase_keys</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Does not support standalone mode&quot;</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">read_exif_data</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
-        <span class="n">parsed</span> <span class="o">=</span> <span class="n">parse_and_categorize</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># gather the exif data in a dict</span>
+        <span class="k">if</span> <span class="n">exiftool_available</span><span class="p">():</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">exiftool_read</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">exifread_read</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="c1"># lowercase keys if wanted</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowercase_keys</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">lowercase_keys_recursive</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># convert strings to datetime objects where possible</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="n">convert_recursive</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
         <span class="n">res</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_config</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">parsed</span>
-        <span class="k">return</span> <span class="n">matches_tags</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_tags</span><span class="p">,</span> <span class="n">parsed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">matches_tags</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_tags</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
 

@@ -43,9 +43,13 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href=".">Home</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#testers-needed-help-testing-the-v3-alpha">Testers needed! Help testing the v3-alpha</a>
+    <li class="toctree-l2"><a class="reference internal" href="#v3-is-now-available">v3 is now available</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#about">About</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#people-use-this-for">People use this for:</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#features">Features</a>
     </li>
@@ -121,23 +125,16 @@
                 <h1 id="welcome-to-organizes-documentation">Welcome to organize's documentation<a class="headerlink" href="#welcome-to-organizes-documentation" title="Permanent link">#</a></h1>
 <!-- BEGIN INCLUDE ../README.md -->
 <p align="center">
-  <img width="623" height="168" src="https://github.com/tfeldmann/organize/raw/gh-pages/img/organize.svg?sanitize=true" alt="organize logo">
+  <!--<img width="623" height="168" src="https://github.com/tfeldmann/organize/raw/gh-pages/img/organize.svg?sanitize=true" alt="organize logo">-->
+  <a href="https://tfeldmann.github.io/organize/changelog/" target="_blank"><img width="100%" src="https://github.com/tfeldmann/organize/blob/main/docs/img/organize-v3.jpg?raw=true" alt="organize v3 is out"></a>
 </p>
 
 <div align="center">
 
-<a href="https://github.com/tfeldmann/organize/actions/workflows/tests.yml">
-  <img src="https://github.com/tfeldmann/organize/actions/workflows/tests.yml/badge.svg" title="tests">
-</a>
-<a href="https://organize.readthedocs.io/en/latest/?badge=latest">
-  <img src="https://readthedocs.org/projects/organize/badge/?version=latest" title="Documentation Status">
-</a>
-<a href="https://github.com/tfeldmann/organize/blob/main/LICENSE.txt">
-  <img src="https://img.shields.io/badge/license-MIT-blue.svg" title="License">
-</a>
-<a href="https://pypi.org/project/organize-tool/">
-  <img src="https://img.shields.io/pypi/v/organize-tool" title="PyPI Version">
-</a>
+<a href="https://github.com/tfeldmann/organize/actions/workflows/tests.yml"><img src="https://github.com/tfeldmann/organize/actions/workflows/tests.yml/badge.svg" title="tests"></a>
+<a href="https://organize.readthedocs.io/en/latest/?badge=latest"><img src="https://readthedocs.org/projects/organize/badge/?version=latest" title="Documentation Status"></a>
+<a href="https://github.com/tfeldmann/organize/blob/main/LICENSE.txt"><img src="https://img.shields.io/badge/license-MIT-blue.svg" title="License"></a>
+<a href="https://pypi.org/project/organize-tool/"><img src="https://img.shields.io/pypi/v/organize-tool" title="PyPI Version"></a>
 
 </div>
 
@@ -147,22 +144,13 @@
 <a href="https://organize.readthedocs.io/" target="_blank">Full documentation at Read the docs</a>
 </p>
 
-<h2 id="testers-needed-help-testing-the-v3-alpha">Testers needed! Help testing the v3-alpha<a class="headerlink" href="#testers-needed-help-testing-the-v3-alpha" title="Permanent link">#</a></h2>
-<p>A prerelease of organize v3 is available. To install:</p>
-<pre><code class="language-sh"># Installs the pre release!
-pip install -U organize-tool --pre
-
-# Installs the pre release with text extraction utils.
-pip install -U organize-tool[textract] --pre
-
-# If you use pipx (which is awesome) you can run:
-pipx install --pip-args=&quot;--pre&quot; --force organize-tool
-</code></pre>
-<p>The new version should be <em>much</em> faster and fixes a lot of bugs. It also comes with
+<h2 id="v3-is-now-available">v3 is now available<a class="headerlink" href="#v3-is-now-available" title="Permanent link">#</a></h2>
+<p>The new version should be <em>much</em> faster and fix a lot of bugs. It also comes with
 a some new actions, filters and options.</p>
+<p>If you encounter any other bugs or problems during the migration, please reach out!</p>
 <ul>
 <li><a href="https://tfeldmann.github.io/organize/changelog/">See the changelog</a></li>
-<li><a href="https://tfeldmann.github.io/organize/migrating/#migrating-from-v2-to-v3">Migration guide</a>.</li>
+<li><a href="https://tfeldmann.github.io/organize/migrating/#migrating-from-v2-to-v3">Migration guide</a></li>
 </ul>
 <h2 id="about">About<a class="headerlink" href="#about" title="Permanent link">#</a></h2>
 <p>Your desktop is a mess? You cannot find anything in your downloads and
@@ -170,6 +158,16 @@ documents? Sorting and renaming all these files by hand is too tedious?
 Time to automate it once and benefit from it forever.</p>
 <p><strong>organize</strong> is a command line, open-source alternative to apps like Hazel (macOS)
 or File Juggler (Windows).</p>
+<h3 id="people-use-this-for">People use this for:<a class="headerlink" href="#people-use-this-for" title="Permanent link">#</a></h3>
+<ul>
+<li>Sorting and tagging pictures into various folder structures based on EXIF data</li>
+<li>Sorting and renaming PDF invoices based on file content</li>
+<li>Removing incomplete downloads from their ~/Downloads</li>
+<li>Cleaning up their ~/Desktop from unused files</li>
+<li>Freeing up disk space by removing duplicates</li>
+<li>Automating various business processes</li>
+<li>and many more</li>
+</ul>
 <h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">#</a></h2>
 <p>Some highlights include:</p>
 <ul>
@@ -185,7 +183,7 @@ or File Juggler (Windows).</p>
 </ul>
 <h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">#</a></h2>
 <h3 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h3>
-<p>Only python 3.8+ is needed.
+<p>Only python 3.9+ is needed.
 Install it via your package manager or from <a href="https://python.org/..">python.org</a>.</p>
 <p>Installation is done via pip. Note that the package name is <code>organize-tool</code>:</p>
 <pre><code class="language-bash">pip install -U organize-tool
@@ -400,5 +398,5 @@ Options:
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2023-12-31 19:01:32.006109+00:00
+Build Date UTC : 2024-01-05 21:19:47.899054+00:00
 -->

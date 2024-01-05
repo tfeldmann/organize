@@ -57,8 +57,6 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#location-options">Location options</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#filesystem-and-path">filesystem and path</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#max_depth-and-subfolders">max_depth and subfolders</a>
     </li>
         </ul>
@@ -138,6 +136,7 @@ You can set multiple locations for each rule if you want.</p>
 <pre><code class="language-yml">rules:
   - locations:
       - path: ...
+        min_depth: ...
         max_depth: ...
         search: ...
         exclude_files: ...
@@ -150,6 +149,9 @@ You can set multiple locations for each rule if you want.</p>
 </code></pre>
 <p><strong>path</strong> (<code>str</code>)<br>
 Path to a local folder</p>
+<p><strong>min_depth</strong> (<code>int</code> or <code>null</code>)<br>
+Minimum directory depth to search. This can be useful if you want to only handle files
+in subdirectories of <code>location</code>.</p>
 <p><strong>max_depth</strong> (<code>int</code> or <code>null</code>)<br>
 Maximum directory depth to search.</p>
 <p><strong>search</strong> (<code>"breadth"</code> or <code>"depth"</code>)<br>
@@ -174,20 +176,6 @@ All other files are skipped.</p>
 <p><strong>filter_dirs</strong> (<code>List[str]</code>)<br>
 A list of patterns to match directory names that are included in this location.
 All other directories are skipped.</p>
-<p><strong>filesystem</strong> (str)<br>
-A <a href="#filesystems">Filesystem URL</a>.</p>
-<h3 id="filesystem-and-path"><code>filesystem</code> and <code>path</code><a class="headerlink" href="#filesystem-and-path" title="Permanent link">#</a></h3>
-<p>If you want the location to be the root (<code>"/"</code>) of a filesystem, use <code>path</code>:</p>
-<pre><code class="language-yml">rules:
-  - locations:
-      - path: zip:///Users/theuser/Downloads/Test.zip
-</code></pre>
-<p>If you want the location to be a subfolder inside a filesystem, use <code>path</code> and <code>filesystem</code>:</p>
-<pre><code class="language-yml">rules:
-  - locations:
-      - filesystem: zip:///Users/theuser/Downloads/Test.zip
-        path: &quot;/folder/in/the/zipfile/&quot;
-</code></pre>
 <h3 id="max_depth-and-subfolders"><code>max_depth</code> and <code>subfolders</code><a class="headerlink" href="#max_depth-and-subfolders" title="Permanent link">#</a></h3>
 <ul>
 <li>If <code>subfolders: true</code> is specified on the rule, all locations are set to <code>max_depth: null</code>
