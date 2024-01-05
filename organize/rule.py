@@ -219,7 +219,7 @@ class Rule(BaseModel):
                 max_depth = location.max_depth
 
             walker = Walker(
-                min_depth=0,
+                min_depth=location.min_depth,
                 max_depth=max_depth,
                 filter_dirs=location.filter_dirs,
                 filter_files=location.filter,

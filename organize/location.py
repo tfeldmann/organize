@@ -23,6 +23,7 @@ DEFAULT_SYSTEM_EXCLUDE_DIRS = {
 @dataclass(config=ConfigDict(extra="forbid"))
 class Location(BaseModel):
     path: FlatList[str]
+    min_depth: int = 0
     max_depth: Union[Literal["inherit"], int, None] = "inherit"
     search: Literal["depth", "breadth"] = "breadth"
     exclude_files: Set[str] = Field(default_factory=set)

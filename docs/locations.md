@@ -39,6 +39,7 @@ rules:
 rules:
   - locations:
       - path: ...
+        min_depth: ...
         max_depth: ...
         search: ...
         exclude_files: ...
@@ -52,6 +53,10 @@ rules:
 
 **path** (`str`)<br>
 Path to a local folder
+
+**min_depth** (`int` or `null`)<br>
+Minimum directory depth to search. This can be useful if you want to only handle files
+in subdirectories of `location`.
 
 **max_depth** (`int` or `null`)<br>
 Maximum directory depth to search.
@@ -85,28 +90,6 @@ All other files are skipped.
 **filter_dirs** (`List[str]`)<br>
 A list of patterns to match directory names that are included in this location.
 All other directories are skipped.
-
-**filesystem** (str)<br>
-A [Filesystem URL](#filesystems).
-
-### `filesystem` and `path`
-
-If you want the location to be the root (`"/"`) of a filesystem, use `path`:
-
-```yml
-rules:
-  - locations:
-      - path: zip:///Users/theuser/Downloads/Test.zip
-```
-
-If you want the location to be a subfolder inside a filesystem, use `path` and `filesystem`:
-
-```yml
-rules:
-  - locations:
-      - filesystem: zip:///Users/theuser/Downloads/Test.zip
-        path: "/folder/in/the/zipfile/"
-```
 
 ### `max_depth` and `subfolders`
 
