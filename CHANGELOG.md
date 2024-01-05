@@ -2,7 +2,13 @@
 
 ## [Unreleased]
 
-- Nothing.
+- Nothing yet.
+
+## v3.0.0 (2024-01-05)
+
+- Supports `exiftool` in the `exif` filter by setting the `ORGANIZE_EXIFTOOL_PATH` env
+  var.
+- Fixes the `min_depth` location parameter.
 
 ## v3.0.0a2 (2024-01-02)
 

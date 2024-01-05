@@ -1,21 +1,14 @@
 <p align="center">
-  <img width="623" height="168" src="https://github.com/tfeldmann/organize/raw/gh-pages/img/organize.svg?sanitize=true" alt="organize logo">
+  <!--<img width="623" height="168" src="https://github.com/tfeldmann/organize/raw/gh-pages/img/organize.svg?sanitize=true" alt="organize logo">-->
+  <img width="100%" src="https://github.com/tfeldmann/organize/blob/main/docs/img/organize-v3.jpg?raw=true" alt="organize v3 is out">
 </p>
 
 <div align="center">
 
-<a href="https://github.com/tfeldmann/organize/actions/workflows/tests.yml">
-  <img src="https://github.com/tfeldmann/organize/actions/workflows/tests.yml/badge.svg" title="tests">
-</a>
-<a href="https://organize.readthedocs.io/en/latest/?badge=latest">
-  <img src="https://readthedocs.org/projects/organize/badge/?version=latest" title="Documentation Status">
-</a>
-<a href="https://github.com/tfeldmann/organize/blob/main/LICENSE.txt">
-  <img src="https://img.shields.io/badge/license-MIT-blue.svg" title="License">
-</a>
-<a href="https://pypi.org/project/organize-tool/">
-  <img src="https://img.shields.io/pypi/v/organize-tool" title="PyPI Version">
-</a>
+<a href="https://github.com/tfeldmann/organize/actions/workflows/tests.yml"><img src="https://github.com/tfeldmann/organize/actions/workflows/tests.yml/badge.svg" title="tests"></a>
+<a href="https://organize.readthedocs.io/en/latest/?badge=latest"><img src="https://readthedocs.org/projects/organize/badge/?version=latest" title="Documentation Status"></a>
+<a href="https://github.com/tfeldmann/organize/blob/main/LICENSE.txt"><img src="https://img.shields.io/badge/license-MIT-blue.svg" title="License"></a>
+<a href="https://pypi.org/project/organize-tool/"><img src="https://img.shields.io/pypi/v/organize-tool" title="PyPI Version"></a>
 
 </div>
 
@@ -27,26 +20,15 @@
 </p>
 
 
-## Testers needed! Help testing the v3-alpha
+## v3 is now available
 
-A prerelease of organize v3 is available. To install:
-
-```sh
-# Installs the pre release!
-pip install -U organize-tool --pre
-
-# Installs the pre release with text extraction utils.
-pip install -U organize-tool[textract] --pre
-
-# If you use pipx (which is awesome) you can run:
-pipx install --pip-args="--pre" --force organize-tool
-```
-
-The new version should be *much* faster and fixes a lot of bugs. It also comes with
+The new version should be *much* faster and fix a lot of bugs. It also comes with
 a some new actions, filters and options.
 
+If you encounter any other bugs or problems during the migration, please reach out!
+
 - [See the changelog](https://tfeldmann.github.io/organize/changelog/)
-- [Migration guide](https://tfeldmann.github.io/organize/migrating/#migrating-from-v2-to-v3).
+- [Migration guide](https://tfeldmann.github.io/organize/migrating/#migrating-from-v2-to-v3)
 
 ## About
 
@@ -56,6 +38,16 @@ Time to automate it once and benefit from it forever.
 
 **organize** is a command line, open-source alternative to apps like Hazel (macOS)
 or File Juggler (Windows).
+
+### People use this for:
+
+- Sorting and tagging pictures into various folder structures based on EXIF data
+- Sorting and renaming PDF invoices based on file content
+- Removing incomplete downloads from their ~/Downloads
+- Cleaning up their ~/Desktop from unused files
+- Freeing up disk space by removing duplicates
+- Automating various business processes
+- and many more
 
 ## Features
 
@@ -75,7 +67,7 @@ Some highlights include:
 
 ### Installation
 
-Only python 3.8+ is needed.
+Only python 3.9+ is needed.
 Install it via your package manager or from [python.org](https://python.org).
 
 Installation is done via pip. Note that the package name is `organize-tool`:
