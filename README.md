@@ -162,7 +162,6 @@ rules:
       - path: ~/Downloads
     targets: dirs
     subfolders: true
-    targets: dirs
     filters:
       - empty
     actions:
