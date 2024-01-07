@@ -23,11 +23,12 @@ class Python:
     **Returns:**
 
     - If your code returns `False` or `None` the file is filtered out,
-        otherwise the file is passed on to the next filters.
+      otherwise the file is passed on to the next filters.
     - `{python}` contains the returned value. If you return a dictionary (for
-        example `return {"some_key": some_value, "nested": {"k": 2}}`) it will be
-        accessible via dot syntax in your actions: `{python.some_key}`,
-        `{python.nested.k}`.
+      example `return {"some_key": some_value, "nested": {"k": 2}}`) it will be
+      accessible via dot syntax actions: `{python.some_key}`, `{python.nested.k}`.
+    - Variables of previous filters are available, but you have to use the normal python
+      dictionary syntax `x = regex["my_group"]`.
     """
 
     code: str

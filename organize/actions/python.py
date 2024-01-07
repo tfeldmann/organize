@@ -18,6 +18,9 @@ class Python:
         code (str): The python code to execute.
         run_in_simulation (bool):
             Whether to execute this code in simulation mode (Default false).
+
+    Variables of previous filters are available, but you have to use the normal python
+    dictionary syntax `x = regex["my_group"]`.
     """
 
     code: str
