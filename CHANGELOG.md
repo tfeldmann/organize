@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-- Nothing yet.
+- Fixes a bug where Quicktime and mp4 files return no Exif data.
+  (#313, @jleatham thanks for debugging!)
+- Fixes a bug where `exlude_dirs` are not correctly excluded. (#339)
 
 ## v3.0.0 (2024-01-05)
 
