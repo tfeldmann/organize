@@ -64,10 +64,10 @@ class Walker:
     min_depth: int = 0
     max_depth: Optional[int] = None
     method: Literal["breadth", "depth"] = "breadth"
-    filter_dirs: Optional[Iterable[str]] = None
-    filter_files: Optional[Iterable[str]] = None
-    exclude_dirs: Iterable[str] = Field(default_factory=set)
-    exclude_files: Iterable[str] = Field(default_factory=set)
+    filter_dirs: Optional[List[str]] = None
+    filter_files: Optional[List[str]] = None
+    exclude_dirs: List[str] = Field(default_factory=set)
+    exclude_files: List[str] = Field(default_factory=set)
 
     def _should_yield_file(self, entry: os.DirEntry, lvl: int):
         return (

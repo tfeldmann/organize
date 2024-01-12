@@ -2,6 +2,7 @@ from collections import Counter
 from pathlib import Path
 
 import pytest
+from conftest import make_files
 from pyfakefs.fake_filesystem import FakeFilesystem
 
 from organize.walker import Walker
@@ -129,3 +130,18 @@ def test_walk(fs: FakeFilesystem, method):
             Path("/test/d1/d1/d2"),
         ]
     )
+
+
+def test_exclude_dirs(fs):
+    make_files(
+        {
+            "subA": {"file.a": "", "file.b": ""},
+            "subB": {
+                "subC": {"file.ca": "", "file.cb": ""},
+                "file.ba": "",
+                "file.bb": "",
+            },
+        },
+        "test",
+    )
+    assert len(list(Walker(exclude_dirs=["subC"]).files("/test"))) == 4
