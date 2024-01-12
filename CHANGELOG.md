@@ -1,5 +1,9 @@
 # Changelog
 
+[Unreleased]
+
+- Add a new output format `errorsonly` which only shows output if an error occured.
+
 ## v3.0.1 (2024-01-12)
 
 - Fixes a bug where Quicktime and mp4 files return no Exif data.

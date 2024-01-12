@@ -15,6 +15,8 @@ from ._sender import sender_name
 from .output import Level
 
 if TYPE_CHECKING:
+    from typing import List
+
     from organize.resource import Resource
 
     from ._sender import SenderType
@@ -51,7 +53,7 @@ class Confirm(RichConfirm):
 
 
 class Default:
-    def __init__(self, theme: Optional[Theme] = None):
+    def __init__(self, theme: Optional[Theme] = None, errors_only: bool = False):
         if theme is None:
             theme = Theme(
                 {
@@ -74,6 +76,10 @@ class Default:
                     "summary.fail": "red",
                 }
             )
+        self.errors_only = errors_only
+        self.msg_queue: List[str] = []
+        self.det_resource = ChangeDetector()
+
         self.console = Console(theme=theme, highlight=False)
 
         self.status = Status("", console=self.console)
@@ -141,14 +147,26 @@ class Default:
         sender: SenderType,
         level: Level = "info",
     ) -> None:
-        self.show_resource(res)
         msg_pre = format_sender(sender=sender, standalone=res.path is None)
         if level == "info":
-            self.console.print(f"{msg_pre}{format_info(msg=msg)}")
-        elif level == "error":
-            self.console.print(f"{msg_pre}{format_error(msg=msg)}")
+            msg = f"{msg_pre}{format_info(msg=msg)}"
         elif level == "warn":
-            self.console.print(f"{msg_pre}{format_warn(msg=msg)}")
+            msg = f"{msg_pre}{format_warn(msg=msg)}"
+        elif level == "error":
+            msg = f"{msg_pre}{format_error(msg=msg)}"
+
+        if self.errors_only:
+            if self.det_resource.changed(res):
+                self.msg_queue.clear()
+            self.msg_queue.append(msg)
+            if level == "error":
+                self.show_resource(res)
+                for msg in self.msg_queue:
+                    self.console.print(msg)
+                self.msg_queue.clear()
+        else:
+            self.show_resource(res)
+            self.console.print(msg)
 
     def confirm(
         self,

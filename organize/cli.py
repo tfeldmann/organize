@@ -30,7 +30,8 @@ Commands:
 Options:
   <config>                        A config name or path to a config file
   -W --working-dir <dir>          The working directory
-  -F --format (DEFAULT|JSONL)     The output format [Default: DEFAULT]
+  -F --format (default|errorsonly|JSONL)
+                                  The output format [Default: default]
   -T --tags <tags>                Tags to run (eg. "initial,release")
   -S --skip-tags <tags>           Tags to skip
   -h --help                       Show this help page.
@@ -72,7 +73,7 @@ rules:
 
 Tags = Set[str]
 OutputFormat = Annotated[
-    Literal["default", "jsonl"], BeforeValidator(lambda v: v.lower())
+    Literal["default", "jsonl", "errorsonly"], BeforeValidator(lambda v: v.lower())
 ]
 
 console = Console()
@@ -84,6 +85,16 @@ def _open_uri(uri: str):
     webbrowser.open(uri)
 
 
+def _output_for_format(format: OutputFormat) -> Output:
+    if format == "default":
+        return Default()
+    elif format == "errorsonly":
+        return Default(errors_only=True)
+    elif format == "jsonl":
+        return JSONL()
+    raise ValueError(f"{format} is not a valid output format.")
+
+
 def execute(
     config: Optional[str],
     working_dir: Optional[Path],
@@ -92,12 +103,10 @@ def execute(
     skip_tags: Tags,
     simulate: bool,
 ) -> None:
-    output = JSONL() if format == "jsonl" else Default()
-    assert isinstance(output, Output)
     config_path = find_config(name_or_path=config)
     Config.from_path(config_path).execute(
         simulate=simulate,
-        output=output,
+        output=_output_for_format(format),
         tags=tags,
         skip_tags=skip_tags,
         working_dir=working_dir or Path("."),
