@@ -1,12 +1,12 @@
 import os
 from fnmatch import fnmatch
-from typing import Iterable, Iterator, List, Literal, NamedTuple, Optional
+from typing import Iterable, Iterator, List, Literal, NamedTuple, Optional, Set
 
 from pydantic import Field
 from pydantic.dataclasses import dataclass
 
 
-def pattern_match(name, patterns):
+def pattern_match(name: str, patterns: Iterable[str]) -> bool:
     return any(fnmatch(name, pat) for pat in patterns)
 
 
@@ -15,7 +15,7 @@ class ScandirResult(NamedTuple):
     nondirs: List[os.DirEntry]
 
 
-def scandir(top: str, collectfiles: bool = True):
+def scandir(top: str, collectfiles: bool = True) -> ScandirResult:
     result = ScandirResult([], [])
     try:
         # build iterator if we have the permissions to this folder
@@ -66,10 +66,10 @@ class Walker:
     method: Literal["breadth", "depth"] = "breadth"
     filter_dirs: Optional[List[str]] = None
     filter_files: Optional[List[str]] = None
-    exclude_dirs: List[str] = Field(default_factory=set)
-    exclude_files: List[str] = Field(default_factory=set)
+    exclude_dirs: Set[str] = Field(default_factory=set)
+    exclude_files: Set[str] = Field(default_factory=set)
 
-    def _should_yield_file(self, entry: os.DirEntry, lvl: int):
+    def _should_yield_file(self, entry: os.DirEntry, lvl: int) -> bool:
         return (
             lvl >= self.min_depth
             and not pattern_match(entry.name, self.exclude_files)
