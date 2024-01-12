@@ -25,9 +25,8 @@ def read_stat_created(path: Path) -> Optional[int]:
 
 
 def read_created(path: Path) -> datetime:
-    stat_result = path.stat()
-
     timestamp = None
+    stat_result = path.stat()
 
     # ctime is the creation time only in Windows.
     # On unix it's the datetime of the last metadata change.

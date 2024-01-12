@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from arrow import now as arrow_now
 from conftest import make_files, read_files
@@ -45,3 +45,20 @@ def test_photo_sorting(fs):
         "2000": {"01": {"12": {"photo1": ""}}},
         "2020": {"01": {"01": {"photo2": "", "photo3": ""}}},
     }
+
+
+def test_date_formatting(fs, testoutput):
+    make_files(["test.txt"], "/test")
+    config = """
+        rules:
+        - locations: /test
+          filters:
+            - lastmodified
+          actions:
+            - echo: "moving to {lastmodified.strftime('%Y%m%d - test.txt')}"
+            - move: "/test/moved/{lastmodified.strftime('%Y%m%d - test.txt')}"
+        """
+    Config.from_string(config).execute(simulate=False, output=testoutput)
+    new_name = f"{date.today():%Y%m%d} - test.txt"
+    testoutput.messages == [f"Created at {new_name}"]
+    assert read_files("/test/moved") == {new_name: ""}
