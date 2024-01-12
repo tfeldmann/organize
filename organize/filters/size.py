@@ -70,7 +70,7 @@ def create_constraints(inp: str):
             raise ValueError("Invalid size format: %s" % part) from e
 
 
-def satisfies_constraints(size, constraints):
+def satisfies_constraints(size, constraints) -> bool:
     return all(op(size, p_size) for op, p_size in constraints)
 
 
@@ -88,21 +88,21 @@ def number_with_unit(size: int, suffixes: Iterable[str], base: int) -> str:
     return "{:,.1f} {}".format((base * size / unit), suffix)
 
 
-def traditional(size):
+def traditional(size: int) -> str:
     """Convert a filesize in to a string (powers of 1024, JDEC prefixes)."""
     return number_with_unit(
         size, ("KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"), 1024
     )
 
 
-def binary(size):
+def binary(size: int) -> str:
     """Convert a filesize in to a string (powers of 1024, IEC prefixes)."""
     return number_with_unit(
         size, ("KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"), 1024
     )
 
 
-def decimal(size):
+def decimal(size: int) -> str:
     """Convert a filesize in to a string (powers of 1000, SI prefixes)."""
     return number_with_unit(
         size, ("kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"), 1000
