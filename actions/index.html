@@ -1619,7 +1619,9 @@ Default: True</p>
       </td>
     </tr>
   </tbody>
-</table>
+</table>      <p>Variables of previous filters are available, but you have to use the normal python
+dictionary syntax <code>x = regex["my_group"]</code>.</p>
+
             <details class="quote">
               <summary>Source code in <code>organize/actions/python.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
@@ -1679,7 +1681,10 @@ Default: True</p>
 <span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
-<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
 <span class="k">class</span> <span class="nc">Python</span><span class="p">:</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Execute python code.</span>
@@ -1688,6 +1693,9 @@ Default: True</p>
 <span class="sd">        code (str): The python code to execute.</span>
 <span class="sd">        run_in_simulation (bool):</span>
 <span class="sd">            Whether to execute this code in simulation mode (Default false).</span>
+
+<span class="sd">    Variables of previous filters are available, but you have to use the normal python</span>
+<span class="sd">    dictionary syntax `x = regex[&quot;my_group&quot;]`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">code</span><span class="p">:</span> <span class="nb">str</span>

@@ -284,7 +284,8 @@ time. (default = 'older')</p>
 </table>
             <details class="quote">
               <summary>Source code in <code>organize/filters/created.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
+<span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span>
@@ -310,8 +311,7 @@ time. (default = 'older')</p>
 <span class="normal">80</span>
 <span class="normal">81</span>
 <span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Created</span><span class="p">(</span><span class="n">TimeFilter</span><span class="p">):</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Created</span><span class="p">(</span><span class="n">TimeFilter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Matches files / folders by created date</span>
 
 <span class="sd">    Attributes:</span>
@@ -3075,11 +3075,12 @@ case insensitive matching.</p>
 </table>      <p><strong>Returns:</strong></p>
 <ul>
 <li>If your code returns <code>False</code> or <code>None</code> the file is filtered out,
-    otherwise the file is passed on to the next filters.</li>
+  otherwise the file is passed on to the next filters.</li>
 <li><code>{python}</code> contains the returned value. If you return a dictionary (for
-    example <code>return {"some_key": some_value, "nested": {"k": 2}}</code>) it will be
-    accessible via dot syntax in your actions: <code>{python.some_key}</code>,
-    <code>{python.nested.k}</code>.</li>
+  example <code>return {"some_key": some_value, "nested": {"k": 2}}</code>) it will be
+  accessible via dot syntax actions: <code>{python.some_key}</code>, <code>{python.nested.k}</code>.</li>
+<li>Variables of previous filters are available, but you have to use the normal python
+  dictionary syntax <code>x = regex["my_group"]</code>.</li>
 </ul>
 
             <details class="quote">
@@ -3149,7 +3150,8 @@ case insensitive matching.</p>
 <span class="normal">75</span>
 <span class="normal">76</span>
 <span class="normal">77</span>
-<span class="normal">78</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
+<span class="normal">78</span>
+<span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
 <span class="k">class</span> <span class="nc">Python</span><span class="p">:</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Use python code to filter files.</span>
@@ -3162,11 +3164,12 @@ case insensitive matching.</p>
 <span class="sd">    **Returns:**</span>
 
 <span class="sd">    - If your code returns `False` or `None` the file is filtered out,</span>
-<span class="sd">        otherwise the file is passed on to the next filters.</span>
+<span class="sd">      otherwise the file is passed on to the next filters.</span>
 <span class="sd">    - `{python}` contains the returned value. If you return a dictionary (for</span>
-<span class="sd">        example `return {&quot;some_key&quot;: some_value, &quot;nested&quot;: {&quot;k&quot;: 2}}`) it will be</span>
-<span class="sd">        accessible via dot syntax in your actions: `{python.some_key}`,</span>
-<span class="sd">        `{python.nested.k}`.</span>
+<span class="sd">      example `return {&quot;some_key&quot;: some_value, &quot;nested&quot;: {&quot;k&quot;: 2}}`) it will be</span>
+<span class="sd">      accessible via dot syntax actions: `{python.some_key}`, `{python.nested.k}`.</span>
+<span class="sd">    - Variables of previous filters are available, but you have to use the normal python</span>
+<span class="sd">      dictionary syntax `x = regex[&quot;my_group&quot;]`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">code</span><span class="p">:</span> <span class="nb">str</span>
