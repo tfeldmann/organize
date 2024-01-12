@@ -155,7 +155,7 @@ def exiftool_read(path: Path) -> ExifStrDict:
 
     # if data contains no media specific EXIF keys we assume we don't have
     # any relevant EXIF data.
-    if "EXIF" not in data.keys():
+    if "Composite" not in data.keys():
         return dict()
     return data
 
@@ -268,6 +268,9 @@ if __name__ == "__main__":
     # Usage:
     # python organize/filters/exif.py tests/resources/images-with-exif/3.jpg
     data = exifread_read(Path(sys.argv[1]))
-    print(data)
-    data = exiftool_read(Path(sys.argv[1]))
-    print(data)
+    print("Exifread", data)
+    if exiftool_available():
+        data = exiftool_read(Path(sys.argv[1]))
+        print("Exiftool", data)
+    else:
+        print("Exiftool not available")
