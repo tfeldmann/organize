@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## v3.0.1 (2024-01-12)
 
 - Fixes a bug where Quicktime and mp4 files return no Exif data.
   (#313, @jleatham thanks for debugging!)
