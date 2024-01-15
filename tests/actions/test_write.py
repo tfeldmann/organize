@@ -51,9 +51,7 @@ def test_write(fs, mode, newline, result):
                     outfile: "new/folder/out.txt"
                     mode: {mode}
                     newline: {newline}
-    """.format(
-        text="{name}", mode=mode, newline=newline
-    )
+    """.format(text="{name}", mode=mode, newline=newline)
 
     Config.from_string(config).execute(simulate=False)
     with open("new/folder/out.txt") as f:
