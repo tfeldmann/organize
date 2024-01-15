@@ -1,5 +1,6 @@
+from collections import Counter
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import Dict, Iterable, List, Union
 
 import pytest
 
@@ -8,24 +9,27 @@ from organize.output import SavingOutput
 ORGANIZE_DIR = Path(__file__).parent.parent
 
 
-@pytest.fixture
+@pytest.fixture()
 def testoutput() -> SavingOutput:
     return SavingOutput()
 
 
-def make_files(structure: Union[Dict, List], path: Union[Path, str] = "."):
-    """
-    Example structure:
+def equal_items(a: Iterable, b: Iterable) -> bool:
+    return Counter(a) == Counter(b)
 
-        {
-            "folder": {
-                "subfolder": {
-                    "test.txt": "",
-                    "other.pdf": b"binary",
-                },
+
+def make_files(structure: Union[Dict, List], path: Union[Path, str] = "."):
+    """Example structure:
+
+    {
+        "folder": {
+            "subfolder": {
+                "test.txt": "",
+                "other.pdf": b"binary",
             },
-            "file.txt": "Hello world\nAnother line",
-        }
+        },
+        "file.txt": "Hello world\nAnother line",
+    }
     """
     if isinstance(path, str):
         path = Path(path)

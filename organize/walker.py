@@ -1,5 +1,6 @@
 import os
 from fnmatch import fnmatch
+from pathlib import Path
 from typing import Iterable, Iterator, List, Literal, NamedTuple, Optional, Set
 
 from pydantic import Field
@@ -16,7 +17,7 @@ class ScandirResult(NamedTuple):
 
 
 def scandir(top: str, collectfiles: bool = True) -> ScandirResult:
-    result = ScandirResult([], [])
+    result = ScandirResult(dirs=[], nondirs=[])
     try:
         # build iterator if we have the permissions to this folder
         scandir_it = os.scandir(top)
@@ -59,6 +60,11 @@ def scandir(top: str, collectfiles: bool = True) -> ScandirResult:
     return result
 
 
+class DirActions(NamedTuple):
+    to_yield: List[os.DirEntry]
+    to_walk: List[os.DirEntry]
+
+
 @dataclass(frozen=True)
 class Walker:
     min_depth: int = 0
@@ -79,19 +85,25 @@ class Walker:
             )
         )
 
-    def _dirs_list_yield_walk(self, entries: Iterable[os.DirEntry], lvl: int):
-        to_yield, to_walk = [], []
+    def _dir_actions(self, entries: Iterable[os.DirEntry], lvl: int) -> DirActions:
+        result = DirActions(to_yield=[], to_walk=[])
         for entry in entries:
             if not pattern_match(entry.name, self.exclude_dirs) and (
                 self.filter_dirs is None or pattern_match(entry.name, self.filter_dirs)
             ):
                 if self.max_depth is None or lvl < self.max_depth:
-                    to_walk.append(entry)
+                    result.to_walk.append(entry)
                 if lvl >= self.min_depth:
-                    to_yield.append(entry)
-        return (to_yield, to_walk)
+                    result.to_yield.append(entry)
+        return result
 
-    def walk(self, top: str, files: bool = True, dirs: bool = True, lvl: int = 0):
+    def walk(
+        self,
+        top: str,
+        files: bool = True,
+        dirs: bool = True,
+        lvl: int = 0,
+    ) -> Iterator[os.DirEntry]:
         if not files and not dirs:
             return
 
@@ -103,33 +115,36 @@ class Walker:
             for entry in result.nondirs:
                 if files and self._should_yield_file(entry=entry, lvl=lvl):
                     yield entry
-            to_yield, to_walk = self._dirs_list_yield_walk(result.dirs, lvl=lvl)
+            dir_actions = self._dir_actions(result.dirs, lvl=lvl)
             if dirs:
-                yield from to_yield
+                yield from dir_actions.to_yield
             # Recurse into sub-directories
-            for entry in to_walk:
+            for entry in dir_actions.to_walk:
                 yield from self.walk(entry.path, files=files, dirs=dirs, lvl=lvl + 1)
 
         elif self.method == "depth":
-            to_yield, to_walk = self._dirs_list_yield_walk(result.dirs, lvl=lvl)
+            dir_actions = self._dir_actions(result.dirs, lvl=lvl)
             # Recurse into sub-directories
-            for entry in to_walk:
+            for entry in dir_actions.to_walk:
                 yield from self.walk(entry.path, files=files, dirs=dirs, lvl=lvl + 1)
             # Return entries
             for entry in result.nondirs:
                 if files and self._should_yield_file(entry=entry, lvl=lvl):
                     yield entry
             if dirs:
-                yield from to_yield
+                yield from dir_actions.to_yield
         else:
             raise ValueError(f'Unknown method "{self.method}"')
 
-    def files(self, dir: str) -> Iterator[str]:
-        if os.path.isfile(dir):
-            yield dir
-        for entry in self.walk(dir, files=True, dirs=False):
-            yield entry.path
+    def files(self, path: str) -> Iterator[Path]:
+        # if path is a single file we emit just the path itself
+        if os.path.isfile(path):
+            yield Path(path)
+            return
+        # otherwise we walk the given folder
+        for entry in self.walk(path, files=True, dirs=False):
+            yield Path(entry.path)
 
-    def dirs(self, dir: str) -> Iterator[str]:
-        for entry in self.walk(dir, files=False, dirs=True):
-            yield entry.path
+    def dirs(self, path: str) -> Iterator[Path]:
+        for entry in self.walk(path, files=False, dirs=True):
+            yield Path(entry.path)

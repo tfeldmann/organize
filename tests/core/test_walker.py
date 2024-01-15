@@ -2,7 +2,7 @@ from collections import Counter
 from pathlib import Path
 
 import pytest
-from conftest import make_files
+from conftest import equal_items, make_files
 from pyfakefs.fake_filesystem import FakeFilesystem
 
 from organize.walker import Walker
@@ -19,20 +19,26 @@ def test_location(fs):
     fs.create_file("test/hi/.other")
     fs.create_file("test/.hidden/some.pdf")
 
-    assert list(Path(x) for x in Walker().files("test")) == [
-        Path("test/folder/file.txt"),
-        Path("test/folder/subfolder/another.pdf"),
-        Path("test/hi/there"),
-        Path("test/hi/.other"),
-        Path("test/.hidden/some.pdf"),
-    ]
-    assert list(Path(x) for x in Walker(method="depth").files("test")) == [
-        Path("test/folder/subfolder/another.pdf"),
-        Path("test/folder/file.txt"),
-        Path("test/hi/there"),
-        Path("test/hi/.other"),
-        Path("test/.hidden/some.pdf"),
-    ]
+    assert equal_items(
+        Walker().files("test"),
+        [
+            Path("test/folder/file.txt"),
+            Path("test/folder/subfolder/another.pdf"),
+            Path("test/hi/there"),
+            Path("test/hi/.other"),
+            Path("test/.hidden/some.pdf"),
+        ],
+    )
+    assert equal_items(
+        Walker(method="depth").files("test"),
+        [
+            Path("test/folder/subfolder/another.pdf"),
+            Path("test/folder/file.txt"),
+            Path("test/hi/there"),
+            Path("test/hi/.other"),
+            Path("test/.hidden/some.pdf"),
+        ],
+    )
 
 
 @pytest.mark.parametrize("method", ("depth", "breadth"))
@@ -46,48 +52,47 @@ def test_walk(fs: FakeFilesystem, method):
     fs.create_dir("/test/d1/d3")
     fs.create_dir("/test/d1/d1/d2")
 
-    assert counter(Path(x) for x in Walker(method=method).files("/test")) == counter(
+    assert equal_items(
+        Walker(method=method).files("/test"),
         [
             Path("/test/d1/f1.txt"),
             Path("/test/d1/d1/f1.txt"),
             Path("/test/d1/d1/f2.txt"),
             Path("/test/d1/d1/d1/f1.txt"),
             Path("/test/f1.txt"),
-        ]
+        ],
     )
 
-    assert counter(
-        Path(x) for x in Walker(method=method, min_depth=1).files("/test/")
-    ) == counter(
+    assert equal_items(
+        Walker(method=method, min_depth=1).files("/test/"),
         [
             Path("/test/d1/f1.txt"),
             Path("/test/d1/d1/f1.txt"),
             Path("/test/d1/d1/f2.txt"),
             Path("/test/d1/d1/d1/f1.txt"),
-        ]
+        ],
     )
 
-    assert counter(
-        Path(x) for x in Walker(method=method, min_depth=1, max_depth=2).files("/test/")
-    ) == counter(
+    assert equal_items(
+        Walker(method=method, min_depth=1, max_depth=2).files("/test/"),
         [
             Path("/test/d1/f1.txt"),
             Path("/test/d1/d1/f1.txt"),
             Path("/test/d1/d1/f2.txt"),
-        ]
+        ],
     )
 
-    assert counter(
-        Path(x) for x in Walker(method=method, min_depth=2, max_depth=2).files("/test/")
-    ) == counter(
+    assert equal_items(
+        Walker(method=method, min_depth=2, max_depth=2).files("/test/"),
         [
             Path("/test/d1/d1/f1.txt"),
             Path("/test/d1/d1/f2.txt"),
-        ]
+        ],
     )
 
     # dirs
-    assert counter(Path(x) for x in Walker(method=method).dirs("/test/")) == counter(
+    assert equal_items(
+        Walker(method=method).dirs("/test/"),
         [
             Path("/test/d1"),
             Path("/test/d1/d1"),
@@ -95,40 +100,37 @@ def test_walk(fs: FakeFilesystem, method):
             Path("/test/d1/d2"),
             Path("/test/d1/d3"),
             Path("/test/d1/d1/d2"),
-        ]
+        ],
     )
 
-    assert counter(
-        Path(x) for x in Walker(method=method, min_depth=1).dirs("/test/")
-    ) == counter(
+    assert equal_items(
+        Walker(method=method, min_depth=1).dirs("/test/"),
         [
             Path("/test/d1/d1"),
             Path("/test/d1/d1/d1"),
             Path("/test/d1/d2"),
             Path("/test/d1/d3"),
             Path("/test/d1/d1/d2"),
-        ]
+        ],
     )
 
-    assert counter(
-        Path(x) for x in Walker(method=method, min_depth=1, max_depth=2).dirs("/test/")
-    ) == counter(
+    assert equal_items(
+        Walker(method=method, min_depth=1, max_depth=2).dirs("/test/"),
         [
             Path("/test/d1/d1"),
             Path("/test/d1/d1/d1"),
             Path("/test/d1/d2"),
             Path("/test/d1/d3"),
             Path("/test/d1/d1/d2"),
-        ]
+        ],
     )
 
-    assert counter(
-        Path(x) for x in Walker(method=method, min_depth=2, max_depth=2).dirs("/test/")
-    ) == counter(
+    assert equal_items(
+        Walker(method=method, min_depth=2, max_depth=2).dirs("/test/"),
         [
             Path("/test/d1/d1/d1"),
             Path("/test/d1/d1/d2"),
-        ]
+        ],
     )
 
 
