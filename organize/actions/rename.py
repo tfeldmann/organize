@@ -19,7 +19,7 @@ class Rename:
     """Renames a file.
 
     Attributes:
-        name (str):
+        new_name (str):
             The new name for the file / dir.
 
         on_conflict (str):
