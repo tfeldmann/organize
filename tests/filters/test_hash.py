@@ -7,7 +7,7 @@ from organize.filters.hash import hash, hash_first_chunk
 
 
 def test_full_hash(fs):
-    """
+    r"""
     Reference hashsums:
 
     ```sh

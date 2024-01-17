@@ -79,7 +79,7 @@ OutputFormat = Annotated[
 console = Console()
 
 
-def _open_uri(uri: str):
+def _open_uri(uri: str) -> None:
     import webbrowser
 
     webbrowser.open(uri)
