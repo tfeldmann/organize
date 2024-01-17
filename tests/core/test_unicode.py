@@ -1,9 +1,9 @@
 from pathlib import Path
 
-import pytest
 from conftest import make_files, read_files
 
 from organize import Config
+from organize.utils import normalize_unicode
 
 
 def test_startswith_issue74(fs):
@@ -59,41 +59,45 @@ def test_folder_umlauts(fs):
     assert read_files("Erträge") == {}
 
 
-@pytest.mark.skip(reason="TODO")
-def test_normalization_regex(testfs):
+def test_normalize():
+    formA = b"Ertr\xc3\xa4gnisaufstellung.txt".decode("utf-8")  # copied from config
+    formB = b"Ertra\xcc\x88gnisaufstellung.txt".decode("utf-8")  # copied from filename
+    assert normalize_unicode(formA) == normalize_unicode(formB)
+
+
+def test_normalization_regex(fs):
     make_files(
-        testfs,
         {b"Ertra\xcc\x88gnisaufstellung.txt".decode("utf-8"): ""},
+        "test",
     )
     config = (
         b"""
     rules:
-      - locations: "."
+      - locations: /test
         filters:
-          - regex: 'Ertra\xc3\xa4gnisaufstellung.txt$'
+          - regex: 'Ertr\xc3\xa4gnisaufstellung.txt$'
         actions:
           - rename: "found-regex.txt"
     """
     ).decode("utf-8")
-    Config.execute(config, simulate=False, working_dir=testfs)
-    assert read_files(testfs) == {"found-regex.txt"}
+    Config.from_string(config).execute(simulate=False)
+    assert read_files("test") == {"found-regex.txt"}
 
 
-@pytest.mark.skip(reason="TODO")
-def test_normalization_filename(testfs):
+def test_normalization_filename(fs):
     make_files(
-        testfs,
         {b"Ertr\xcc\x88gnisaufstellung.txt".decode("utf-8"): ""},
+        "test",
     )
     config = (
         b"""
     rules:
-      - locations: "."
+      - locations: /test
         filters:
-          - filename: "Ertr\xc3\xa4gnisaufstellung"
+          - name: "Ertr\xc3\xa4gnisaufstellung"
         actions:
           - rename: "found-regex.txt"
     """
     ).decode("utf-8")
-    Config.run(config, simulate=False, working_dir=testfs)
-    assert read_files(testfs) == {"found-regex.txt"}
+    Config.from_string(config).execute(simulate=False)
+    assert read_files("test") == {"found-regex.txt"}

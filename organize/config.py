@@ -13,7 +13,7 @@ from .errors import ConfigError
 from .output import Default, Output
 from .rule import Rule
 from .template import render
-from .utils import ReportSummary
+from .utils import ReportSummary, normalize_unicode
 
 Tags = Iterable[str]
 
@@ -59,8 +59,9 @@ class Config:
     _config_path: Optional[Path] = None
 
     @classmethod
-    def from_string(cls, config: str, config_path: Optional[Path] = None) -> "Config":
-        dedented = textwrap.dedent(config)
+    def from_string(cls, config: str, config_path: Optional[Path] = None) -> Config:
+        normalized = normalize_unicode(config)
+        dedented = textwrap.dedent(normalized)
         as_dict = yaml.load(dedented, Loader=yaml.SafeLoader)
         try:
             inst = cls(**as_dict)
@@ -71,7 +72,7 @@ class Config:
             raise ConfigError(e=e, config_path=config_path) from e
 
     @classmethod
-    def from_path(cls, config_path: Path) -> "Config":
+    def from_path(cls, config_path: Path) -> Config:
         text = config_path.read_text(encoding="utf-8")
         inst = cls.from_string(text, config_path=config_path)
         return inst
