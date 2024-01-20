@@ -7,6 +7,7 @@ from pydantic.dataclasses import dataclass
 from organize.filter import FilterConfig
 from organize.output import Output
 from organize.resource import Resource
+from organize.utils import normalize_unicode
 
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
@@ -72,8 +73,8 @@ class Name:
             name, ext = res.path.stem, res.path.suffix
             if not name:
                 name = ext
-        result = self.matches(name)
-        m = self._matcher.match(name)
+        result = self.matches(normalize_unicode(name))
+        m = self._matcher.match(normalize_unicode(name))
         if not m:
             m = name
 

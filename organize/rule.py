@@ -10,7 +10,7 @@ from .output import Output
 from .registry import action_by_name, filter_by_name
 from .resource import Resource
 from .template import render
-from .utils import ReportSummary, normalize_unicode
+from .utils import ReportSummary
 from .validators import FlatList, flatten
 from .walker import Walker
 
@@ -237,7 +237,7 @@ class Rule(BaseModel):
                 expanded_path = render(loc_path)
                 for path in _walk_funcs[self.targets](expanded_path):
                     yield Resource(
-                        path=Path(normalize_unicode(path)),
+                        path=Path(path),
                         basedir=Path(expanded_path),
                         rule=self,
                         rule_nr=rule_nr,

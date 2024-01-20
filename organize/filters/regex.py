@@ -7,6 +7,7 @@ from pydantic.dataclasses import dataclass
 from organize.filter import FilterConfig
 from organize.output import Output
 from organize.resource import Resource
+from organize.utils import normalize_unicode
 
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
@@ -42,7 +43,7 @@ class Regex:
 
     def pipeline(self, res: Resource, output: Output) -> bool:
         assert res.path is not None, "Does not support standalone mode"
-        match = self.matches(res.path.name)
+        match = self.matches(normalize_unicode(res.path.name))
         if match:
             res.deep_merge(key=self.filter_config.name, data=match.groupdict())
             return True

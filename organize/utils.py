@@ -4,26 +4,15 @@ import unicodedata
 from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, TypeVar, Union
+from typing import Any, Union
+
+ENV_ORGANIZE_NORMALIZE_UNICODE = os.environ.get("ORGANIZE_NORMALIZE_UNICODE", "1")
 
 
-def _parse_bool(val: str) -> bool:
-    return val.lower() in ("1", "true")
-
-
-ENV_ORGANIZE_NORMALIZE_UNICODE = _parse_bool(
-    os.environ.get("ORGANIZE_NORMALIZE_UNICODE", "0")
-)
-
-T = TypeVar("T", str, Path)
-
-
-def normalize_unicode(text: T, form: str = "NFC") -> T:
-    if not ENV_ORGANIZE_NORMALIZE_UNICODE:
-        return text
-    if isinstance(text, str):
+def normalize_unicode(text: str, form: str = "NFC") -> str:
+    if ENV_ORGANIZE_NORMALIZE_UNICODE == "1":
         return unicodedata.normalize(form, text)
-    return Path(unicodedata.normalize(form, str(text)))
+    return text
 
 
 @dataclass

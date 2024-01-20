@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import pytest
 from conftest import make_files, read_files
 
 from organize import Config
@@ -59,45 +60,49 @@ def test_folder_umlauts(fs):
     assert read_files("Erträge") == {}
 
 
-def test_normalize():
-    formA = b"Ertr\xc3\xa4gnisaufstellung.txt".decode("utf-8")  # copied from config
-    formB = b"Ertra\xcc\x88gnisaufstellung.txt".decode("utf-8")  # copied from filename
-    assert normalize_unicode(formA) == normalize_unicode(formB)
+CONFUSABLES = (
+    (
+        b"Ertr\xc3\xa4gnisaufstellung".decode("utf-8"),
+        b"Ertra\xcc\x88gnisaufstellung".decode("utf-8"),
+    ),
+    (
+        b"Ertra\xcc\x88gnisaufstellung".decode("utf-8"),
+        b"Ertr\xc3\xa4gnisaufstellung".decode("utf-8"),
+    ),
+)
 
 
-def test_normalization_regex(fs):
-    make_files(
-        {b"Ertra\xcc\x88gnisaufstellung.txt".decode("utf-8"): ""},
-        "test",
-    )
-    config = (
-        b"""
+@pytest.mark.parametrize("a, b", CONFUSABLES)
+def test_normalize(a, b):
+    assert a != b
+    assert normalize_unicode(a) == normalize_unicode(b)
+
+
+@pytest.mark.parametrize("a, b", CONFUSABLES)
+def test_normalization_regex(fs, a, b):
+    make_files({f"{a}.txt": ""}, "test")
+    config = f"""
     rules:
       - locations: /test
         filters:
-          - regex: 'Ertr\xc3\xa4gnisaufstellung.txt$'
+          - regex: {b}
         actions:
           - rename: "found-regex.txt"
     """
-    ).decode("utf-8")
     Config.from_string(config).execute(simulate=False)
-    assert read_files("test") == {"found-regex.txt"}
+    assert read_files("test") == {"found-regex.txt": ""}
 
 
-def test_normalization_filename(fs):
-    make_files(
-        {b"Ertr\xcc\x88gnisaufstellung.txt".decode("utf-8"): ""},
-        "test",
-    )
-    config = (
-        b"""
+@pytest.mark.parametrize("a, b", CONFUSABLES)
+def test_normalization_filename(fs, a, b):
+    make_files({f"{a}.txt": ""}, "test")
+    config = f"""
     rules:
       - locations: /test
         filters:
-          - name: "Ertr\xc3\xa4gnisaufstellung"
+          - name: {a}
         actions:
           - rename: "found-regex.txt"
     """
-    ).decode("utf-8")
     Config.from_string(config).execute(simulate=False)
-    assert read_files("test") == {"found-regex.txt"}
+    assert read_files("test") == {"found-regex.txt": ""}

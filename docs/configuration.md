@@ -79,6 +79,8 @@ Special tags:
 ## Environment variables
 
 - `ORGANIZE_CONFIG` - The path to the default config file.
+- `ORGANIZE_EXIFTOOL_PATH` - Path to the `exiftool` executable (Default: `""`)
+- `ORGANIZE_NORMALIZE_UNICODE` - Whether to normalize strings to NFC unicode form for comparisons (Default `"1"`)
 - `NO_COLOR` - if this is set, the output is not colored.
 - `EDITOR` - The editor used to edit the config file.
 
