@@ -7,6 +7,7 @@
 
 <a href="https://github.com/tfeldmann/organize/actions/workflows/tests.yml"><img src="https://github.com/tfeldmann/organize/actions/workflows/tests.yml/badge.svg" title="tests"></a>
 <a href="https://organize.readthedocs.io/en/latest/?badge=latest"><img src="https://readthedocs.org/projects/organize/badge/?version=latest" title="Documentation Status"></a>
+<a href="https://results.pre-commit.ci/latest/github/tfeldmann/organize/main"><img src="https://results.pre-commit.ci/badge/github/tfeldmann/organize/main.svg" title="pre-commit.ci status"></a>
 <a href="https://github.com/tfeldmann/organize/blob/main/LICENSE.txt"><img src="https://img.shields.io/badge/license-MIT-blue.svg" title="License"></a>
 <a href="https://pypi.org/project/organize-tool/"><img src="https://img.shields.io/pypi/v/organize-tool" title="PyPI Version"></a>
 
