@@ -64,7 +64,7 @@ docs = [
 ]
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.4.0"
+pytest = ">=7.4,<9.0"
 mypy = "^1.4.0"
 requests = "^2.31.0"
 types-PyYAML = "^6.0.12.10"
