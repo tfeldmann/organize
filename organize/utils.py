@@ -6,7 +6,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Union
 
+from rich.markup import escape as rich_escape
+
 ENV_ORGANIZE_NORMALIZE_UNICODE = os.environ.get("ORGANIZE_NORMALIZE_UNICODE", "1")
+
+
+def escape(msg: Any) -> str:
+    return rich_escape(str(msg))
 
 
 def normalize_unicode(text: str, form: str = "NFC") -> str:

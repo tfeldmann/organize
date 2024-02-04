@@ -4,13 +4,12 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Dict, Optional
 
 from rich.console import Console
-from rich.markup import escape
 from rich.panel import Panel
 from rich.prompt import Confirm as RichConfirm
 from rich.status import Status
 from rich.theme import Theme
 
-from organize.utils import ChangeDetector
+from organize.utils import ChangeDetector, escape
 
 from ._sender import sender_name
 from .output import Level
@@ -24,8 +23,8 @@ if TYPE_CHECKING:
 
 
 def format_path(path: Path, base_style: str, main_style: str) -> str:
-    base = escape(str(f"{path.parent}/"))
-    main = escape(str(path.name))
+    base = escape(f"{path.parent}/")
+    main = escape(path.name)
     return f"[{base_style}]{base}[/][{main_style}]{main}[/]"
 
 
@@ -141,9 +140,9 @@ class Default:
             self.console.print(Panel("SIMULATION", style="simulation"))
 
         if working_dir.resolve() != Path(".").resolve():
-            self.console.print(f'Working dir: "{escape(str(working_dir))}"')
+            self.console.print(f'Working dir: "{escape(working_dir)}"')
         if config_path:
-            self.console.print(f'Config: "{escape(str(config_path))}"')
+            self.console.print(f'Config: "{escape(config_path)}"')
 
         status_verb = "simulating" if simulate else "organizing"
         self.status.update(f"[status]{status_verb}[/]")

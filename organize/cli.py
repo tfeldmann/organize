@@ -54,8 +54,9 @@ from yaml.scanner import ScannerError
 from organize import Config, ConfigError
 from organize.find_config import ConfigNotFound, find_config, list_configs
 from organize.output import JSONL, Default, Output
+from organize.utils import escape
 
-from .__version__ import __is_prerelease__, __version__
+from .__version__ import __version__
 
 DOCS_RTD = "https://organize.readthedocs.io"
 DOCS_GHPAGES = "https://tfeldmann.github.io/organize/"
@@ -117,14 +118,16 @@ def new(config: Optional[str]) -> None:
     try:
         config_path = find_config(config)
         console.print(
-            f'Config "{config_path}" already exists.\n'
+            f'Config "{escape(config_path)}" already exists.\n'
             r'Use "organize new \[name]" to create a config in the default location.'
         )
     except ConfigNotFound as e:
         assert e.init_path is not None
         e.init_path.parent.mkdir(parents=True, exist_ok=True)
         e.init_path.write_text(EXAMPLE_CONFIG, encoding="utf-8")
-        console.print(f'Config "{e.init_path.stem}" created at "{e.init_path}"')
+        console.print(
+            f'Config "{escape(e.init_path.stem)}" created at "{escape(e.init_path)}"'
+        )
 
 
 def edit(config: Optional[str]) -> None:
@@ -139,7 +142,7 @@ def edit(config: Optional[str]) -> None:
 def check(config: Optional[str]) -> None:
     config_path = find_config(config)
     Config.from_path(config_path=config_path)
-    console.print(f'No problems found in "{config_path}".')
+    console.print(f'No problems found in "{escape(config_path)}".')
 
 
 def debug(config: Optional[str]) -> None:
@@ -161,7 +164,7 @@ def show(config: Optional[str], path: bool, reveal: bool) -> None:
         _open_uri(config_path.parent.as_uri())
     else:
         syntax = Syntax(config_path.read_text(encoding="utf-8"), "yaml")
-        console.print(syntax)
+        console.print(escape(syntax))
 
 
 def list_() -> None:
@@ -174,8 +177,8 @@ def list_() -> None:
 
 
 def docs() -> None:
-    uri = DOCS_GHPAGES if __is_prerelease__ else DOCS_RTD
-    print(f'Opening "{uri}"')
+    uri = DOCS_RTD
+    print(f'Opening "{escape(uri)}"')
     _open_uri(uri=uri)
 
 
@@ -251,13 +254,13 @@ def cli() -> None:
         elif args.docs:
             docs()
     except (ConfigError, ConfigNotFound) as e:
-        console.print(f"[red]Error: Config problem[/]\n{e}")
+        console.print(f"[red]Error: Config problem[/]\n{escape(e)}")
         sys.exit(1)
     except ValidationError as e:
-        console.print(f"[red]Error: Invalid CLI arguments[/]\n{e}")
+        console.print(f"[red]Error: Invalid CLI arguments[/]\n{escape(e)}")
         sys.exit(2)
     except ScannerError as e:
-        console.print(f"[red]Error: YAML syntax error[/]\n{e}")
+        console.print(f"[red]Error: YAML syntax error[/]\n{escape(e)}")
         sys.exit(3)
 
 
