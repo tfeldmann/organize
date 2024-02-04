@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Dict, Optional
 
 from rich.console import Console
+from rich.markup import escape
 from rich.panel import Panel
 from rich.prompt import Confirm as RichConfirm
 from rich.status import Status
@@ -22,28 +23,32 @@ if TYPE_CHECKING:
     from ._sender import SenderType
 
 
-def _highlight_path(path: Path, base_style: str, main_style: str) -> str:
-    base = str(f"{path.parent}/")
-    main = str(path.name)
+def format_path(path: Path, base_style: str, main_style: str) -> str:
+    base = escape(str(f"{path.parent}/"))
+    main = escape(str(path.name))
     return f"[{base_style}]{base}[/][{main_style}]{main}[/]"
 
 
-def format_sender(sender: SenderType, standalone: bool) -> str:
-    if not standalone:
-        return f"    - ([pipeline.source]{sender_name(sender)}[/]) "
-    return f"([pipeline.source]{sender_name(sender)}[/]) "
+MSG_STYLE: Dict[Level, str] = {
+    "info": "[pipeline.msg]",
+    "warn": "[pipeline.warn]",
+    "error": "[pipeline.error]ERROR! ",
+}
 
 
-def format_info(msg: str) -> str:
-    return f"[pipeline.msg]{msg}[/]"
+def format_msg(
+    msg: str,
+    level: Level,
+    sender: SenderType,
+    standalone: bool,
+    escape_msg: bool = True,
+) -> str:
+    _msg = escape(msg) if escape_msg else msg
+    indent = "    - " if not standalone else ""
 
-
-def format_warn(msg: str) -> str:
-    return f"[pipeline.warn]{msg}[/]"
-
-
-def format_error(msg: str) -> str:
-    return f"[pipeline.error]ERROR! {msg}[/]"
+    fmt_sender = f"([pipeline.source]{escape(sender_name(sender))}[/])"
+    fmt_msg = f"{MSG_STYLE[level]}{_msg}[/]"
+    return f"{indent}{fmt_sender} {fmt_msg}"
 
 
 class Confirm(RichConfirm):
@@ -97,13 +102,17 @@ class Default:
             rule_name = f"Rule #{res.rule_nr}"
             if res.rule is not None and res.rule.name is not None:
                 rule_name += f": {res.rule.name}"
-            self.console.rule(f"[rule]:gear: {rule_name}", align="left", style="rule")
+            self.console.rule(
+                f"[rule]:gear: {escape(rule_name)}",
+                align="left",
+                style="rule",
+            )
 
         # location changed
         if self.det_location.changed(res.basedir):
             self.det_path.reset()
             if res.basedir:
-                path_str = _highlight_path(
+                path_str = format_path(
                     Path(res.basedir),
                     "location.base",
                     "location.main",
@@ -114,7 +123,7 @@ class Default:
         if self.det_path.changed(res.path):
             relative_path = res.relative_path()
             if relative_path is not None:
-                path_str = _highlight_path(relative_path, "path.base", "path.main")
+                path_str = format_path(relative_path, "path.base", "path.main")
                 self.console.print(f"  {path_str}")
 
     def start(
@@ -132,9 +141,9 @@ class Default:
             self.console.print(Panel("SIMULATION", style="simulation"))
 
         if working_dir.resolve() != Path(".").resolve():
-            self.console.print(f'Working dir: "{working_dir}"')
+            self.console.print(f'Working dir: "{escape(str(working_dir))}"')
         if config_path:
-            self.console.print(f'Config: "{config_path}"')
+            self.console.print(f'Config: "{escape(str(config_path))}"')
 
         status_verb = "simulating" if simulate else "organizing"
         self.status.update(f"[status]{status_verb}[/]")
@@ -147,13 +156,12 @@ class Default:
         sender: SenderType,
         level: Level = "info",
     ) -> None:
-        msg_pre = format_sender(sender=sender, standalone=res.path is None)
-        if level == "info":
-            msg = f"{msg_pre}{format_info(msg=msg)}"
-        elif level == "warn":
-            msg = f"{msg_pre}{format_warn(msg=msg)}"
-        elif level == "error":
-            msg = f"{msg_pre}{format_error(msg=msg)}"
+        msg = format_msg(
+            msg=msg,
+            level=level,
+            sender=sender,
+            standalone=res.path is None,
+        )
 
         if self.errors_only:
             if self.det_resource.changed(res):
@@ -177,14 +185,22 @@ class Default:
     ) -> bool:
         self.status.stop()
         self.show_resource(res)
-        msg_pre = format_sender(sender=sender, standalone=res.path is None)
-        error_msg = f"{msg_pre}[prompt.invalid]Please enter Y or N[/]"
-        Confirm.set_error_msg(msg=error_msg)
-        result = Confirm.ask(
-            prompt=f"{msg_pre}[pipeline.prompt]{msg}[/]",
-            console=self.console,
-            default=default,
+        msg_prompt = format_msg(
+            msg=f"[pipeline.prompt]{escape(msg)}[/]",
+            level="info",
+            sender=sender,
+            standalone=res.path is None,
+            escape_msg=False,
         )
+        msg_invalid = format_msg(
+            msg="[prompt.invalid]Please enter Y or N[/]",
+            level="info",
+            sender=sender,
+            standalone=res.path is None,
+            escape_msg=False,
+        )
+        Confirm.set_error_msg(msg=msg_invalid)
+        result = Confirm.ask(prompt=msg_prompt, console=self.console, default=default)
         self.status.start()
         return result
 
