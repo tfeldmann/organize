@@ -49,7 +49,7 @@ textract = { version = "^1.6.5", optional = true }
 # must be in main dependencies for readthedocs.
 mkdocs = { version = "^1.5.3", optional = true }
 mkdocs-autorefs = { version = "^0.5.0", optional = true }
-mkdocs-include-markdown-plugin = { version = "^6.0.0", optional = true }
+mkdocs-include-markdown-plugin = { version = "^6.0.4", optional = true }
 mkdocstrings = { version = "^0.24.0", extras = ["python"], optional = true }
 markupsafe = { version = "2.0.1", optional = true }                          # Pinned: https://stackoverflow.com/q/72191560/300783
 
@@ -64,13 +64,13 @@ docs = [
 ]
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.4.0"
+pytest = "^8.0.0"
 mypy = "^1.4.0"
 requests = "^2.31.0"
 types-PyYAML = "^6.0.12.10"
 coverage = "^7.2.0"
 pytest-cov = "^4.1.0"
-ruff = "^0.1.5"
+ruff = "^0.2.0"
 pyfakefs = "^5.3.1"
 
 [tool.coverage.run]
