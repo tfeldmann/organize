@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v3.1.0 (2024-02-04)
+
 - Add a new output format `errorsonly` which only shows output if an error occured.
 - Fixes a bug where messages and paths containing brackets where not printed correctly
   (#348, thanks @kwbr!)
