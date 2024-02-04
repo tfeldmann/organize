@@ -50,7 +50,7 @@ def test_filename_move(fs, testoutput):
             - echo: 'Found JPG file: {name}'
         """
     Config.from_string(config).execute(simulate=False, output=testoutput)
-    testoutput.messages == [
+    assert testoutput.messages == [
         "Found JPG file: test",
         "Found JPG file: asd",
         "Found JPG file: camel",
