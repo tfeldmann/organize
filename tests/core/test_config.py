@@ -103,6 +103,24 @@ def test_empty_filters():
     assert Config.from_string(conf)
 
 
+def test_issue352():
+    conf = """
+    all_my_messy__download_folders: &download_folders
+      - D:/Windows/Downloads/Chrome
+      - D:/Windows/Downloads/Chrome/Other
+
+    rules:
+      - name: "Delete Duplicate"
+        locations: *download_folders
+        filters:
+          - duplicate:
+              detect_original_by: "created"
+        actions:
+          - delete
+    """
+    assert Config.from_string(conf)
+
+
 def test_flatten_filters_and_actions():
     config = """
     folder_aliases:
