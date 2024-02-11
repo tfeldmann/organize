@@ -1,6 +1,7 @@
 # Changelog
-
 ## [Unreleased]
+
+## v3.1.1 (2024-02-11)
 
 - Fixes the `organize show` command which broke in v3.1.0.
 
