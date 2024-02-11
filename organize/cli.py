@@ -164,7 +164,7 @@ def show(config: Optional[str], path: bool, reveal: bool) -> None:
         _open_uri(config_path.parent.as_uri())
     else:
         syntax = Syntax(config_path.read_text(encoding="utf-8"), "yaml")
-        console.print(escape(syntax))
+        console.print(syntax)
 
 
 def list_() -> None:

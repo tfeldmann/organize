@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Fixes the `organize show` command which broke in v3.1.0.
+
 ## v3.1.0 (2024-02-04)
 
 - Add a new output format `errorsonly` which only shows output if an error occured.
