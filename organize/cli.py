@@ -43,7 +43,14 @@ from pathlib import Path
 from typing import Annotated, Literal, Optional, Set
 
 from docopt import docopt
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    ValidationError,
+    field_validator,
+    model_validator,
+)
 from pydantic.functional_validators import BeforeValidator
 from rich.console import Console
 from rich.syntax import Syntax
@@ -201,6 +208,7 @@ class CliArgs(BaseModel):
     format: OutputFormat = Field("default", alias="--format")
     tags: Optional[str] = Field(..., alias="--tags")
     skip_tags: Optional[str] = Field(..., alias="--skip-tags")
+    stdin: bool = Field(..., alias="--stdin")
 
     # show options
     path: bool = Field(False, alias="--path")
@@ -216,6 +224,12 @@ class CliArgs(BaseModel):
         if val is None:
             return set()
         return set(val.split(","))
+
+    @model_validator(mode="after")
+    def either_stdin_or_config(self):
+        if self.stdin and self.config is not None:
+            raise ValueError("Either set a config file or --stdin.")
+        return self
 
 
 def cli() -> None:
