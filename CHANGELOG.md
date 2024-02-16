@@ -1,5 +1,10 @@
 # Changelog
+
 ## [Unreleased]
+
+## v3.1.2 (2024-02-16)
+
+- Fixes a validation error where correctly defined actions were not accepted in Python 3.12.2.
 
 ## v3.1.1 (2024-02-11)
 
