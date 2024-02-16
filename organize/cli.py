@@ -40,7 +40,7 @@ import os
 import sys
 from functools import partial
 from pathlib import Path
-from typing import Literal, Optional, Set
+from typing import Annotated, Literal, Optional, Set
 
 from docopt import docopt
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
@@ -48,7 +48,6 @@ from pydantic.functional_validators import BeforeValidator
 from rich.console import Console
 from rich.syntax import Syntax
 from rich.table import Table
-from typing_extensions import Annotated
 from yaml.scanner import ScannerError
 
 from organize import Config, ConfigError

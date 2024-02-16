@@ -1,8 +1,7 @@
-from typing import List, Set, Union
+from typing import List, Literal, Set, Union
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic.dataclasses import dataclass
-from typing_extensions import Literal
 
 from .validators import FlatList
 

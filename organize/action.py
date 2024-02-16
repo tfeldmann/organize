@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, NamedTuple
-
-from typing_extensions import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, ClassVar, NamedTuple, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
     from .output import Output

@@ -1,7 +1,6 @@
-from typing import Any, Iterable, List, Mapping, TypeVar
+from typing import Annotated, Any, Iterable, List, Mapping, TypeVar
 
 from pydantic.functional_validators import BeforeValidator
-from typing_extensions import Annotated
 
 
 def islist(x):
