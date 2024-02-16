@@ -11,6 +11,22 @@ from organize.output import Output
 from organize.resource import Resource
 
 
+def extract_pdf(path: Path) -> str:
+    pass
+
+
+def extract_txt(path: Path) -> str:
+    return path.read_text()
+
+
+EXTRACTORS = {
+    ".md": extract_txt,
+    ".txt": extract_txt,
+    ".log": extract_txt,
+    ".pdf": extract_pdf,
+}
+
+
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class FileContent:
     """Matches file content with the given regular expression
