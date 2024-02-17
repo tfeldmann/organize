@@ -77,13 +77,6 @@ Installation is done via pip. Note that the package name is `organize-tool`:
 pip install -U organize-tool
 ```
 
-If you want the text extraction capabilities, install with `textract` like this (the
-qoutes are important):
-
-```bash
-pip install "organize-tool[texttract]"
-```
-
 This command can also be used to update to the newest version. Now you can run `organize --help` to check if the installation was successful.
 
 ### Create your first rule

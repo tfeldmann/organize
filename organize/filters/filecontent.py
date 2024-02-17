@@ -3,7 +3,7 @@ import re
 import subprocess
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any, Callable, ClassVar, Dict
 
 from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
@@ -54,9 +54,9 @@ def _pdftotext_available() -> bool:
 
 def _extract_with_pdftotext(path: Path, keep_layout: bool) -> str:
     if keep_layout:
-        args = ("-layout", str(path), "-")
+        args = ["-layout", str(path), "-"]
     else:
-        args = (str(path), "-")
+        args = [str(path), "-"]
     result = subprocess.check_output(("pdftotext", *args), text=True)
     return clean(result)
 
@@ -74,13 +74,13 @@ def extract_pdf(path: Path, keep_layout: bool = True) -> str:
 
 
 def extract_docx(path: Path) -> str:
-    import docx2txt
+    import docx2txt  # type: ignore
 
     result = docx2txt.process(path)
     return clean(result)
 
 
-EXTRACTORS = {
+EXTRACTORS: Dict[str, Callable[[Path], str]] = {
     ".md": extract_txt,
     ".txt": extract_txt,
     ".log": extract_txt,

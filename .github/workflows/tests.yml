@@ -39,9 +39,9 @@ jobs:
           PYTHON_KEYRING_BACKEND: keyring.backends.null.Keyring
         run: |
           python3 -m pip install -U pip setuptools
-          python3 -m pip install poetry==1.7.1 lxml
+          python3 -m pip install poetry==1.7.1
           poetry config virtualenvs.create false
-          poetry install --with=dev --extras=textract
+          poetry install --with=dev
 
       - name: Version info
         run: |
