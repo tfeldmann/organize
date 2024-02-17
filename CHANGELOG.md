@@ -1,5 +1,10 @@
 # Changelog
+
 ## [Unreleased]
+
+- Integrated `pdftotext`, `pdfminer` and `docx2txt` interfaces into `filecontent` filter.
+- Removed `textract` and many other dependencies as they are no longer needed.
+- Python 3.12 support
 
 ## v3.1.1 (2024-02-11)
 
