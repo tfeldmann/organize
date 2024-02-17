@@ -40,7 +40,7 @@ def exiftool_available() -> bool:
         )
         return True
     except subprocess.CalledProcessError:
-        logging.warning("exiddftool not available. Falling back to exifread library.")
+        logging.warning("exiftool not available. Falling back to exifread library.")
         return False
 
 

@@ -2,13 +2,13 @@ __doc__ = """
 organize - The file management automation tool.
 
 Usage:
-  organize run   [options] [<config>]
-  organize sim   [options] [<config>]
-  organize new   [<config>]
-  organize edit  [<config>]
-  organize check [<config>]
-  organize debug [<config>]
-  organize show  [--path|--reveal] [<config>]
+  organize run    [options] [<config>]
+  organize sim    [options] [<config>]
+  organize new    [<config>]
+  organize edit   [<config>]
+  organize check  [<config>]
+  organize debug  [<config>]
+  organize show   [--path|--reveal] [<config>]
   organize list
   organize docs
   organize --version

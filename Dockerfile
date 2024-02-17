@@ -12,7 +12,7 @@ FROM base as pydeps
 RUN pip install "poetry==1.7.1" && \
     python -m venv ${VIRTUAL_ENV}
 COPY pyproject.toml poetry.lock ./
-RUN poetry install --only=main --extras=textract --no-interaction
+RUN poetry install --only=main --no-interaction
 
 
 FROM base as final
