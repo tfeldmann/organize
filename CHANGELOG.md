@@ -2,9 +2,10 @@
 
 ## [Unreleased]
 
-- Integrated `pdftotext`, `pdfminer` and `docx2txt` interfaces into `filecontent` filter.
+- Integrated `.docx`, `.pdf` and various raw text parsers into `filecontent` filter.
 - Removed `textract` and ~50 MB of dependencies as they are no longer needed.
 - Python 3.12 support
+- Add support for piping in a config file from STDIN (`organize run --stdin < file.yml`)
 
 ## v3.1.2 (2024-02-16)
 

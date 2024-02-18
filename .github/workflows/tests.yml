@@ -40,17 +40,16 @@ jobs:
         run: |
           python3 -m pip install -U pip setuptools
           python3 -m pip install poetry==1.7.1
-          poetry config virtualenvs.create false
           poetry install --with=dev
 
       - name: Version info
         run: |
-          python main.py --version
+          poetry run python main.py --version
 
       - name: Test with pytest
         run: |
-          pytest
+          poetry run pytest
 
       - name: Check with MyPy
         run: |
-          mypy .
+          poetry run mypy .

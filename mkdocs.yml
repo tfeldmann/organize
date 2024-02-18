@@ -9,6 +9,7 @@ nav:
   - Locations: locations.md
   - Filters: filters.md
   - Actions: actions.md
+  - Docker: docker.md
   - Changelog: changelog.md
   - Migrating from older versions: migrating.md
 plugins:
