@@ -22,7 +22,7 @@ RUN apt update && \
     rm -rf /var/lib/apt/lists/*
 ENV ORGANIZE_CONFIG=/config/config.yml \
     ORGANIZE_EXIFTOOL_PATH=exiftool
-RUN mkdir /config && touch ./README.md
+RUN mkdir /config && mkdir /data
 COPY --from=pydeps ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 COPY ./organize ./organize
 

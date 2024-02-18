@@ -64,6 +64,8 @@ class Config:
         dedented = textwrap.dedent(normalized)
         as_dict = yaml.load(dedented, Loader=yaml.SafeLoader)
         try:
+            if not as_dict:
+                raise ValueError("Config is empty")
             inst = cls(**as_dict)
             inst._config_path = config_path
             return inst
