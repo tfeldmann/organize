@@ -17,7 +17,9 @@ RUN poetry install --only=main --no-interaction
 
 FROM base as final
 
-RUN apt update && apt install -y exiftool && rm -rf /var/lib/apt/lists/*
+RUN apt update && \
+    apt install -y exiftool poppler-utils && \
+    rm -rf /var/lib/apt/lists/*
 ENV ORGANIZE_CONFIG=/config/config.yml \
     ORGANIZE_EXIFTOOL_PATH=exiftool
 RUN mkdir /config && touch ./README.md
