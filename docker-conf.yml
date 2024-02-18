@@ -1,4 +1,0 @@
-rules:
-  - locations: /data
-    actions:
-      - echo: "Found file: {path}"
