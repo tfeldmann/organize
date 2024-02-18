@@ -3,15 +3,15 @@
 The organize docker image comes preinstalled with `exiftool` and `pdftotext` as well as
 all the python dependencies set up and ready to go.
 
-!!! note
+!!! danger
 
     As organize is mainly used for moving files around you have to be careful about your
-    volume mounts and paths. If you move a file to a folder which is not persisted
-    it is gone as soon as the container is stopped!
+    volume mounts and paths. **If you move a file to a folder which is not persisted
+    it is gone as soon as the container is stopped!**
 
 ## Building the image
 
-`cd` into the organize folder (containing `Dockerfile`) and build the image:
+`cd` into the organize folder (containing the `Dockerfile`) and build the image:
 
 ```sh
 docker build -t organize .
@@ -20,7 +20,7 @@ docker build -t organize .
 The image is now tagged as `organize`. Now you can test the image by running
 
 ```sh
-docker run --rm organize
+docker run organize
 ```
 
 This will show the organize usage help text.
@@ -40,7 +40,7 @@ We can now run mount the config file to the container path `/config/config.yml`.
 We can now start the container:
 
 ```sh
-docker run --rm -v ./docker-conf.yml:/config/config.yml -v .:/data organize run
+docker run -v ./docker-conf.yml:/config/config.yml -v .:/data organize run
 ```
 
 ### Passing the config file from stdin
@@ -48,5 +48,5 @@ docker run --rm -v ./docker-conf.yml:/config/config.yml -v .:/data organize run
 Instead of mounting the config file into the container you can also pass it from stdin:
 
 ```sh
-docker run -i --rm organize check --stdin < ./docker-conf.yml
+docker run -i organize check --stdin < ./docker-conf.yml
 ```
