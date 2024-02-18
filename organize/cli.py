@@ -2,12 +2,12 @@ __doc__ = """
 organize - The file management automation tool.
 
 Usage:
-  organize run    [options] [<config>]
-  organize sim    [options] [<config>]
+  organize run    [options] [<config> | --stdin]
+  organize sim    [options] [<config> | --stdin]
   organize new    [<config>]
   organize edit   [<config>]
-  organize check  [<config>]
-  organize debug  [<config>]
+  organize check  [<config> | --stdin]
+  organize debug  [<config> | --stdin]
   organize show   [--path|--reveal] [<config>]
   organize list
   organize docs
@@ -28,7 +28,9 @@ Commands:
   docs       Open the documentation.
 
 Options:
-  <config>                        A config name or path to a config file
+  <config>                        A config name or path to a config file.
+                                  Some commands also support piping in a config file
+                                  via the `--stdin` flag.
   -W --working-dir <dir>          The working directory
   -F --format (default|errorsonly|JSONL)
                                   The output format [Default: default]
@@ -53,6 +55,7 @@ from pydantic import (
 )
 from pydantic.functional_validators import BeforeValidator
 from rich.console import Console
+from rich.pretty import pprint
 from rich.syntax import Syntax
 from rich.table import Table
 from yaml.scanner import ScannerError
@@ -86,6 +89,33 @@ OutputFormat = Annotated[
 console = Console()
 
 
+class ConfigWithPath(BaseModel):
+    """
+    Allows reading the config from a path, finding it by name or supplying it directly
+    via stdin.
+    """
+
+    config: str
+    config_path: Optional[Path]
+
+    @classmethod
+    def from_stdin(cls) -> "ConfigWithPath":
+        return cls(config=sys.stdin.read(), config_path=None)
+
+    @classmethod
+    def by_name_or_path(cls, name_or_path: Optional[str]) -> "ConfigWithPath":
+        config_path = find_config(name_or_path=name_or_path)
+        return cls(
+            config=config_path.read_text(),
+            config_path=config_path,
+        )
+
+    def path(self):
+        if self.config_path is not None:
+            return str(self.config_path)
+        return "[config given by string / stdin]"
+
+
 def _open_uri(uri: str) -> None:
     import webbrowser
 
@@ -103,15 +133,17 @@ def _output_for_format(format: OutputFormat) -> Output:
 
 
 def execute(
-    config: Optional[str],
+    config: ConfigWithPath,
     working_dir: Optional[Path],
     format: OutputFormat,
     tags: Tags,
     skip_tags: Tags,
     simulate: bool,
 ) -> None:
-    config_path = find_config(name_or_path=config)
-    Config.from_path(config_path).execute(
+    Config.from_string(
+        config=config.config,
+        config_path=config.config_path,
+    ).execute(
         simulate=simulate,
         output=_output_for_format(format),
         tags=tags,
@@ -145,21 +177,14 @@ def edit(config: Optional[str]) -> None:
         _open_uri(config_path.as_uri())
 
 
-def check(config: Optional[str]) -> None:
-    config_path = find_config(config)
-    Config.from_path(config_path=config_path)
-    console.print(f'No problems found in "{escape(config_path)}".')
+def check(config: ConfigWithPath) -> None:
+    Config.from_string(config=config.config, config_path=config.config_path)
+    console.print(f'No problems found in "{escape(config.path())}".')
 
 
-def debug(config: Optional[str]) -> None:
-    from rich.pretty import pprint
-
-    config_path = find_config(config)
-    pprint(
-        Config.from_path(config_path=config_path),
-        expand_all=True,
-        indent_guides=False,
-    )
+def debug(config: ConfigWithPath) -> None:
+    conf = Config.from_string(config=config.config, config_path=config.config_path)
+    pprint(conf, expand_all=True, indent_guides=False)
 
 
 def show(config: Optional[str], path: bool, reveal: bool) -> None:
@@ -240,9 +265,13 @@ def cli() -> None:
     )
     try:
         args = CliArgs.model_validate(arguments)
+        if args.stdin:
+            config_with_path = ConfigWithPath.from_stdin()
+        else:
+            config_with_path = ConfigWithPath.by_name_or_path(args.config)
         _execute = partial(
             execute,
-            config=args.config,
+            config=config_with_path,
             working_dir=args.working_dir,
             format=args.format,
             tags=args.tags,
@@ -257,9 +286,9 @@ def cli() -> None:
         elif args.edit:
             edit(config=args.config)
         elif args.check:
-            check(config=args.config)
+            check(config=config_with_path)
         elif args.debug:
-            debug(config=args.config)
+            debug(config=config_with_path)
         elif args.show:
             show(config=args.config, path=args.path, reveal=args.reveal)
         elif args.list:
