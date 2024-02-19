@@ -78,7 +78,11 @@ def set_version(args):
     # change WIP to version number and date
     changes = match.group(1)
     today = datetime.now().strftime("%Y-%m-%d")
-    changelog = wip_regex.sub(f"## v{version} ({today})\n{changes}", changelog, count=1)
+    changelog = wip_regex.sub(
+        f"## [Unreleased]\n\n## v{version} ({today})\n{changes}",
+        changelog,
+        count=1,
+    )
 
     # write changelog
     with open(CURRENT_FOLDER / "CHANGELOG.md", "w") as f:

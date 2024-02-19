@@ -3,9 +3,14 @@
 ## [Unreleased]
 
 - Integrated `.docx`, `.pdf` and various raw text parsers into `filecontent` filter.
-- Removed `textract` and ~50 MB of dependencies as they are no longer needed.
-- Python 3.12 support
+- Removed `textract` and ~50 MB of dependencies as they are no longer required.
+- Full Python 3.12 support
 - Add support for piping in a config file from STDIN (`organize run --stdin < file.yml`)
+
+**Important:**
+
+You may have to adjust your `filecontent` regexes. The output should be a bit cleaner
+now.
 
 ## v3.1.2 (2024-02-16)
 
