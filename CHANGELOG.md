@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v3.2.0 (2024-02-19)
+
 - Integrated `.docx`, `.pdf` and various raw text parsers into `filecontent` filter.
 - Removed `textract` and ~50 MB of dependencies as they are no longer required.
 - Full Python 3.12 support
