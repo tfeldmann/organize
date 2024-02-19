@@ -3,7 +3,7 @@ import re
 import subprocess
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, ClassVar, Dict
+from typing import Callable, ClassVar, Dict, Union
 
 from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
@@ -57,7 +57,11 @@ def _extract_with_pdftotext(path: Path, keep_layout: bool) -> str:
         args = ["-layout", str(path), "-"]
     else:
         args = [str(path), "-"]
-    result = subprocess.check_output(("pdftotext", *args), text=True)
+    result = subprocess.check_output(
+        ("pdftotext", *args),
+        text=True,
+        stderr=subprocess.DEVNULL,
+    )
     return clean(result)
 
 
@@ -113,6 +117,12 @@ class FileContent:
 
     - `{filecontent.groupname}`: The text matched with the named group
       `(?P<groupname>)`
+
+    You can test the filter on any file by running:
+
+    ```sh
+    python -m organize.filters.filecontent "/path/to/file.pdf"
+    ```
     """
 
     expr: str = r"(?P<all>.*)"
@@ -126,10 +136,13 @@ class FileContent:
     def __post_init__(self):
         self._expr = re.compile(self.expr, re.MULTILINE | re.DOTALL)
 
-    def matches(self, path: Path) -> Any:
-        content = textract(path)
-        match = self._expr.search(content)
-        return match
+    def matches(self, path: Path) -> Union[re.Match, None]:
+        try:
+            content = textract(path)
+            match = self._expr.search(content)
+            return match
+        except Exception:
+            return None
 
     def pipeline(self, res: Resource, output: Output) -> bool:
         assert res.path is not None, "Does not support standalone mode"
