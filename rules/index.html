@@ -75,6 +75,10 @@
                 </li>
               </ul>
               <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../docker/">Docker</a>
+                </li>
+              </ul>
+              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
                 </li>
               </ul>
@@ -164,14 +168,15 @@ return an error.</p>
 <p><code>{env}</code> (<code>dict</code>)<br>
 All your environment variables. You can access individual env vars like this: <code>{env.MY_VARIABLE}</code>.</p>
 <p><code>{path}</code> (<a href="https://docs.python.org/3/library/pathlib.html#methods-and-properties"><code>pathlib.Path</code></a>)<br>
-The full path to the current file / folder on the local harddrive.
-This is not available for remote locations - in this case use <code>fs</code> and <code>fs_path</code>.</p>
+The full path to the current file / folder on the local harddrive.</p>
 <p><code>{relative_path}</code> (<code>str</code>)<br>
 the relative path of the current file or dir.</p>
-<p><code>{now}</code> (<code>datetime</code>)<br>
+<p><code>{now()}</code> (<code>datetime</code>)<br>
 The current datetime in the local timezone.</p>
-<p><code>{utcnow}</code> (<code>datetime</code>)<br>
+<p><code>{utcnow()}</code> (<code>datetime</code>)<br>
 The current UTC datetime.</p>
+<p><code>{today()}</code> (<code>date</code>)<br>
+Today's date.</p>
 <p>In addition to that nearly all filters add new placeholders with information about
 the currently handled file / folder.</p>
 <p>Example on how to access the size and hash of a file:</p>

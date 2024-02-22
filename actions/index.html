@@ -93,6 +93,10 @@
                 </li>
               </ul>
               <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../docker/">Docker</a>
+                </li>
+              </ul>
+              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
                 </li>
               </ul>
@@ -207,6 +211,7 @@ look at the <a href="../rules/">Rules</a> section.</p>
   </div>
 
   </div>
+
 
 </div><p><strong>Examples</strong></p>
 <p>Confirm before deleting a duplicate</p>
@@ -510,6 +515,7 @@ Defaults to "copy".</p>
 
   </div>
 
+
 </div><p><strong>Examples:</strong></p>
 <p>Copy all pdfs into <code>~/Desktop/somefolder/</code> and keep filenames</p>
 <pre><code class="language-yaml">rules:
@@ -627,6 +633,7 @@ Using the <code>Trash</code> action is strongly advised for most use-cases!</p>
   </div>
 
   </div>
+
 
 </div><p><strong>Examples:</strong></p>
 <p>Delete old downloads.</p>
@@ -766,6 +773,7 @@ variables.</p>
   </div>
 
   </div>
+
 
 </div><p><strong>Examples:</strong></p>
 <pre><code class="language-yaml">rules:
@@ -1033,6 +1041,7 @@ Default: true</p>
 
   </div>
 
+
 </div><h2 id="macos_tags">macos_tags<a class="headerlink" href="#macos_tags" title="Permanent link">#</a></h2>
 
 
@@ -1225,6 +1234,7 @@ Default: true</p>
   </div>
 
   </div>
+
 
 </div><p><strong>Examples:</strong></p>
 <pre><code class="language-yaml">rules:
@@ -1538,6 +1548,7 @@ Default: True</p>
 
   </div>
 
+
 </div><p><strong>Examples:</strong></p>
 <p>Move all pdfs and jpgs from the desktop into the folder "~/Desktop/media/". Filenames are not changed.</p>
 <pre><code class="language-yaml">rules:
@@ -1766,6 +1777,7 @@ dictionary syntax <code>x = regex["my_group"]</code>.</p>
 
   </div>
 
+
 </div><p><strong>Examples:</strong></p>
 <p>A basic example that shows how to get the current file path and do some printing in a
 for loop. The <code>|</code> is yaml syntax for defining a string literal spanning multiple lines.</p>
@@ -1839,7 +1851,7 @@ filename starting with an underscore:</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b><code>name</code></b>
+              <b><code>new_name</code></b>
                   (<code>str</code>)
               –
               <div class="doc-md-description">
@@ -1941,7 +1953,7 @@ Defaults to <code>{name} {counter}{extension}</code>.</p>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Renames a file.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        name (str):</span>
+<span class="sd">        new_name (str):</span>
 <span class="sd">            The new name for the file / dir.</span>
 
 <span class="sd">        on_conflict (str):</span>
@@ -2018,6 +2030,7 @@ Defaults to <code>{name} {counter}{extension}</code>.</p>
   </div>
 
   </div>
+
 
 </div><p><strong>Examples:</strong></p>
 <pre><code class="language-yaml">rules:
@@ -2275,6 +2288,7 @@ Defaults to <code>{name} {counter}{extension}</code>.</p>
 
   </div>
 
+
 </div><p><strong>Examples:</strong></p>
 <pre><code class="language-yaml">rules:
   - name: &quot;On macOS: Open all pdfs on your desktop&quot;
@@ -2512,6 +2526,7 @@ Default: true</p>
 
   </div>
 
+
 </div><h2 id="trash">trash<a class="headerlink" href="#trash" title="Permanent link">#</a></h2>
 
 
@@ -2580,6 +2595,7 @@ Default: true</p>
   </div>
 
   </div>
+
 
 </div><p><strong>Examples:</strong></p>
 <pre><code class="language-yaml">rules:
@@ -2872,6 +2888,7 @@ Defaults to <code>false</code>.</p>
 
   </div>
 
+
 </div><p><strong>Examples</strong></p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Record file sizes&quot;
@@ -2915,7 +2932,7 @@ filesizes of everything in the <code>~/Downloads</code> folder:</p>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../filters/" class="btn btn-neutral float-left" title="Filters"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../changelog/" class="btn btn-neutral float-right" title="Changelog">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../docker/" class="btn btn-neutral float-right" title="Docker">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -2945,7 +2962,7 @@ filesizes of everything in the <code>~/Downloads</code> folder:</p>
       <span><a href="../filters/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../changelog/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../docker/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

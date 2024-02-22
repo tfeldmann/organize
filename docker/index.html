@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Thomas Feldmann" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Textract installation hints - organize</title>
+    <title>Docker - organize</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Textract installation hints";
-        var mkdocs_page_input_path = "textract-hints.md";
+        var mkdocs_page_name = "Docker";
+        var mkdocs_page_input_path = "docker.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -64,8 +64,18 @@
                 <li class="toctree-l1"><a class="reference internal" href="../actions/">Actions</a>
                 </li>
               </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../docker/">Docker</a>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Docker</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#building-the-image">Building the image</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#running">Running</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#passing-the-config-file-from-stdin">Passing the config file from stdin</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
                 </li>
               </ul>
               <ul>
@@ -90,9 +100,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Textract installation hints</li>
+      <li class="breadcrumb-item active">Docker</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/tfeldmann/organize/edit/main/docs/textract-hints.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/tfeldmann/organize/edit/main/docs/docker.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -100,28 +110,45 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="textract-installation-hints">Textract installation hints<a class="headerlink" href="#textract-installation-hints" title="Permanent link">#</a></h1>
-<p>Textract needs <a href="https://poppler.freedesktop.org/">Poppler</a> to extract text from PDFs.</p>
-<h2 id="windows">Windows<a class="headerlink" href="#windows" title="Permanent link">#</a></h2>
-<ol>
-<li>Download the latest binary of your choice from <a href="https://github.com/oschwartz10612/poppler-windows/releases">github.com/oschwartz10612</a>. In this example we will download and use <a href="https://github.com/oschwartz10612/poppler-windows/releases/download/v22.01.0-0/Release-22.01.0-0.zip">Release-22.01.0-0.zip</a>.</li>
-<li>Extract the archive file <em>Release-22.01.0-0.zip</em></li>
-<li>Copy the folders from <em>poppler-22.01.0\Library</em> into <code>C:\Program Files\Poppler</code>.</li>
-<li>Thus, the directory structure should look something like this:</li>
-</ol>
-<pre><code>C:\Program Files\Poppler
-                        \bin
-                        \include
-                        \lib
-                        \share
+                <h1 id="using-the-organize-docker-image">Using the organize docker image<a class="headerlink" href="#using-the-organize-docker-image" title="Permanent link">#</a></h1>
+<p>The organize docker image comes preinstalled with <code>exiftool</code> and <code>pdftotext</code> as well as
+all the python dependencies set up and ready to go.</p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>As organize is mainly used for moving files around you have to be careful about your
+volume mounts and paths. <strong>If you move a file to a folder which is not persisted
+it is gone as soon as the container is stopped!</strong></p>
+</div>
+<h2 id="building-the-image">Building the image<a class="headerlink" href="#building-the-image" title="Permanent link">#</a></h2>
+<p><code>cd</code> into the organize folder (containing the <code>Dockerfile</code>) and build the image:</p>
+<pre><code class="language-sh">docker build -t organize .
 </code></pre>
-<ol>
-<li>Add <code>C:\Program Files\Poppler\bin</code> to your system PATH!</li>
-<li>Try it with a <a href="https://organize.readthedocs.io/en/latest/filters/#filecontent">filecontent example rule</a></li>
-</ol>
+<p>The image is now tagged as <code>organize</code>. Now you can test the image by running</p>
+<pre><code class="language-sh">docker run organize
+</code></pre>
+<p>This will show the organize usage help text.</p>
+<h2 id="running">Running<a class="headerlink" href="#running" title="Permanent link">#</a></h2>
+<p>Let's create a basic config file <code>docker-conf.yml</code>:</p>
+<pre><code class="language-yml">rules:
+  - locations: /data
+    actions:
+      - echo: &quot;Found file: {path}&quot;
+</code></pre>
+<p>We can now run mount the config file to the container path <code>/config/config.yml</code>. The current directory is mounted to <code>/data</code> so we have some files present.
+We can now start the container:</p>
+<pre><code class="language-sh">docker run -v ./docker-conf.yml:/config/config.yml -v .:/data organize run
+</code></pre>
+<h3 id="passing-the-config-file-from-stdin">Passing the config file from stdin<a class="headerlink" href="#passing-the-config-file-from-stdin" title="Permanent link">#</a></h3>
+<p>Instead of mounting the config file into the container you can also pass it from stdin:</p>
+<pre><code class="language-sh">docker run -i organize check --stdin &lt; ./docker-conf.yml
+</code></pre>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../actions/" class="btn btn-neutral float-left" title="Actions"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../changelog/" class="btn btn-neutral float-right" title="Changelog">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -147,6 +174,10 @@
         </span>
     
     
+      <span><a href="../actions/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../changelog/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

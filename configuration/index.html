@@ -77,6 +77,10 @@
                 </li>
               </ul>
               <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../docker/">Docker</a>
+                </li>
+              </ul>
+              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
                 </li>
               </ul>
@@ -160,6 +164,8 @@ want to run. The options take a comma-separated list of tags:</p>
 <h2 id="environment-variables">Environment variables<a class="headerlink" href="#environment-variables" title="Permanent link">#</a></h2>
 <ul>
 <li><code>ORGANIZE_CONFIG</code> - The path to the default config file.</li>
+<li><code>ORGANIZE_EXIFTOOL_PATH</code> - Path to the <code>exiftool</code> executable (Default: <code>""</code>)</li>
+<li><code>ORGANIZE_NORMALIZE_UNICODE</code> - Whether to normalize strings to NFC unicode form for comparisons (Default <code>"1"</code>)</li>
 <li><code>NO_COLOR</code> - if this is set, the output is not colored.</li>
 <li><code>EDITOR</code> - The editor used to edit the config file.</li>
 </ul>

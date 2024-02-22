@@ -64,9 +64,23 @@
                 <li class="toctree-l1"><a class="reference internal" href="../actions/">Actions</a>
                 </li>
               </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../docker/">Docker</a>
+                </li>
+              </ul>
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">Changelog</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#unreleased">[Unreleased]</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v320-2024-02-19">v3.2.0 (2024-02-19)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v312-2024-02-16">v3.1.2 (2024-02-16)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v311-2024-02-11">v3.1.1 (2024-02-11)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#v310-2024-02-04">v3.1.0 (2024-02-04)</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#v301-2024-01-12">v3.0.1 (2024-01-12)</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#v300-2024-01-05">v3.0.0 (2024-01-05)</a>
@@ -206,6 +220,31 @@
               
                 <!-- BEGIN INCLUDE ../CHANGELOG.md -->
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">#</a></h1>
+<h2 id="unreleased">[Unreleased]<a class="headerlink" href="#unreleased" title="Permanent link">#</a></h2>
+<h2 id="v320-2024-02-19">v3.2.0 (2024-02-19)<a class="headerlink" href="#v320-2024-02-19" title="Permanent link">#</a></h2>
+<ul>
+<li>Integrated <code>.docx</code>, <code>.pdf</code> and various raw text parsers into <code>filecontent</code> filter.</li>
+<li>Removed <code>textract</code> and ~50 MB of dependencies as they are no longer required.</li>
+<li>Full Python 3.12 support</li>
+<li>Add support for piping in a config file from STDIN (<code>organize run --stdin &lt; file.yml</code>)</li>
+</ul>
+<p><strong>Important:</strong></p>
+<p>You may have to adjust your <code>filecontent</code> regexes. The output should be a bit cleaner
+now.</p>
+<h2 id="v312-2024-02-16">v3.1.2 (2024-02-16)<a class="headerlink" href="#v312-2024-02-16" title="Permanent link">#</a></h2>
+<ul>
+<li>Fixes a validation error where correctly defined actions were not accepted in Python 3.12.2.</li>
+</ul>
+<h2 id="v311-2024-02-11">v3.1.1 (2024-02-11)<a class="headerlink" href="#v311-2024-02-11" title="Permanent link">#</a></h2>
+<ul>
+<li>Fixes the <code>organize show</code> command which broke in v3.1.0.</li>
+</ul>
+<h2 id="v310-2024-02-04">v3.1.0 (2024-02-04)<a class="headerlink" href="#v310-2024-02-04" title="Permanent link">#</a></h2>
+<ul>
+<li>Add a new output format <code>errorsonly</code> which only shows output if an error occured.</li>
+<li>Fixes a bug where messages and paths containing brackets where not printed correctly
+  (#348, thanks @kwbr!)</li>
+</ul>
 <h2 id="v301-2024-01-12">v3.0.1 (2024-01-12)<a class="headerlink" href="#v301-2024-01-12" title="Permanent link">#</a></h2>
 <ul>
 <li>Fixes a bug where Quicktime and mp4 files return no Exif data.
@@ -543,7 +582,7 @@ Please backup all your important stuff before running and use the simulate optio
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../actions/" class="btn btn-neutral float-left" title="Actions"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../docker/" class="btn btn-neutral float-left" title="Docker"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../migrating/" class="btn btn-neutral float-right" title="Migrating from older versions">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -571,7 +610,7 @@ Please backup all your important stuff before running and use the simulate optio
         </span>
     
     
-      <span><a href="../actions/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../docker/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../migrating/" style="color: #fcfcfc">Next &raquo;</a></span>

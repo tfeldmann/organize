@@ -101,6 +101,10 @@
                 </li>
               </ul>
               <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../docker/">Docker</a>
+                </li>
+              </ul>
+              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
                 </li>
               </ul>
@@ -360,6 +364,7 @@ time. (default = 'older')</p>
 
   </div>
 
+
 </div><p><strong>Examples:</strong></p>
 <p>Show all files on your desktop created at least 10 days ago</p>
 <pre><code class="language-yaml">rules:
@@ -617,6 +622,7 @@ time. (default = 'older')</p>
 
   </div>
 
+
 </div><p>Works the same way as <a href="#created"><code>created</code></a> and <a href="#lastmodified"><code>lastmodified</code></a>.</p>
 <p>** Examples **</p>
 <pre><code class="language-yaml">rules:
@@ -840,6 +846,7 @@ time. (default = 'older')</p>
   </div>
 
   </div>
+
 
 </div><p>Works the same way as <a href="#created"><code>created</code></a> and <a href="#lastmodified"><code>lastmodified</code></a>.</p>
 <p>** Examples **</p>
@@ -1170,6 +1177,7 @@ example <code>"-first_seen"</code>, <code>"-name"</code>, <code>"-created"</code
 
   </div>
 
+
 </div><p><strong>Examples:</strong></p>
 <p>Show all duplicate files in your desktop and download folder (and their subfolders)</p>
 <pre><code class="language-yaml">rules:
@@ -1255,6 +1263,7 @@ example <code>"-first_seen"</code>, <code>"-name"</code>, <code>"-created"</code
   </div>
 
   </div>
+
 
 </div><p><strong>Examples:</strong></p>
 <p>Recursively delete empty folders</p>
@@ -1507,6 +1516,7 @@ will have their value converted to 'datetime.datetime', 'datetime.date' and
 
   </div>
 
+
 </div><p>Show available EXIF data of your pictures</p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Show available EXIF data of your pictures&quot;
@@ -1703,6 +1713,7 @@ accordingly:</p>
 
   </div>
 
+
 </div><p><strong>Examples:</strong></p>
 <p>Match a single file extension</p>
 <pre><code class="language-yaml">rules:
@@ -1765,7 +1776,10 @@ rules:
   <div class="doc doc-contents first">
 
   
-      <p>Matches file content with the given regular expression</p>
+      <p>Matches file content with the given regular expression.</p>
+<p>Supports .md, .txt, .log, .pdf and .docx files.</p>
+<p>For PDF content extraction poppler should be installed for the <code>pdftotext</code> command.
+If this is not available <code>filecontent</code> will fall back to the <code>pdfminer</code> library.</p>
 
 
 
@@ -1798,60 +1812,72 @@ be returned like this:</p>
 <li><code>{filecontent.groupname}</code>: The text matched with the named group
   <code>(?P&lt;groupname&gt;)</code></li>
 </ul>
+<p>You can test the filter on any file by running:</p>
+<pre><code class="language-sh">python -m organize.filters.filecontent &quot;/path/to/file.pdf&quot;
+</code></pre>
 
             <details class="quote">
               <summary>Source code in <code>organize/filters/filecontent.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
 <span class="k">class</span> <span class="nc">FileContent</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Matches file content with the given regular expression</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Matches file content with the given regular expression.</span>
+
+<span class="sd">    Supports .md, .txt, .log, .pdf and .docx files.</span>
+
+<span class="sd">    For PDF content extraction poppler should be installed for the `pdftotext` command.</span>
+<span class="sd">    If this is not available `filecontent` will fall back to the `pdfminer` library.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        expr (str): The regular expression to be matched.</span>
@@ -1863,6 +1889,12 @@ be returned like this:</p>
 
 <span class="sd">    - `{filecontent.groupname}`: The text matched with the named group</span>
 <span class="sd">      `(?P&lt;groupname&gt;)`</span>
+
+<span class="sd">    You can test the filter on any file by running:</span>
+
+<span class="sd">    ```sh</span>
+<span class="sd">    python -m organize.filters.filecontent &quot;/path/to/file.pdf&quot;</span>
+<span class="sd">    ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">expr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(?P&lt;all&gt;.*)&quot;</span>
@@ -1876,20 +1908,13 @@ be returned like this:</p>
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_expr</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">Match</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">textract</span>
-
-            <span class="n">content</span> <span class="o">=</span> <span class="n">textract</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
-            <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expr</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">))</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">textract</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expr</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">match</span>
-        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
-                <span class="s2">&quot;textract is not installed. &quot;</span>
-                <span class="s2">&quot;Install with pip install organize-tool[textract]&quot;</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
-        <span class="k">except</span> <span class="n">textract</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">CommandLineError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Does not support standalone mode&quot;</span>
@@ -1918,6 +1943,7 @@ be returned like this:</p>
   </div>
 
   </div>
+
 
 </div><p><strong>Examples:</strong></p>
 <p>Show the content of all your PDF files</p>
@@ -2140,6 +2166,7 @@ interpreter:</p>
 
   </div>
 
+
 </div><p><strong>Examples:</strong></p>
 <p>Show the hashes of your files:</p>
 <pre><code class="language-yaml">rules:
@@ -2350,6 +2377,7 @@ time. (default = 'older')</p>
 
   </div>
 
+
 </div><p><strong>Examples:</strong></p>
 <pre><code class="language-yaml">rules:
   - name: &quot;Show all files on your desktop last modified at least 10 days ago&quot;
@@ -2512,6 +2540,7 @@ time. (default = 'older')</p>
   </div>
 
   </div>
+
 
 </div><p><strong>Examples:</strong></p>
 <pre><code class="language-yaml">rules:
@@ -2702,6 +2731,7 @@ from "audio/midi" to "audio/quicktime".</p>
 
   </div>
 
+
 </div><p><strong>Examples:</strong></p>
 <p>Show MIME types</p>
 <pre><code class="language-yaml">rules:
@@ -2814,8 +2844,7 @@ case insensitive matching.</p>
 </table>
             <details class="quote">
               <summary>Source code in <code>organize/filters/name.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
-<span class="normal">13</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
 <span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
@@ -2894,7 +2923,8 @@ case insensitive matching.</p>
 <span class="normal">89</span>
 <span class="normal">90</span>
 <span class="normal">91</span>
-<span class="normal">92</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
+<span class="normal">92</span>
+<span class="normal">93</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
 <span class="k">class</span> <span class="nc">Name</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Match files and folders by name</span>
 
@@ -2957,8 +2987,8 @@ case insensitive matching.</p>
             <span class="n">name</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">stem</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">suffix</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
                 <span class="n">name</span> <span class="o">=</span> <span class="n">ext</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">normalize_unicode</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">normalize_unicode</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="p">:</span>
             <span class="n">m</span> <span class="o">=</span> <span class="n">name</span>
 
@@ -2995,6 +3025,7 @@ case insensitive matching.</p>
   </div>
 
   </div>
+
 
 </div><p><strong>Examples:</strong></p>
 <p>Match all files starting with 'Invoice':</p>
@@ -3239,6 +3270,7 @@ case insensitive matching.</p>
 
   </div>
 
+
 </div><p><strong>Examples:</strong></p>
 <pre><code class="language-yaml">rules:
   - name: A file name reverser.
@@ -3339,8 +3371,7 @@ and then renaming the files with the output of your python script.</p>
 
             <details class="quote">
               <summary>Source code in <code>organize/filters/regex.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
-<span class="normal">13</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
 <span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
@@ -3376,7 +3407,8 @@ and then renaming the files with the output of your python script.</p>
 <span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span>
-<span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
+<span class="normal">49</span>
+<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">ConfigDict</span><span class="p">(</span><span class="n">coerce_numbers_to_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">))</span>
 <span class="k">class</span> <span class="nc">Regex</span><span class="p">:</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Matches filenames with the given regular expression</span>
@@ -3409,7 +3441,7 @@ and then renaming the files with the output of your python script.</p>
 
     <span class="k">def</span> <span class="nf">pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Does not support standalone mode&quot;</span>
-        <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">normalize_unicode</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
             <span class="n">res</span><span class="o">.</span><span class="n">deep_merge</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_config</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">())</span>
             <span class="k">return</span> <span class="kc">True</span>
@@ -3434,6 +3466,7 @@ and then renaming the files with the output of your python script.</p>
   </div>
 
   </div>
+
 
 </div><p><strong>Examples:</strong></p>
 <p>Match an invoice with a regular expression:</p>
@@ -3639,6 +3672,7 @@ conditions are satisfied.</p>
   </div>
 
   </div>
+
 
 </div><p><strong>Examples:</strong></p>
 <p>Trash big downloads:</p>
