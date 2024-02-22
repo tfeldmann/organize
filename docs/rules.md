@@ -76,16 +76,18 @@ All your environment variables. You can access individual env vars like this: `{
 
 `{path}` ([`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#methods-and-properties))<br>
 The full path to the current file / folder on the local harddrive.
-This is not available for remote locations - in this case use `fs` and `fs_path`.
 
 `{relative_path}` (`str`)<br>
 the relative path of the current file or dir.
 
-`{now}` (`datetime`)<br>
+`{now()}` (`datetime`)<br>
 The current datetime in the local timezone.
 
-`{utcnow}` (`datetime`)<br>
+`{utcnow()}` (`datetime`)<br>
 The current UTC datetime.
+
+`{today()}` (`date`)<br>
+Today's date.
 
 In addition to that nearly all filters add new placeholders with information about
 the currently handled file / folder.
