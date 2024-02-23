@@ -21,4 +21,4 @@ def test_api(fs, testoutput):
         ]
     )
     config.execute(simulate=False, output=testoutput)
-    assert testoutput.messages == ["FOOFOO", "BAR", "BAZ"]
+    assert testoutput.messages == ["BAR", "BAZ", "FOOFOO"]

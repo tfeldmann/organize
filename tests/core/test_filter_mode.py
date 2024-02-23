@@ -31,7 +31,7 @@ def test_filter_mode(fs, testoutput, filter_mode, expected_msgs):
 @pytest.mark.parametrize(
     "filter_mode, expected_msgs",
     (
-        ("any", ["foo", "baz", "x"]),
+        ("any", ["baz", "foo", "x"]),
         ("all", ["x"]),
         ("none", []),
     ),

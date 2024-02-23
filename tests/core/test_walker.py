@@ -147,3 +147,28 @@ def test_exclude_dirs(fs):
         "test",
     )
     assert len(list(Walker(exclude_dirs=["subC"]).files("/test"))) == 4
+
+
+def test_order(fs):
+    make_files(
+        {
+            "2024": {"004": "", "001": "", "003": "", "002": ""},
+            "1989": {"D": "", "C": "", "A": "", "B": ""},
+            "2000": {"B": {"2": "", "1": ""}, "A": {"1": "", "2": ""}},
+        },
+        "test",
+    )
+    assert list(Walker().files("/test")) == [
+        Path("/test/1989/A"),
+        Path("/test/1989/B"),
+        Path("/test/1989/C"),
+        Path("/test/1989/D"),
+        Path("/test/2000/A/1"),
+        Path("/test/2000/A/2"),
+        Path("/test/2000/B/1"),
+        Path("/test/2000/B/2"),
+        Path("/test/2024/001"),
+        Path("/test/2024/002"),
+        Path("/test/2024/003"),
+        Path("/test/2024/004"),
+    ]

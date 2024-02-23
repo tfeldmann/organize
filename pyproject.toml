@@ -39,6 +39,7 @@ docx2txt = "^0.8"
 ExifRead = "2.3.2"                                                        # Pinned: https://github.com/tfeldmann/organize/issues/267
 Jinja2 = "^3.1.2"
 macos-tags = { version = "^1.5.1", markers = "sys_platform == 'darwin'" }
+natsort = "^8.4.0"
 pdfminer-six = "^20231228"
 platformdirs = "^4.0.0"
 pydantic = "^2.3.0"

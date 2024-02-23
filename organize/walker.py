@@ -3,6 +3,7 @@ from fnmatch import fnmatch
 from pathlib import Path
 from typing import Iterable, Iterator, List, Literal, NamedTuple, Optional, Set
 
+from natsort import os_sorted
 from pydantic import Field
 from pydantic.dataclasses import dataclass
 
@@ -57,7 +58,10 @@ def scandir(top: str, collectfiles: bool = True) -> ScandirResult:
                 result.dirs.append(entry)
             elif collectfiles:
                 result.nondirs.append(entry)
-    return result
+    return ScandirResult(
+        dirs=os_sorted(result.dirs, key=lambda x: x.name),
+        nondirs=os_sorted(result.nondirs, key=lambda x: x.name),
+    )
 
 
 class DirActions(NamedTuple):

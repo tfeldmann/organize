@@ -51,7 +51,7 @@ def test_filename_move(fs, testoutput):
         """
     Config.from_string(config).execute(simulate=False, output=testoutput)
     assert testoutput.messages == [
-        "Found JPG file: test",
         "Found JPG file: asd",
         "Found JPG file: camel",
+        "Found JPG file: test",
     ]

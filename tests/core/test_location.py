@@ -49,7 +49,7 @@ def test_multiple_pathes(fs, testoutput):
               - echo: '{path.name}'
         """
     ).execute(simulate=False, output=testoutput)
-    assert testoutput.messages == ["foo.txt", "bar.txt"] * 2
+    assert testoutput.messages == ["bar.txt", "foo.txt"] * 2
 
 
 def test_multiple_pathes_single_location(fs, testoutput):
@@ -66,7 +66,7 @@ def test_multiple_pathes_single_location(fs, testoutput):
               - echo: '{path.name}'
         """
     ).execute(simulate=False, output=testoutput)
-    assert testoutput.messages == ["foo.txt", "bar.txt"] * 2
+    assert testoutput.messages == ["bar.txt", "foo.txt", "bar.txt", "foo.txt"]
 
 
 def test_multiple_dirs(fs, testoutput):

@@ -70,9 +70,9 @@ def test_python_dict(fs, testoutput):
         """
     Config.from_string(config).execute(simulate=False, output=testoutput)
     assert testoutput.messages == [
-        "100 foo",
         "200 bar",
         "300 baz",
+        "100 foo",
     ]
 
 
