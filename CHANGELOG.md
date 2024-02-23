@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Files and folders are now handled in natural sort order (#354).
+
 ## v3.2.0 (2024-02-19)
 
 - Integrated `.docx`, `.pdf` and various raw text parsers into `filecontent` filter.
