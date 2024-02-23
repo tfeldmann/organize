@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "organize-tool"
-version = "3.2.0"
+version = "3.2.1"
 description = "The file management automation tool"
 packages = [{ include = "organize" }]
 authors = ["Thomas Feldmann <mail@tfeldmann.de>"]

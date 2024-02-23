@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v3.2.1 (2024-02-23)
+
 - Files and folders are now handled in natural sort order (#354).
 
 ## v3.2.0 (2024-02-19)
