@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## v3.2.2 (2024-03-04)
+
+- Fixes an problem where the `organize new` command fails to create a new config file.
+
 ## v3.2.1 (2024-02-23)
 
 - Files and folders are now handled in natural sort order (#354).

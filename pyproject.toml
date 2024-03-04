@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "organize-tool"
-version = "3.2.1"
+version = "3.2.2"
 description = "The file management automation tool"
 packages = [{ include = "organize" }]
 authors = ["Thomas Feldmann <mail@tfeldmann.de>"]
@@ -71,7 +71,7 @@ pyfakefs = "^5.3.1"
 pytest = "^8.0.0"
 pytest-cov = "^4.1.0"
 requests = "^2.31.0"
-ruff = "^0.2.0"
+ruff = "^0.3.0"
 types-PyYAML = "^6.0.12.10"
 
 [tool.coverage.run]
