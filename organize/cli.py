@@ -42,7 +42,7 @@ import os
 import sys
 from functools import partial
 from pathlib import Path
-from typing import Annotated, Literal, Optional, Set
+from typing import Annotated, Literal, Optional, Set, Union
 
 from docopt import docopt
 from pydantic import (
@@ -257,15 +257,15 @@ class CliArgs(BaseModel):
         return self
 
 
-def cli(args: list[str] | str | None = None) -> None:
-    arguments = docopt(
+def cli(argv: Union[list[str], str, None] = None) -> None:
+    parsed_args = docopt(
         __doc__,
-        argv=args,
+        argv=argv,
         default_help=True,
         version=f"organize v{__version__}",
     )
     try:
-        args = CliArgs.model_validate(arguments)
+        args = CliArgs.model_validate(parsed_args)
 
         def _config_with_path():
             if args.stdin:
