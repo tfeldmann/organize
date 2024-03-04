@@ -257,38 +257,43 @@ class CliArgs(BaseModel):
         return self
 
 
-def cli() -> None:
+def cli(args: list[str] | str | None = None) -> None:
     arguments = docopt(
         __doc__,
-        version=f"organize v{__version__}",
+        argv=args,
         default_help=True,
+        version=f"organize v{__version__}",
     )
     try:
         args = CliArgs.model_validate(arguments)
-        if args.stdin:
-            config_with_path = ConfigWithPath.from_stdin()
-        else:
-            config_with_path = ConfigWithPath.by_name_or_path(args.config)
-        _execute = partial(
-            execute,
-            config=config_with_path,
-            working_dir=args.working_dir,
-            format=args.format,
-            tags=args.tags,
-            skip_tags=args.skip_tags,
-        )
-        if args.run:
-            _execute(simulate=False)
-        elif args.sim:
-            _execute(simulate=True)
+
+        def _config_with_path():
+            if args.stdin:
+                return ConfigWithPath.from_stdin()
+            else:
+                return ConfigWithPath.by_name_or_path(args.config)
+
+        if args.sim or args.run:
+            _execute = partial(
+                execute,
+                config=_config_with_path(),
+                working_dir=args.working_dir,
+                format=args.format,
+                tags=args.tags,
+                skip_tags=args.skip_tags,
+            )
+            if args.run:
+                _execute(simulate=False)
+            elif args.sim:
+                _execute(simulate=True)
         elif args.new:
             new(config=args.config)
         elif args.edit:
             edit(config=args.config)
         elif args.check:
-            check(config=config_with_path)
+            check(config=_config_with_path())
         elif args.debug:
-            debug(config=config_with_path)
+            debug(config=_config_with_path())
         elif args.show:
             show(config=args.config, path=args.path, reveal=args.reveal)
         elif args.list:
