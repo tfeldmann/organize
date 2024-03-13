@@ -18,7 +18,6 @@ def guess_mimetype(path):
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class MimeType:
-
     """Filter by MIME type associated with the file extension.
 
     Supports a single string or list of MIME type strings as argument.

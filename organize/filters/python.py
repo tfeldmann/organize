@@ -12,7 +12,6 @@ from organize.resource import Resource
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Python:
-
     """Use python code to filter files.
 
     Attributes:

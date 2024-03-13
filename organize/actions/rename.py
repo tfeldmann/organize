@@ -15,7 +15,6 @@ from .common.conflict import ConflictMode, resolve_conflict
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Rename:
-
     """Renames a file.
 
     Attributes:

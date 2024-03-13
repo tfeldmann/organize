@@ -14,7 +14,6 @@ from .common.target_path import prepare_target_path
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Symlink:
-
     """Create a symbolic link.
 
     Attributes:

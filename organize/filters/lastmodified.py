@@ -12,7 +12,6 @@ def read_lastmodified(path: Path) -> datetime:
 
 
 class LastModified(TimeFilter):
-
     """Matches files by last modified date
 
     Attributes:

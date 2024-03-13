@@ -12,7 +12,6 @@ from organize.utils import normalize_unicode
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Regex:
-
     """Matches filenames with the given regular expression
 
     Attributes:

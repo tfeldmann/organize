@@ -10,7 +10,6 @@ from organize.resource import Resource
 
 @dataclass(config=ConfigDict(extra="forbid"))
 class Empty:
-
     """Finds empty dirs and files"""
 
     filter_config: ClassVar[FilterConfig] = FilterConfig(

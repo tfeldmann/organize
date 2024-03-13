@@ -18,7 +18,6 @@ def read_date_lastused(path: Path) -> datetime:
 
 
 class DateLastUsed(TimeFilter):
-
     """Matches files by the time the file was last used.
 
     **`date_lastused` is only available on macOS!**

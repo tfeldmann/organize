@@ -21,7 +21,6 @@ def create_hardlink(target: Path, link: Path) -> None:
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Hardlink:
-
     """Create a hardlink.
 
     Attributes:

@@ -7,6 +7,7 @@ Based on this stackoverflow answer:
 Which was updated for python3 in:
     https://gist.github.com/tfeldmann/fc875e6630d11f2256e746f67a09c1ae
 """
+
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Callable, ClassVar, Literal, NamedTuple, Tuple

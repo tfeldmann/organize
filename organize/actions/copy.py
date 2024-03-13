@@ -15,7 +15,6 @@ from .common.target_path import prepare_target_path
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Copy:
-
     """Copy a file or dir to a new location.
 
     If the specified path does not exist it will be created.

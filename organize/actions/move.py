@@ -15,7 +15,6 @@ from .common.target_path import prepare_target_path
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Move:
-
     """Move a file to a new location.
 
     The file can also be renamed.
