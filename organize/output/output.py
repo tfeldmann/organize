@@ -24,8 +24,7 @@ class Output(Protocol):
         simulate: bool,
         config_path: Optional[Path],
         working_dir: Path,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     def msg(
         self,
@@ -33,8 +32,7 @@ class Output(Protocol):
         msg: str,
         sender: SenderType,
         level: Level = "info",
-    ) -> None:
-        ...
+    ) -> None: ...
 
     def confirm(
         self,
@@ -42,8 +40,6 @@ class Output(Protocol):
         msg: str,
         default: bool,
         sender: SenderType,
-    ) -> bool:
-        ...
+    ) -> bool: ...
 
-    def end(self, success_count: int, error_count: int) -> None:
-        ...
+    def end(self, success_count: int, error_count: int) -> None: ...

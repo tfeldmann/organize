@@ -14,7 +14,6 @@ from organize.validators import FlatList
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class MacOSTags:
-
     """Add macOS tags.
 
     Attributes:

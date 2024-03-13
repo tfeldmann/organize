@@ -24,7 +24,6 @@ def delete(path: Path):
 
 @dataclass(config=ConfigDict(extra="forbid"))
 class Delete:
-
     """
     Delete a file from disk.
 

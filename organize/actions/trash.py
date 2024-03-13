@@ -17,7 +17,6 @@ def trash(path: Path):
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Trash:
-
     """Move a file or dir into the trash."""
 
     action_config: ClassVar[ActionConfig] = ActionConfig(

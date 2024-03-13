@@ -20,8 +20,7 @@ class HasFilterConfig(Protocol):
 
 
 class HasFilterPipeline(Protocol):
-    def pipeline(self, res: Resource, output: Output) -> bool:
-        ...  # pragma: no cover
+    def pipeline(self, res: Resource, output: Output) -> bool: ...  # pragma: no cover
 
 
 @runtime_checkable

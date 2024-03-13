@@ -16,7 +16,6 @@ if TYPE_CHECKING:
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Write:
-
     """
     Write text to a file.
 

@@ -20,8 +20,7 @@ class HasActionConfig(Protocol):
 
 
 class HasActionPipeline(Protocol):
-    def pipeline(self, res: Resource, output: Output, simulate: bool):
-        ...
+    def pipeline(self, res: Resource, output: Output, simulate: bool): ...
 
 
 @runtime_checkable

@@ -11,7 +11,6 @@ from organize.resource import Resource
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Python:
-
     """Execute python code.
 
     Attributes:

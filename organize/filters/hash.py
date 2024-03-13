@@ -37,7 +37,6 @@ def hash_first_chunk(path: Path, algo: str, *, chunksize=1024) -> str:
 
 @dataclass(config=ConfigDict(extra="forbid"))
 class Hash:
-
     """Calculates the hash of a file.
 
     Attributes:

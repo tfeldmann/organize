@@ -17,7 +17,6 @@ def read_date_added(path: Path) -> datetime:
 
 
 class DateAdded(TimeFilter):
-
     """Matches files by the time the file was added to a folder.
 
     **`date_added` is only available on macOS!**

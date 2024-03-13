@@ -11,7 +11,6 @@ from organize.template import Template, render
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class Confirm:
-
     """Ask for confirmation before continuing."""
 
     msg: str = "Continue?"
