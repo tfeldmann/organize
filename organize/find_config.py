@@ -46,7 +46,7 @@ def find_default_config() -> Path:
     # if the `ORGANIZE_CONFIG` env variable is set we only check this specific location
     if ENV_ORGANIZE_CONFIG is not None:
         result = expandvars(ENV_ORGANIZE_CONFIG)
-        if result.exists() and result.is_file():
+        if result.is_file():
             return result
         raise ConfigNotFound(str(result))
 
