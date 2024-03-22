@@ -1,5 +1,5 @@
 from organize import Config
-from organize.cli import EXAMPLE_CONFIG
+from organize.find_config import EXAMPLE_CONFIG
 from organize.output import JSONL, Default
 
 
