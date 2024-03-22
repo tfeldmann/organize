@@ -61,25 +61,17 @@ from rich.table import Table
 from yaml.scanner import ScannerError
 
 from organize import Config, ConfigError
-from organize.find_config import ConfigNotFound, find_config, list_configs
+from organize.find_config import (
+    DOCS_RTD,
+    ConfigNotFound,
+    create_example_config,
+    find_config,
+    list_configs,
+)
 from organize.output import JSONL, Default, Output
 from organize.utils import escape
 
 from .__version__ import __version__
-
-DOCS_RTD = "https://organize.readthedocs.io"
-DOCS_GHPAGES = "https://tfeldmann.github.io/organize/"
-
-EXAMPLE_CONFIG = f"""\
-# organize configuration file
-# {DOCS_RTD}
-
-rules:
-  - locations:
-    filters:
-    actions:
-      - echo: "Hello, World!"
-"""
 
 Tags = Set[str]
 OutputFormat = Annotated[
@@ -154,18 +146,16 @@ def execute(
 
 def new(config: Optional[str]) -> None:
     try:
-        config_path = find_config(config)
+        new_path = create_example_config(name_or_path=config)
         console.print(
-            f'Config "{escape(config_path)}" already exists.\n'
+            f'Config "{escape(new_path.name)}" created at "{escape(new_path.absolute())}"'
+        )
+    except FileExistsError as e:
+        console.print(
+            f"{e}\n"
             r'Use "organize new \[name]" to create a config in the default location.'
         )
-    except ConfigNotFound as e:
-        assert e.init_path is not None
-        e.init_path.parent.mkdir(parents=True, exist_ok=True)
-        e.init_path.write_text(EXAMPLE_CONFIG, encoding="utf-8")
-        console.print(
-            f'Config "{escape(e.init_path.stem)}" created at "{escape(e.init_path)}"'
-        )
+        sys.exit(1)
 
 
 def edit(config: Optional[str]) -> None:
