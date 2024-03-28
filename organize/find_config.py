@@ -1,4 +1,5 @@
 import os
+from collections.abc import Iterable
 from itertools import chain, product
 from pathlib import Path
 from typing import Iterator, Optional
@@ -16,25 +17,26 @@ ENV_ORGANIZE_CONFIG = os.environ.get("ORGANIZE_CONFIG")
 XDG_CONFIG_DIR = expandvars(os.environ.get("XDG_CONFIG_HOME", "~/.config")) / "organize"
 USER_CONFIG_DIR = platformdirs.user_config_path(appname="organize")
 
-SEARCH_DIRS = (
-    XDG_CONFIG_DIR,
-    USER_CONFIG_DIR,
-)
+
+def _search_dirs(include_cwd: bool) -> Iterable[Path]:
+    if include_cwd:
+        yield Path(".")
+    yield XDG_CONFIG_DIR
+    yield USER_CONFIG_DIR
 
 
 def find_config_by_name(name: str) -> Path:
     stem = Path(name).stem
     filenames = (
+        name,
         f"{stem}.yaml",
         f"{stem}.yml",
-        name,
+        f"{name}.yaml",
+        f"{name}.yml",
     )
-    search_dirs = (
-        Path("."),
-        *SEARCH_DIRS,
-    )
-
-    search_pathes = [d / f for d, f in product(search_dirs, filenames)]
+    search_pathes = [
+        d / f for d, f in product(_search_dirs(include_cwd=True), filenames)
+    ]
     for path in search_pathes:
         if path.is_file():
             return path
@@ -69,7 +71,7 @@ def find_config(name_or_path: Optional[str] = None) -> Path:
 
 
 def list_configs() -> Iterator[Path]:
-    for loc in SEARCH_DIRS:
+    for loc in _search_dirs(include_cwd=False):
         yield from chain(loc.glob("*.yml"), loc.glob("*.yaml"))
 
 
