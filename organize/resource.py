@@ -44,7 +44,11 @@ class Resource:
             return self.path
         if self.path is None:
             return None
-        return self.path.relative_to(self.basedir)
+        try:
+            return self.path.relative_to(self.basedir)
+        except ValueError:
+            # path is not relative to basedir
+            return None
 
     def dict(self):
         return dict(
