@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## v3.2.3 (2024-03-28)
+
+- Improves the logic of finding and creating config files.
+- Fixes a bug where config files in XDG_CONFIG_HOME are not found (#371).
+- Fixes a bug in the `relative_path` parameter crashing on actions after moving files (#372).
+
 ## v3.2.2 (2024-03-04)
 
 - Fixes an problem where the `organize new` command fails to create a new config file.
