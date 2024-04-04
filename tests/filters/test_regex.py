@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from conftest import make_files
+from conftest import make_files, read_files
 from pyfakefs.fake_filesystem import FakeFilesystem
 
 from organize import Config
@@ -60,3 +60,31 @@ def test_multiple_regex_placeholders(fs: FakeFilesystem):
     out = Path("/test/out.txt").read_text()
     assert "test 123 test-123 jpg" in out
     assert "other 456 other-456 pdf" in out
+
+
+def test_podcast_sorting(fs: FakeFilesystem):
+    make_files(
+        [
+            "My Podcast Ep 1.mp3",
+            "My Podcast Ep 2.mp3",
+            "My Podcast Ep 3.mp3",
+            "Your Podcast Ep 1.mp3",
+            "Your Podcast Ep 2.mp3",
+            "Your Podcast Ep 3.mp3",
+        ],
+        "test",
+    )
+
+    config = r"""
+    rules:
+      - locations: /test/
+        filters:
+          - regex: '^(?P<podcast>.+?) (?P<episode>Ep \d+\.mp3)'
+        actions:
+          - move: '/test/{regex.podcast}/{regex.episode}'
+    """
+    Config.from_string(config).execute(simulate=False)
+    assert read_files("test") == {
+        "My Podcast": {"Ep 1.mp3": "", "Ep 2.mp3": "", "Ep 3.mp3": ""},
+        "Your Podcast": {"Ep 1.mp3": "", "Ep 2.mp3": "", "Ep 3.mp3": ""},
+    }
