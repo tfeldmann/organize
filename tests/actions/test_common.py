@@ -25,51 +25,66 @@ def test_user_wants_a_folder_autodetect():
 
 def test_prepare_target_path(fs):
     # simulate
-    assert prepare_target_path(
-        src_name="dst.txt",
-        dst="/test/",
-        autodetect_folder=True,
-        simulate=True,
-    ) == Path("/test/dst.txt")
+    assert (
+        prepare_target_path(
+            src_name="dst.txt",
+            dst="/test/",
+            autodetect_folder=True,
+            simulate=True,
+        )
+        == Path("/test/dst.txt").resolve()
+    )
     assert not Path("/test").exists()
     # for real
-    assert prepare_target_path(
-        src_name="dst.txt",
-        dst="/test/",
-        autodetect_folder=True,
-        simulate=False,
-    ) == Path("/test/dst.txt")
+    assert (
+        prepare_target_path(
+            src_name="dst.txt",
+            dst="/test/",
+            autodetect_folder=True,
+            simulate=False,
+        )
+        == Path("/test/dst.txt").resolve()
+    )
     assert read_files("test") == {}
 
 
 def test_prepare_folder_target_advanced(fs):
-    assert prepare_target_path(
-        src_name="dst",
-        dst="/some/test/folder",
-        autodetect_folder=True,
-        simulate=False,
-    ) == Path("/some/test/folder/dst")
+    assert (
+        prepare_target_path(
+            src_name="dst",
+            dst="/some/test/folder",
+            autodetect_folder=True,
+            simulate=False,
+        )
+        == Path("/some/test/folder/dst").resolve()
+    )
     assert read_files("some") == {"test": {"folder": {}}}
 
 
 def test_prepare_folder_target_already_exists(fs):
     make_files({"some": {"Application.app": {}}})
-    assert prepare_target_path(
-        src_name="info.plist",
-        dst="/some/Application.app",
-        autodetect_folder=True,
-        simulate=False,
-    ) == Path("/some/Application.app/info.plist")
+    assert (
+        prepare_target_path(
+            src_name="info.plist",
+            dst="/some/Application.app",
+            autodetect_folder=True,
+            simulate=False,
+        )
+        == Path("/some/Application.app/info.plist").resolve()
+    )
     assert read_files("some") == {"Application.app": {}}
 
 
 def test_prepare_folder_no_folder(fs):
-    assert prepare_target_path(
-        src_name="filename.txt",
-        dst="/some/original/folder/name.txt",
-        autodetect_folder=True,
-        simulate=False,
-    ) == Path("/some/original/folder/name.txt")
+    assert (
+        prepare_target_path(
+            src_name="filename.txt",
+            dst="/some/original/folder/name.txt",
+            autodetect_folder=True,
+            simulate=False,
+        )
+        == Path("/some/original/folder/name.txt").resolve()
+    )
     assert read_files("some") == {"original": {"folder": {}}}
 
 
