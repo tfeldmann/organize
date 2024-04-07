@@ -20,7 +20,7 @@ def prepare_target_path(
     autodetect_folder: bool,
     simulate: bool,
 ) -> Path:
-    result = Path(dst)
+    result = Path(dst).resolve()
     wants_folder = user_wants_a_folder(path=dst, autodetect=autodetect_folder)
 
     # if dst is an existing folder, we use it
