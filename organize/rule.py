@@ -3,6 +3,8 @@ from typing import Dict, Iterable, List, Literal, Optional, Set
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from organize.logger import logger
+
 from .action import Action
 from .filter import All, Any, Filter, HasFilterPipeline, Not
 from .location import Location
@@ -268,7 +270,7 @@ class Rule(BaseModel):
                     level="error",
                     sender=action,
                 )
-                # logging.exception(e)
+                logger.exception(e)
                 return ReportSummary(errors=1)
 
         # normal mode
@@ -301,6 +303,6 @@ class Rule(BaseModel):
                         level="error",
                         sender=action,
                     )
-                    # logging.exception(e)
+                    logger.exception(e)
                     summary.errors += 1
         return summary

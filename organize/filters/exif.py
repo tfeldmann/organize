@@ -1,7 +1,6 @@
 import collections
 import fnmatch
 import json
-import logging
 import os
 import subprocess
 from datetime import date, datetime, timedelta
@@ -14,6 +13,7 @@ from pydantic import BaseModel
 from rich import print
 
 from organize.filter import FilterConfig
+from organize.logger import logger
 from organize.output import Output
 from organize.resource import Resource
 
@@ -40,7 +40,7 @@ def exiftool_available() -> bool:
         )
         return True
     except subprocess.CalledProcessError:
-        logging.warning("exiftool not available. Falling back to exifread library.")
+        logger.warning("exiftool not available. Falling back to exifread library.")
         return False
 
 

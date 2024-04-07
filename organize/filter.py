@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING, NamedTuple, Protocol, runtime_checkable
+
+from organize.logger import logger
 
 if TYPE_CHECKING:
     from .output import Output
@@ -54,7 +55,7 @@ class All:
                     return False
             except Exception as e:
                 output.msg(res=res, level="error", msg=str(e), sender=filter)
-                logging.exception(e)
+                logger.exception(e)
                 return False
         return True
 
@@ -72,5 +73,5 @@ class Any:
                     result = True
             except Exception as e:
                 output.msg(res=res, level="error", msg=str(e), sender=filter)
-                logging.exception(e)
+                logger.exception(e)
         return result

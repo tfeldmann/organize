@@ -68,6 +68,7 @@ from organize.find_config import (
     find_config,
     list_configs,
 )
+from organize.logger import enable_logfile
 from organize.output import JSONL, Default, Output
 from organize.utils import escape
 
@@ -248,6 +249,8 @@ class CliArgs(BaseModel):
 
 
 def cli(argv: Union[list[str], str, None] = None) -> None:
+    enable_logfile()
+    assert __doc__ is not None
     parsed_args = docopt(
         __doc__,
         argv=argv,

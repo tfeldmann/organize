@@ -1,4 +1,3 @@
-import logging
 import re
 import subprocess
 from functools import lru_cache
@@ -9,6 +8,7 @@ from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.filter import FilterConfig
+from organize.logger import logger
 from organize.output import Output
 from organize.resource import Resource
 
@@ -48,7 +48,7 @@ def _pdftotext_available() -> bool:
         )
         return True
     except subprocess.CalledProcessError:
-        logging.warning("pdftotext not available. Falling back to pdfminer library.")
+        logger.warning("pdftotext not available. Falling back to pdfminer library.")
         return False
 
 
