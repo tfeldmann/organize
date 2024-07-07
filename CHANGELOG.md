@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v3.2.4 (2024-07-07)
+
 - Fixes a bug preventing organize from starting (thanks @feather42).
 - Fixes a bug where ignoring failing shell commands would not work (thanks @florianklumb).
 
