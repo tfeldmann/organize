@@ -64,14 +64,24 @@ class Shell:
                     stderr=subprocess.STDOUT,
                     shell=True,
                 )
+                res.vars[self.action_config.name] = {
+                    "output": call.stdout.decode("utf-8"),
+                    "returncode": call.returncode,
+                }
             except subprocess.CalledProcessError as e:
                 if not self.ignore_errors:
                     raise e
+                output.msg(
+                    res=res,
+                    msg=f"Ignoring error: {e}",
+                    sender=self,
+                    level="warn",
+                )
+                res.vars[self.action_config.name] = {
+                    "output": e.output.decode("utf-8"),
+                    "returncode": e.returncode,
+                }
 
-            res.vars[self.action_config.name] = {
-                "output": call.stdout.decode("utf-8"),
-                "returncode": call.returncode,
-            }
         else:
             output.msg(
                 res=res,
