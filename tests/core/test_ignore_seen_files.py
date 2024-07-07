@@ -1,8 +1,12 @@
+import sys
+
+import pytest
 from conftest import make_files, read_files
 
 from organize import Config
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="Wrong path names in windows")
 def test_ignore_seen_files(fs):
     make_files(
         {
