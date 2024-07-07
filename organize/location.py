@@ -1,6 +1,6 @@
 from typing import List, Literal, Set, Union
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import ConfigDict, Field, field_validator
 from pydantic.dataclasses import dataclass
 
 from .validators import FlatList
@@ -20,7 +20,7 @@ DEFAULT_SYSTEM_EXCLUDE_DIRS = {
 
 
 @dataclass(config=ConfigDict(extra="forbid"))
-class Location(BaseModel):
+class Location:
     path: FlatList[str]
     min_depth: int = 0
     max_depth: Union[Literal["inherit"], int, None] = "inherit"
