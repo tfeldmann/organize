@@ -4,7 +4,7 @@ import unicodedata
 from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Union
+from typing import Any, Literal, Union
 
 from rich.markup import escape as rich_escape
 
@@ -15,7 +15,10 @@ def escape(msg: Any) -> str:
     return rich_escape(str(msg))
 
 
-def normalize_unicode(text: str, form: str = "NFC") -> str:
+def normalize_unicode(
+    text: str,
+    form: Literal["NFC", "NFD", "NFKC", "NFKD"] = "NFC",
+) -> str:
     if ENV_ORGANIZE_NORMALIZE_UNICODE == "1":
         return unicodedata.normalize(form, text)
     return text
