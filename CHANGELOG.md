@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Fixes a bug preventing organize from starting (thanks @feather42).
+- Fixes a bug where ignoring failing shell commands would not work (thanks @florianklumb).
+
 ## v3.2.3 (2024-03-28)
 
 - Improves the logic of finding and creating config files.
