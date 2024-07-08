@@ -109,7 +109,7 @@ class Rule(BaseModel):
     name: Optional[str] = None
     enabled: bool = True
     targets: Literal["files", "dirs"] = "files"
-    locations: FlatList[Location] = Field(default_factory=list)
+    locations: None | str | list[str] | FlatList[Location] = Field(default_factory=list)
     subfolders: bool = False
     tags: Set[str] = Field(default_factory=set)
     filters: List[Filter] = Field(default_factory=list)

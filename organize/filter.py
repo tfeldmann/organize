@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, NamedTuple, Protocol, runtime_checkable
 
+from typing_extensions import ClassVar
+
 from organize.logger import logger
 
 if TYPE_CHECKING:
@@ -17,7 +19,7 @@ class FilterConfig(NamedTuple):
 
 @runtime_checkable
 class HasFilterConfig(Protocol):
-    filter_config: FilterConfig
+    filter_config: ClassVar[FilterConfig]
 
 
 class HasFilterPipeline(Protocol):
