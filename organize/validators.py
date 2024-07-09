@@ -1,4 +1,4 @@
-from typing import Annotated, Any, Iterable, List, Mapping, TypeVar
+from typing import Annotated, Any, Iterable, List, Mapping, Set, TypeVar
 
 from pydantic.functional_validators import BeforeValidator
 
@@ -26,4 +26,4 @@ def flatten(x: Any):
 
 T = TypeVar("T")
 FlatList = Annotated[List[T], BeforeValidator(flatten)]
-FlatSet = Annotated[List[T], BeforeValidator(flatten)]
+FlatSet = Annotated[Set[T], BeforeValidator(flatten)]
