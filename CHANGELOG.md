@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v3.2.5 (2024-07-09)
+
 - Fixes a bug where some location options did not accept yaml aliases
   (#390, thanks for reporting @zany130).
 
