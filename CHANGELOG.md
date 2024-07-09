@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Fixes a bug where some location options did not accept yaml aliases
+  (#390, thanks for reporting @zany130).
+
 ## v3.2.4 (2024-07-07)
 
 - Fixes a bug preventing organize from starting (thanks @feather42).

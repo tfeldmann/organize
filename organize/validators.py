@@ -26,3 +26,4 @@ def flatten(x: Any):
 
 T = TypeVar("T")
 FlatList = Annotated[List[T], BeforeValidator(flatten)]
+FlatSet = Annotated[List[T], BeforeValidator(flatten)]
