@@ -110,3 +110,25 @@ class Config:
                     summary += rule_summary
         finally:
             output.end(summary.success, summary.errors)
+
+    def watch(
+        self,
+        simulate: bool = True,
+        output: Output = Default(),
+        tags: Tags = set(),
+        skip_tags: Tags = set(),
+        working_dir: Union[str, Path] = ".",
+    ) -> None:
+        from watchfiles import watch
+
+        from .template import render
+
+        watchpathes = []
+        for rule in self.rules:
+            for location in rule.locations:
+                for path in location.path:
+                    watchpathes.append(render(path))
+
+        print(watchpathes)
+        for x in watch(*watchpathes):
+            print(x)

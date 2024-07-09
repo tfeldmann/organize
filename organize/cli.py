@@ -32,6 +32,7 @@ Options:
                                   Some commands also support piping in a config file
                                   via the `--stdin` flag.
   -W --working-dir <dir>          The working directory
+  --watch                         Monitor for file / folder changes
   -F --format (default|errorsonly|JSONL)
                                   The output format [Default: default]
   -T --tags <tags>                Tags to run (eg. "initial,release")
@@ -130,18 +131,29 @@ def execute(
     format: OutputFormat,
     tags: Tags,
     skip_tags: Tags,
+    watch: bool,
     simulate: bool,
 ) -> None:
-    Config.from_string(
+    _config = Config.from_string(
         config=config.config,
         config_path=config.config_path,
-    ).execute(
+    )
+    _config.execute(
         simulate=simulate,
         output=_output_for_format(format),
         tags=tags,
         skip_tags=skip_tags,
         working_dir=working_dir or Path("."),
     )
+    if watch:
+        print("Watching")
+        _config.watch(
+            simulate=simulate,
+            output=_output_for_format(format),
+            tags=tags,
+            skip_tags=skip_tags,
+            working_dir=working_dir or Path("."),
+        )
 
 
 def new(config: Optional[str]) -> None:
@@ -224,6 +236,7 @@ class CliArgs(BaseModel):
     tags: Optional[str] = Field(..., alias="--tags")
     skip_tags: Optional[str] = Field(..., alias="--skip-tags")
     stdin: bool = Field(..., alias="--stdin")
+    watch: bool = Field(..., alias="--watch")
 
     # show options
     path: bool = Field(False, alias="--path")
@@ -272,6 +285,7 @@ def cli(argv: Union[list[str], str, None] = None) -> None:
                 format=args.format,
                 tags=_split_tags(args.tags),
                 skip_tags=_split_tags(args.skip_tags),
+                watch=args.watch,
             )
             if args.run:
                 _execute(simulate=False)
