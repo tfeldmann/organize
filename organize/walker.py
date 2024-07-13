@@ -64,7 +64,17 @@ def scandir(top: str, collectfiles: bool = True) -> ScandirResult:
     )
 
 
-class DirActions(NamedTuple):
+class DirMatchResult(NamedTuple):
+    """What to do with the matched dir."""
+
+    should_walk_into: bool
+    should_yield: bool
+
+    def __bool__(self) -> bool:
+        return self.should_walk_into or self.should_yield
+
+
+class Queue(NamedTuple):
     to_yield: List[os.DirEntry]
     to_walk: List[os.DirEntry]
 
@@ -79,26 +89,37 @@ class Walker:
     exclude_dirs: Set[str] = Field(default_factory=set)
     exclude_files: Set[str] = Field(default_factory=set)
 
-    def _should_yield_file(self, entry: os.DirEntry, lvl: int) -> bool:
+    def _file_match(self, filename: str, lvl: int) -> bool:
         return (
             lvl >= self.min_depth
-            and not pattern_match(entry.name, self.exclude_files)
+            and not pattern_match(filename, self.exclude_files)
             and (
-                self.filter_files is None
-                or pattern_match(entry.name, self.filter_files)
+                self.filter_files is None or pattern_match(filename, self.filter_files)
             )
         )
 
-    def _dir_actions(self, entries: Iterable[os.DirEntry], lvl: int) -> DirActions:
-        result = DirActions(to_yield=[], to_walk=[])
+    def _dir_match(self, dirname: str, lvl: int) -> DirMatchResult:
+        should_walk, should_yield = False, False
+        if not pattern_match(dirname, self.exclude_dirs) and (
+            self.filter_dirs is None or pattern_match(dirname, self.filter_dirs)
+        ):
+            if self.max_depth is None or lvl < self.max_depth:
+                should_walk = True
+            if lvl >= self.min_depth:
+                should_yield = True
+        return DirMatchResult(
+            should_walk_into=should_walk,
+            should_yield=should_yield,
+        )
+
+    def _queue_dirs(self, entries: Iterable[os.DirEntry], lvl: int) -> Queue:
+        result = Queue(to_yield=[], to_walk=[])
         for entry in entries:
-            if not pattern_match(entry.name, self.exclude_dirs) and (
-                self.filter_dirs is None or pattern_match(entry.name, self.filter_dirs)
-            ):
-                if self.max_depth is None or lvl < self.max_depth:
-                    result.to_walk.append(entry)
-                if lvl >= self.min_depth:
-                    result.to_yield.append(entry)
+            actions = self._dir_match(dirname=entry.name, lvl=lvl)
+            if actions.should_walk_into:
+                result.to_walk.append(entry)
+            if actions.should_yield:
+                result.to_yield.append(entry)
         return result
 
     def walk(
@@ -115,28 +136,28 @@ class Walker:
         result = scandir(top, collectfiles=files)
 
         if self.method == "breadth":
-            # Return entries
+            # Breadth-first: First return entries from the current dir
             for entry in result.nondirs:
-                if files and self._should_yield_file(entry=entry, lvl=lvl):
+                if files and self._file_match(filename=entry.name, lvl=lvl):
                     yield entry
-            dir_actions = self._dir_actions(result.dirs, lvl=lvl)
+            queue = self._queue_dirs(result.dirs, lvl=lvl)
             if dirs:
-                yield from dir_actions.to_yield
-            # Recurse into sub-directories
-            for entry in dir_actions.to_walk:
+                yield from queue.to_yield
+            # then recurse into sub-directories
+            for entry in queue.to_walk:
                 yield from self.walk(entry.path, files=files, dirs=dirs, lvl=lvl + 1)
 
         elif self.method == "depth":
-            dir_actions = self._dir_actions(result.dirs, lvl=lvl)
-            # Recurse into sub-directories
-            for entry in dir_actions.to_walk:
+            # Depth-first: First recurse into sub-directories
+            queue = self._queue_dirs(result.dirs, lvl=lvl)
+            for entry in queue.to_walk:
                 yield from self.walk(entry.path, files=files, dirs=dirs, lvl=lvl + 1)
-            # Return entries
+            # then return entries
             for entry in result.nondirs:
-                if files and self._should_yield_file(entry=entry, lvl=lvl):
+                if files and self._file_match(filename=entry.name, lvl=lvl):
                     yield entry
             if dirs:
-                yield from dir_actions.to_yield
+                yield from queue.to_yield
         else:
             raise ValueError(f'Unknown method "{self.method}"')
 
@@ -152,3 +173,9 @@ class Walker:
     def dirs(self, path: str) -> Iterator[Path]:
         for entry in self.walk(path, files=False, dirs=True):
             yield Path(entry.path)
+
+    def would_emit(self, walkdir: Path, path: Path) -> bool:
+        # for every part of the relative path, check if we have file or dir actions.
+        if not path.is_relative_to(walkdir):
+            return False
+        return True
