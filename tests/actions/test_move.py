@@ -55,6 +55,7 @@ def test_move_conflict(fs, mode, result):
     Config.from_string(config).execute(simulate=False)
     assert read_files("test") == result
 
+
 def test_move_deduplicate_conflict(fs):
     files = {
         "src.txt": "src",
@@ -81,7 +82,7 @@ def test_move_deduplicate_conflict(fs):
 
     Config.from_string(config).execute(simulate=False)
     result = read_files("test")
-    
+
     assert result == {
         "duplicate": {
             "src.txt": "src",
@@ -90,6 +91,7 @@ def test_move_deduplicate_conflict(fs):
         "dst.txt": "src",
         "dst 2.txt": "src2",
     }
+
 
 def test_move_folder_conflict(fs):
     make_files(

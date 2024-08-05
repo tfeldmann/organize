@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import filecmp
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, NamedTuple
-import filecmp
 
 from organize.output import Output
 from organize.resource import Resource
@@ -12,7 +12,9 @@ if TYPE_CHECKING:
     from jinja2 import Template
 
 # TODO: keep_newer, keep_older, keep_bigger, keep_smaller
-ConflictMode = Literal["skip", "overwrite", "deduplicate", "trash", "rename_new", "rename_existing"]
+ConflictMode = Literal[
+    "skip", "overwrite", "deduplicate", "trash", "rename_new", "rename_existing"
+]
 
 
 class ConflictResult(NamedTuple):
@@ -104,10 +106,10 @@ def resolve_conflict(
 
             delete(path=dst)
         return ConflictResult(skip_action=False, use_dst=dst)
-    
+
     elif conflict_mode == "deduplicate":
         if filecmp.cmp(res.path, dst, shallow=True):
-            _print(f"Duplicate skipped.")
+            _print("Duplicate skipped.")
             return ConflictResult(skip_action=True, use_dst=res.path)
         else:
             new_path = next_free_name(

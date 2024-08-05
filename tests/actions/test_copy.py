@@ -136,6 +136,7 @@ def test_copy_conflict(fs, mode, result):
     Config.from_string(config).execute(simulate=False)
     assert read_files("test") == result
 
+
 def test_copy_deduplicate_conflict(fs):
     files = {
         "src.txt": "src",
@@ -162,7 +163,7 @@ def test_copy_deduplicate_conflict(fs):
 
     Config.from_string(config).execute(simulate=False)
     result = read_files("test")
-    
+
     assert result == {
         "src.txt": "src",
         "duplicate": {
@@ -174,6 +175,7 @@ def test_copy_deduplicate_conflict(fs):
         "dst.txt": "src",
         "dst 2.txt": "src2",
     }
+
 
 def test_does_not_create_folder_in_simulation(fs):
     config = """
