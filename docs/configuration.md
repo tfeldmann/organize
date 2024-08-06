@@ -15,8 +15,8 @@ EDITOR=code organize edit
 To open the folder containing the configuration file:
 
 ```sh
-organize reveal
-organize reveal --path  # show the full path to the default config
+organize show
+organize show --path  # show the full path to the default config
 ```
 
 To check your configuration run:
