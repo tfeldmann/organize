@@ -58,6 +58,21 @@ rules:
           on_conflict: overwrite
 ```
 
+Use a placeholder to copy all .pdf files into a "PDF" folder and all .jpg files into a "JPG" folder. If two files share the same file name and are duplicates, the duplicate will be skipped. If they aren't duplicates, the second file will be renamed.
+
+```yaml
+rules:
+  - locations: ~/Desktop
+    filters:
+      - extension:
+          - pdf
+          - jpg
+    actions:
+      - copy:
+          dest: "~/Desktop/{extension.upper()}/"
+          on_conflict: deduplicate
+```
+
 Copy into the folder `Invoices`. Keep the filename but do not overwrite existing files.
 To prevent overwriting files, an index is added to the filename, so `somefile.jpg` becomes `somefile 2.jpg`.
 The counter separator is `' '` by default, but can be changed using the `counter_separator` property.
