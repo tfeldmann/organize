@@ -172,3 +172,34 @@ def test_order(fs):
         Path("/test/2024/003"),
         Path("/test/2024/004"),
     ]
+
+
+def test_would_emit(fs):
+    make_files(
+        {
+            "subA": {"file.a": "", "file.b": ""},
+            "subB": {
+                "subC": {"file.ca": "", "file.cb": ""},
+                "file.ba": "",
+                "file.bb": "",
+            },
+            "subD": {
+                "subE": {"file.ca": "", "file.cb": ""},
+                "file.ba": "",
+                "file.bb": "",
+            },
+        },
+        "test",
+    )
+    assert Walker().would_walk(Path("/test"), Path("/test/subA/file.a"))
+
+    assert Walker(exclude_dirs={"subB"}).would_walk(
+        Path("/test"), Path("/test/subA/file.a")
+    )
+    assert Walker().would_walk(Path("/test"), Path("/test/subB/subC/file.ca"))
+    assert not Walker(exclude_dirs={"subB"}).would_walk(
+        Path("/test"), Path("/test/subB/subC/file.ca")
+    )
+
+    with pytest.raises(FileNotFoundError):
+        Walker().would_walk(Path("/test"), Path("/test/_/file.a"))

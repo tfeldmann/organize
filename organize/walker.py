@@ -174,8 +174,18 @@ class Walker:
         for entry in self.walk(path, files=False, dirs=True):
             yield Path(entry.path)
 
-    def would_emit(self, walkdir: Path, path: Path) -> bool:
-        # for every part of the relative path, check if we have file or dir actions.
-        if not path.is_relative_to(walkdir):
-            return False
+    def would_walk(self, root: Path, path: Path) -> bool:
+        full_path = root / path
+        if not full_path.exists():
+            raise FileNotFoundError(path)
+
+        curr = root
+        for lvl, part in enumerate(path.relative_to(root).parts):
+            curr /= part
+            if curr.is_dir():
+                is_match = self._dir_match(dirname=part, lvl=lvl).should_walk_into
+            else:
+                is_match = self._file_match(filename=part, lvl=lvl)
+            if not is_match:
+                return False
         return True
