@@ -76,9 +76,17 @@ source = ['organize']
 [tool.coverage.report]
 exclude_also = ["pragma: no cover", "if TYPE_CHECKING:"]
 
+
+
 [tool.mypy]
 python_version = "3.9"
 plugins = ["pydantic.mypy"]
+follow_imports = "silent"
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_any_generics = false
+check_untyped_defs = true
+no_implicit_reexport = true
 
 [[tool.mypy.overrides]]
 module = [
@@ -92,6 +100,11 @@ module = [
     "macos_tags",
 ]
 ignore_missing_imports = true
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
 
 [tool.pytest.ini_options]
 addopts = "--doctest-modules"

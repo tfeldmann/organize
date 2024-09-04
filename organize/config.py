@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import textwrap
+from collections import defaultdict
 from pathlib import Path
 from typing import Iterable, List, Optional, Union
 
@@ -14,6 +15,7 @@ from .output import Default, Output
 from .rule import Rule
 from .template import render
 from .utils import ReportSummary, normalize_unicode
+from .walker import Walker
 
 Tags = Iterable[str]
 
@@ -119,16 +121,24 @@ class Config:
         skip_tags: Tags = set(),
         working_dir: Union[str, Path] = ".",
     ) -> None:
-        from watchfiles import watch
+        from watchfiles import Change, watch
 
         from .template import render
 
-        watchpathes = []
+        walkers: defaultdict[Rule, list[Walker]] = defaultdict(list)
+        pathes: list[Path] = []
         for rule in self.rules:
             for location in rule.locations:
+                walker = rule._create_walker(location)
+                walkers[rule].append(walker)
                 for path in location.path:
-                    watchpathes.append(render(path))
+                    pathes.append(Path(render(path)))
 
-        print(watchpathes)
-        for x in watch(*watchpathes):
-            print(x)
+        print(walkers, pathes)
+        for changes in watch(*pathes):
+            for change, path in changes:
+                if change == Change.deleted:
+                    continue
+                # try all walkers
+                for rule, _walkers in walkers.items():
+                    print(rule, _walkers)

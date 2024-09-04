@@ -210,26 +210,28 @@ class Rule(BaseModel):
 
         return self
 
+    def _create_walker(self, location: Location) -> Walker:
+        # instantiate the filesystem walker
+        exclude_files = location.system_exclude_files | location.exclude_files
+        exclude_dirs = location.system_exclude_dirs | location.exclude_dirs
+        if location.max_depth == "inherit":
+            max_depth = None if self.subfolders else 0
+        else:
+            max_depth = location.max_depth
+
+        return Walker(
+            min_depth=location.min_depth,
+            max_depth=max_depth,
+            filter_dirs=location.filter_dirs,
+            filter_files=location.filter,
+            method=location.search,
+            exclude_dirs=exclude_dirs,
+            exclude_files=exclude_files,
+        )
+
     def walk(self, rule_nr: int = 0):
         for location in self.locations:
-            # instantiate the filesystem walker
-            exclude_files = location.system_exclude_files | location.exclude_files
-            exclude_dirs = location.system_exclude_dirs | location.exclude_dirs
-            if location.max_depth == "inherit":
-                max_depth = None if self.subfolders else 0
-            else:
-                max_depth = location.max_depth
-
-            walker = Walker(
-                min_depth=location.min_depth,
-                max_depth=max_depth,
-                filter_dirs=location.filter_dirs,
-                filter_files=location.filter,
-                method="breadth",
-                exclude_dirs=exclude_dirs,
-                exclude_files=exclude_files,
-            )
-
+            walker = self._create_walker(location=location)
             # whether to walk dirs or files
             _walk_funcs = {
                 "files": walker.files,
