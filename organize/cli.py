@@ -99,7 +99,7 @@ class ConfigWithPath(BaseModel):
     def by_name_or_path(cls, name_or_path: Optional[str]) -> "ConfigWithPath":
         config_path = find_config(name_or_path=name_or_path)
         return cls(
-            config=config_path.read_text(),
+            config=config_path.read_text(encoding="utf-8"),
             config_path=config_path,
         )
 
