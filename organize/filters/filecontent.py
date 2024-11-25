@@ -34,7 +34,7 @@ def clean(inp: str) -> str:
 
 
 def extract_txt(path: Path) -> str:
-    return path.read_text()
+    return path.read_text(encoding="utf-8")
 
 
 @lru_cache(maxsize=1)
