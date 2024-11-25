@@ -4,6 +4,10 @@
 
 - Added a new conflict mode `deduplicate` which skips duplicate files and renames
   non-duplicates (thanks @TheExistingOne).
+- The `exif` filter now supports extracting metadata from non-image files such as EPUB
+  or PDF files.
+- Loosen the pdfminer-six dependency version constraint for easier NixOS packaging.
+- Fixes encoding issues in windows (thanks @Alimektor).
 
 ## v3.2.5 (2024-07-09)
 
