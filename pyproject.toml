@@ -40,7 +40,7 @@ ExifRead = "2.3.2"                                                        # Pinn
 Jinja2 = "^3.1.2"
 macos-tags = { version = "^1.5.1", markers = "sys_platform == 'darwin'" }
 natsort = "^8.4.0"
-pdfminer-six = "^20231228"
+pdfminer-six = ">=20231228"
 platformdirs = "^4.0.0"
 pydantic = "^2.3.0"
 PyYAML = "^6.0"
