@@ -6,7 +6,7 @@ packages = [{ include = "organize" }]
 authors = ["Thomas Feldmann <mail@tfeldmann.de>"]
 license = "MIT"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.9"
 repository = "https://github.com/tfeldmann/organize"
 documentation = "https://organize.readthedocs.io"
 keywords = [
