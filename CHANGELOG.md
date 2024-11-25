@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v3.3.0 (2024-11-25)
+
 - Added a new conflict mode `deduplicate` which skips duplicate files and renames
   non-duplicates (thanks @TheExistingOne).
 - The `exif` filter now supports extracting metadata from non-image files such as EPUB
