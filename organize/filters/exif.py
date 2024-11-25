@@ -153,10 +153,11 @@ def exiftool_read(path: Path) -> ExifStrDict:
     # we pass a single filepath, so we are interested in the first element
     data: Dict = json.loads(data_json)[0]
 
-    # if data contains no media specific EXIF keys we assume we don't have
-    # any relevant EXIF data.
-    if "Composite" not in data.keys():
+    # if the result only contains "File", "SourceFile" and "ExifTool" it means exiftool
+    # couldn't find any additional data about this file.
+    if set(data.keys()) == set(["SourceFile", "ExifTool", "File"]):
         return dict()
+
     return data
 
 
