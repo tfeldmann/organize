@@ -50,7 +50,6 @@ from pydantic import (
     ConfigDict,
     Field,
     ValidationError,
-    field_validator,
     model_validator,
 )
 from pydantic.functional_validators import BeforeValidator
@@ -234,18 +233,17 @@ class CliArgs(BaseModel):
     version: bool = Field(..., alias="--version")
     help: bool = Field(..., alias="--help")
 
-    @field_validator("tags", "skip_tags", mode="after")
-    @classmethod
-    def split_tags(cls, val) -> Set[str]:
-        if val is None:
-            return set()
-        return set(val.split(","))
-
     @model_validator(mode="after")
     def either_stdin_or_config(self):
         if self.stdin and self.config is not None:
             raise ValueError("Either set a config file or --stdin.")
         return self
+
+
+def _split_tags(val: Optional[str]) -> Tags:
+    if val is None:
+        return set()
+    return set(val.split(","))
 
 
 def cli(argv: Union[list[str], str, None] = None) -> None:
@@ -272,8 +270,8 @@ def cli(argv: Union[list[str], str, None] = None) -> None:
                 config=_config_with_path(),
                 working_dir=args.working_dir,
                 format=args.format,
-                tags=args.tags,
-                skip_tags=args.skip_tags,
+                tags=_split_tags(args.tags),
+                skip_tags=_split_tags(args.skip_tags),
             )
             if args.run:
                 _execute(simulate=False)

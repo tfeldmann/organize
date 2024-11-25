@@ -39,7 +39,7 @@ def action_by_name(name: str) -> Type[Action]:
 
 
 # Register filters and actions
-for x in filters.ALL:
-    register_filter(x)
-for x in actions.ALL:
-    register_action(x)
+for _filter in filters.ALL:
+    register_filter(_filter)  # type: ignore
+for _action in actions.ALL:
+    register_action(_action)

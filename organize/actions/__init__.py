@@ -1,3 +1,7 @@
+from typing import Tuple, Type
+
+from organize.action import Action
+
 from .confirm import Confirm
 from .copy import Copy
 from .delete import Delete
@@ -12,7 +16,7 @@ from .symlink import Symlink
 from .trash import Trash
 from .write import Write
 
-ALL = (
+ALL: Tuple[Type[Action], ...] = (
     Confirm,
     Copy,
     Delete,
