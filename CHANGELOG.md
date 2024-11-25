@@ -1,7 +1,9 @@
 # Changelog
 
 ## [Unreleased]
-- Added a new conflict mode `deduplicate` which skips duplicate files amd renames non-duplicates
+
+- Added a new conflict mode `deduplicate` which skips duplicate files and renames
+  non-duplicates (thanks @TheExistingOne).
 
 ## v3.2.5 (2024-07-09)
 
