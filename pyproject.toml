@@ -2,13 +2,10 @@
 name = "organize-tool"
 version = "3.3.0"
 description = "The file management automation tool"
-packages = [{ include = "organize" }]
-authors = ["Thomas Feldmann <mail@tfeldmann.de>"]
-license = "MIT"
+authors = [{ name="Thomas Feldmann", email = "mail@tfeldmann.de" }]
+license = {file = "./LICENSE.txt"}
 readme = "README.md"
 requires-python = ">=3.9"
-repository = "https://github.com/tfeldmann/organize"
-documentation = "https://organize.readthedocs.io"
 keywords = [
     "file",
     "management",
@@ -45,6 +42,22 @@ dependencies = [
     "simplematch>=1.4,<2.0.0",
 ]
 
+[project.urls]
+repository = "https://github.com/tfeldmann/organize"
+documentation = "https://organize.readthedocs.io"
+
+[project.optional-dependencies]
+docs = [
+    "markupsafe==2.0.1",
+    "mkdocs-autorefs>=0.5.0,<1.0.0",
+    "mkdocs-include-markdown-plugin>=6.0.4,<7.0.0",
+    "mkdocs>=1.5.3,<2.0.0",
+    "mkdocstrings[python]>=0.24.0,<1.0.0",
+]
+
+[project.scripts]
+organize = "organize.cli:cli"
+
 [dependency-groups]
 dev = [
     "coverage>=7.2.0,<8.0.0",
@@ -55,14 +68,6 @@ dev = [
     "requests>=2.31.0,<3.0.0",
     "ruff>=0.3.0,<1.0.0",
     "types-pyyaml>=6.0.12.10,<7.0.0",
-]
-[project.optional-dependencies]
-docs = [
-    "markupsafe==2.0.1",
-    "mkdocs-autorefs>=0.5.0,<1.0.0",
-    "mkdocs-include-markdown-plugin>=6.0.4,<7.0.0",
-    "mkdocs>=1.5.3,<2.0.0",
-    "mkdocstrings[python]>=0.24.0,<1.0.0",
 ]
 
 [tool.coverage.run]
@@ -94,3 +99,6 @@ testpaths = ["tests", "organize"]
 norecursedirs = ["tests/todo", "organize/filters", ".configs"]
 filterwarnings = ["ignore::DeprecationWarning"]
 
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
