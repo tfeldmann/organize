@@ -4,14 +4,14 @@ from organize import Config
 
 
 def test_is_executable():
+    import sys
+    from uuid import uuid1 as uuid
     from organize.filters.filecontent import _is_executable as is_executable
 
-    import sys
-    present_exe = 'dir' if hasattr(sys, 'getwindowsversion') else 'ls'
+    present_exe = "dir" if hasattr(sys, "getwindowsversion") else "ls"
     assert is_executable(present_exe)
 
-    from uuid import uuid1 as uuid
-    absent_exe = f"no-such-executable-{uuid()}" # random name that won't exist
+    absent_exe = f"no-such-executable-{uuid()}"  # random name that won't exist
     assert not is_executable(absent_exe)
 
 
