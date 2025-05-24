@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Fixed #438 (`filecontent` filter fails for PDFs when `pdftotext` isn't installed, instead of falling back to `pdfminer`)
+
 ## v3.3.0 (2024-11-25)
 
 - Added a new conflict mode `deduplicate` which skips duplicate files and renames
