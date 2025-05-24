@@ -54,7 +54,7 @@ def _is_executable(name: str, *args) -> bool:
             stderr=subprocess.STDOUT,
         )
         return True
-    except subprocess.CalledProcessError:
+    except (FileNotFoundError, subprocess.CalledProcessError):
         return False
 
 
