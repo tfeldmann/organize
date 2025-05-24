@@ -40,15 +40,21 @@ def extract_txt(path: Path) -> str:
 @lru_cache(maxsize=1)
 def _pdftotext_available() -> bool:
     # check whether the given path is executable
+    ok = _is_executable("pdftotext", "-v")
+    if not ok:
+        logger.warning("pdftotext not available. Falling back to pdfminer library.")
+    return ok
+
+
+def _is_executable(name: str, *args) -> bool:
     try:
         subprocess.check_call(
-            ["pdftotext", "-v"],
+            [name, *args],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.STDOUT,
         )
         return True
     except subprocess.CalledProcessError:
-        logger.warning("pdftotext not available. Falling back to pdfminer library.")
         return False
 
 
