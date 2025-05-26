@@ -6,6 +6,7 @@ from organize import Config
 def test_is_executable():
     import sys
     from uuid import uuid1 as uuid
+
     from organize.filters.filecontent import _is_executable as is_executable
 
     present_exe = "dir" if hasattr(sys, "getwindowsversion") else "ls"
