@@ -9,7 +9,7 @@ repos:
           - --fix=lf
       - id: trailing-whitespace
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.0
+    rev: v0.11.11
     hooks:
       # lint and fix
       - id: ruff
@@ -20,6 +20,6 @@ repos:
       # format
       - id: ruff-format
   - repo: https://github.com/python-poetry/poetry
-    rev: "1.8.0"
+    rev: "2.1.3"
     hooks:
       - id: poetry-check
