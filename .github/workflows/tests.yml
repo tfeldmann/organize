@@ -44,4 +44,3 @@ jobs:
       - name: Check with MyPy
         run: |
           uv run mypy .
-

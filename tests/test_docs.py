@@ -45,14 +45,14 @@ def test_examples_are_valid(location, config):
 def test_all_filters_documented():
     filter_docs = (DOCS_DIR / "filters.md").read_text(encoding="utf-8")
     for name in FILTERS.keys():
-        assert (
-            "## {}".format(name) in filter_docs
-        ), f"The {name} filter is not documented!"
+        assert "## {}".format(name) in filter_docs, (
+            f"The {name} filter is not documented!"
+        )
 
 
 def test_all_actions_documented():
     action_docs = (DOCS_DIR / "actions.md").read_text(encoding="utf-8")
     for name in ACTIONS.keys():
-        assert (
-            "## {}".format(name) in action_docs
-        ), f"The {name} action is not documented!"
+        assert "## {}".format(name) in action_docs, (
+            f"The {name} action is not documented!"
+        )
