@@ -8,7 +8,7 @@ from organize.utils import (
 )
 
 
-def test_is_executable():
+def test_has_executable():
     from uuid import uuid1 as uuid
 
     present_exe = "dir" if sys.platform.startswith("win") else "ls"
