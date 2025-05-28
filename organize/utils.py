@@ -1,5 +1,6 @@
 import fnmatch
 import os
+import shutil
 import unicodedata
 from copy import deepcopy
 from dataclasses import dataclass
@@ -53,6 +54,10 @@ class ChangeDetector:
 
     def reset(self) -> None:
         self._ready = False
+
+
+def has_executable(name: str) -> bool:
+    return shutil.which(name) is not None
 
 
 def expandvars(path: Union[str, Path]) -> Path:

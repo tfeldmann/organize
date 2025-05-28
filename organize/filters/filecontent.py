@@ -1,5 +1,4 @@
 import re
-import shutil
 import subprocess
 from functools import lru_cache
 from pathlib import Path
@@ -12,6 +11,7 @@ from organize.filter import FilterConfig
 from organize.logger import logger
 from organize.output import Output
 from organize.resource import Resource
+from organize.utils import has_executable
 
 
 def _compress_chars(inp: str) -> str:
@@ -41,14 +41,10 @@ def extract_txt(path: Path) -> str:
 @lru_cache(maxsize=1)
 def _pdftotext_available() -> bool:
     # check whether the given path is executable
-    ok = _is_executable("pdftotext")
+    ok = has_executable(name="pdftotext")
     if not ok:
         logger.warning("pdftotext not available. Falling back to pdfminer library.")
     return ok
-
-
-def _is_executable(name: str) -> bool:
-    return shutil.which(name) is not None
 
 
 def _extract_with_pdftotext(path: Path, keep_layout: bool) -> str:

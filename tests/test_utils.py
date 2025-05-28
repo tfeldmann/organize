@@ -1,4 +1,17 @@
-from organize.utils import ChangeDetector, deep_merge, deep_merge_inplace
+from organize.utils import (
+    ChangeDetector,
+    deep_merge,
+    deep_merge_inplace,
+    has_executable,
+)
+
+
+def test_is_executable():
+    from uuid import uuid1 as uuid
+
+    assert has_executable("cd")
+    absent_exe = f"no-such-executable-{uuid()}"  # random name that won't exist
+    assert not has_executable(absent_exe)
 
 
 def test_changedetector():
