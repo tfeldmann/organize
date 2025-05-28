@@ -3,6 +3,19 @@ from conftest import make_files, read_files
 from organize import Config
 
 
+def test_is_executable():
+    import sys
+    from uuid import uuid1 as uuid
+
+    from organize.filters.filecontent import _is_executable as is_executable
+
+    present_exe = "dir" if hasattr(sys, "getwindowsversion") else "ls"
+    assert is_executable(present_exe)
+
+    absent_exe = f"no-such-executable-{uuid()}"  # random name that won't exist
+    assert not is_executable(absent_exe)
+
+
 def test_filecontent(fs):
     # inspired by https://github.com/tfeldmann/organize/issues/43
     files = {

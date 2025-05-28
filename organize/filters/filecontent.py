@@ -1,4 +1,5 @@
 import re
+import shutil
 import subprocess
 from functools import lru_cache
 from pathlib import Path
@@ -40,16 +41,14 @@ def extract_txt(path: Path) -> str:
 @lru_cache(maxsize=1)
 def _pdftotext_available() -> bool:
     # check whether the given path is executable
-    try:
-        subprocess.check_call(
-            ["pdftotext", "-v"],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.STDOUT,
-        )
-        return True
-    except subprocess.CalledProcessError:
+    ok = _is_executable("pdftotext")
+    if not ok:
         logger.warning("pdftotext not available. Falling back to pdfminer library.")
-        return False
+    return ok
+
+
+def _is_executable(name: str) -> bool:
+    return shutil.which(name) is not None
 
 
 def _extract_with_pdftotext(path: Path, keep_layout: bool) -> str:
