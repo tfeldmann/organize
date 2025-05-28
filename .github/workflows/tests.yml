@@ -12,10 +12,6 @@ on:
       - main
   workflow_dispatch:
 
-# https://github.com/python-poetry/poetry/issues/8623
-env:
-  PYTHON_KEYRING_BACKEND: keyring.backends.null.Keyring
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -34,22 +30,18 @@ jobs:
         with:
           python-version: "${{ matrix.python-version }}"
 
-      - name: Setup Environment
-        env:
-          PYTHON_KEYRING_BACKEND: keyring.backends.null.Keyring
-        run: |
-          python3 -m pip install -U pip setuptools
-          python3 -m pip install poetry==1.7.1
-          poetry install --with=dev
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
 
       - name: Version info
         run: |
-          poetry run python main.py --version
+          uv run python main.py --version
 
       - name: Test with pytest
         run: |
-          poetry run pytest
+          uv run python -m pytest tests
 
       - name: Check with MyPy
         run: |
-          poetry run mypy .
+          uv run mypy .
+
