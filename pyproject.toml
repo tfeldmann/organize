@@ -48,7 +48,7 @@ documentation = "https://organize.readthedocs.io"
 
 [project.optional-dependencies]
 docs = [
-    "markupsafe==2.0.1",
+    "markupsafe==3.0.2",
     "mkdocs-autorefs>=0.5.0,<1.0.0",
     "mkdocs-include-markdown-plugin>=6.0.4,<7.0.0",
     "mkdocs>=1.5.3,<2.0.0",
