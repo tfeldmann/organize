@@ -34,7 +34,7 @@ jobs:
           images: tfeldmann/organize
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: true
           tags: tfeldmann/organize:latest
