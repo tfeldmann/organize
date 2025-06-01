@@ -50,7 +50,7 @@ documentation = "https://organize.readthedocs.io"
 docs = [
     "markupsafe==2.0.1",
     "mkdocs-autorefs>=0.5.0,<1.0.0",
-    "mkdocs-include-markdown-plugin>=6.0.4,<7.0.0",
+    "mkdocs-include-markdown-plugin>=6.0.4,<8.0.0",
     "mkdocs>=1.5.3,<2.0.0",
     "mkdocstrings[python]>=0.24.0,<1.0.0",
 ]
