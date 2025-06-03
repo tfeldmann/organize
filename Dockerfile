@@ -9,11 +9,12 @@ WORKDIR /app
 
 FROM base as pydeps
 
-RUN pip install "poetry==1.7.1" && \
-    python -m venv ${VIRTUAL_ENV}
-COPY pyproject.toml poetry.lock ./
-RUN poetry install --only=main --no-interaction
-
+RUN pip install uv
+COPY pyproject.toml uv.lock ./
+RUN uv venv ${VIRTUAL_ENV} && \
+    uv pip compile --generate-hashes pyproject.toml > requirements.txt && \
+    uv pip install --require-hashes -r requirements.txt
+RUN uv pip freeze
 
 FROM base as final
 
