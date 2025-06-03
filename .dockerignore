@@ -4,7 +4,7 @@
 # Allow root-level pyproject files
 !pyproject.toml
 !poetry.lock
-!uv.lock 
+!uv.lock
 !README.md
 
 # Allow Python files anywhere
