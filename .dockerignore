@@ -1,11 +1,20 @@
-# ignore everything
-*
+# Ignore everything by default
+**
 
-# except pyproject files
-!poetry.lock
+# Allow root-level pyproject files
 !pyproject.toml
+!poetry.lock
+!uv.lock
 !README.md
 
-# and python scripts
+# Allow Python files anywhere
 !**/*.py
 !**/py.typed
+
+# Allow organize package if it's a directory
+!organize/
+!organize/**
+
+# Allow config files if applicable
+!config/
+!config/**
