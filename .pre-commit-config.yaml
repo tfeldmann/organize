@@ -9,7 +9,7 @@ repos:
           - --fix=lf
       - id: trailing-whitespace
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.11
+    rev: v0.11.12
     hooks:
       # lint and fix
       - id: ruff
