@@ -1,29 +1,28 @@
-FROM python:3.11-slim as base
+FROM python:3.12-slim
 
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    PYTHONUNBUFFERED=1 \
-    VIRTUAL_ENV="/venv"
-ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
+RUN apt-get -y update && apt-get install -y --no-install-recommends \
+    exiftool \
+    poppler-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=ghcr.io/astral-sh/uv:0.7.14 /uv /uvx /bin/
+
 WORKDIR /app
 
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    PATH="/app/.venv/bin:$PATH"
 
-FROM base as pydeps
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --locked --no-install-project
 
-RUN pip install "poetry==1.7.1" && \
-    python -m venv ${VIRTUAL_ENV}
-COPY pyproject.toml poetry.lock ./
-RUN poetry install --only=main --no-interaction
+ADD . /app
 
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked
 
-FROM base as final
-
-RUN apt update && \
-    apt install -y exiftool poppler-utils && \
-    rm -rf /var/lib/apt/lists/*
-ENV ORGANIZE_CONFIG=/config/config.yml \
-    ORGANIZE_EXIFTOOL_PATH=exiftool
-RUN mkdir /config && mkdir /data
-COPY --from=pydeps ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 COPY ./organize ./organize
 
 ENTRYPOINT ["python", "-m", "organize"]

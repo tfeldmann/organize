@@ -2,10 +2,8 @@
 *
 
 # except pyproject files
-!poetry.lock
 !pyproject.toml
-!README.md
+!uv.lock
 
-# and python scripts
-!**/*.py
-!**/py.typed
+# and the organize folder
+!organize/**/*.py
