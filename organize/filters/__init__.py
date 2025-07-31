@@ -8,8 +8,8 @@ from .extension import Extension
 from .filecontent import FileContent
 from .hash import Hash
 from .lastmodified import LastModified
+from .macos_downloadsource import MacOSDownloadSource
 from .macos_tags import MacOSTags
-from .macos_downloadsource import MacOSDownloadSource 
 from .mimetype import MimeType
 from .name import Name
 from .python import Python

@@ -1,5 +1,5 @@
-import sys
 import json
+import sys
 from typing import ClassVar, List
 
 from pydantic import Field, field_validator
@@ -14,6 +14,7 @@ from organize.utils import glob_match
 
 def list_download_urls(path) -> List[str]:
     import osxmetadata
+
     urls = json.loads(osxmetadata.OSXMetaData(path).to_json())["kMDItemWhereFroms"]
     return urls
 
@@ -40,9 +41,9 @@ def match_urls(filter_urls, file_urls) -> bool:
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class MacOSDownloadSource:
-    """Filter files using the "kMDItemWhereFroms" metadata present in macOS files. 
+    """Filter files using the "kMDItemWhereFroms" metadata present in macOS files.
     This allows us to check where the file originated from (if such metadata exists)
- 
+
     Attributes:
         urls (list(str) or str):
             The source URLs to filter by
@@ -58,7 +59,9 @@ class MacOSDownloadSource:
 
     def __post_init__(self):
         if sys.platform != "darwin":
-            raise EnvironmentError("The macos_downloadsource filter is only available on macOS")
+            raise EnvironmentError(
+                "The macos_downloadsource filter is only available on macOS"
+            )
 
     @field_validator("urls", mode="before")
     def normalise_urls(cls, v):
