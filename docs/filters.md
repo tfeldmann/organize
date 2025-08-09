@@ -501,6 +501,33 @@ rules:
       - echo: "{macos_tags}"
 ```
 
+## macos_downloadsource
+
+::: organize.filters.MacOSDownloadSource
+
+**Examples:**
+
+```yaml
+rules:
+  - name: "List all files downloaded from example.com"
+    locations: "~/Downloads"
+    filters:
+      - macos_downloadsource:
+        - "https://example.com/*"
+    actions:
+      - echo: "File downloaded from example.com"
+```
+
+```yaml
+rules:
+  - name: "Listing files that were downloaded installed of created locally"
+    locations: "~/Downloads"
+    filters:
+      - macos_downloadsource
+    actions:
+      - echo: "{path}"
+```
+
 ## mimetype
 
 ::: organize.filters.MimeType
