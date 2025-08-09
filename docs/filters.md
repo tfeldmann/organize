@@ -102,7 +102,7 @@ rules:
 
 Works the same way as [`created`](#created) and [`lastmodified`](#lastmodified).
 
-** Examples **
+**Examples:**
 
 ```yaml
 rules:
@@ -120,7 +120,7 @@ rules:
 
 Works the same way as [`created`](#created) and [`lastmodified`](#lastmodified).
 
-** Examples **
+**Examples:**
 
 ```yaml
 rules:
