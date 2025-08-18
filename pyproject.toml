@@ -37,7 +37,7 @@ dependencies = [
     "platformdirs>=4.0.0,<5.0.0",
     "pydantic>=2.3.0,<3.0.0",
     "pyyaml>=6.0,<7.0",
-    "rich>=13.4.2,<=14.0.0",
+    "rich>=13.4.2,<=14.1.0",
     "send2trash[nativelib]>=1.8.2,<2.0.0",
     "simplematch>=1.4,<2.0.0",
 ]
