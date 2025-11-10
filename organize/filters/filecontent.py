@@ -79,25 +79,20 @@ def extract_docx(path: Path) -> str:
     return clean(result)
 
 
-EXTRACTORS: Dict[str, Callable[[Path], str]] = {
-    ".md": extract_txt,
-    ".txt": extract_txt,
-    ".log": extract_txt,
+SPECIALIZED_EXTRACTORS: Dict[str, Callable[[Path], str]] = {
     ".pdf": extract_pdf,
     ".docx": extract_docx,
 }
 
 
 def textract(path: Path) -> str:
-    extractor = EXTRACTORS[path.suffix.lower()]
+    extractor = SPECIALIZED_EXTRACTORS.get(path.suffix.lower(), extract_txt)
     return extractor(path)
 
 
 @dataclass(config=ConfigDict(coerce_numbers_to_str=True, extra="forbid"))
 class FileContent:
     """Matches file content with the given regular expression.
-
-    Supports .md, .txt, .log, .pdf and .docx files.
 
     For PDF content extraction poppler should be installed for the `pdftotext` command.
     If this is not available `filecontent` will fall back to the `pdfminer` library.
