@@ -31,7 +31,7 @@ def test_regex_return(path, valid, test_result):
     assert bool(regex.matches(path)) == valid
     res = Resource(path=Path(path))
     if valid:
-        regex.pipeline(res=res, output=Default)
+        regex.pipeline(res=res, output=Default())
         assert res.vars == {"regex": {"the_number": test_result}}
 
 
@@ -44,7 +44,7 @@ def test_regex_umlaut():
 def test_multiple_regex_placeholders(fs: FakeFilesystem):
     make_files(["test-123.jpg", "other-456.pdf"], "test")
 
-    config = """
+    config = r"""
     rules:
       - locations: /test/
         filters:

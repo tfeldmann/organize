@@ -13,7 +13,7 @@ def test_codepost_usecase(fs):
     }
     make_files(files, "test")
     Config.from_string(
-        """
+        r"""
         rules:
           - locations: /test
             filters:
