@@ -251,12 +251,13 @@ class Rule(BaseModel):
         if not self.enabled:
             return ReportSummary()
 
+        current_action: Optional[Action] = None
+
         # standalone mode
         if not self.locations:
             res = Resource(path=None, rule_nr=rule_nr)
-            action: str | Action = "rule"
             try:
-                for action in action_pipeline(
+                for current_action in action_pipeline(
                     actions=self.actions,
                     res=res,
                     simulate=simulate,
@@ -269,7 +270,7 @@ class Rule(BaseModel):
                     res=res,
                     msg=str(e),
                     level="error",
-                    sender=action,
+                    sender="rule" if current_action is None else current_action,
                 )
                 logger.exception(e)
                 return ReportSummary(errors=1)
@@ -287,9 +288,9 @@ class Rule(BaseModel):
                 output=output,
             )
             if result:
-                action: str | Action = "rule"
+                current_action = None
                 try:
-                    for action in action_pipeline(
+                    for current_action in action_pipeline(
                         actions=self.actions,
                         res=res,
                         simulate=simulate,
@@ -303,7 +304,7 @@ class Rule(BaseModel):
                         res=res,
                         msg=str(e),
                         level="error",
-                        sender=action,
+                        sender="rule" if current_action is None else current_action,
                     )
                     logger.exception(e)
                     summary.errors += 1
