@@ -254,6 +254,7 @@ class Rule(BaseModel):
         # standalone mode
         if not self.locations:
             res = Resource(path=None, rule_nr=rule_nr)
+            action: str | Action = "rule"
             try:
                 for action in action_pipeline(
                     actions=self.actions,
@@ -286,6 +287,7 @@ class Rule(BaseModel):
                 output=output,
             )
             if result:
+                action: str | Action = "rule"
                 try:
                     for action in action_pipeline(
                         actions=self.actions,

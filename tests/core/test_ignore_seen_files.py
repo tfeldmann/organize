@@ -35,7 +35,7 @@ def test_ignore_seen_files(fs):
 
 def test_issue_200(fs):
     # https://github.com/tfeldmann/organize/issues/200
-    config = """
+    config = r"""
     # try to extract the first date from the file and rename it accordingly
     rules:
       - name: date_rename
