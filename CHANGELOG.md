@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Fixed #438 (`filecontent` filter fails for PDFs when `pdftotext` isn't installed, instead of falling back to `pdfminer`)
+- New filter: `macos_downloadsource` (macOS only).
 
 ## v3.3.0 (2024-11-25)
 
