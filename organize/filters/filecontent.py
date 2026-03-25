@@ -90,7 +90,7 @@ EXTRACTORS: Dict[str, Callable[[Path], str]] = {
 
 def textract(path: Path) -> str:
     """Extract text from a file.
-    
+
     For known formats (PDF, DOCX), use specialized extractors.
     For all other formats, fall back to plain text extraction.
     """
