@@ -73,10 +73,10 @@ def extract_pdf(path: Path, keep_layout: bool = True) -> str:
 
 
 def extract_docx(path: Path) -> str:
-    import docx2txt  # type: ignore
+    from docx2python import docx2python  # type: ignore
 
-    result = docx2txt.process(path)
-    return clean(result)
+    doc = docx2python(str(path))
+    return clean(doc.text)
 
 
 EXTRACTORS: Dict[str, Callable[[Path], str]] = {
