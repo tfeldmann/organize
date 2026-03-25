@@ -89,7 +89,13 @@ EXTRACTORS: Dict[str, Callable[[Path], str]] = {
 
 
 def textract(path: Path) -> str:
-    extractor = EXTRACTORS[path.suffix.lower()]
+    """Extract text from a file.
+
+    For known formats (PDF, DOCX), use specialized extractors.
+    For all other formats, fall back to plain text extraction.
+    """
+    suffix = path.suffix.lower()
+    extractor = EXTRACTORS.get(suffix, extract_txt)
     return extractor(path)
 
 
@@ -97,7 +103,9 @@ def textract(path: Path) -> str:
 class FileContent:
     """Matches file content with the given regular expression.
 
-    Supports .md, .txt, .log, .pdf and .docx files.
+    Supports .md, .txt, .log, .pdf, and .docx files natively.
+    For any other file format (e.g., .xml, .json, .csv, .py), falls back to
+    reading the file as plain text.
 
     For PDF content extraction poppler should be installed for the `pdftotext` command.
     If this is not available `filecontent` will fall back to the `pdfminer` library.
