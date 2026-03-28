@@ -159,7 +159,11 @@ def new(config: Optional[str]) -> None:
 
 
 def edit(config: Optional[str]) -> None:
-    config_path = find_config(config)
+    try:
+        config_path = find_config(config)
+    except ConfigNotFound as e:
+        console.print(f"Error: {escape(e)}")
+        sys.exit(1)
     editor = os.getenv("EDITOR")
     if editor:
         os.system(f'{editor} "{config_path}"')
