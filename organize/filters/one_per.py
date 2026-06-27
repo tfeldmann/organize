@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import ClassVar, Literal, assert_type
+from typing import ClassVar, Literal
 
 import arrow
 from pydantic.config import ConfigDict
@@ -57,8 +57,6 @@ class OnePer:
     )
 
     def __post_init__(self):
-        assert_type(self.period, Period)
-
         self._seen_files: set["os.PathLike"] = set()
         self._the_one_for_period: dict["arrow.Arrow", "os.PathLike"] = dict()
 
