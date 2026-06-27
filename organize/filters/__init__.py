@@ -11,6 +11,7 @@ from .lastmodified import LastModified
 from .macos_tags import MacOSTags
 from .mimetype import MimeType
 from .name import Name
+from .one_per import OnePer
 from .python import Python
 from .regex import Regex
 from .size import Size
@@ -29,6 +30,7 @@ ALL = (
     MacOSTags,
     MimeType,
     Name,
+    OnePer,
     Python,
     Regex,
     Size,
