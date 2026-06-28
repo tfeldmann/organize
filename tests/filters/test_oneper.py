@@ -17,13 +17,26 @@ def period(request) -> Period:
     return request.param
 
 
+def make_a_path(file: Path | str, timestamp: Arrow | None = None) -> Path:
+    """make sure file exists and has a specific timestamp"""
+    # make sure file exists
+    path = Path(file)
+    path.touch()
+
+    # set timestamp
+    if timestamp is not None:
+        ts = timestamp.timestamp()
+        os.utime(path, (ts, ts))
+
+    return path
+
+
 def test_tracks_seen_files(fs):
     """our filter should keep track of files that it processes"""
     ## organize
     # create a single file
     op = OnePer()
-    a = Path("/a")
-    a.touch()
+    a = make_a_path("/a")
     r = Resource(a)
 
     ## act
@@ -41,8 +54,7 @@ def test_skips_symlinks(fs):
     ## organize
     # create a file and a symlink to it
     op = OnePer()
-    real_file = Path("/real_file")
-    real_file.touch()
+    real_file = make_a_path("/real_file")
     link_file = Path("/link_file")
     link_file.symlink_to(real_file)
 
@@ -82,14 +94,7 @@ def test_tracks_file_period(fs, period):
     now = Arrow(2026, 6, 26, 17, 8, 32, 123)
     # expected period for the file
     file_period = now.floor(period)
-    # the POSIX timestamp
-    ts = now.timestamp()
-    # path to the file
-    f = Path("/f")
-    # create the file
-    f.touch()
-    # set the timestamp on the file
-    os.utime(f, (ts, ts))
+    f = make_a_path("/f", now)
 
     ## act
     processed = op.pipeline(Resource(f), Output())
