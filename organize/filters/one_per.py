@@ -132,7 +132,10 @@ class OnePer:
         :return: is `path` the new `the_one`
         :rtype: bool
         """
-        it_is = ts < self._ts_for_the_one[period]
+        if self._detect_the_one_by == "first_seen":
+            it_is = False
+        else:
+            it_is = ts < self._ts_for_the_one[period]
         if self._detect_the_one_reverse:
             return not it_is
         return it_is

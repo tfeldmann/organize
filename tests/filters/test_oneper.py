@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from time import sleep
 from typing import Generator, List, Optional, Tuple, Union
 
 import pytest
@@ -145,6 +146,10 @@ def files_with_relative_ts(
       - order[2] -> 1 -> offsets[1]: `/file_1`, mtime is +5
     """
     now = Arrow.now()
+    # try to avoid issues with file creation close to the end of the hour
+    if now.minute == 59 and now.second == 59:
+        sleep(1)
+        now = Arrow.now()
 
     paths: List[Path] = list()
     for i in range(len(offsets)):
@@ -158,26 +163,35 @@ def files_with_relative_ts(
 @pytest.fixture
 def method_and_expect(
     files_with_relative_ts, method: DetectionMethod, expected: int
-) -> Generator[Tuple[DetectionMethod, List[Path], Path], None, None]:
+) -> Generator[Tuple[DetectionMethod, List[Path]], None, None]:
     """"""
     paths = files_with_relative_ts
-    yield method, paths, (paths[expected])
+    yield method, paths  # , (paths[expected])
 
 
-@pytest.mark.parametrize(
-    ["method", "expected", "offsets", "order", "acted"],
-    [
-        ("lastmodified", 1, [2, 0, 1], None, [False, 0, 2]),
-        ("lastmodified", 2, [1, 2, 0], None, [False, 1, 0]),
-        ("-lastmodified", 1, [0, 2, 1], None, [False, 0, 2]),
-        ("-lastmodified", 2, [0, 1, 2], None, [False, 0, 1]),
-        ("created", 1, [5, 5, 5], [1, 0, 2], [False, 0, 2]),
-        ("-created", 1, [5, 5, 5], [0, 2, 1], [False, 0, 2]),
-    ],
-)
-def test_selects_one_with_method(method_and_expect, acted: List[Union[bool, int]]):
+def check_selects_one_with_method(
+    method: DetectionMethod,
+    paths: List[Path],
+    acted: List[Union[bool, int]],
+):
+    """test the OnePer::pipeline() for one set of files
+
+    :param method: How OnePer should choose "the one" file
+    :type method: DetectionMethod
+    :param paths: list of file Paths to process
+    :type paths: List[Path]
+    :param acted: the expected results for each call of the pipeline; the call
+            either return `False`, or it will return `True`, and the value of
+            `res.path` will be set to a file which is specified by its index
+            in the `paths` param;
+            e.g., `acted=[False, 1, 2]` indicates: the first call returns
+            `False`, the second call returns `True` with `res.path` set to
+            `paths[1]`, and the third call returns `True` with `res.path` set
+            to `paths[2]`
+    :type acted: List[Union[bool, int]]
+    """
     ## arrange
-    method, paths, expected = method_and_expect
+    # method, paths, expected = method_and_expect
     op = OnePer(detect_the_one_by=method)
 
     ## act
@@ -213,3 +227,140 @@ def test_selects_one_with_method(method_and_expect, acted: List[Union[bool, int]
         if expected_act != i:
             expected_one = paths[i]
         assert expected_one == res.vars[op.filter_config.name]["the_one"]
+
+
+@pytest.mark.parametrize(
+    ["offsets", "order", "acted"],
+    [
+        ([2, 0, 1], None, [False, 0, 2]),
+        ([1, 2, 0], None, [False, 1, 0]),
+    ],
+)
+def test_detects_by_lastmodified(files_with_relative_ts, acted):
+    """test `OnePer::pipeline()` with the `lastmodified` method
+
+    :param files_with_relative_ts: a test fixture that generates files with
+        relative modification timestamps, and optionally in a specified order
+        of file creation
+    :param acted: the expected results (see `check_selects_one_with_method`)
+    """
+    check_selects_one_with_method("lastmodified", files_with_relative_ts, acted)
+
+
+@pytest.mark.parametrize(
+    ["offsets", "order", "acted"],
+    [
+        ([0, 2, 1], None, [False, 0, 2]),
+        ([0, 1, 2], None, [False, 0, 1]),
+    ],
+)
+def test_reverses_lastmodified(files_with_relative_ts, acted):
+    """test `OnePer::pipeline()` with the `lastmodified` method, reversed
+
+    :param files_with_relative_ts: a test fixture that generates files with
+        relative modification timestamps, and optionally in a specified order
+        of file creation
+    :param acted: the expected results (see `check_selects_one_with_method`)
+    """
+    check_selects_one_with_method("-lastmodified", files_with_relative_ts, acted)
+
+
+@pytest.mark.parametrize(
+    ["offsets", "order", "acted"],
+    [
+        ([3, 2, 1], None, [False, 1, 2]),
+        ([5, 5, 5], [1, 0, 2], [False, 0, 2]),
+    ],
+)
+def test_detects_by_created(files_with_relative_ts, acted):
+    """test `OnePer::pipeline()` with the `created` method
+
+    This test uses different orders of file creation to alter which files
+    are filtered.
+
+    :param files_with_relative_ts: a test fixture that generates files with
+        relative modification timestamps, and optionally in a specified order
+        of file creation
+    :param acted: the expected results (see `check_selects_one_with_method`)
+    """
+    check_selects_one_with_method("created", files_with_relative_ts, acted)
+
+
+@pytest.mark.parametrize(
+    ["offsets", "order", "acted"],
+    [
+        ([1, 2, 3], None, [False, 0, 1]),
+        ([5, 5, 5], [0, 2, 1], [False, 0, 2]),
+    ],
+)
+def test_reverses_created(files_with_relative_ts, acted):
+    """test `OnePer::pipeline()` with the `created` method, reversed
+
+    This test uses different orders of file creation to alter which files
+    are filtered.
+
+    :param files_with_relative_ts: a test fixture that generates files with
+        relative modification timestamps, and optionally in a specified order
+        of file creation
+    :param acted: the expected results (see `check_selects_one_with_method`)
+    """
+    check_selects_one_with_method("-created", files_with_relative_ts, acted)
+
+
+@pytest.mark.parametrize(
+    ["offsets", "order", "acted", "seen"],
+    [
+        # The file indexes for `acted` are based on the `seen` order,
+        # not `order` or `offsets`
+        ([1, 2, 3], None, [False, 1, 2], [2, 1, 0]),
+        ([1, 2, 3], None, [False, 1, 2], [1, 0, 2]),
+        ([3, 2, 1], [2, 1, 0], [False, 1, 2], [2, 1, 0]),
+    ],
+)
+def test_detects_by_first_seen(files_with_relative_ts, acted, seen):
+    """test `OnePer::pipeline()` with the `first seen` method
+
+    This test changes the order of the paths get processed in when calling
+    the pipeline.
+
+    :param files_with_relative_ts: a test fixture that generates files with
+        relative modification timestamps, and optionally in a specified order
+        of file creation
+    :param acted: the expected results (see `check_selects_one_with_method`)
+    """
+    # we want to process the files in different order
+    seen_paths: List[Path] = list()
+    for i in seen:
+        seen_paths.append(files_with_relative_ts[i])
+
+    check_selects_one_with_method("first_seen", seen_paths, acted)
+
+
+@pytest.mark.parametrize(
+    ["offsets", "order", "acted", "seen"],
+    [
+        # The file indexes for `acted` are based on the `seen` order,
+        # not `order` or `offsets`
+        ([3, 2, 1], None, [False, 0, 1], [2, 1, 0]),
+        ([3, 2, 1], None, [False, 0, 1], [1, 0, 2]),
+        ([3, 2, 1], [2, 1, 0], [False, 0, 1], [0, 1, 2]),
+        ([3, 2, 1], [2, 1, 0], [False, 0, 1], [2, 1, 0]),
+    ],
+)
+def test_reverse_first_seen(files_with_relative_ts, acted, seen):
+    """test `OnePer::pipeline()` with the `first seen` method, reversed
+
+    This test changes the order of the paths get processed in when calling
+    the pipeline.
+
+    :param files_with_relative_ts: a test fixture that generates files with
+        relative modification timestamps, and optionally in a specified order
+        of file creation
+    :param acted: the expected results (see `check_selects_one_with_method`)
+    """
+    # we want to process the files in different order
+    seen_paths: List[Path] = list()
+    for i in seen:
+        seen_paths.append(files_with_relative_ts[i])
+
+    check_selects_one_with_method("-first_seen", seen_paths, acted)
