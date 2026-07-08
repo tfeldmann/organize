@@ -553,3 +553,67 @@ def test_two_periods(fs):
         else:
             # files other than "/q" or "/z" should not exist
             assert not Path(file).exists()
+
+
+CONFIG_WITH_COMPLICATED_PYTHON = """
+rules:
+  - name: "0"
+    locations: "."
+    filters:
+      - python: |
+          import arrow
+          ts = arrow.get(path.stat().st_mtime)
+          earliest = ts.floor("hour")
+          latest = earliest.shift(minutes=30)
+          return (ts >= earliest) and (ts < latest)
+      - one_per
+    actions:
+      - delete
+  - name: "30"
+    locations: "."
+    filters:
+      - python: |
+          import arrow
+          ts = arrow.get(path.stat().st_mtime)
+          earliest = ts.floor("hour").shift(minutes=30)
+          latest = earliest.shift(minutes=30)
+          return (ts >= earliest) and (ts < latest)
+      - one_per
+    actions:
+      - delete
+"""
+
+
+def test_with_python_and_arrow(fs):
+    """test with a complicated config that uses python and arrow
+
+    This tests a config that restricts a time range to a portion of an hour. For
+    each hour, keep the earliest file with a timestamp between 0 and 30 minutes,
+    and the earliest file with a timestamp between 30 and 60 minutes.
+    """
+    both_periods = period_one_files | period_two_files
+    for file in sorted(both_periods):
+        make_a_path(file, both_periods[file])
+
+    Config.from_string(CONFIG_WITH_COMPLICATED_PYTHON).execute(simulate=False)
+
+    expected: List[str] = list()
+    # period_one: 00-30
+    expected.append("/q")
+    # period_one: 30-00
+    expected.append("/r")
+    # period_two: 00-30
+    expected.append("/z")
+    # period_two: 30-00
+    expected.append("/v")
+
+    # "/q", "/r", "/z", and "/v" should all exist
+    for file in expected:
+        assert Path(file).exists()
+
+    for file in both_periods:
+        if file in expected:
+            assert Path(file).exists()
+        else:
+            # files other than "/q", "/r", "/z", and "/v" should not exist
+            assert not Path(file).exists()
