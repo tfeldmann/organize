@@ -134,6 +134,8 @@ class OnePer:
         """
         if self._detect_the_one_by == "first_seen":
             it_is = False
+        elif self._detect_the_one_by == "name":
+            it_is = path < self._the_one_for_period[period]
         else:
             it_is = ts < self._ts_for_the_one[period]
         if self._detect_the_one_reverse:

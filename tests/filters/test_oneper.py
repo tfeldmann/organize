@@ -364,3 +364,95 @@ def test_reverse_first_seen(files_with_relative_ts, acted, seen):
         seen_paths.append(files_with_relative_ts[i])
 
     check_selects_one_with_method("-first_seen", seen_paths, acted)
+
+
+def rename_paths(paths: List[Path], names: List[str]) -> List[Path]:
+    """rename a list of files to a list of new file names
+    
+    :param paths: list of Paths to files that exist
+    :type paths: List[Path]
+    :param names: list of strings to be used to rename files in `paths`
+    :type names: List[str]
+
+    :return: the new list of Paths to the renamed files
+    :rtype: List[Path]
+    """
+    named_paths: List[Path] = list()
+    for i in range(len(names)):
+        named = paths[i]
+        # create a new Path that points to the new name
+        new_name = named.with_name(names[i])
+        assert not new_name.exists()
+        # rename existing file to the new_name
+        named.rename(new_name)
+        # new_name is now an existing Path, add it to list of files
+        named_paths.append(new_name)
+        assert not (named).exists()
+        assert new_name.exists()
+
+    return named_paths
+
+
+@pytest.mark.parametrize(
+    ["offsets", "order", "names", "acted"],
+    [
+        ## "a" is expected to be the alphabetical choice of these
+        # "b" - oldest file, "c" - youngest file; seen: c, a, b
+        ([2, 1, 0], [2, 1, 0], ["c", "a", "b"], [False, 0, 2]),
+        # "c" - oldest file, "a" - youngest file; seen: a, b, c
+        ([2, 1, 0], [2, 1, 0], ["a", "b", "c"], [False, 1, 2]),
+        # "c" - oldest file, "b" - youngest file; seen: c, b, a
+        ([0, 2, 1], None, ["c", "b", "a"], [False, 0, 1]),
+    ],
+)
+def test_detects_by_name(files_with_relative_ts, acted, names):
+    """test `OnePer::pipeline()` with the `name` method
+    
+    :param files_with_relative_ts: a test fixture that generates files with
+        relative modification timestamps, and optionally in a specified order
+        of file creation
+    :param acted: the expected results (see `check_selects_one_with_method`)
+    :param names: a list of new file names; the files from 
+        `files_with_relative_ts` will be renamed to these names, so we can
+        control which files are alpabetically first or last
+    """
+    # name the files
+
+    named_paths: List[Path] = rename_paths(
+        files_with_relative_ts,
+        names,
+    )
+
+    check_selects_one_with_method("name", named_paths, acted)
+
+@pytest.mark.parametrize(
+    ["offsets", "order", "names", "acted"],
+    [
+        ## "c" is the choice of these, in reverse alphabetical order
+        # "b" - oldest file, "c" - youngest file; seen: c, a, b
+        ([2, 1, 0], [2, 1, 0], ["c", "a", "b"], [False, 1, 2]),
+        # "c" - oldest file, "a" - youngest file; seen: a, b, c
+        ([2, 1, 0], [2, 1, 0], ["a", "b", "c"], [False, 0, 1]),
+        # "c" - oldest file, "a" - youngest file; seen: c, b, a
+        ([0, 1, 2], None, ["c", "b", "a"], [False, 1, 2]),
+    ],
+)
+def test_reverses_name(files_with_relative_ts, acted, names):
+    """test `OnePer::pipeline()` with the `name` method, reversed
+    
+    :param files_with_relative_ts: a test fixture that generates files with
+        relative modification timestamps, and optionally in a specified order
+        of file creation
+    :param acted: the expected results (see `check_selects_one_with_method`)
+    :param names: a list of new file names; the files from 
+        `files_with_relative_ts` will be renamed to these names, so we can
+        control which files are alpabetically first or last
+    """
+    # name the files
+
+    named_paths: List[Path] = rename_paths(
+        files_with_relative_ts,
+        names,
+    )
+
+    check_selects_one_with_method("-name", named_paths, acted)
