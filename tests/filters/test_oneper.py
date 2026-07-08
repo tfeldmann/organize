@@ -23,7 +23,19 @@ def make_a_path(
     file: str,
     timestamp: Optional[Arrow] = None,
 ) -> Path:
-    """make sure file exists and has a specific timestamp"""
+    """make sure file exists and has a specific timestamp
+    
+    Creates a file at the specified path. If a timestamp is provided, the
+    lastmodified timestamp of the file is changed to that.
+
+    :param file: the path to the file to create
+    :type file: str
+    :param timestamp: an optional Arrow time to be used for the lastmodified
+        time of the file
+    :type timestamp: Arrow
+    :return: the Path to the new file
+    :rtype: Path
+    """
     # make sure file exists
     path = Path(file)
     path.touch()
