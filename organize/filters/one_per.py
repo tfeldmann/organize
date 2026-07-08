@@ -38,20 +38,26 @@ DetectionMethod = Literal[
 class OnePer:
     """Group files by modification time.
 
-    This filter finds files that were modified in a given time period, except
-    for the earliest file from the time period.
+    This filter creates groups files that were modified in a given time period.
+    It emits the "extra" files per group, and does not emit the "earliest" file
+    of the group. The "earliest" file is available as `{one_per.the_one}`, but
+    beware that the value of this can change as more files are processed.
+
+    The time period is based on the `lastmodified` timestamp for all methods,
+    except for the `created` method.
 
     Attributes:
         detect_the_one_by (str):
-            Detection method to distinguish between original and duplicate.
+            Detection method to distinguish between earliest and extra.
             Possible values are:
 
-            - `"first_seen"`: Whatever file is visited first is the original. This
-              depends on the order of your location entries.
-            - `"name"`: The first entry sorted by name is the original.
-            - `"created"`: The first entry sorted by creation date is the original.
-            - `"lastmodified"`: The first file sorted by date of last modification is
-               the original.
+            - `"first_seen"`: Whatever file is visited first is the earliest.
+              This depends on the order of your location entries.
+            - `"name"`: The first entry sorted by name is the earliest.
+            - `"created"`: The first entry sorted by creation date is the
+              earliest; the period is determined by the creation timestamp.
+            - `"lastmodified"`: The first file sorted by date of last
+              modification is the earliest.
 
         period (str):
             The period to group files into.
@@ -62,6 +68,61 @@ class OnePer:
             - `"hour"`
             - `"day"`
             - `"month"`
+
+    You can reverse the sorting method by prefixing a `-`.
+
+    So with `detect_the_one_by: "-created"` the file with the older creation
+    date is "the one" and the younger file is the extra. This works on all
+    methods, for example `"-first_seen"`, `"-name"`, `"-created"`,
+    `"-lastmodified"`.
+
+    **Example and explanation:**
+
+    Given the following files in a directory, where `my_file.txt` has been
+    edited several times, and each time it is saved, a new backup file is
+    created:
+    ```
+    name                  last modified
+    -----------------------------------
+    my_file.txt           June 25 15:01
+    my_file.txt~1         June 23 13:23
+    my_file.txt~2         June 23 14:03
+    my_file.txt~3         June 24 11:23
+    my_file.txt~4         June 24 11:47
+    my_file.txt~5         June 24 11:53
+    my_file.txt~6         June 25 13:23
+    ```
+
+    The user might not need to keep every single backup file, but may wish to
+    "thin" them out. The backups are not dependant on each other, so it is safe
+    to remove any particular file.
+
+    If the rule is for a period of `hour`, and a method of `lastmodified`, and
+    there is a name filter to process files in the directory that contains `~`,
+    then:
+
+      Periods found are:
+      - June 23, 13:00:00 - 13:59:59
+        - `the_one`: `my_file.txt~1`
+        - extra files emitted: None
+      - June 23, 14:00:00 - 14:59:59
+        - `the_one`: `my_file.txt~2`
+        - extra files emitted: None
+      - June 24, 11:00:00 - 11:59:59
+        - `the_one`: `my_file.txt~3`
+        - extra files emitted: `my_file.txt~4`, `my_file.txt~5`
+      - June 25, 13:00:00 - 13:59:59
+        - `the_one`: `my_file.txt~6`
+        - extra files emitted: None
+
+    If this rule is set to delete or trash files emitted by the filter, then
+    `my_file.txt~4` and `my_file.txt~5` will be removed, and the other files
+    (`the_one` for each period) would be kept.
+
+    **Returns:**
+
+    `{one_per.the_one}` - The path to the "earliest" file found so far from the
+    same period as the file currently being processed
     """
 
     period: Period = "hour"

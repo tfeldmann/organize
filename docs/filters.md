@@ -610,6 +610,115 @@ rules:
       - echo: "Found a match."
 ```
 
+## one_per
+
+::: organize.filters.OnePer
+
+**Examples:**
+
+Show backup files in a folder that are *not* the earliest backup for any given 
+day.
+
+Given files in `~/backups`:
+```
+file          last modified
+file.1.bkup   June 1 12:01
+file.2.bkup   June 1 15:21
+file.3.bkup   June 1 09:13
+file.4.bkup   June 2 02:02
+file.5.bkup   June 2 08:11
+file.6.bkup   June 2 10:22
+file.7.bkup   June 2 10:33
+```
+
+```yaml
+rules:
+  - name: find extra backup files by day
+    locations:
+      - ~/backups
+    filters:
+      - one_per:
+          detect_the_one_by: lastmodified
+          period: day
+    action:
+      - echo: "{path} is an extra in the same day as {one_per.the_one}"
+```
+
+Output:
+
+- `file.2.bkup is an extra in the same day as file.1.bkup`
+- `file.1.bkup is an extra in the same day as file.3.bkup`
+- `file.5.bkup is an extra in the same day as file.4.bkup`
+- `file.6.bkup is an extra in the same day as file.4.bkup`
+- `file.7.bkup is an extra in the same day as file.4.bkup`
+
+Result summary:
+- June 1: `the_one` is `file.3.bkup`, files emitted by the filter are (in order):
+  `file.2.bkup`, `file.1.bkup`
+- June 2: `the_one` is `file.4.bkup`, files emitted are: `file.5.bkup`,
+  `file.6.bkup`, `file.7.bkup`
+
+Keep one backup file per hour, removing other backups created in the same hour,
+where the file to be kept is determined by the file name, which includes a
+timestamp. (E.g., "~/backups/backup-20260623-151359")
+
+```yaml
+rules:
+  - name: find extra backup files by name, keep last one per hour
+    locations:
+      - ~/backups
+    filters:
+      - one_per:
+          detect_the_one_by: -name # keep the file that is alphabetically last
+          period: hour
+    action:
+      - echo: "{path} is an extra in the same hour as {one_per.the_one}"
+      - trash
+```
+
+Here is a more complicated example to show how multiple filters can be combined
+to allow finer periods to be filtered.
+
+Keep earliest backup per each 30 minute period, within the current clock hour
+(e.g., if the current time is 15:59, then keep the first file between 15:00 and
+15:29, and earliest between 15:30 and 15:59):
+
+```yaml
+rules:
+  - name: "00-29"
+    locations:
+      - ~/backups
+    filters:
+      # include only files updated between minutes "00" and "30" of current hour
+      - python: |
+          import arrow
+          now = arrow.now()
+          earliest = now.floor("hour")
+          latest = earliest.shift(minutes=30)
+          ts = arrow.get(path.stat().st_mtime)
+          return (ts >= earliest) and (ts < latest)
+      # one_per with default method of `lastmodified` and period of `hour`
+      - one_per
+    actions:
+      - trash
+  - name: "30-59"
+    locations:
+      - ~/backups
+    filters:
+      # include only files updated between minutes "30" and "59" of current hour
+      - python: |
+          import arrow
+          now = arrow.now()
+          earliest = now.floor("hour").shift(minutes=30)
+          latest = earliest.shift(minutes=30)
+          ts = arrow.get(path.stat().st_mtime)
+          return (ts >= earliest) and (ts < latest)
+      # one_per with default method of `lastmodified` and period of `hour`
+      - one_per
+    actions:
+      - trash
+```
+
 ## python
 
 ::: organize.filters.Python
