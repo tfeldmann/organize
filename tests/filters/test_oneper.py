@@ -7,6 +7,7 @@ import pytest
 from arrow import Arrow
 from pydantic_core import ValidationError
 
+from organize import Config
 from organize.filters import OnePer
 from organize.filters.one_per import DetectionMethod, Period
 from organize.output import Default as Output
@@ -24,7 +25,7 @@ def make_a_path(
     timestamp: Optional[Arrow] = None,
 ) -> Path:
     """make sure file exists and has a specific timestamp
-    
+
     Creates a file at the specified path. If a timestamp is provided, the
     lastmodified timestamp of the file is changed to that.
 
@@ -380,7 +381,7 @@ def test_reverse_first_seen(files_with_relative_ts, acted, seen):
 
 def rename_paths(paths: List[Path], names: List[str]) -> List[Path]:
     """rename a list of files to a list of new file names
-    
+
     :param paths: list of Paths to files that exist
     :type paths: List[Path]
     :param names: list of strings to be used to rename files in `paths`
@@ -419,12 +420,12 @@ def rename_paths(paths: List[Path], names: List[str]) -> List[Path]:
 )
 def test_detects_by_name(files_with_relative_ts, acted, names):
     """test `OnePer::pipeline()` with the `name` method
-    
+
     :param files_with_relative_ts: a test fixture that generates files with
         relative modification timestamps, and optionally in a specified order
         of file creation
     :param acted: the expected results (see `check_selects_one_with_method`)
-    :param names: a list of new file names; the files from 
+    :param names: a list of new file names; the files from
         `files_with_relative_ts` will be renamed to these names, so we can
         control which files are alpabetically first or last
     """
@@ -436,6 +437,7 @@ def test_detects_by_name(files_with_relative_ts, acted, names):
     )
 
     check_selects_one_with_method("name", named_paths, acted)
+
 
 @pytest.mark.parametrize(
     ["offsets", "order", "names", "acted"],
@@ -451,12 +453,12 @@ def test_detects_by_name(files_with_relative_ts, acted, names):
 )
 def test_reverses_name(files_with_relative_ts, acted, names):
     """test `OnePer::pipeline()` with the `name` method, reversed
-    
+
     :param files_with_relative_ts: a test fixture that generates files with
         relative modification timestamps, and optionally in a specified order
         of file creation
     :param acted: the expected results (see `check_selects_one_with_method`)
-    :param names: a list of new file names; the files from 
+    :param names: a list of new file names; the files from
         `files_with_relative_ts` will be renamed to these names, so we can
         control which files are alpabetically first or last
     """
@@ -468,3 +470,86 @@ def test_reverses_name(files_with_relative_ts, acted, names):
     )
 
     check_selects_one_with_method("-name", named_paths, acted)
+
+
+#####
+# tests that execute an actual Config
+
+# the config
+# this uses the default values for `one_per`:
+# - period: hour
+# - detect_the_one_by: lastmodified
+CONFIG_ONE_PER_DELETE = """
+rules:
+  - locations: "."
+    filters:
+      - one_per
+    actions:
+      - delete
+"""
+
+# files and lastmodified timestamps for the first period
+# period is 2026-July-8@15:00:00
+period_one = Arrow(2026, 7, 8, 15)
+period_one_files = {
+    # path to file: lastmodified timestamp of file
+    "/q": period_one.shift(minutes=1),
+    "/w": period_one.shift(minutes=3),
+    "/e": period_one.shift(minutes=21),
+    "/r": period_one.shift(minutes=37),
+    "/t": period_one.shift(minutes=59),
+    "/y": period_one.shift(minutes=1, seconds=1),
+}
+
+# files and lastmodified timestamps for the first period
+# period is 2026-July-8@16:00:00
+period_two = period_one.shift(hours=1)
+period_two_files = {
+    # path to file: lastmodified timestamp of file
+    "/z": period_two.shift(minutes=1),
+    "/x": period_two.shift(minutes=3),
+    "/c": period_two.shift(minutes=21),
+    "/v": period_two.shift(minutes=37),
+    "/b": period_two.shift(minutes=59),
+    "/n": period_two.shift(minutes=1, seconds=1),
+}
+
+
+def test_one_period(fs):
+    """test with all files in the same period - remove all except earliest"""
+    for file in sorted(period_one_files):
+        make_a_path(file, period_one_files[file])
+
+    for file in sorted(period_one_files):
+        assert Path(file).exists()
+
+    Config.from_string(CONFIG_ONE_PER_DELETE).execute(simulate=False)
+
+    # the earliest file in the period should exist ("/q")
+    assert Path("/q").exists()
+    for file in period_one_files:
+        if file == "/q":
+            assert Path(file).exists()
+        else:
+            # files other than "/q" should not exist
+            assert not Path(file).exists()
+
+
+def test_two_periods(fs):
+    """test with two different periods - keep earliest file from each period"""
+    both_periods = period_one_files | period_two_files
+    for file in sorted(both_periods):
+        make_a_path(file, both_periods[file])
+
+    Config.from_string(CONFIG_ONE_PER_DELETE).execute(simulate=False)
+
+    # the earliest file in period one should exist ("/q")
+    assert Path("/q").exists()
+    # the earliest file in period two should exist ("/z")
+    assert Path("/z").exists()
+    for file in both_periods:
+        if (file == "/q") or (file == "/z"):
+            assert Path(file).exists()
+        else:
+            # files other than "/q" or "/z" should not exist
+            assert not Path(file).exists()
