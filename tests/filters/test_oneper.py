@@ -1,11 +1,11 @@
-import os
 from pathlib import Path
-from time import sleep
 from typing import Generator, List, Optional, Tuple, Union
 
 import pytest
 from arrow import Arrow
+from arrow import get as arrow_get
 from pydantic_core import ValidationError
+from pyfakefs.fake_filesystem import FakeFilesystem
 
 from organize import Config
 from organize.filters import OnePer
@@ -20,31 +20,39 @@ def period(request) -> Period:
     return request.param
 
 
-def make_a_path(
+def make_fake_path(
+    fs: FakeFilesystem,
     file: str,
-    timestamp: Optional[Arrow] = None,
+    mtime: Optional[Arrow] = None,
+    ctime: Optional[Arrow] = None,
 ) -> Path:
-    """make sure file exists and has a specific timestamp
+    """create a fake file with optional timestamps
 
-    Creates a file at the specified path. If a timestamp is provided, the
-    lastmodified timestamp of the file is changed to that.
-
-    :param file: the path to the file to create
+    :param fs: pyfakefs FakeFilesystem (from fixture)
+    :param file: the path the the file to create
     :type file: str
-    :param timestamp: an optional Arrow time to be used for the lastmodified
+    :param mtime: optional Arrow time to use for the last modified
         time of the file
-    :type timestamp: Arrow
+    :type mtime: Arrow
+    :param ctime: optional Arrow time to use for the creation
+        time of the file
+    :type ctime: Arrow
     :return: the Path to the new file
     :rtype: Path
     """
-    # make sure file exists
+    fake_file = fs.create_file(file)
     path = Path(file)
-    path.touch()
+    if mtime:
+        fake_file.st_mtime = mtime.timestamp()
+    if ctime:
+        fake_file.st_ctime = ctime.timestamp()
 
-    # set timestamp
-    if timestamp is not None:
-        ts = timestamp.timestamp()
-        os.utime(path, (ts, ts))
+    if mtime:
+        mts = arrow_get(path.stat().st_mtime)
+        assert mts == mtime
+    if ctime:
+        mts = arrow_get(path.stat().st_ctime)
+        assert mts == ctime
 
     return path
 
@@ -54,7 +62,7 @@ def test_tracks_seen_files(fs):
     ## organize
     # create a single file
     op = OnePer()
-    a = make_a_path("/a")
+    a = make_fake_path(fs, "/a")
     r = Resource(a)
 
     ## act
@@ -72,7 +80,7 @@ def test_skips_symlinks(fs):
     ## organize
     # create a file and a symlink to it
     op = OnePer()
-    real_file = make_a_path("/real_file")
+    real_file = make_fake_path(fs, "/real_file")
     link_file = Path("/link_file")
     link_file.symlink_to(real_file)
 
@@ -112,7 +120,7 @@ def test_tracks_file_period(fs, period):
     now = Arrow(2026, 6, 26, 17, 8, 32, 123)
     # expected period for the file
     file_period = now.floor(period)
-    f = make_a_path("/f", now)
+    f = make_fake_path(fs, "/f", now)
 
     ## act
     processed = op.pipeline(Resource(f), Output())
@@ -158,21 +166,14 @@ def files_with_relative_ts(
       - order[1] -> 0 -> offsets[0]: `/file_0`, mtime is +5
       - order[2] -> 1 -> offsets[1]: `/file_1`, mtime is +5
     """
-    now = Arrow.now()
-    # try to avoid issues with file creation close to the end of the hour
-    if now.minute == 59 and now.second == 59:
-        sleep(1)
-        now = Arrow.now()
-
+    ctime: Optional[Arrow] = None
+    now = Arrow(2026, 7, 12, 15)
     paths: List[Path] = list()
     for i in range(len(offsets)):
-        idx = order[i] if order else i
-        if i > 0:
-            # force a delay between ctime stamps
-            sleep(0.01)
-        offset = offsets[idx]
-        mtime = now.shift(seconds=offset)
-        paths.append(make_a_path(f"/file_{idx}", mtime))
+        mtime = now.shift(seconds=offsets[i])
+        if order:
+            ctime = now.shift(seconds=order[i])
+        paths.append(make_fake_path(fs, f"/file_{i}", mtime, ctime))
     yield sorted(paths)
 
 
@@ -521,7 +522,7 @@ period_two_files = {
 def test_one_period(fs):
     """test with all files in the same period - remove all except earliest"""
     for file in sorted(period_one_files):
-        make_a_path(file, period_one_files[file])
+        make_fake_path(fs, file, period_one_files[file])
 
     for file in sorted(period_one_files):
         assert Path(file).exists()
@@ -542,7 +543,7 @@ def test_two_periods(fs):
     """test with two different periods - keep earliest file from each period"""
     both_periods = period_one_files | period_two_files
     for file in sorted(both_periods):
-        make_a_path(file, both_periods[file])
+        make_fake_path(fs, file, both_periods[file])
 
     Config.from_string(CONFIG_ONE_PER_DELETE).execute(simulate=False)
 
@@ -596,7 +597,7 @@ def test_with_python_and_arrow(fs):
     """
     both_periods = period_one_files | period_two_files
     for file in sorted(both_periods):
-        make_a_path(file, both_periods[file])
+        make_fake_path(fs, file, both_periods[file])
 
     Config.from_string(CONFIG_WITH_COMPLICATED_PYTHON).execute(simulate=False)
 
