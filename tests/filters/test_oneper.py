@@ -169,7 +169,7 @@ def files_with_relative_ts(
         idx = order[i] if order else i
         if i > 0:
             # force a delay between ctime stamps
-            sleep(0.001)
+            sleep(0.01)
         offset = offsets[idx]
         mtime = now.shift(seconds=offset)
         paths.append(make_a_path(f"/file_{idx}", mtime))
