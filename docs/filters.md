@@ -640,7 +640,7 @@ rules:
       - one_per:
           detect_the_one_by: lastmodified
           period: day
-    action:
+    actions:
       - echo: "{path} is an extra in the same day as {one_per.the_one}"
 ```
 
@@ -671,7 +671,7 @@ rules:
       - one_per:
           detect_the_one_by: -name # keep the file that is alphabetically last
           period: hour
-    action:
+    actions:
       - echo: "{path} is an extra in the same hour as {one_per.the_one}"
       - trash
 ```
