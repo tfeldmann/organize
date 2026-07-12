@@ -616,7 +616,7 @@ rules:
 
 **Examples:**
 
-Show backup files in a folder that are *not* the earliest backup for any given 
+Show backup files in a folder that are *not* the earliest backup for any given
 day.
 
 Given files in `~/backups`:

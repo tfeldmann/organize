@@ -10,7 +10,6 @@ from organize.filter import FilterConfig
 from organize.output import Output
 from organize.resource import Resource
 
-
 # allowable values for `period`
 Period = Literal[
     "month",
