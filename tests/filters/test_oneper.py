@@ -1,17 +1,24 @@
+import os
+import subprocess
+import sys
+import time
 from pathlib import Path
-from typing import Generator, List, Optional, Tuple, Union
+from typing import Callable, Generator, List, Optional, Union
 
 import pytest
 from arrow import Arrow
 from arrow import get as arrow_get
 from pydantic_core import ValidationError
 from pyfakefs.fake_filesystem import FakeFilesystem
+from pyfakefs.fake_filesystem_unittest import Patcher
 
 from organize import Config
 from organize.filters import OnePer
 from organize.filters.one_per import DetectionMethod, Period
 from organize.output import Default as Output
 from organize.resource import Resource
+
+FakeOrTmpFileSystem = Union[FakeFilesystem, Path]
 
 
 @pytest.fixture(params=["month", "day", "hour", "minute", "second"])
@@ -21,10 +28,11 @@ def period(request) -> Period:
 
 
 def make_fake_path(
-    fs: FakeFilesystem,
+    fs: FakeOrTmpFileSystem,
     file: str,
     mtime: Optional[Arrow] = None,
     ctime: Optional[Arrow] = None,
+    _last: bool = False,
 ) -> Path:
     """create a fake file with optional timestamps
 
@@ -40,6 +48,7 @@ def make_fake_path(
     :return: the Path to the new file
     :rtype: Path
     """
+    assert isinstance(fs, FakeFilesystem)
     fake_file = fs.create_file(file)
     path = Path(file)
     if mtime:
@@ -55,6 +64,220 @@ def make_fake_path(
         assert mts == ctime
 
     return path
+
+
+def make_tmp_path(
+    tmp_path: FakeOrTmpFileSystem,
+    file: str,
+    mtime: Optional[Arrow] = None,
+    ctime: Optional[Arrow] = None,
+    last: bool = False,
+) -> Path:
+    """Create a real file in a temporary location.
+
+    If the caller cares about the order of file creation, and this is NOT the
+    last file being created for this test case, then this function will sleep
+    for 1 second before returning, to ensure that each file has a separate
+    creation time, and that the ordering of the file creation times matches
+    what the test case expects.
+
+    :param tmp_path: a safe location for tmp files for this test execution
+    :param file: the path to the file we want to create
+    :param mtime: an optional Arrow timestamp to use for the lastmodified time
+    :param ctime: an optional Arrow timestamp to use for the file creation time;
+        it is actually impossible to change or specify this, so we mainly use
+        this to indicate that we care about the creation order
+    :param last: is this the last file for this test case, or will there be more
+    """
+    assert isinstance(tmp_path, Path)
+    tmp_file = tmp_path / file.lstrip("/")
+
+    if ctime:
+        ts = ctime.isoformat()
+        subprocess.run(["touch", "-d", ts, tmp_file], check=True)
+    else:
+        tmp_file.touch()
+    if mtime:
+        os.utime(tmp_file, (mtime.timestamp(), mtime.timestamp()))
+
+    # It is impossible to modify the file creation timestamp on real files. If
+    # a test needs to validate that files are created in a specific order, then
+    # we need to do two things:
+    # - have at least one second delay between creating each file
+    # - make sure that the "hour" is the same for each file -- this is very
+    #   specific to these tests, but since we have to delay between each file,
+    #   we want to make sure that we do not end up creating files that are
+    #   in different "hour" periods.
+    #
+    # Here, we will sleep 1 second in between each file creation. If this is the
+    # last file, we will not sleep. If no ctime was provided, we won't sleep,
+    # either, but there is currently no use case for creating real files outside
+    # of controlling the order of creation.
+    if ctime and not last:
+        time.sleep(1)
+    return tmp_file
+
+
+def make_files_with_relative_ts(
+    my_fs: Union[FakeFilesystem, Path],
+    offsets: List[int],
+    order: Optional[List[int]],
+    maker: Callable[
+        [FakeOrTmpFileSystem, str, Optional[Arrow], Optional[Arrow], bool],
+        Path,
+    ] = make_fake_path,
+) -> list[Path]:
+    """function that implements the `files_with_relative_ts` fixture.
+
+    Create all the files expected by a test case, either fake, using pyfakefs,
+    or real temporary files.
+
+    :param my_fs: either the FakeFilesystem instance, or a safe path for tmp files
+    :param offsets: an array of offsets in seconds for the timestamp for each file
+         there should always be one offset for each file desired
+    :param order: an array of offsets for the creation timestamp; these are
+         treated as seconds to add to the creation time when using pyfakefs,
+         but as the order of creation when using real tmp files; e.g., an order
+         of `[1, 0, 2]` will create `file_1` first, then `file_0`, and finally
+         `file_2` last.
+    :param maker: a function used to create the files; one version uses
+         pyfakefs, and the other version uses real tmp files
+    """
+    ctime: Optional[Arrow] = None
+    now = Arrow(2026, 7, 12, 15)
+    paths: List[Path] = list()
+    count = len(offsets)
+    for idx in range(count):
+        i = order[idx] if order else idx
+        mtime = now.shift(seconds=offsets[i])
+        if order:
+            ctime = now.shift(seconds=order[i])
+        paths.append(maker(my_fs, f"/file_{i}", mtime, ctime, (idx + 1) >= count))
+    return sorted(paths)
+
+
+@pytest.fixture
+def files_with_relative_ts(
+    fs, offsets: List[int], order: Optional[List[int]]
+) -> list[Path]:
+    """fixture to create several files with timestamps
+
+    Parameters:
+    - `offsets`: an array of offsets in seconds for the modified timestamp;
+      the value of the offset is added to the time when the function is called
+    - `order`: (optional) the order to create the files in; by default, they
+      will be created in the natural order provided by the offsets; the value of
+      order will be used as the index into the `offsets` list
+
+    Example explaining `offsets` and `order`:
+    - `offsets = [2, 0, 1]`
+    - `order = None`:
+    - Three files will be created:
+      - index 0: `/file_0` will be created with its mtime with 2 seconds
+        (from `offsets[0] = 2`)
+      - index 1: `/file_1`, mtime is +0 (`offsets[1] = 0`)
+      - index 2: `/file_2`, mtime is +1 (`offsets[2] = 1`)
+
+    Example 2:
+    - `offsets = [5, 5, 5]`
+    - `order = [2, 0, 1]`
+    - Three files will be created, in the following order:
+      - order[0] -> 2 -> offsets[2]: `/file_2`, mtime is +5
+      - order[1] -> 0 -> offsets[0]: `/file_0`, mtime is +5
+      - order[2] -> 1 -> offsets[1]: `/file_1`, mtime is +5
+    """
+    return make_files_with_relative_ts(fs, offsets, order)
+
+
+@pytest.fixture
+def may_need_real_files(
+    tmp_path,
+    offsets: list[int],
+    order: Optional[list[int]],
+) -> Generator[list[Path], None, None]:
+    """create files where we care about the creation timestamp
+
+    Create all the files expected by a test case, either fake, using pyfakefs,
+    or real temporary files.
+
+    On Windows, we can use pyfakefs, since the Windows implementation uses
+    pure python to get the file creation time.
+
+    On Linux or MacOS, we use an external command to get the file birthtime, and
+    it won't work with pyfakefs. On those OSes, we have to create real files,
+    and we have to be careful to ensure that the files have creation timestamps
+    in the order that the test case expects.
+
+    This function calls `make_files_with_relative_ts()`.
+
+    On Windows, the default behavior of `make_files_with_relative_ts()` is
+    expected.
+
+    On non-Windows systems, we first ensure that the real files will all be
+    created within the same clock hour, and then call
+    `make_files_with_relative_ts()` with the `tmp_path` value, and specify it
+    should create real files in that location.
+
+    :param tmp_path: safe location for tmp file creation, from a pytest fixture
+    :param offsets: list of modification timestamp offsets for each file; this
+        also controls how many files are created
+    :param order: optional list of creation timestamp offsets
+    """
+    if sys.platform == "win32":
+        with Patcher() as patcher:
+            # When creating pyfakefs files, we need to take care of the patching
+            # to ensure the fake filesystem gets used. This is handled
+            # automatically when using the `fs` fixture, but since we don't want
+            # to patch if we are testing on non-Windows systems, we have to
+            # do the patching manually
+            assert patcher.fs is not None
+            yield make_files_with_relative_ts(patcher.fs, offsets, order)
+    else:
+        # It is impossible to modify the file creation timestamp on real files. If
+        # a test needs to validate that files are created in a specific order, then
+        # we need to do two things:
+        # - have at least one second delay between creating each file
+        # - make sure that the "hour" is the same for each file -- this is very
+        #   specific to these tests, but since we have to delay between each file,
+        #   we want to make sure that we do not end up creating files that are
+        #   in different "hour" periods.
+        #
+        # Here, we want to make sure that we have enough time to create all the
+        # files, plus the delays between each file, and keep them all with
+        # creation times in the same hour
+        now = Arrow.now()
+        count = len(offsets)
+        later = now.shift(seconds=count)
+        if now.hour != later.hour:
+            time.sleep(count)
+        yield make_files_with_relative_ts(tmp_path, offsets, order, maker=make_tmp_path)
+
+
+def rename_paths(paths: List[Path], names: List[str]) -> List[Path]:
+    """rename a list of files to a list of new file names
+
+    :param paths: list of Paths to files that exist
+    :type paths: List[Path]
+    :param names: list of strings to be used to rename files in `paths`
+    :type names: List[str]
+
+    :return: the new list of Paths to the renamed files
+    :rtype: List[Path]
+    """
+    named_paths: List[Path] = list()
+    for i in range(len(names)):
+        named = paths[i]
+        # create a new Path that points to the new name
+        new_name = named.with_name(names[i])
+        assert not new_name.exists()
+        # rename existing file to the new_name
+        named.rename(new_name)
+        # new_name is now an existing Path, add it to list of files
+        named_paths.append(new_name)
+        assert not (named).exists()
+        assert new_name.exists()
+
+    return named_paths
 
 
 def test_tracks_seen_files(fs):
@@ -136,56 +359,6 @@ def test_tracks_file_period(fs, period):
     assert op._the_one_for_period[file_period] is f
 
 
-@pytest.fixture
-def files_with_relative_ts(
-    fs, offsets: List[int], order: Optional[List[int]]
-) -> Generator[List[Path], None, None]:
-    """fixture to create several files with timestamps
-
-    Parameters:
-    - `offsets`: an array of offsets in seconds for the modified timestamp;
-      the value of the offset is added to the time when the function is called
-    - `order`: (optional) the order to create the files in; by default, they
-      will be created in the natural order provided by the offsets; the value of
-      order will be used as the index into the `offsets` list
-
-    Example explaining `offsets` and `order`:
-    - `offsets = [2, 0, 1]`
-    - `order = None`:
-    - Three files will be created:
-      - index 0: `/file_0` will be created with its mtime with 2 seconds
-        (from `offsets[0] = 2`)
-      - index 1: `/file_1`, mtime is +0 (`offsets[1] = 0`)
-      - index 2: `/file_2`, mtime is +1 (`offsets[2] = 1`)
-
-    Example 2:
-    - `offsets = [5, 5, 5]`
-    - `order = [2, 0, 1]`
-    - Three files will be created, in the following order:
-      - order[0] -> 2 -> offsets[2]: `/file_2`, mtime is +5
-      - order[1] -> 0 -> offsets[0]: `/file_0`, mtime is +5
-      - order[2] -> 1 -> offsets[1]: `/file_1`, mtime is +5
-    """
-    ctime: Optional[Arrow] = None
-    now = Arrow(2026, 7, 12, 15)
-    paths: List[Path] = list()
-    for i in range(len(offsets)):
-        mtime = now.shift(seconds=offsets[i])
-        if order:
-            ctime = now.shift(seconds=order[i])
-        paths.append(make_fake_path(fs, f"/file_{i}", mtime, ctime))
-    yield sorted(paths)
-
-
-@pytest.fixture
-def method_and_expect(
-    files_with_relative_ts, method: DetectionMethod, expected: int
-) -> Generator[Tuple[DetectionMethod, List[Path]], None, None]:
-    """"""
-    paths = files_with_relative_ts
-    yield method, paths  # , (paths[expected])
-
-
 def check_selects_one_with_method(
     method: DetectionMethod,
     paths: List[Path],
@@ -193,9 +366,11 @@ def check_selects_one_with_method(
 ):
     """test the OnePer::pipeline() for one set of files
 
+    This performs the actual validation of `OnePer::pipeline()`.
+
     :param method: How OnePer should choose "the one" file
     :type method: DetectionMethod
-    :param paths: list of file Paths to process
+    :param paths: list of file Paths to process, in the order to process them
     :type paths: List[Path]
     :param acted: the expected results for each call of the pipeline; the call
             either return `False`, or it will return `True`, and the value of
@@ -289,7 +464,7 @@ def test_reverses_lastmodified(files_with_relative_ts, acted):
         ([5, 5, 5], [1, 0, 2], [False, 0, 2]),
     ],
 )
-def test_detects_by_created(files_with_relative_ts, acted):
+def test_detects_by_created(may_need_real_files, acted):
     """test `OnePer::pipeline()` with the `created` method
 
     This test uses different orders of file creation to alter which files
@@ -300,7 +475,7 @@ def test_detects_by_created(files_with_relative_ts, acted):
         of file creation
     :param acted: the expected results (see `check_selects_one_with_method`)
     """
-    check_selects_one_with_method("created", files_with_relative_ts, acted)
+    check_selects_one_with_method("created", may_need_real_files, acted)
 
 
 @pytest.mark.parametrize(
@@ -310,7 +485,7 @@ def test_detects_by_created(files_with_relative_ts, acted):
         ([5, 5, 5], [0, 2, 1], [False, 0, 2]),
     ],
 )
-def test_reverses_created(files_with_relative_ts, acted):
+def test_reverses_created(may_need_real_files, acted):
     """test `OnePer::pipeline()` with the `created` method, reversed
 
     This test uses different orders of file creation to alter which files
@@ -321,7 +496,7 @@ def test_reverses_created(files_with_relative_ts, acted):
         of file creation
     :param acted: the expected results (see `check_selects_one_with_method`)
     """
-    check_selects_one_with_method("-created", files_with_relative_ts, acted)
+    check_selects_one_with_method("-created", may_need_real_files, acted)
 
 
 @pytest.mark.parametrize(
@@ -381,33 +556,6 @@ def test_reverse_first_seen(files_with_relative_ts, acted, seen):
         seen_paths.append(files_with_relative_ts[i])
 
     check_selects_one_with_method("-first_seen", seen_paths, acted)
-
-
-def rename_paths(paths: List[Path], names: List[str]) -> List[Path]:
-    """rename a list of files to a list of new file names
-
-    :param paths: list of Paths to files that exist
-    :type paths: List[Path]
-    :param names: list of strings to be used to rename files in `paths`
-    :type names: List[str]
-
-    :return: the new list of Paths to the renamed files
-    :rtype: List[Path]
-    """
-    named_paths: List[Path] = list()
-    for i in range(len(names)):
-        named = paths[i]
-        # create a new Path that points to the new name
-        new_name = named.with_name(names[i])
-        assert not new_name.exists()
-        # rename existing file to the new_name
-        named.rename(new_name)
-        # new_name is now an existing Path, add it to list of files
-        named_paths.append(new_name)
-        assert not (named).exists()
-        assert new_name.exists()
-
-    return named_paths
 
 
 @pytest.mark.parametrize(

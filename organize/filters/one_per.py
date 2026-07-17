@@ -7,6 +7,8 @@ from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from organize.filter import FilterConfig
+from organize.filters.created import read_created
+from organize.filters.lastmodified import read_lastmodified
 from organize.output import Output
 from organize.resource import Resource
 
@@ -171,10 +173,10 @@ class OnePer:
         """
         if self._detect_the_one_by == "created":
             # if detection method is file creation time, use that as timestamp
-            ts = arrow_get(file.stat().st_ctime)
+            ts = arrow_get(read_created(file))
         else:
             # for all other detection methods, use the file modification time
-            ts = arrow_get(file.stat().st_mtime)
+            ts = arrow_get(read_lastmodified(file))
         # period for `path`
         period = ts.floor(self.period)
 
