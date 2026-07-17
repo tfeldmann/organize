@@ -91,13 +91,11 @@ def make_tmp_path(
     """
     assert isinstance(tmp_path, Path)
     tmp_file = tmp_path / file.lstrip("/")
+    tmp_file.touch()
 
     if ctime:
-        ts = ctime.isoformat()
-        subprocess.run(["touch", "-d", ts, tmp_file], check=True)
-    else:
-        tmp_file.touch()
-    if mtime:
+        os.utime(tmp_file, (ctime.timestamp(), ctime.timestamp()))
+    elif mtime:
         os.utime(tmp_file, (mtime.timestamp(), mtime.timestamp()))
 
     # It is impossible to modify the file creation timestamp on real files. If
