@@ -1,3 +1,22 @@
+"""tests for `organize/filters/OnePer`
+
+These tests are pretty straightforward, with the exception of using the
+file creation timestamp for grouping files together.
+
+- On Windows, file creation time is obtained from the `st_ctime` attribute of a
+  file, and the pyfakefs module allows us to directly change that
+- On MacOS, file creation time is obtained from the `st_birthtime` attribute.
+  pyfakefs does not support modifying this attribute, so we need to create real
+  files. The birthtime cannot be directly manipulated, with the exception being
+  that if a timestamp on the file is set to a value *earlier* than the current
+  birthtime, the birthtime is also set to that value.
+- On Linux, it seems to be a mishmash of whether `st_birthtime` gets set or
+  not, but either way, pyfakefs isn't sufficient for our tests. There is no way
+  to change the birthtime at all, and it will allow ctime or atime to be earlier
+  than birthtime. For these tests, the only thing that seems to work is creating
+  the files in a specific order, and having a delay in between creating files.
+"""
+
 import os
 import subprocess
 import sys
@@ -93,16 +112,23 @@ def make_tmp_path(
     tmp_file = tmp_path / file.lstrip("/")
 
     if ctime:
-        ts = ctime.isoformat()
+        # On linux, gnu touch works with a variety of timestamp formats, but
+        # on MacOS, touch only accepts an ISO-like format with either 'Z', for
+        # UTC, or nothing, to use the current timezone
+        #
+        # On MacOS, if you change a timestamp to earlier than the file
+        # birthtime, it will automatically set the birthtime to the earlier
+        # time.
+        ts = ctime.isoformat()[:-6] + "Z"
         subprocess.run(["touch", "-d", ts, tmp_file], check=True)
     else:
         tmp_file.touch()
     if mtime:
         os.utime(tmp_file, (mtime.timestamp(), mtime.timestamp()))
 
-    # It is impossible to modify the file creation timestamp on real files. If
-    # a test needs to validate that files are created in a specific order, then
-    # we need to do two things:
+    # On Windows or Linux, it is impossible to modify the file creation
+    # timestamp on real files. If a test needs to validate that files are
+    # created in a specific order, then we need to do two things:
     # - have at least one second delay between creating each file
     # - make sure that the "hour" is the same for each file -- this is very
     #   specific to these tests, but since we have to delay between each file,
@@ -113,7 +139,10 @@ def make_tmp_path(
     # last file, we will not sleep. If no ctime was provided, we won't sleep,
     # either, but there is currently no use case for creating real files outside
     # of controlling the order of creation.
-    if ctime and not last:
+    #
+    # We do not need to sleep on MacOS (darwin), because we are able to
+    # manipulate the birthtime by setting the ctime.
+    if (ctime is not None) and (not last) and (sys.platform != "darwin"):
         time.sleep(1)
     return tmp_file
 
@@ -152,6 +181,11 @@ def make_files_with_relative_ts(
         mtime = now.shift(seconds=offsets[i])
         if order:
             ctime = now.shift(seconds=order[i])
+        else:
+            # if the test does not specifically change the ctime, then we will
+            # provide one anyway. This lets us enforce the correct order of file
+            # creation when testing on MacOS.
+            ctime = now.shift(hours=-1, seconds=i)
         paths.append(maker(my_fs, f"/file_{i}", mtime, ctime, (idx + 1) >= count))
     return sorted(paths)
 
