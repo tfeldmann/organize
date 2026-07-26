@@ -1,5 +1,6 @@
 from pathlib import Path
-from typing import ClassVar, Literal, Tuple
+from typing import Callable, ClassVar, Literal, Optional
+from typing import cast as type_cast
 
 from arrow import Arrow
 from arrow import get as arrow_get
@@ -15,6 +16,7 @@ from organize.resource import Resource
 # allowable values for `period`
 Period = Literal[
     "month",
+    "week",
     "day",
     "hour",
     "minute",
@@ -34,6 +36,8 @@ DetectionMethod = Literal[
     "lastmodified",
     "-lastmodified",
 ]
+
+WeekStart = Literal[1, 2, 3, 4, 5, 6, 7]
 
 
 @dataclass(config=ConfigDict(extra="forbid"))
@@ -69,7 +73,14 @@ class OnePer:
             - `"minute"`
             - `"hour"`
             - `"day"`
+            - `"week"`
             - `"month"`
+
+        week_start (int):
+            Only use with `period: "week"`. By default, a period of `week`
+            begins on Sunday. To use a different day, include this attribute.
+            Follows isoweekday() where Monday is 1 and Sunday is 7. (See the
+            documentation for the `arrow` python package for more details.)
 
     You can reverse the sorting method by prefixing a `-`.
 
@@ -129,32 +140,72 @@ class OnePer:
 
     period: Period = "hour"
     detect_the_one_by: DetectionMethod = "lastmodified"
+    # NOTE: cannot replace `Optional[WeekStart]` with future annotations and
+    #       `WeekStart | None` here, because in python 3.9, it will get a
+    #       runtime error, so we disable ruff and pylance type checking on
+    #       this line
+    week_start: Optional[WeekStart] = None  # noqa: FA100
 
     filter_config: ClassVar[FilterConfig] = FilterConfig(
         name="one_per", files=True, dirs=True
     )
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """set up initial state of the filter, based on the filter options"""
-        self._detect_the_one_by = self.detect_the_one_by
+        self._detect_the_one_by: DetectionMethod = self.detect_the_one_by
         self._detect_the_one_reverse = False
         if self.detect_the_one_by.startswith("-"):
-            self._detect_the_one_by = self.detect_the_one_by[1:]
+            # DetectionMethods with "-" are all valid DetectionMethods
+            # after removing the "-" from the start, but we have to
+            # tell the typechecker that this is valid
+            self._detect_the_one_by = type_cast(
+                DetectionMethod, self.detect_the_one_by[1:]
+            )
             self._detect_the_one_reverse = True
+
+        # determine the correct function to get the floor
+        #
+        # choosing which method to use here is possibly slightly faster than
+        # test-and-branch on every individual file comparison. The period and
+        # the correct method for the timestamp floor will never change once the
+        # filter instance is configured.
+        self.get_timestamp_floor: Callable[[Arrow], Arrow]
+        if "week" == self.period:
+            self.get_timestamp_floor = self.get_timestamp_floor_week
+            if self.week_start is None:
+                self.week_start = 7
+        else:
+            assert self.week_start is None, '`"week_start"` invalid for non-week period'
+            self.get_timestamp_floor = self.get_timestamp_floor_non_week
 
         # track files we have already seen before
         self._seen_files: set[Path] = set()
         # for each period, the file that is "the_one"
-        self._the_one_for_period: dict[Arrow, Path] = dict()
+        self._the_one_for_period: dict[Arrow, Path] = {}
         # does our detection method need the timestamp?
         self._track_timestamps: bool = False
         if self._detect_the_one_by in ["created", "lastmodified"]:
             # this detection method uses the file timestamp, so keep it for
             # each period
-            self._ts_for_the_one: dict[Arrow, Arrow] = dict()
+            self._ts_for_the_one: dict[Arrow, Arrow] = {}
             self._track_timestamps = True
 
-    def get_period(self, file: Path) -> Tuple[Arrow, Arrow]:
+    def get_timestamp_floor_non_week(self, timestamp: Arrow) -> Arrow:
+        """
+        Get the period for a file timestamp for all periods (except `"week"`)
+        """
+        return timestamp.floor(self.period)
+
+    def get_timestamp_floor_week(self, timestamp: Arrow) -> Arrow:
+        """Get the period for a file timestamp when the period is `"week"`
+
+        The user can configure to use any day of the week as the start.
+
+        This follows isoweekday() where Monday is 1 and Sunday is 7.
+        """
+        return timestamp.floor(self.period, week_start=self.week_start)
+
+    def get_period(self, file: Path) -> tuple[Arrow, Arrow]:
         """get the timestamp for the file and the period for the timestamp
 
         A period is the earliest possible timestamp for grouping files that are
@@ -178,7 +229,7 @@ class OnePer:
             # for all other detection methods, use the file modification time
             ts = arrow_get(read_lastmodified(file))
         # period for `path`
-        period = ts.floor(self.period)
+        period = self.get_timestamp_floor(ts)
 
         return period, ts
 

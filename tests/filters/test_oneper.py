@@ -17,12 +17,15 @@ file creation timestamp for grouping files together.
   the files in a specific order, and having a delay in between creating files.
 """
 
+from __future__ import annotations
+
 import os
 import subprocess
 import sys
 import time
+from collections.abc import Generator
 from pathlib import Path
-from typing import Callable, Generator, List, Optional, Union
+from typing import Callable, Union
 
 import pytest
 from arrow import Arrow
@@ -33,24 +36,38 @@ from pyfakefs.fake_filesystem_unittest import Patcher
 
 from organize import Config
 from organize.filters import OnePer
-from organize.filters.one_per import DetectionMethod, Period
+from organize.filters.one_per import DetectionMethod, Period, WeekStart
 from organize.output import Default as Output
 from organize.resource import Resource
 
 FakeOrTmpFileSystem = Union[FakeFilesystem, Path]
 
+AllPeriods = ["month", "week", "day", "hour", "minute", "second"]
 
-@pytest.fixture(params=["month", "day", "hour", "minute", "second"])
+
+@pytest.fixture(params=AllPeriods)
 def period(request) -> Period:
     """fixture to loop over valid periods"""
+    return request.param
+
+
+@pytest.fixture(params=[p for p in AllPeriods if p != "week"])
+def non_week_period(request) -> Period:
+    """fixture to loop over periods but skip `"week"`"""
+    return request.param
+
+
+@pytest.fixture(params=[i + 1 for i in range(7)])
+def week_start(request) -> WeekStart:
+    """fixture to loop over valid `week_start` values: 1-7"""
     return request.param
 
 
 def make_fake_path(
     fs: FakeOrTmpFileSystem,
     file: str,
-    mtime: Optional[Arrow] = None,
-    ctime: Optional[Arrow] = None,
+    mtime: Arrow | None = None,
+    ctime: Arrow | None = None,
     _last: bool = False,
 ) -> Path:
     """create a fake file with optional timestamps
@@ -88,8 +105,8 @@ def make_fake_path(
 def make_tmp_path(
     tmp_path: FakeOrTmpFileSystem,
     file: str,
-    mtime: Optional[Arrow] = None,
-    ctime: Optional[Arrow] = None,
+    mtime: Arrow | None = None,
+    ctime: Arrow | None = None,
     last: bool = False,
 ) -> Path:
     """Create a real file in a temporary location.
@@ -148,11 +165,11 @@ def make_tmp_path(
 
 
 def make_files_with_relative_ts(
-    my_fs: Union[FakeFilesystem, Path],
-    offsets: List[int],
-    order: Optional[List[int]],
+    my_fs: FakeFilesystem | Path,
+    offsets: list[int],
+    order: list[int] | None,
     maker: Callable[
-        [FakeOrTmpFileSystem, str, Optional[Arrow], Optional[Arrow], bool],
+        [FakeOrTmpFileSystem, str, Arrow | None, Arrow | None, bool],
         Path,
     ] = make_fake_path,
 ) -> list[Path]:
@@ -172,9 +189,9 @@ def make_files_with_relative_ts(
     :param maker: a function used to create the files; one version uses
          pyfakefs, and the other version uses real tmp files
     """
-    ctime: Optional[Arrow] = None
+    ctime: Arrow | None = None
     now = Arrow(2026, 7, 12, 15)
-    paths: List[Path] = list()
+    paths: list[Path] = []
     count = len(offsets)
     for idx in range(count):
         i = order[idx] if order else idx
@@ -192,7 +209,7 @@ def make_files_with_relative_ts(
 
 @pytest.fixture
 def files_with_relative_ts(
-    fs, offsets: List[int], order: Optional[List[int]]
+    fs, offsets: list[int], order: list[int] | None
 ) -> list[Path]:
     """fixture to create several files with timestamps
 
@@ -227,7 +244,7 @@ def files_with_relative_ts(
 def may_need_real_files(
     tmp_path,
     offsets: list[int],
-    order: Optional[list[int]],
+    order: list[int] | None,
 ) -> Generator[list[Path], None, None]:
     """create files where we care about the creation timestamp
 
@@ -287,18 +304,18 @@ def may_need_real_files(
         yield make_files_with_relative_ts(tmp_path, offsets, order, maker=make_tmp_path)
 
 
-def rename_paths(paths: List[Path], names: List[str]) -> List[Path]:
+def rename_paths(paths: list[Path], names: list[str]) -> list[Path]:
     """rename a list of files to a list of new file names
 
     :param paths: list of Paths to files that exist
-    :type paths: List[Path]
+    :type paths: list[Path]
     :param names: list of strings to be used to rename files in `paths`
-    :type names: List[str]
+    :type names: list[str]
 
     :return: the new list of Paths to the renamed files
-    :rtype: List[Path]
+    :rtype: list[Path]
     """
-    named_paths: List[Path] = list()
+    named_paths: list[Path] = []
     for i in range(len(names)):
         named = paths[i]
         # create a new Path that points to the new name
@@ -370,13 +387,19 @@ def test_invalid_period():
 
 def test_tracks_file_period(fs, period):
     """filtering a file should track the file's period"""
+    ## arrange
     op = OnePer(period=period)
 
     ## organize
     # possible time stamps
     now = Arrow(2026, 6, 26, 17, 8, 32, 123)
     # expected period for the file
-    file_period = now.floor(period)
+    file_period = (
+        now.floor(period)
+        if "week" != period
+        # the filter defaults to non-iso start on Sunday
+        else now.floor(period, week_start=7)
+    )
     f = make_fake_path(fs, "/f", now)
 
     ## act
@@ -393,10 +416,75 @@ def test_tracks_file_period(fs, period):
     assert op._the_one_for_period[file_period] is f
 
 
+def test_week_start(fs, week_start):
+    """user can specify a different day to start the week on"""
+    ## arrange
+    op = OnePer(period="week", week_start=week_start)
+
+    # possible time stamps
+    now = Arrow(2026, 6, 26, 17, 8, 32, 123)
+    # expected period for the file
+    file_period = now.floor("week", week_start=week_start)
+    f = make_fake_path(fs, "/f", now)
+
+    ## act
+    processed = op.pipeline(Resource(f), Output())
+
+    ## assert
+    # one file should not find extras to process
+    assert not processed
+
+    # the period for the file should be known
+    assert file_period in op._the_one_for_period
+
+    # with only one file, it should be the one for its period
+    assert op._the_one_for_period[file_period] is f
+
+    # the filter should be configured with the correct week_start
+    assert op.week_start == week_start
+
+
+def test_week_period_defaults_to_Sunday():
+    """when no `week_start` provided, default to Sunday"""
+    ## arrange
+    op = OnePer(period="week")
+
+    ## assert
+    assert op.week_start == 7
+
+
+def test_cannot_specify_week_start_on_other_periods(non_week_period, week_start):
+    """exception should be raised if `week_start` provided for non-week period"""
+    try:
+        OnePer(period=non_week_period, week_start=week_start)
+        assert False, "Unexpected week_start allowed"
+    except ValidationError:
+        assert True
+
+
+def test_week_start_between_1_and_7():
+    """exception should be raised for invalid `week_start`
+
+    This is non-exhaustive, but just checks the two edge cases. Only values
+    between 1 and 7 (inclusive) are valid.
+    """
+    try:
+        OnePer(period="week", week_start=0)  # type: ignore[assignment]
+        assert False, "Unexpected week_start value allowed"
+    except ValidationError:
+        assert True
+
+    try:
+        OnePer(period="week", week_start=8)  # type: ignore[assignment]
+        assert False, "Unexpected week_start value allowed"
+    except ValidationError:
+        assert True
+
+
 def check_selects_one_with_method(
     method: DetectionMethod,
-    paths: List[Path],
-    acted: List[Union[bool, int]],
+    paths: list[Path],
+    acted: list[bool | int],
 ):
     """test the OnePer::pipeline() for one set of files
 
@@ -405,7 +493,7 @@ def check_selects_one_with_method(
     :param method: How OnePer should choose "the one" file
     :type method: DetectionMethod
     :param paths: list of file Paths to process, in the order to process them
-    :type paths: List[Path]
+    :type paths: list[Path]
     :param acted: the expected results for each call of the pipeline; the call
             either return `False`, or it will return `True`, and the value of
             `res.path` will be set to a file which is specified by its index
@@ -414,15 +502,15 @@ def check_selects_one_with_method(
             `False`, the second call returns `True` with `res.path` set to
             `paths[1]`, and the third call returns `True` with `res.path` set
             to `paths[2]`
-    :type acted: List[Union[bool, int]]
+    :type acted: list[bool | int]
     """
     ## arrange
     # method, paths, expected = method_and_expect
     op = OnePer(detect_the_one_by=method)
 
     ## act
-    a: List[bool] = list()
-    r: List[Resource] = list()
+    a: list[bool] = []
+    r: list[Resource] = []
     for path in paths:
         res = Resource(path)
         act = op.pipeline(res, Output())
@@ -543,7 +631,11 @@ def test_reverses_created(may_need_real_files, acted):
         ([3, 2, 1], [2, 1, 0], [False, 1, 2], [2, 1, 0]),
     ],
 )
-def test_detects_by_first_seen(files_with_relative_ts, acted, seen):
+def test_detects_by_first_seen(
+    files_with_relative_ts: list[Path],
+    acted: list[int | bool],
+    seen: list[int],
+):
     """test `OnePer::pipeline()` with the `first seen` method
 
     This test changes the order of the paths get processed in when calling
@@ -555,7 +647,7 @@ def test_detects_by_first_seen(files_with_relative_ts, acted, seen):
     :param acted: the expected results (see `check_selects_one_with_method`)
     """
     # we want to process the files in different order
-    seen_paths: List[Path] = list()
+    seen_paths: list[Path] = []
     for i in seen:
         seen_paths.append(files_with_relative_ts[i])
 
@@ -573,7 +665,11 @@ def test_detects_by_first_seen(files_with_relative_ts, acted, seen):
         ([3, 2, 1], [2, 1, 0], [False, 0, 1], [2, 1, 0]),
     ],
 )
-def test_reverse_first_seen(files_with_relative_ts, acted, seen):
+def test_reverse_first_seen(
+    files_with_relative_ts: list[Path],
+    acted: list[bool | int],
+    seen: list[int],
+):
     """test `OnePer::pipeline()` with the `first seen` method, reversed
 
     This test changes the order of the paths get processed in when calling
@@ -585,7 +681,7 @@ def test_reverse_first_seen(files_with_relative_ts, acted, seen):
     :param acted: the expected results (see `check_selects_one_with_method`)
     """
     # we want to process the files in different order
-    seen_paths: List[Path] = list()
+    seen_paths: list[Path] = []
     for i in seen:
         seen_paths.append(files_with_relative_ts[i])
 
@@ -604,7 +700,11 @@ def test_reverse_first_seen(files_with_relative_ts, acted, seen):
         ([0, 2, 1], None, ["c", "b", "a"], [False, 0, 1]),
     ],
 )
-def test_detects_by_name(files_with_relative_ts, acted, names):
+def test_detects_by_name(
+    files_with_relative_ts: list[Path],
+    acted: list[bool | int],
+    names: list[str],
+):
     """test `OnePer::pipeline()` with the `name` method
 
     :param files_with_relative_ts: a test fixture that generates files with
@@ -617,7 +717,7 @@ def test_detects_by_name(files_with_relative_ts, acted, names):
     """
     # name the files
 
-    named_paths: List[Path] = rename_paths(
+    named_paths: list[Path] = rename_paths(
         files_with_relative_ts,
         names,
     )
@@ -637,7 +737,11 @@ def test_detects_by_name(files_with_relative_ts, acted, names):
         ([0, 1, 2], None, ["c", "b", "a"], [False, 1, 2]),
     ],
 )
-def test_reverses_name(files_with_relative_ts, acted, names):
+def test_reverses_name(
+    files_with_relative_ts: list[Path],
+    acted: list[bool | int],
+    names: list[str],
+):
     """test `OnePer::pipeline()` with the `name` method, reversed
 
     :param files_with_relative_ts: a test fixture that generates files with
@@ -650,7 +754,7 @@ def test_reverses_name(files_with_relative_ts, acted, names):
     """
     # name the files
 
-    named_paths: List[Path] = rename_paths(
+    named_paths: list[Path] = rename_paths(
         files_with_relative_ts,
         names,
     )
@@ -701,7 +805,7 @@ period_two_files = {
 }
 
 
-def test_one_period(fs):
+def test_one_period(fs: FakeFilesystem):
     """test with all files in the same period - remove all except earliest"""
     for file in sorted(period_one_files):
         make_fake_path(fs, file, period_one_files[file])
@@ -721,7 +825,7 @@ def test_one_period(fs):
             assert not Path(file).exists()
 
 
-def test_two_periods(fs):
+def test_two_periods(fs: FakeFilesystem):
     """test with two different periods - keep earliest file from each period"""
     both_periods = period_one_files | period_two_files
     for file in sorted(both_periods):
@@ -770,7 +874,7 @@ rules:
 """
 
 
-def test_with_python_and_arrow(fs):
+def test_with_python_and_arrow(fs: FakeFilesystem):
     """test with a complicated config that uses python and arrow
 
     This tests a config that restricts a time range to a portion of an hour. For
@@ -783,7 +887,7 @@ def test_with_python_and_arrow(fs):
 
     Config.from_string(CONFIG_WITH_COMPLICATED_PYTHON).execute(simulate=False)
 
-    expected: List[str] = list()
+    expected: list[str] = []
     # period_one: 00-30
     expected.append("/q")
     # period_one: 30-00
