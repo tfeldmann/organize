@@ -398,7 +398,7 @@ def test_tracks_file_period(fs, period):
         now.floor(period)
         if "week" != period
         # the filter defaults to non-iso start on Sunday
-        else now.floor(period, week_start=7)
+        else now.floor(period).shift(days=-1)
     )
     f = make_fake_path(fs, "/f", now)
 
@@ -424,7 +424,8 @@ def test_week_start(fs, week_start):
     # possible time stamps
     now = Arrow(2026, 6, 26, 17, 8, 32, 123)
     # expected period for the file
-    file_period = now.floor("week", week_start=week_start)
+    shift_days = -1 if week_start == 7 else (week_start - 1)
+    file_period = now.floor("week").shift(days=shift_days)
     f = make_fake_path(fs, "/f", now)
 
     ## act

@@ -171,9 +171,10 @@ class OnePer:
         # filter instance is configured.
         self.get_timestamp_floor: Callable[[Arrow], Arrow]
         if "week" == self.period:
-            self.get_timestamp_floor = self.get_timestamp_floor_week
             if self.week_start is None:
                 self.week_start = 7
+            self._shift_days = -1 if self.week_start == 7 else (self.week_start - 1)
+            self.get_timestamp_floor = self.get_timestamp_floor_week
         else:
             assert self.week_start is None, '`"week_start"` invalid for non-week period'
             self.get_timestamp_floor = self.get_timestamp_floor_non_week
@@ -199,11 +200,23 @@ class OnePer:
     def get_timestamp_floor_week(self, timestamp: Arrow) -> Arrow:
         """Get the period for a file timestamp when the period is `"week"`
 
-        The user can configure to use any day of the week as the start.
+        The user can configure `"week_start"` to use any day of the week as the
+        start.
+
+        NOTE: arrow version >= 1.4 adds a parameter to the `Arrow.floor()`
+              method to specify the start day of the week, but in arrow@1.3.0,
+              the current version used by this project, that parameter is not
+              available. As a result, we implement the same behavior by taking
+              the default week start of Monday and shifting it. We pre-calculate
+              the days to shift it in the `__post_init__()` method, because
+              the value won't change after the filter is configured. For Sunday,
+              which has an isoweekday value of 7, we shift it by `-1` days. All
+              other days are shifted by `week_start - 1`.
 
         This follows isoweekday() where Monday is 1 and Sunday is 7.
         """
-        return timestamp.floor(self.period, week_start=self.week_start)
+        period = timestamp.floor("week")
+        return period.shift(days=self._shift_days)
 
     def get_period(self, file: Path) -> tuple[Arrow, Arrow]:
         """get the timestamp for the file and the period for the timestamp
