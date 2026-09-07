@@ -47,7 +47,7 @@ class DateLastUsed(TimeFilter):
 
     def __post_init__(self):
         if sys.platform != "darwin":
-            raise EnvironmentError("date_added is only available on macOS")
+            raise OSError("date_added is only available on macOS")
         return super().__post_init__()
 
     def get_datetime(self, path: Path) -> datetime:

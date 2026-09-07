@@ -44,8 +44,7 @@ def set_version(args):
     version = version.lower()
     if not re.match(r"v?\d+\.\d+.*", version):
         return
-    if version.startswith("v"):
-        version = version[1:]
+    version = version.removeprefix("v")
 
     # safety check
     if not ask_confirm(f"Creating version v{version}. Continue?"):
