@@ -5,7 +5,7 @@ from .saving import SavingOutput
 
 __all__ = (
     "JSONL",
+    "Default",
     "Output",
     "SavingOutput",
-    "Default",
 )
