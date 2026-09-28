@@ -1,6 +1,7 @@
 from collections import Counter
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Dict, Iterable, List, Union
+from typing import Dict, List, Union
 
 import pytest
 

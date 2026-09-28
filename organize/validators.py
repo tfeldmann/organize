@@ -1,4 +1,5 @@
-from typing import Annotated, Any, Iterable, List, Mapping, Set, TypeVar
+from collections.abc import Iterable, Mapping
+from typing import Annotated, Any, List, Set, TypeVar
 
 from pydantic.functional_validators import BeforeValidator
 
