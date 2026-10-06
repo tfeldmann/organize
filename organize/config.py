@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import os
 import textwrap
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, List, Optional, Union
+from typing import List, Optional, Union
 
 import yaml
 from pydantic import ConfigDict, ValidationError
