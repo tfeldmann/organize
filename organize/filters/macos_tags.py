@@ -15,7 +15,7 @@ def list_tags(path) -> List[str]:
     import macos_tags
 
     tags = macos_tags.get_all(path)
-    return ["{} ({})".format(tag.name, tag.color.name.lower()) for tag in tags]
+    return [f"{tag.name} ({tag.color.name.lower()})" for tag in tags]
 
 
 def matches_tags(filter_tags, file_tags) -> bool:
@@ -48,7 +48,7 @@ class MacOSTags:
 
     def __post_init__(self):
         if sys.platform != "darwin":
-            raise EnvironmentError("The macos_tags filter is only available on macOS")
+            raise OSError("The macos_tags filter is only available on macOS")
 
     @field_validator("tags", mode="before")
     def ensure_list(cls, v):
