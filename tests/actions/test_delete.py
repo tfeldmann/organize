@@ -38,7 +38,7 @@ def test_delete_empty_files(fs):
     }
 
 
-def test_delete_empty_dirs(fs):
+def test_delete_empty_dirs(fs, testoutput):
     config = """
     rules:
     - name: "Recursively delete all empty directories"
@@ -51,7 +51,7 @@ def test_delete_empty_dirs(fs):
         - delete
     """
     make_files(FILES, "test")
-    Config.from_string(config).execute(simulate=False)
+    Config.from_string(config).execute(simulate=False, output=testoutput)
     result = read_files("test")
     assert result == {
         "test.txt": "",
@@ -61,6 +61,7 @@ def test_delete_empty_dirs(fs):
             "x.txt": "",
         },
     }
+    assert testoutput.msg_report.error_count == 0
 
 
 def test_delete_deep(fs):

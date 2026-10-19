@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 - Fixed #438 (`filecontent` filter fails for PDFs when `pdftotext` isn't installed, instead of falling back to `pdfminer`)
+- Fixes a bug where errors reading a location (e.g. missing permissions) were silently
+  ignored and the location looked empty. The `ignore_errors` location option works
+  again (#103, #413).
 
 ## v3.3.0 (2024-11-25)
 
