@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Fixes a bug where errors reading a location (e.g. missing permissions) were silently
+  ignored and the location looked empty. The `ignore_errors` location option works
+  again (#103, #413).
+
 ## v3.4.0 (2026-11-15)
 
 - Python >= 3.11 is now required

@@ -1,5 +1,5 @@
 import os
-from collections.abc import Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Literal, NamedTuple
@@ -18,12 +18,18 @@ class ScandirResult(NamedTuple):
     nondirs: list[os.DirEntry]
 
 
-def scandir(top: str, collectfiles: bool = True) -> ScandirResult:
+def scandir(
+    top: str,
+    collectfiles: bool = True,
+    onerror: Callable[[OSError], None] | None = None,
+) -> ScandirResult:
     result = ScandirResult(dirs=[], nondirs=[])
     try:
         # build iterator if we have the permissions to this folder
         scandir_it = os.scandir(top)
-    except OSError:
+    except OSError as e:
+        if onerror is not None:
+            onerror(e)
         return result
 
     with scandir_it:
@@ -33,7 +39,9 @@ def scandir(top: str, collectfiles: bool = True) -> ScandirResult:
                     entry = next(scandir_it)
                 except StopIteration:
                     break
-            except OSError:
+            except OSError as e:
+                if onerror is not None:
+                    onerror(e)
                 return result
 
             try:
@@ -79,6 +87,7 @@ class Walker:
     filter_files: list[str] | None = None
     exclude_dirs: set[str] = Field(default_factory=set)
     exclude_files: set[str] = Field(default_factory=set)
+    onerror: Callable[[OSError], None] | None = None
 
     def _should_yield_file(self, entry: os.DirEntry, lvl: int) -> bool:
         return (
@@ -112,8 +121,10 @@ class Walker:
         if not files and not dirs:
             return
 
-        # list all dirs and nondirs of the folder
-        result = scandir(top, collectfiles=files)
+        # list all dirs and nondirs of the folder. Errors are only reported for the
+        # location itself, subfolders might get moved or deleted while walking.
+        onerror = self.onerror if lvl == 0 else None
+        result = scandir(top, collectfiles=files, onerror=onerror)
 
         if self.method == "breadth":
             # Return entries
