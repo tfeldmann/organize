@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from conftest import make_files
@@ -104,3 +105,51 @@ def test_at_sign_in_path(fs):
 
     assert (Path(test_path) / "foo.txt").exists()
     assert (Path(test_path) / "bar.txt").exists()
+
+
+def deny_scandir(monkeypatch, denied):
+    scandir = os.scandir
+
+    def _scandir(path):
+        if path == denied:
+            raise PermissionError(13, "Permission denied", path)
+        return scandir(path)
+
+    monkeypatch.setattr(os, "scandir", _scandir)
+
+
+def test_unreadable_location(fs, testoutput, monkeypatch):
+    make_files(["foo.txt"], "/test")
+    make_files(["bar.txt"], "/test2")
+    deny_scandir(monkeypatch, "/test")
+    Config.from_string(
+        """
+        rules:
+          - locations:
+              - /test
+              - /test2
+            actions:
+              - echo: '{path.name}'
+        """
+    ).execute(simulate=False, output=testoutput)
+    assert testoutput.messages == ["[Errno 13] Permission denied: '/test'", "bar.txt"]
+    assert testoutput.msg_report.error_count == 1
+
+
+def test_unreadable_location_ignore_errors(fs, testoutput, monkeypatch):
+    make_files(["foo.txt"], "/test")
+    make_files(["bar.txt"], "/test2")
+    deny_scandir(monkeypatch, "/test")
+    Config.from_string(
+        """
+        rules:
+          - locations:
+              - path: /test
+                ignore_errors: true
+              - /test2
+            actions:
+              - echo: '{path.name}'
+        """
+    ).execute(simulate=False, output=testoutput)
+    assert testoutput.messages == ["bar.txt"]
+    assert testoutput.msg_report.error_count == 0
