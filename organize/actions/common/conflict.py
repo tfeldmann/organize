@@ -130,7 +130,7 @@ def resolve_conflict(
             dst=dst,
             template=rename_template,
         )
-        _print('Renaming existing to: "{new_path.name}"')
+        _print(f'Renaming existing to: "{new_path.name}"')
         if not simulate:
             dst.rename(new_path)
         return ConflictResult(skip_action=False, use_dst=dst)
