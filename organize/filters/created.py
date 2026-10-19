@@ -48,7 +48,7 @@ def read_created(path: Path) -> datetime:
 
     # give up.
     if timestamp is None:
-        raise EnvironmentError("The creation time is not available.")
+        raise OSError("The creation time is not available.")
 
     return datetime.fromtimestamp(timestamp, timezone.utc)
 
