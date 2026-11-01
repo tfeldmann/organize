@@ -4,6 +4,11 @@ from typing import Dict, Iterable, List, Union
 
 import pytest
 
+# Import modules with compiled extensions before pyfakefs is active: pyfakefs
+# unloads modules imported during a test, and these cannot be loaded twice.
+import pdfminer.high_level  # noqa: F401, E402
+import pdfminer.pdfdocument  # noqa: F401, E402
+
 from organize import history
 from organize.output import SavingOutput
 

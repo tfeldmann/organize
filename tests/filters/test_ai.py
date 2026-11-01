@@ -1,5 +1,7 @@
 import json
 import os
+import pathlib
+import uuid
 
 import pytest
 from conftest import make_files, read_files
@@ -39,6 +41,19 @@ class FakeAI:
 
 def answer(category, confidence=0.95, **fields):
     return dict(category=category, confidence=confidence, reason="", fields=fields)
+
+
+@pytest.fixture(autouse=True)
+def cache_dir(request, monkeypatch):
+    # a fresh cache for each test, so answers never leak between tests
+    if "fs" in request.fixturenames:
+        request.getfixturevalue("fs")
+        # created after pyfakefs is active, so it is a path in the fake filesystem
+        path = pathlib.Path(f"/ai-cache-{uuid.uuid4().hex}")
+    else:
+        path = request.getfixturevalue("tmp_path") / "ai-cache"
+    monkeypatch.setattr(ai, "CACHE_DIR", path)
+    return path
 
 
 @pytest.fixture
@@ -290,7 +305,7 @@ def test_target_folders_are_not_moved(fs, claude):
             "Invoice": {"x.pdf": ""},
             "_Review": {},
             "Archives": {"a.zip": ""},
-            "folders": {},
+            "Folders": {},
             "Random stuff": {},
         },
         "test",
@@ -301,7 +316,7 @@ def test_target_folders_are_not_moved(fs, claude):
         "Invoice": {"x.pdf": ""},
         "_Review": {},
         "Archives": {"a.zip": ""},
-        "folders": {"Random stuff": {}},
+        "Folders": {"Random stuff": {}},
     }
 
 

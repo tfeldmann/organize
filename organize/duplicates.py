@@ -13,7 +13,12 @@ from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional
 
 TAG = "Duplicate"
-ORIGINAL_ATTR = "local.organize.duplicate-of"
+# Linux only allows extended attributes in the "user." namespace
+ORIGINAL_ATTR = (
+    "user.organize.duplicate-of"
+    if sys.platform.startswith("linux")
+    else "local.organize.duplicate-of"
+)
 
 
 def _set_attr(path: Path, value: str) -> None:
@@ -143,8 +148,9 @@ def _find_by_content(path: Path, by_size: Dict[int, List[Path]]) -> Optional[Pat
 
 
 def _created(path: Path) -> float:
+    # the earliest known time of the file, as creation times are not always kept
     st = path.stat()
-    return getattr(st, "st_birthtime", st.st_mtime)
+    return min(getattr(st, "st_birthtime", st.st_mtime), st.st_mtime)
 
 
 def find_existing(paths: List[Path]) -> List[Dict[str, str]]:

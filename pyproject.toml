@@ -46,7 +46,9 @@ dependencies = [
     "send2trash[nativelib]>=1.8.2,<2.0.0",
     "simplematch>=1.4,<2.0.0",
     "watchdog>=6.0.0",
-    "xattr>=0.9.9,<2.0.0 ; sys_platform != 'win32'",
+    # Windows uses alternate data streams instead of xattr
+    "xattr>=0.9.9,<0.10.0 ; sys_platform == 'darwin'",  # what macos-tags needs
+    "xattr>=1.0.0,<2.0.0 ; sys_platform == 'linux'",  # has wheels for all Pythons
 ]
 
 [project.urls]
