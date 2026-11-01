@@ -3,6 +3,8 @@
 #
 #   scripts/macos-service.sh install [config]   install and start (config: downloads)
 #   scripts/macos-service.sh uninstall          stop and remove
+#   scripts/macos-service.sh stop               pause until `start` or the next login
+#   scripts/macos-service.sh start              resume after `stop`
 #   scripts/macos-service.sh status             show whether it is running
 #   scripts/macos-service.sh logs               follow the log
 #
@@ -82,9 +84,25 @@ uninstall() {
     echo "Uninstalled."
 }
 
+start() {
+    if [ ! -f "$PLIST" ]; then
+        echo "Not installed. Use: $0 install [config]" >&2
+        exit 1
+    fi
+    launchctl bootstrap "$DOMAIN" "$PLIST" 2>/dev/null || launchctl kickstart "$DOMAIN/$LABEL"
+    echo "Started."
+}
+
+stop() {
+    launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
+    echo "Stopped."
+}
+
 status() {
     if launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1; then
         launchctl print "$DOMAIN/$LABEL" | grep -E '^\s+(state|pid|last exit code) ='
+    elif [ -f "$PLIST" ]; then
+        echo "Stopped."
     else
         echo "Not installed."
     fi
@@ -93,10 +111,12 @@ status() {
 case "${1:-}" in
 install) install "${2:-}" ;;
 uninstall) uninstall ;;
+start) start ;;
+stop) stop ;;
 status) status ;;
 logs) tail -f "$LOG" ;;
 *)
-    sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'
+    sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//'
     exit 2
     ;;
 esac

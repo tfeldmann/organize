@@ -7,6 +7,8 @@ Usage:
   organize watch  [options] [--delay <seconds>] [<config>]
   organize undo   [--dry-run] [--run <id>]
   organize history
+  organize info   [<config>]
+  organize move   <src> <dest>
   organize new    [<config>]
   organize edit   [<config>]
   organize check  [<config> | --stdin]
@@ -25,6 +27,8 @@ Commands:
   undo       Undo the last run (or the run given by --run).
                Use --dry-run to only show what would be undone.
   history    List the runs that can be undone.
+  info       Print the folders and AI categories of a config as JSON.
+  move       Move <src> into the folder <dest> as an undoable run.
   new        Creates a default config.
   edit       Edit the config file with $EDITOR
   check      Check config file validity
@@ -201,6 +205,29 @@ def undo(run_id: Optional[str], dry_run: bool) -> None:
         console.print(f"  {escape(msg)}")
 
 
+def info(config: Optional[str]) -> None:
+    import json
+
+    from organize import app_support
+
+    conf = ConfigWithPath.by_name_or_path(config)
+    parsed = Config.from_string(config=conf.config, config_path=conf.config_path)
+    print(json.dumps({**app_support.info(parsed), "config_path": conf.path()}))
+
+
+def move(src: str, dest: str) -> None:
+    import json
+
+    from organize import app_support
+
+    try:
+        dst = app_support.move(Path(src), Path(dest))
+    except OSError as e:
+        console.print(f"[red]Error:[/] {escape(e)}")
+        sys.exit(1)
+    print(json.dumps({"dst": str(dst)}))
+
+
 def history_() -> None:
     table = Table()
     table.add_column("Run", no_wrap=True)
@@ -281,6 +308,8 @@ class CliArgs(BaseModel):
     watch: bool
     undo: bool
     history: bool
+    info: bool
+    move: bool
     new: bool
     edit: bool
     check: bool
@@ -301,6 +330,10 @@ class CliArgs(BaseModel):
     delay: float = Field(5.0, alias="--delay")
     run_id: Optional[str] = Field(None, alias="--run")
     dry_run: bool = Field(False, alias="--dry-run")
+
+    # move arguments
+    src: Optional[str] = Field(None, alias="<src>")
+    dest: Optional[str] = Field(None, alias="<dest>")
 
     # show options
     path: bool = Field(False, alias="--path")
@@ -367,6 +400,11 @@ def cli(argv: Union[list[str], str, None] = None) -> None:
             undo(run_id=args.run_id, dry_run=args.dry_run)
         elif args.history:
             history_()
+        elif args.info:
+            info(config=args.config)
+        elif args.move:
+            assert args.src is not None and args.dest is not None
+            move(src=args.src, dest=args.dest)
         elif args.new:
             new(config=args.config)
         elif args.edit:
