@@ -1,4 +1,5 @@
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -6,18 +7,18 @@ from organize import Config, duplicates
 
 MARK_AND_SORT = """
 rules:
-  - locations: "{loc}"
+  - locations: '{loc}'
     subfolders: false
     filters:
       - copy_of
     actions:
       - mark_duplicate
-  - locations: "{loc}"
+  - locations: '{loc}'
     subfolders: false
     filters:
       - extension
     actions:
-      - move: "{loc}/sorted/"
+      - move: '{loc}/sorted/'
 """
 
 
@@ -65,9 +66,9 @@ def test_first_of_new_copies_is_the_original(tmp_path):
     run(tmp_path)
     marked = duplicates.find_marked([tmp_path])
     assert len(marked) == 1
-    assert marked[0]["path"].endswith("sorted/b.txt")
+    assert Path(marked[0]["path"]).parts[-2:] == ("sorted", "b.txt")
     # the original was sorted after b.txt was marked and is found by its content
-    assert marked[0]["original"].endswith("sorted/a.txt")
+    assert Path(marked[0]["original"]).parts[-2:] == ("sorted", "a.txt")
     assert marked[0]["original_exists"] is True
 
 
@@ -86,10 +87,10 @@ def test_search_other_folders(tmp_path):
     Config.from_string(
         f"""
         rules:
-          - locations: "{tmp_path}/Downloads"
+          - locations: '{tmp_path}/Downloads'
             filters:
               - copy_of:
-                  search: "{tmp_path}/Documents"
+                  search: '{tmp_path}/Documents'
             actions:
               - mark_duplicate
         """
@@ -139,17 +140,17 @@ def test_sorted_files_leaves_out_moved_folders(tmp_path):
     Config.from_string(
         f"""
         rules:
-          - locations: "{tmp_path}"
+          - locations: '{tmp_path}'
             subfolders: false
             actions:
-              - move: "{tmp_path}/docs/"
-          - locations: "{tmp_path}"
+              - move: '{tmp_path}/docs/'
+          - locations: '{tmp_path}'
             subfolders: false
             targets: dirs
             filters:
               - name: Project
             actions:
-              - move: "{tmp_path}/projects/"
+              - move: '{tmp_path}/projects/'
         """
     ).execute(simulate=False)
     assert duplicates.sorted_files([tmp_path]) == [tmp_path / "docs" / "a.pdf"]

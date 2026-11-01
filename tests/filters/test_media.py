@@ -58,12 +58,12 @@ def test_sort_music_by_artist(tmp_path):
     Config.from_string(
         f"""
         rules:
-          - locations: "{tmp_path}"
+          - locations: '{tmp_path}'
             subfolders: false
             filters:
               - media
             actions:
-              - move: "{tmp_path}/Music/{{media.artist}}/{{media.album}}/"
+              - move: '{tmp_path}/Music/{{media.artist}}/{{media.album}}/'
         """
     ).execute(simulate=False)
     assert (tmp_path / "Music/AC-DC/Live/a.wav").is_file()

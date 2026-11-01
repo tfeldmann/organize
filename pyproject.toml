@@ -46,7 +46,7 @@ dependencies = [
     "send2trash[nativelib]>=1.8.2,<2.0.0",
     "simplematch>=1.4,<2.0.0",
     "watchdog>=6.0.0",
-    "xattr>=0.9.9,<2.0.0",
+    "xattr>=0.9.9,<2.0.0 ; sys_platform != 'win32'",
 ]
 
 [project.urls]

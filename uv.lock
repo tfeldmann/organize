@@ -1057,7 +1057,7 @@ dependencies = [
     { name = "send2trash", extra = ["nativelib"] },
     { name = "simplematch" },
     { name = "watchdog" },
-    { name = "xattr" },
+    { name = "xattr", marker = "sys_platform != 'win32'" },
 ]
 
 [package.optional-dependencies]
@@ -1108,7 +1108,7 @@ requires-dist = [
     { name = "send2trash", extras = ["nativelib"], specifier = ">=1.8.2,<2.0.0" },
     { name = "simplematch", specifier = ">=1.4,<2.0.0" },
     { name = "watchdog", specifier = ">=6.0.0" },
-    { name = "xattr", specifier = ">=0.9.9,<2.0.0" },
+    { name = "xattr", marker = "sys_platform != 'win32'", specifier = ">=0.9.9,<2.0.0" },
 ]
 provides-extras = ["docs"]
 

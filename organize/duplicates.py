@@ -2,7 +2,8 @@
 Marking files as duplicates of files that already exist.
 
 A marked file gets the Finder tag "Duplicate" (on macOS) and the path of its
-original in an extended attribute, which stays with the file when it is moved.
+original in an extended attribute (an alternate data stream on Windows), which
+stays with the file when it is moved.
 """
 
 import os
@@ -15,12 +16,45 @@ TAG = "Duplicate"
 ORIGINAL_ATTR = "local.organize.duplicate-of"
 
 
+def _set_attr(path: Path, value: str) -> None:
+    if sys.platform == "win32":
+        # NTFS alternate data stream, kept when the file is moved
+        with open(f"{path}:{ORIGINAL_ATTR}", "w", encoding="utf-8") as f:
+            f.write(value)
+    else:
+        import xattr
+
+        xattr.setxattr(str(path), ORIGINAL_ATTR, value.encode("utf-8"))
+
+
+def _get_attr(path: Path) -> Optional[str]:
+    try:
+        if sys.platform == "win32":
+            with open(f"{path}:{ORIGINAL_ATTR}", encoding="utf-8") as f:
+                return f.read()
+        import xattr
+
+        return xattr.getxattr(str(path), ORIGINAL_ATTR).decode("utf-8")
+    except OSError:
+        return None
+
+
+def _remove_attr(path: Path) -> None:
+    try:
+        if sys.platform == "win32":
+            os.remove(f"{path}:{ORIGINAL_ATTR}")
+        else:
+            import xattr
+
+            xattr.removexattr(str(path), ORIGINAL_ATTR)
+    except OSError:
+        pass
+
+
 def mark(
     path: Path, original: Path, tag: Optional[str] = TAG, color: str = "red"
 ) -> None:
-    import xattr
-
-    xattr.setxattr(str(path), ORIGINAL_ATTR, str(original).encode("utf-8"))
+    _set_attr(path, str(original))
     if tag and sys.platform == "darwin":
         import macos_tags
 
@@ -31,12 +65,7 @@ def mark(
 
 
 def unmark(path: Path, tag: Optional[str] = TAG) -> None:
-    import xattr
-
-    try:
-        xattr.removexattr(str(path), ORIGINAL_ATTR)
-    except OSError:
-        pass
+    _remove_attr(path)
     if tag and sys.platform == "darwin":
         import macos_tags
 
@@ -46,13 +75,8 @@ def unmark(path: Path, tag: Optional[str] = TAG) -> None:
 
 
 def original_of(path: Path) -> Optional[Path]:
-    import xattr
-
-    try:
-        value = xattr.getxattr(str(path), ORIGINAL_ATTR)
-    except OSError:
-        return None
-    return Path(value.decode("utf-8"))
+    value = _get_attr(path)
+    return Path(value) if value is not None else None
 
 
 def walk_files(folder: Path) -> Iterator[Path]:

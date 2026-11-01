@@ -90,7 +90,7 @@ def test_undo_copy_trashes_the_copy(fs, monkeypatch):
     run = history.last_run()
     assert run is not None
     list(history.undo(run, simulate=False))
-    assert [str(p) for p in trashed] == ["/backup/a.txt"]
+    assert [(p.parent.name, p.name) for p in trashed] == [("backup", "a.txt")]
 
 
 def test_rename_existing_conflict_is_undone(fs):

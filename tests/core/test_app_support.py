@@ -8,14 +8,14 @@ def test_info(tmp_path):
     config = Config.from_string(
         f"""
         rules:
-          - locations: "{tmp_path}/in"
+          - locations: '{tmp_path}/in'
             filters:
               - ai:
                   categories: [invoice, tax]
                   uncertain: Check
             actions:
               - echo: "x"
-          - locations: "{tmp_path}/in"
+          - locations: '{tmp_path}/in'
             filters:
               - ai:
                   categories: [tax, photos]
@@ -34,7 +34,7 @@ def test_move_is_undoable(fs):
     dst = app_support.move(
         app_support.Path("/dl/_Review/a.pdf"), app_support.Path("/dl/tax")
     )
-    assert str(dst) == "/dl/tax/a 2.pdf"
+    assert (dst.parent.name, dst.name) == ("tax", "a 2.pdf")
     assert read_files("dl") == {
         "_Review": {},
         "tax": {"a.pdf": "old", "a 2.pdf": "new"},

@@ -49,10 +49,10 @@ def test_watched_folders(tmp_path):
     config = Config.from_string(
         f"""
         rules:
-          - locations: ["{tmp_path}/a", "{tmp_path}/b", "{tmp_path}/missing"]
+          - locations: ['{tmp_path}/a', '{tmp_path}/b', '{tmp_path}/missing']
             actions:
               - echo: "x"
-          - locations: "{tmp_path}/a"
+          - locations: '{tmp_path}/a'
             actions:
               - echo: "x"
         """
@@ -69,7 +69,7 @@ def test_watch_runs_after_new_file(tmp_path):
     config = Config.from_string(
         f"""
         rules:
-          - locations: "{inbox}"
+          - locations: '{inbox}'
             actions:
               - echo: "x"
         """
@@ -112,7 +112,7 @@ def test_watch_runs_after_new_folder(tmp_path):
     config = Config.from_string(
         f"""
         rules:
-          - locations: "{inbox}"
+          - locations: '{inbox}'
             targets: dirs
             actions:
               - echo: "x"
