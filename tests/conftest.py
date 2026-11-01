@@ -2,11 +2,24 @@ from collections import Counter
 from pathlib import Path
 from typing import Dict, Iterable, List, Union
 
+# Import modules with compiled extensions before pyfakefs is active: pyfakefs
+# unloads modules imported during a test, and these cannot be loaded twice.
+import pdfminer.high_level  # noqa: F401, E402
+import pdfminer.pdfdocument  # noqa: F401, E402
 import pytest
 
+from organize import history
 from organize.output import SavingOutput
 
 ORGANIZE_DIR = Path(__file__).parent.parent
+
+
+@pytest.fixture(autouse=True)
+def history_file(tmp_path_factory, monkeypatch) -> Path:
+    # never write to the real undo history while testing
+    path = tmp_path_factory.mktemp("history") / "history.jsonl"
+    monkeypatch.setattr(history, "HISTORY_FILE", path)
+    return path
 
 
 @pytest.fixture()

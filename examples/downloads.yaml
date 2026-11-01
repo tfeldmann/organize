@@ -1,0 +1,95 @@
+# Example config: copy it to the organize config folder (`organize show --path`
+# shows where) and adjust the folders and categories to your files.
+#
+# Sorts each folder below into subfolders of itself, e.g. ~/Downloads/invoice/Telekom/:
+#   - documents, images and media by what they are (invoice, receipt, ...)
+#   - files the AI is unsure about into _Review
+#   - everything else by file type (Documents, Images, Archives, Installers, ...)
+#   - folders as a whole by their name (tax/, Folders/, ...) - their content stays
+#     together and is never sorted
+#   - files you already have (same content, any name) get the Finder tag "Duplicate"
+#     and are sorted as usual - review them in the Finder sidebar or the menu bar app
+#
+# Preview:     organize sim downloads     (classifies, but moves nothing)
+# Run once:    organize run downloads
+# Keep going:  organize watch downloads   (runs 5s after new files arrive)
+# Undo:        organize undo              (reverts the last run)
+
+folders: &folders
+  path:
+    - "~/Downloads"
+    # add more folders here, each one is sorted into itself:
+    # - "~/Desktop"
+  # skip hidden files, downloads in progress and Office lock files (~$Book.xlsx)
+  exclude_files: [".*", "*.crdownload", "*.part", "*.download", "~$*"]
+  exclude_dirs: [".*"]
+
+rules:
+  # Runs first, so new files are compared before they are sorted.
+  - name: "Mark duplicates"
+    locations: *folders
+    subfolders: false
+    filters:
+      - copy_of
+    actions:
+      - mark_duplicate
+
+  - name: "Sort with AI"
+    locations: *folders
+    # only loose files - folders are moved as a whole by the last rule
+    subfolders: false
+    filters:
+      - extension: &ai_extensions
+          [pdf, docx, txt, md, jpg, jpeg, png, webp, mp3, m4a, wav, mp4, mov, m4v]
+      - ai: &ai
+          # provider: openai     # or gemini - needs OPENAI_API_KEY / GEMINI_API_KEY
+          categories:
+            invoice: "A bill requesting payment"
+            receipt: "Proof of a payment that was already made"
+            contract: "An agreement between parties, including terms and offers"
+            bank_statement: "An account statement from a bank or card issuer"
+            tax: "Tax returns, assessments and letters from the tax office"
+            insurance: "Policies, claims and letters from insurers"
+            medical: "Medical reports, prescriptions, lab results"
+            music: "Songs and albums"
+            recording: "Voice memos, meeting, lecture or podcast recordings"
+            photos: "Personal photos and videos, e.g. of trips, events and family"
+            projects: "Work or personal projects with mixed files"
+            software: "Apps, installers, source code, drivers and their documentation"
+            education: "Course material, lecture notes, certificates and transcripts"
+            finance: "Other financial matters: credit cards, loans, investments, banking letters"
+            vehicles: "Cars and other vehicles: purchase, leasing, registration, service, repairs"
+            work: "Your job: schedules, memos, policies, meeting notes, presentations, reports"
+            research: "Research and publishing: manuscripts, journal articles, peer reviews, IRB applications, grants"
+            travel: "Trips: flight and train tickets, boarding passes, hotel bookings, itineraries"
+          extract:
+            vendor: "The company or person that issued the document, or the artist"
+          min_confidence: 0.55
+          # don't skip "other" - it is sorted by file type below
+          skip: []
+    actions:
+      # e.g. invoice/Telekom/ - or just photos/ when there is no vendor; files to
+      # review all go directly into _Review/
+      - move: "{location}/{% if ai.category == 'other' %}{ai.filetype}{% else %}{ai.category}{% if ai.vendor != 'Unknown' and ai.category != '_Review' %}/{ai.vendor}{% endif %}{% endif %}/"
+
+  # Files the AI rule could not classify (e.g. no connection) stay where they are
+  # and are tried again next time, because their extensions are excluded here.
+  - name: "Sort everything else by type"
+    locations: *folders
+    subfolders: false
+    filters:
+      - not extension: *ai_extensions
+      - filetype
+    actions:
+      - move: "{location}/{filetype}/"
+
+  # Moves folders as a whole, judged by their name and the names of what is in them.
+  # The folders created above (invoice, _Review, Archives, ...) are never moved.
+  - name: "Sort folders by name"
+    locations: *folders
+    subfolders: false
+    targets: dirs
+    filters:
+      - ai: *ai
+    actions:
+      - move: "{location}/{% if ai.category == 'other' %}{ai.filetype}{% else %}{ai.category}{% endif %}/"

@@ -9,6 +9,7 @@ import yaml
 from pydantic import ConfigDict, ValidationError
 from pydantic.dataclasses import dataclass
 
+from . import history
 from .errors import ConfigError
 from .output import Default, Output
 from .rule import Rule
@@ -96,17 +97,18 @@ class Config:
         )
         summary = ReportSummary()
         try:
-            for rule_nr, rule in enumerate(self.rules):
-                if should_execute(
-                    rule_tags=rule.tags,
-                    tags=tags,
-                    skip_tags=skip_tags,
-                ):
-                    rule_summary = rule.execute(
-                        simulate=simulate,
-                        output=output,
-                        rule_nr=rule_nr,
-                    )
-                    summary += rule_summary
+            with history.recording():
+                for rule_nr, rule in enumerate(self.rules):
+                    if should_execute(
+                        rule_tags=rule.tags,
+                        tags=tags,
+                        skip_tags=skip_tags,
+                    ):
+                        rule_summary = rule.execute(
+                            simulate=simulate,
+                            output=output,
+                            rule_nr=rule_nr,
+                        )
+                        summary += rule_summary
         finally:
             output.end(summary.success, summary.errors)
