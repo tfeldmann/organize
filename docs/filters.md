@@ -135,6 +135,37 @@ rules:
     files, but it does send them to Claude to be classified. Results are cached, so
     the following `organize run` does not classify them again.
 
+## copy_of
+
+::: organize.filters.CopyOf
+
+**Examples:**
+
+Mark new downloads that you already have, so you can review them in the Finder
+sidebar under the tag "Duplicate"
+
+```yaml
+rules:
+  - locations: "~/Downloads"
+    subfolders: false
+    filters:
+      - copy_of
+    actions:
+      - mark_duplicate
+```
+
+Move copies of files that are already in your documents to the trash
+
+```yaml
+rules:
+  - locations: "~/Downloads"
+    filters:
+      - copy_of:
+          search: "~/Documents"
+    actions:
+      - trash
+```
+
 ## created
 
 ::: organize.filters.Created

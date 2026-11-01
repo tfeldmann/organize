@@ -50,6 +50,14 @@ struct Engine: Sendable {
         return try JSONDecoder().decode(AppInfo.self, from: data)
     }
 
+    func duplicates() async throws -> [Duplicate] {
+        let result = try await organize(["duplicates", config])
+        guard result.status == 0, let data = result.output.data(using: .utf8) else {
+            throw Failure(message: result.output.trimmingCharacters(in: .whitespacesAndNewlines))
+        }
+        return try JSONDecoder().decode([Duplicate].self, from: data)
+    }
+
     func isServiceRunning() async -> Bool {
         let result = try? await service("status")
         return result?.output.contains("state = running") ?? false
@@ -81,6 +89,22 @@ struct Engine: Sendable {
                 }
             }
         }
+    }
+}
+
+/// A file marked as a copy of another one by the `mark_duplicate` action.
+struct Duplicate: Decodable, Identifiable, Hashable, Sendable {
+    var id: String { path }
+    let path: String
+    let original: String
+    let originalExists: Bool
+
+    var url: URL { URL(filePath: path) }
+    var originalURL: URL { URL(filePath: original) }
+
+    enum CodingKeys: String, CodingKey {
+        case path, original
+        case originalExists = "original_exists"
     }
 }
 

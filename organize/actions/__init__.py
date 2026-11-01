@@ -8,6 +8,7 @@ from .delete import Delete
 from .echo import Echo
 from .hardlink import Hardlink
 from .macos_tags import MacOSTags
+from .mark_duplicate import MarkDuplicate
 from .move import Move
 from .python import Python
 from .rename import Rename
@@ -23,6 +24,7 @@ ALL: Tuple[Type[Action], ...] = (
     Echo,
     Hardlink,
     MacOSTags,
+    MarkDuplicate,
     Move,
     Python,
     Rename,

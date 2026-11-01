@@ -1057,6 +1057,7 @@ dependencies = [
     { name = "send2trash", extra = ["nativelib"] },
     { name = "simplematch" },
     { name = "watchdog" },
+    { name = "xattr" },
 ]
 
 [package.optional-dependencies]
@@ -1107,6 +1108,7 @@ requires-dist = [
     { name = "send2trash", extras = ["nativelib"], specifier = ">=1.8.2,<2.0.0" },
     { name = "simplematch", specifier = ">=1.4,<2.0.0" },
     { name = "watchdog", specifier = ">=6.0.0" },
+    { name = "xattr", specifier = ">=0.9.9,<2.0.0" },
 ]
 provides-extras = ["docs"]
 
@@ -2096,4 +2098,10 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/e4/c6/b4068f7fa3e74fc7a284c62bd1f62aa7dd0333ff1984d4432a30f29971d7/xattr-0.9.9-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:a517916fbf2f58a3222bb2048fe1eeff4e23e07a4ce6228a27de004c80bf53ab", size = 20325, upload-time = "2021-12-11T18:52:19.386Z" },
     { url = "https://files.pythonhosted.org/packages/0e/a2/074b8d81d3b6cd0266ef3d04950fb8dd74d0ebb1c4a35ef5392bfdb28469/xattr-0.9.9-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:e886c882b3b28c7a684c3e3daf46347da5428a46b88bc6d62c4867d574b90c54", size = 15020, upload-time = "2021-12-11T18:52:20.366Z" },
     { url = "https://files.pythonhosted.org/packages/b8/08/60b111ede2741c651b0b95d181d9a4256a157c6b6b698b38e79e2152eb70/xattr-0.9.9-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:373e3d1fd9258438fc38d1438142d3659f36743f374a20457346ef26741ed441", size = 15319, upload-time = "2021-12-11T18:52:21.185Z" },
+    { url = "https://files.pythonhosted.org/packages/9d/aa/4d53ad8bf1763fd733d02f3da68a95fa1b4756a8255f733d0f12724c7f59/xattr-0.9.9-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1a7beeb54ca140273b2f6320bb98b701ec30628af2ebe4eb30f7051419eb4ef3", size = 35277, upload-time = "2021-12-11T18:52:22.496Z" },
+    { url = "https://files.pythonhosted.org/packages/ad/0d/a47e50ac58579927baba5893c45ea457b12065a8ab5f8f55d47ef2995b4f/xattr-0.9.9-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:ef3ca29cdaae9c47c625d84bb6c9046f7275cccde0ea805caa23ca58d3671f3f", size = 33222, upload-time = "2021-12-11T18:52:23.427Z" },
+    { url = "https://files.pythonhosted.org/packages/62/e7/8a339e67496b6c7345e0781b8e0f196e261b2d7b032089287ae0a6baf5a0/xattr-0.9.9-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5c381d890931cd18b137ce3fb5c5f08b672c3c61e2e47b1a7442ee46e827abfe", size = 35089, upload-time = "2021-12-11T18:52:24.318Z" },
+    { url = "https://files.pythonhosted.org/packages/28/e8/e926e6cbe4aa655a4bd84f71a03c6f0fffb320d5ddf2f5cb8522345390fb/xattr-0.9.9-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:59c5783ccf57cf2700ce57d51a92134900ed26f6ab20d209f383fb898903fea6", size = 36972, upload-time = "2021-12-11T18:52:25.814Z" },
+    { url = "https://files.pythonhosted.org/packages/5f/28/b818d208afd0fa0b3bb2791f032151df1fd7539735226bf6de3e37b1ef47/xattr-0.9.9-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:966b885b69d95362e2a12d39f84889cf857090e57263b5ac33409498aa00c160", size = 35073, upload-time = "2021-12-11T18:52:26.736Z" },
+    { url = "https://files.pythonhosted.org/packages/2d/cf/6eb8ff87f622c9eba2d00814d7001df5ba6f6984bd5d8625ae48dfe035ba/xattr-0.9.9-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:efaaf0cb1ea8e9febb7baad301ae8cc9ad7a96fdfc5c6399d165e7a19e3e61ce", size = 37169, upload-time = "2021-12-11T18:52:27.643Z" },
 ]

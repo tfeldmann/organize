@@ -9,6 +9,8 @@ Usage:
   organize history
   organize info   [<config>]
   organize move   <src> <dest>
+  organize duplicates [--scan] [--dry-run] [<config>]
+  organize unmark <src>
   organize new    [<config>]
   organize edit   [<config>]
   organize check  [<config> | --stdin]
@@ -29,6 +31,9 @@ Commands:
   history    List the runs that can be undone.
   info       Print the folders and AI categories of a config as JSON.
   move       Move <src> into the folder <dest> as an undoable run.
+  duplicates Print the files marked as duplicates in a config's folders as JSON.
+               Use --scan to mark copies among the files organize sorted before.
+  unmark     Remove the duplicate mark from <src>.
   new        Creates a default config.
   edit       Edit the config file with $EDITOR
   check      Check config file validity
@@ -51,6 +56,7 @@ Options:
   --delay <seconds>               Seconds to wait after a change [Default: 5]
   --run <id>                      A run id as shown by `organize history`
   --dry-run                       Only show what would be done
+  --scan                          Look for duplicates among already sorted files
   -h --help                       Show this help page.
 """
 import os
@@ -228,6 +234,31 @@ def move(src: str, dest: str) -> None:
     print(json.dumps({"dst": str(dst)}))
 
 
+def duplicates_(config: Optional[str], scan: bool, dry_run: bool) -> None:
+    import json
+
+    from organize import duplicates
+    from organize.watch import watched_folders
+
+    conf = ConfigWithPath.by_name_or_path(config)
+    parsed = Config.from_string(config=conf.config, config_path=conf.config_path)
+    folders = watched_folders(parsed)
+    if scan:
+        found = duplicates.find_existing(duplicates.sorted_files(folders))
+        if not dry_run:
+            for item in found:
+                duplicates.mark(Path(item["path"]), Path(item["original"]))
+        print(json.dumps(found))
+    else:
+        print(json.dumps(duplicates.find_marked(folders)))
+
+
+def unmark(src: str) -> None:
+    from organize import duplicates
+
+    duplicates.unmark(Path(src))
+
+
 def history_() -> None:
     table = Table()
     table.add_column("Run", no_wrap=True)
@@ -310,6 +341,8 @@ class CliArgs(BaseModel):
     history: bool
     info: bool
     move: bool
+    duplicates: bool
+    unmark: bool
     new: bool
     edit: bool
     check: bool
@@ -330,6 +363,7 @@ class CliArgs(BaseModel):
     delay: float = Field(5.0, alias="--delay")
     run_id: Optional[str] = Field(None, alias="--run")
     dry_run: bool = Field(False, alias="--dry-run")
+    scan: bool = Field(False, alias="--scan")
 
     # move arguments
     src: Optional[str] = Field(None, alias="<src>")
@@ -405,6 +439,11 @@ def cli(argv: Union[list[str], str, None] = None) -> None:
         elif args.move:
             assert args.src is not None and args.dest is not None
             move(src=args.src, dest=args.dest)
+        elif args.duplicates:
+            duplicates_(config=args.config, scan=args.scan, dry_run=args.dry_run)
+        elif args.unmark:
+            assert args.src is not None
+            unmark(src=args.src)
         elif args.new:
             new(config=args.config)
         elif args.edit:

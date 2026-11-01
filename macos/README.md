@@ -4,6 +4,8 @@ A small SwiftUI app that shows what `organize watch` is doing:
 
 - whether the watcher is running, with **Pause / Resume**
 - files and folders waiting in `_Review`, with **Move to** a category
+- files marked as duplicates, with **Show both**, **Keep** (remove the mark) and
+  **Move to Trash**
 - recently sorted items (click to show them in Finder)
 - **Undo last run**, and shortcuts to the watched folders, the config and the log
 - a notification whenever files are sorted

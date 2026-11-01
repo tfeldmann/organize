@@ -1,4 +1,5 @@
 from .ai import AI
+from .copy_of import CopyOf
 from .created import Created
 from .date_added import DateAdded
 from .date_lastused import DateLastUsed
@@ -20,6 +21,7 @@ from .size import Size
 
 ALL = (
     AI,
+    CopyOf,
     Created,
     DateAdded,
     DateLastUsed,

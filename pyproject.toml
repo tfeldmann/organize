@@ -46,6 +46,7 @@ dependencies = [
     "send2trash[nativelib]>=1.8.2,<2.0.0",
     "simplematch>=1.4,<2.0.0",
     "watchdog>=6.0.0",
+    "xattr>=0.9.9,<2.0.0",
 ]
 
 [project.urls]
@@ -93,6 +94,7 @@ module = [
     "appdirs",
     "send2trash",
     "exifread",
+    "xattr",
     "textract",
     "requests",
     "macos_tags",
@@ -108,3 +110,6 @@ filterwarnings = ["ignore::DeprecationWarning"]
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["organize*"]

@@ -28,6 +28,7 @@ struct PanelView: View {
                     .background(.quaternary, in: RoundedRectangle(cornerRadius: 6))
                     .onTapGesture { model.message = nil }
             }
+            if !model.duplicates.isEmpty { duplicatesSection }
             reviewSection
             recentSection
             Divider()
@@ -103,6 +104,49 @@ struct PanelView: View {
         .frame(height: reviewRowHeight)
     }
 
+    private var duplicatesSection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Duplicates (\(model.duplicates.count))").font(.subheadline.bold())
+            ScrollView {
+                VStack(spacing: rowSpacing) {
+                    ForEach(model.duplicates) { duplicate in duplicateRow(duplicate) }
+                }
+            }
+            .frame(height: listHeight(rows: model.duplicates.count, rowHeight: recentRowHeight, maxRows: 4))
+        }
+    }
+
+    private func duplicateRow(_ duplicate: Duplicate) -> some View {
+        HStack(spacing: 8) {
+            FileIcon(url: duplicate.url)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(duplicate.url.lastPathComponent).lineLimit(1).truncationMode(.middle)
+                Text(duplicate.originalExists
+                     ? "Copy of \(duplicate.originalURL.lastPathComponent) in \(relativeFolder(duplicate.originalURL))"
+                     : "Original no longer exists")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+            .onTapGesture { model.revealBoth(duplicate) }
+            .help("Show both in Finder")
+            Button("Keep") { Task { await model.keep(duplicate) } }
+                .buttonStyle(.borderless)
+                .help("Not a duplicate - remove the mark")
+            Button {
+                Task { await model.trash(duplicate) }
+            } label: {
+                Image(systemName: "trash")
+            }
+            .buttonStyle(.borderless)
+            .help("Move to Trash")
+        }
+        .frame(height: recentRowHeight)
+    }
+
     private var recentSection: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Recently sorted").font(.subheadline.bold())
@@ -127,7 +171,7 @@ struct PanelView: View {
                 FileIcon(url: move.destination)
                 VStack(alignment: .leading, spacing: 0) {
                     Text(move.destination.lastPathComponent).lineLimit(1).truncationMode(.middle)
-                    Text(relativeFolder(of: move))
+                    Text(relativeFolder(move.destination))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -146,9 +190,9 @@ struct PanelView: View {
         .help("Show in Finder")
     }
 
-    /// The target folder relative to the sorted folder, e.g. "invoice/Telekom".
-    private func relativeFolder(of move: Move) -> String {
-        let folder = move.destination.deletingLastPathComponent().path(percentEncoded: false)
+    /// The folder of `url` relative to the sorted folder, e.g. "invoice/Telekom".
+    private func relativeFolder(_ url: URL) -> String {
+        let folder = url.deletingLastPathComponent().path(percentEncoded: false)
         for location in model.info?.folders ?? [] where folder.hasPrefix(location) {
             let rel = folder.dropFirst(location.count).trimmingCharacters(in: CharacterSet(charactersIn: "/"))
             return rel.isEmpty ? URL(filePath: location).lastPathComponent : rel

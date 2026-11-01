@@ -24,6 +24,7 @@ final class AppModel {
     var serviceRunning = false
     var recent: [Move] = []
     var review: [ReviewItem] = []
+    var duplicates: [Duplicate] = []
     var busy = false
     var message: String?
     var launchAtLogin = SMAppService.mainApp.status == .enabled
@@ -71,6 +72,10 @@ final class AppModel {
         guard let info else { return }
 
         let history = History.load(from: URL(filePath: info.historyFile))
+        // finding duplicates walks all folders, so only do it when something changed
+        if knownRuns == nil || Set(history.runs) != knownRuns {
+            await refreshDuplicates()
+        }
         // leave out items that were deleted or moved on since
         recent = history.recent.filter {
             FileManager.default.fileExists(atPath: $0.destination.path(percentEncoded: false))
@@ -115,7 +120,39 @@ final class AppModel {
         UNUserNotificationCenter.current().add(request)
     }
 
+    func refreshDuplicates() async {
+        guard let engine else { return }
+        do {
+            duplicates = try await engine.duplicates()
+        } catch {
+            log.error("Could not list duplicates: \(error.localizedDescription, privacy: .public)")
+        }
+    }
+
     // MARK: - Actions
+
+    /// Removes the duplicate mark, keeping the file.
+    func keep(_ duplicate: Duplicate) async {
+        guard let engine else { return }
+        _ = try? await engine.organize(["unmark", duplicate.path])
+        message = "Kept \(duplicate.url.lastPathComponent)"
+        await refreshDuplicates()
+    }
+
+    func trash(_ duplicate: Duplicate) async {
+        do {
+            try await NSWorkspace.shared.recycle([duplicate.url])
+            message = "Moved \(duplicate.url.lastPathComponent) to the Trash"
+        } catch {
+            message = error.localizedDescription
+        }
+        await refreshDuplicates()
+    }
+
+    func revealBoth(_ duplicate: Duplicate) {
+        let urls = duplicate.originalExists ? [duplicate.url, duplicate.originalURL] : [duplicate.url]
+        NSWorkspace.shared.activateFileViewerSelecting(urls)
+    }
 
     func toggleService() async {
         await perform(serviceRunning ? "stop" : "start", service: true)

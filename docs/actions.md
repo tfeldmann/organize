@@ -244,6 +244,22 @@ rules:
           - Year-{created.year} (red)
 ```
 
+## mark_duplicate
+
+::: organize.actions.MarkDuplicate
+
+**Examples:**
+
+```yaml
+rules:
+  - locations: "~/Downloads"
+    subfolders: false
+    filters:
+      - copy_of
+    actions:
+      - mark_duplicate
+```
+
 ## move
 
 ::: organize.actions.Move
