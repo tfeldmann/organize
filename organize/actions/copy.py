@@ -4,6 +4,7 @@ from typing import ClassVar, Literal
 from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
+from organize import history
 from organize.action import ActionConfig
 from organize.output import Output
 from organize.resource import Resource
@@ -99,6 +100,7 @@ class Copy:
                 shutil.copytree(src=res.path, dst=dst)
             else:
                 shutil.copy2(src=res.path, dst=dst)
+            history.record("copy", src=res.path, dst=dst)
 
         # continue with either the original path or the path to the copy
         if self.continue_with == "copy":

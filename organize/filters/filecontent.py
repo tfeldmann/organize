@@ -1,8 +1,11 @@
+import base64
+import binascii
+import io
 import re
 import subprocess
 from functools import lru_cache
 from pathlib import Path
-from typing import Callable, ClassVar, Dict, Union
+from typing import Callable, ClassVar, Dict, Optional, Union
 
 from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
@@ -66,7 +69,53 @@ def _extract_with_pdfminer(path: Path) -> str:
     return clean(high_level.extract_text(path))
 
 
+def unwrap_mime_pdf(data: bytes) -> Optional[bytes]:
+    """
+    Some websites deliver PDFs wrapped in a MIME message part
+    (starting with `------=_Part...`). Returns the contained PDF, if any.
+    """
+    if not data.startswith(b"--"):
+        return None
+    boundary = data.split(b"\n", 1)[0].strip()
+    parts = data.split(boundary)
+    for part in parts[1:]:
+        head, sep, body = part.partition(b"\r\n\r\n")
+        if not sep:
+            head, sep, body = part.partition(b"\n\n")
+        if b"application/pdf" not in head.lower():
+            continue
+        # the line break before the next boundary belongs to the boundary
+        if body.endswith(b"\r\n"):
+            body = body[:-2]
+        elif body.endswith(b"\n"):
+            body = body[:-1]
+        if b"base64" in head.lower():
+            try:
+                body = base64.b64decode(body)
+            except binascii.Error:
+                continue
+        if body.startswith(b"%PDF-"):
+            return body
+    return None
+
+
+def pdf_bytes(path: Path) -> Optional[bytes]:
+    """The PDF data of a file, unwrapping MIME wrapped PDFs. None if no PDF."""
+    data = path.read_bytes()
+    if data.startswith(b"%PDF-"):
+        return data
+    return unwrap_mime_pdf(data)
+
+
 def extract_pdf(path: Path, keep_layout: bool = True) -> str:
+    with path.open("rb") as f:
+        is_plain_pdf = f.read(5) == b"%PDF-"
+    if not is_plain_pdf:
+        data = pdf_bytes(path)
+        if data is not None:
+            from pdfminer import high_level
+
+            return clean(high_level.extract_text(io.BytesIO(data)))
     if _pdftotext_available():
         return _extract_with_pdftotext(path=path, keep_layout=keep_layout)
     return _extract_with_pdfminer(path=path)

@@ -4,6 +4,7 @@ from typing import ClassVar
 from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
+from organize import history
 from organize.action import ActionConfig
 from organize.output import Output
 from organize.resource import Resource
@@ -94,6 +95,7 @@ class Move:
         res.walker_skip_pathes.add(dst)
         if not simulate:
             shutil.move(src=res.path, dst=dst)
+            history.record("move", src=res.path, dst=dst)
 
         # continue with the new path
         res.path = dst

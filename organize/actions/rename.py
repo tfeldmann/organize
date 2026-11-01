@@ -5,6 +5,7 @@ from typing import ClassVar
 from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
 
+from organize import history
 from organize.action import ActionConfig
 from organize.output import Output
 from organize.resource import Resource
@@ -73,5 +74,6 @@ class Rename:
         output.msg(res=res, msg=f"Renaming to {new_name}", sender=self)
         if not simulate:
             res.path.rename(dst)
+            history.record("rename", src=res.path, dst=dst)
         res.path = dst
         res.walker_skip_pathes.add(dst)

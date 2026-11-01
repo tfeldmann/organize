@@ -4,6 +4,9 @@ organize - The file management automation tool.
 Usage:
   organize run    [options] [<config> | --stdin]
   organize sim    [options] [<config> | --stdin]
+  organize watch  [options] [--delay <seconds>] [<config>]
+  organize undo   [--dry-run] [--run <id>]
+  organize history
   organize new    [<config>]
   organize edit   [<config>]
   organize check  [<config> | --stdin]
@@ -17,6 +20,11 @@ Usage:
 Commands:
   run        Organize your files.
   sim        Simulate organizing your files.
+  watch      Organize your files whenever files are added to a location.
+               Waits until no new files arrived for --delay seconds.
+  undo       Undo the last run (or the run given by --run).
+               Use --dry-run to only show what would be undone.
+  history    List the runs that can be undone.
   new        Creates a default config.
   edit       Edit the config file with $EDITOR
   check      Check config file validity
@@ -36,6 +44,9 @@ Options:
                                   The output format [Default: default]
   -T --tags <tags>                Tags to run (eg. "initial,release")
   -S --skip-tags <tags>           Tags to skip
+  --delay <seconds>               Seconds to wait after a change [Default: 5]
+  --run <id>                      A run id as shown by `organize history`
+  --dry-run                       Only show what would be done
   -h --help                       Show this help page.
 """
 import os
@@ -59,7 +70,7 @@ from rich.syntax import Syntax
 from rich.table import Table
 from yaml.scanner import ScannerError
 
-from organize import Config, ConfigError
+from organize import Config, ConfigError, history
 from organize.find_config import (
     DOCS_RTD,
     ConfigNotFound,
@@ -144,6 +155,64 @@ def execute(
     )
 
 
+def watch(
+    config: Optional[str],
+    working_dir: Optional[Path],
+    format: OutputFormat,
+    tags: Tags,
+    skip_tags: Tags,
+    delay: float,
+) -> None:
+    from organize.watch import watch as watch_
+
+    def load_config() -> Config:
+        conf = ConfigWithPath.by_name_or_path(config)
+        return Config.from_string(config=conf.config, config_path=conf.config_path)
+
+    def run(conf: Config) -> None:
+        conf.execute(
+            simulate=False,
+            output=_output_for_format(format),
+            tags=tags,
+            skip_tags=skip_tags,
+            working_dir=working_dir or Path("."),
+        )
+
+    try:
+        watch_(load_config=load_config, run=run, delay=delay)
+    except KeyboardInterrupt:
+        console.print("Stopped watching.")
+    except ValueError as e:
+        console.print(f"[red]Error:[/] {escape(e)}")
+        sys.exit(1)
+
+
+def undo(run_id: Optional[str], dry_run: bool) -> None:
+    run = history.find_run(run_id) if run_id else history.last_run()
+    if run is None:
+        console.print("Nothing to undo.")
+        sys.exit(1)
+    if run.undone:
+        console.print(f"Run {escape(run.id)} was already undone.")
+        sys.exit(1)
+    verb = "Would undo" if dry_run else "Undoing"
+    console.print(f"{verb} run {escape(run.id)} from {escape(run.time)}:")
+    for msg in history.undo(run, simulate=dry_run):
+        console.print(f"  {escape(msg)}")
+
+
+def history_() -> None:
+    table = Table()
+    table.add_column("Run", no_wrap=True)
+    table.add_column("Time", no_wrap=True)
+    table.add_column("Files", justify="right")
+    table.add_column("Undone")
+    for run in history.runs():
+        files = sum(op["op"] != "mkdir" for op in run.ops)
+        table.add_row(run.id, run.time, str(files), "yes" if run.undone else "")
+    console.print(table)
+
+
 def new(config: Optional[str]) -> None:
     try:
         new_path = create_example_config(name_or_path=config)
@@ -209,6 +278,9 @@ class CliArgs(BaseModel):
     # commands
     run: bool
     sim: bool
+    watch: bool
+    undo: bool
+    history: bool
     new: bool
     edit: bool
     check: bool
@@ -224,6 +296,11 @@ class CliArgs(BaseModel):
     tags: Optional[str] = Field(..., alias="--tags")
     skip_tags: Optional[str] = Field(..., alias="--skip-tags")
     stdin: bool = Field(..., alias="--stdin")
+
+    # watch / undo options
+    delay: float = Field(5.0, alias="--delay")
+    run_id: Optional[str] = Field(None, alias="--run")
+    dry_run: bool = Field(False, alias="--dry-run")
 
     # show options
     path: bool = Field(False, alias="--path")
@@ -277,6 +354,19 @@ def cli(argv: Union[list[str], str, None] = None) -> None:
                 _execute(simulate=False)
             elif args.sim:
                 _execute(simulate=True)
+        elif args.watch:
+            watch(
+                config=args.config,
+                working_dir=args.working_dir,
+                format=args.format,
+                tags=_split_tags(args.tags),
+                skip_tags=_split_tags(args.skip_tags),
+                delay=args.delay,
+            )
+        elif args.undo:
+            undo(run_id=args.run_id, dry_run=args.dry_run)
+        elif args.history:
+            history_()
         elif args.new:
             new(config=args.config)
         elif args.edit:

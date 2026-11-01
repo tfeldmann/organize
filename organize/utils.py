@@ -1,5 +1,6 @@
 import fnmatch
 import os
+import re
 import shutil
 import unicodedata
 from copy import deepcopy
@@ -88,3 +89,10 @@ def deep_merge_inplace(base: dict, updates: dict) -> None:
             deep_merge_inplace(av, bv)
         else:
             base[bk] = bv
+
+
+def safe_path_part(value: Any) -> str:
+    """Makes a value safe to use as a single file or folder name."""
+    text = re.sub(r"\s*[/\\:\x00-\x1f]+\s*", "-", str(value))
+    text = re.sub(r"\s+", " ", text).strip(" .-")
+    return text[:80].strip() or "Unknown"

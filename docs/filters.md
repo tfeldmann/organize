@@ -36,6 +36,105 @@ rules:
       - echo: "{name}"
 ```
 
+## ai
+
+::: organize.filters.AI
+
+**Examples:**
+
+Sort documents from your downloads folder by category and vendor. Files Claude is
+unsure about are moved to `~/Documents/_Review`.
+
+```yaml
+rules:
+  - name: "Sort documents with AI"
+    locations: "~/Downloads"
+    subfolders: false
+    filters:
+      - extension: [pdf, docx, txt, jpg, jpeg, png]
+      - ai:
+          categories:
+            invoice: "A bill requesting payment"
+            receipt: "Proof of a payment that was already made"
+            contract: "An agreement between parties"
+            bank_statement: "An account statement from a bank"
+            tax: "Tax returns, assessments and related letters"
+          extract:
+            vendor: "The company or person that issued the document"
+            date: "The document date as YYYY-MM-DD"
+          min_confidence: 0.7
+    actions:
+      - move: "~/Documents/{ai.category}/{ai.vendor}/"
+```
+
+Sort documents by category and everything that fits no category by
+[file type](#filetype), e.g. `~/Documents/Organized/Documents/`
+
+```yaml
+rules:
+  - locations: "~/Downloads"
+    filters:
+      - extension: [pdf, docx, jpg, png]
+      - ai:
+          categories: [invoice, receipt, contract]
+          extract: [vendor]
+          skip: []
+    actions:
+      - move: "~/Documents/Organized/{% if ai.category == 'other' %}{ai.filetype}{% else %}{ai.category}/{ai.vendor}{% endif %}/"
+```
+
+Use OpenAI or Gemini instead of Claude, and sort the files into subfolders of the
+folder they are in
+
+```yaml
+rules:
+  - locations: ["~/Downloads", "~/Desktop"]
+    subfolders: false
+    filters:
+      - extension: pdf
+      - ai:
+          provider: openai
+          categories: [invoice, receipt]
+    actions:
+      - move: "{location}/{ai.category}/"
+```
+
+Move folders as a whole into category folders, judged by their name. The folders
+created by the rule (`tax`, `_Review`, `Folders`, ...) are never moved themselves.
+
+```yaml
+rules:
+  - locations: "~/Downloads"
+    subfolders: false
+    targets: dirs
+    filters:
+      - ai:
+          categories: [tax, projects, photos]
+          skip: []
+    actions:
+      - move: "{location}/{% if ai.category == 'other' %}{ai.filetype}{% else %}{ai.category}{% endif %}/"
+```
+
+Rename invoices to include their date and vendor
+
+```yaml
+rules:
+  - locations: "~/Downloads"
+    filters:
+      - extension: pdf
+      - ai:
+          categories: [invoice]
+          extract: [vendor, date]
+    actions:
+      - rename: "{ai.date} {ai.vendor}.pdf"
+```
+
+!!! note
+
+    Always run `organize sim` first to check the results. `sim` does not move any
+    files, but it does send them to Claude to be classified. Results are cached, so
+    the following `organize run` does not classify them again.
+
 ## created
 
 ::: organize.filters.Created
@@ -377,6 +476,40 @@ rules:
     If you have trouble getting the filecontent filter to work, have a look at the
     [installation hints](textract-hints.md)
 
+## filetype
+
+::: organize.filters.FileType
+
+**Examples:**
+
+Sort your downloads into folders by type
+
+```yaml
+rules:
+  - locations: "~/Downloads"
+    filters:
+      - filetype
+    actions:
+      - move: "~/Downloads/{filetype}/"
+```
+
+Move images and videos into your pictures folder
+
+```yaml
+rules:
+  - locations: "~/Downloads"
+    filters:
+      - filetype: [images, videos]
+    actions:
+      - move: "~/Pictures/From Downloads/"
+```
+
+You can see which extensions belong to which type by running:
+
+```sh
+python -m organize.filters.filetype
+```
+
 ## hash
 
 ::: organize.filters.Hash
@@ -499,6 +632,35 @@ rules:
       - macos_tags
     actions:
       - echo: "{macos_tags}"
+```
+
+## media
+
+::: organize.filters.Media
+
+**Examples:**
+
+Sort your music by artist and album
+
+```yaml
+rules:
+  - locations: "~/Downloads"
+    filters:
+      - extension: [mp3, m4a, flac]
+      - media
+    actions:
+      - move: "~/Music/Sorted/{media.artist}/{media.album}/"
+```
+
+Prefix recordings with their length in minutes
+
+```yaml
+rules:
+  - locations: "~/Recordings"
+    filters:
+      - media
+    actions:
+      - rename: "{(media.duration | int) // 60}min {path.name}"
 ```
 
 ## mimetype

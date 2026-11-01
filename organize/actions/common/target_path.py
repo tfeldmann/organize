@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from organize import history
+
 
 def user_wants_a_folder(path: str, autodetect: bool) -> bool:
     """
@@ -32,9 +34,9 @@ def prepare_target_path(
 
     if wants_folder:
         if not simulate:
-            result.mkdir(parents=True, exist_ok=True)
+            history.mkdir(result)
         return result / src_name
     else:
         if not simulate:
-            result.parent.mkdir(parents=True, exist_ok=True)
+            history.mkdir(result.parent)
         return result

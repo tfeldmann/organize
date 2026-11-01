@@ -4,6 +4,7 @@ import filecmp
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, NamedTuple
 
+from organize import history
 from organize.output import Output
 from organize.resource import Resource
 from organize.template import render
@@ -133,6 +134,7 @@ def resolve_conflict(
         _print(f'Renaming existing to: "{new_path.name}"')
         if not simulate:
             dst.rename(new_path)
+            history.record("rename", src=dst, dst=new_path)
         return ConflictResult(skip_action=False, use_dst=dst)
 
     raise ValueError("Unknown conflict_mode %s" % conflict_mode)
