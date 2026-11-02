@@ -1,8 +1,8 @@
 import os
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 from itertools import chain, product
 from pathlib import Path
-from typing import Iterator, Optional
+from typing import Optional
 
 import platformdirs
 

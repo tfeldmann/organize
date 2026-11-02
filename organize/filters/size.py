@@ -1,7 +1,8 @@
 import operator
 import re
+from collections.abc import Iterable
 from pathlib import Path
-from typing import ClassVar, Iterable
+from typing import ClassVar
 
 from pydantic import Field
 from pydantic.config import ConfigDict
@@ -79,13 +80,13 @@ def number_with_unit(size: int, suffixes: Iterable[str], base: int) -> str:
     if size == 1:
         return "1 byte"
     elif size < base:
-        return "{:,} bytes".format(size)
+        return f"{size:,} bytes"
 
     for i, suffix in enumerate(suffixes, 2):
         unit = base**i
         if size < unit:
             break
-    return "{:,.1f} {}".format((base * size / unit), suffix)
+    return f"{base * size / unit:,.1f} {suffix}"
 
 
 def traditional(size: int) -> str:
