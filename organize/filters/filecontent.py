@@ -48,13 +48,16 @@ def _pdftotext_available() -> bool:
 
 
 def _extract_with_pdftotext(path: Path, keep_layout: bool) -> str:
+    # Ask pdftotext for UTF-8 and decode it as such, instead of relying on the
+    # locale encoding (which is not UTF-8 on many Windows systems, see #492).
+    args = ["-enc", "UTF-8"]
     if keep_layout:
-        args = ["-layout", str(path), "-"]
-    else:
-        args = [str(path), "-"]
+        args.append("-layout")
+    args.extend([str(path), "-"])
     result = subprocess.check_output(
         ("pdftotext", *args),
-        text=True,
+        encoding="utf-8",
+        errors="replace",
         stderr=subprocess.DEVNULL,
     )
     return clean(result)
