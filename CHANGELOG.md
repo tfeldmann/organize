@@ -4,6 +4,7 @@
 
 - Fixed #500: `rename_existing` conflict messages now show the generated filename.
 - Fixed #438 (`filecontent` filter fails for PDFs when `pdftotext` isn't installed, instead of falling back to `pdfminer`)
+- Fixed #492: `filecontent` now reads `pdftotext` output as UTF-8 instead of the locale encoding, so non-ASCII PDF text matches on Windows without `PYTHONUTF8=1`.
 
 ## v3.3.0 (2024-11-25)
 
