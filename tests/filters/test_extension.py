@@ -24,6 +24,10 @@ def test_extension(path, match, suffix):
     assert suffix == suffix
 
 
+def test_extension_empty_needs_a_suffix():
+    assert not Extension().suffix_match(Path("LICENSE"))[1]
+
+
 def test_extension_empty():
     suffix, match = Extension().suffix_match(Path("any.txt"))
     assert suffix == "txt"
