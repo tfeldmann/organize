@@ -217,7 +217,7 @@ rules:
     filters:
       - exif: gps.gpsdate
     actions:
-      - copy: ~/Pictures/with_gps/{relative_path}/
+      - copy: ~/Pictures/with_gps/{relative_path}
 ```
 
 Filter by camera manufacturer
@@ -663,8 +663,8 @@ rules:
               "Bean": "dbean@aol.com",
               "Frey": "l-frey@frey.org",
           }
-          if regex.lastname in emails: # get emails from wherever
-              return {"mail": emails[regex.lastname]}
+          if regex["lastname"] in emails: # get emails from wherever
+              return {"mail": emails[regex["lastname"]]}
     actions:
       - rename: "{python.mail}.txt"
 ```
@@ -740,5 +740,5 @@ rules:
           - jpeg
       - size: ">1mb, <10mb"
     actions:
-      - move: "~/Pictures/sorted/{relative_path}/"
+      - move: "~/Pictures/sorted/{relative_path}"
 ```
