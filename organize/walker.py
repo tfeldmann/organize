@@ -1,7 +1,8 @@
 import os
+from collections.abc import Iterable, Iterator
 from fnmatch import fnmatch
 from pathlib import Path
-from typing import Iterable, Iterator, List, Literal, NamedTuple, Optional, Set
+from typing import List, Literal, NamedTuple, Optional, Set
 
 from natsort import os_sorted
 from pydantic import Field
