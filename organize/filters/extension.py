@@ -56,7 +56,7 @@ class Extension:
     def suffix_match(self, path: Path) -> Tuple[str, bool]:
         suffix = path.suffix.lstrip(".")
         if not self.extensions:
-            return (suffix, True)
+            return (suffix, bool(suffix))
         if not suffix:
             return (suffix, False)
         return (suffix, normalize_extension(suffix) in self.extensions)
