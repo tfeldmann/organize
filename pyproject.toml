@@ -2,44 +2,45 @@
 name = "organize-tool"
 version = "3.3.0"
 description = "The file management automation tool"
-authors = [{ name="Thomas Feldmann", email = "mail@tfeldmann.de" }]
-license = {file = "./LICENSE.txt"}
+authors = [{ name = "Thomas Coenen", email = "mail@tcoenen.de" }]
+license = "MIT"
+license-files = ["LICENSE.txt"]
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 keywords = [
-    "file",
-    "management",
-    "automation",
-    "tool",
-    "organization",
-    "rules",
-    "yaml",
+  "file",
+  "management",
+  "automation",
+  "tool",
+  "organization",
+  "rules",
+  "yaml",
 ]
 classifiers = [
-    # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
-    "Development Status :: 5 - Production/Stable",
-    "Environment :: Console",
-    "Intended Audience :: End Users/Desktop",
-    "Natural Language :: English",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Topic :: Utilities",
+  # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: End Users/Desktop",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Topic :: Utilities",
 ]
 dependencies = [
-    "arrow>=1.3.0,<2.0.0",
-    "docopt-ng>=0.9.0,<1.0.0",
-    "docx2txt>=0.8,<=0.9",
-    "exifread==2.3.2",
-    "jinja2>=3.1.2,<4.0.0",
-    "macos-tags>=1.5.1,<2.0.0 ; sys_platform == 'darwin'",
-    "natsort>=8.4.0,<9.0.0",
-    "pdfminer-six>=20231228",
-    "platformdirs>=4.0.0,<5.0.0",
-    "pydantic>=2.3.0,<3.0.0",
-    "pyyaml>=6.0,<7.0",
-    "rich>=13.4.2,<=14.0.0",
-    "send2trash[nativelib]>=1.8.2,<2.0.0",
-    "simplematch>=1.4,<2.0.0",
+  "arrow>=1.3.0,<2.0.0",
+  "docopt-ng>=0.9.0,<1.0.0",
+  "docx2txt>=0.8,<=0.9",
+  "exifread==3.5.1",
+  "jinja2>=3.1.2,<4.0.0",
+  "macos-tags>=1.5.1,<2.0.0 ; sys_platform == 'darwin'",
+  "natsort>=8.4.0,<9.0.0",
+  "pdfminer-six>=20231228",
+  "platformdirs>=4.0.0,<5.0.0",
+  "pydantic>=2.3.0,<3.0.0",
+  "pyyaml>=6.0,<7.0",
+  "rich>=13.4.2,<=15.0.0",
+  "send2trash[nativelib]>=1.8.2,<2.2.1",
+  "simplematch>=1.4,<2.0.0",
 ]
 
 [project.urls]
@@ -48,11 +49,11 @@ documentation = "https://organize.readthedocs.io"
 
 [project.optional-dependencies]
 docs = [
-    "markupsafe==2.0.1",
-    "mkdocs-autorefs>=0.5.0,<1.0.0",
-    "mkdocs-include-markdown-plugin>=6.0.4,<7.0.0",
-    "mkdocs>=1.5.3,<2.0.0",
-    "mkdocstrings[python]>=0.24.0,<1.0.0",
+  "markupsafe==2.0.1",
+  "mkdocs-autorefs>=0.5.0,<1.0.0",
+  "mkdocs-include-markdown-plugin>=6.0.4,<7.0.0",
+  "mkdocs>=1.5.3,<2.0.0",
+  "mkdocstrings[python]>=0.24.0,<1.0.0",
 ]
 
 [project.scripts]
@@ -60,36 +61,40 @@ organize = "organize.cli:cli"
 
 [dependency-groups]
 dev = [
-    "coverage>=7.2.0,<8.0.0",
-    "mypy==1.10.1", # Recent version seems to break CI (I was using without this constraint, uv gives 1.13.0)
-    "pyfakefs>=5.3.1,<6.0.0",
-    "pytest-cov>=4.1.0,<5.0.0",
-    "pytest>=8.0.0,<9.0.0",
-    "requests>=2.31.0,<3.0.0",
-    "ruff>=0.3.0,<1.0.0",
-    "types-pyyaml>=6.0.12.10,<7.0.0",
+  "coverage>=7.2.0,<8.0.0",
+  "mypy>2",  # Recent version seems to break CI (I was using without this constraint, uv gives 1.13.0)
+  "pyfakefs>=5.3.1,<6.0.0",
+  "pytest-cov>=4.1.0,<5.0.0",
+  "pytest>=8.0.0,<9.0.0",
+  "requests>=2.31.0,<3.0.0",
+  "ruff>=0.3.0,<1.0.0",
+  "types-pyyaml>=6.0.12.10,<7.0.0",
+  "types-send2trash>=2.1.0.20260408",
+]
+docs = [
+  "markupsafe>=2.0.1",
 ]
 
 [tool.coverage.run]
-source = ['organize']
+source = ["organize"]
 
 [tool.coverage.report]
 exclude_also = ["pragma: no cover", "if TYPE_CHECKING:"]
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.11"
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
 module = [
-    "schema",
-    "simplematch",
-    "appdirs",
-    "send2trash",
-    "exifread",
-    "textract",
-    "requests",
-    "macos_tags",
+  "schema",
+  "simplematch",
+  "appdirs",
+  "send2trash",
+  "exifread",
+  "textract",
+  "requests",
+  "macos_tags",
 ]
 ignore_missing_imports = true
 
