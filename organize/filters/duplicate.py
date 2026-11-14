@@ -206,4 +206,5 @@ class Duplicate:
             res.vars[self.filter_config.name] = {"original": original}
             return True
 
+        self._file_for_hash[hash_] = res.path
         return False

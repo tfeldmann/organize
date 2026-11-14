@@ -71,3 +71,20 @@ def test_duplicate_largefiles(fs):
 # TODO detect_original_by: first_seen
 # TODO detect_original_by: created
 # TODO detect_original_by: lastmodified
+
+
+def test_duplicate_after_same_first_chunk(fs):
+    # all three share size and first chunk; only 2 and 3 are equal
+    files = {
+        "1_other.txt": CONTENT_LARGE + "1",
+        "2_photo.txt": CONTENT_LARGE + "2",
+        "3_photo_copy.txt": CONTENT_LARGE + "2",
+    }
+
+    make_files(files, "test")
+    Config.from_string(CONFIG_DEEP_DUP_DELETE).execute(simulate=False)
+    result = read_files("test")
+    assert result == {
+        "1_other.txt": CONTENT_LARGE + "1",
+        "2_photo.txt": CONTENT_LARGE + "2",
+    }
