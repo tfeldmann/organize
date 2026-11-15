@@ -43,11 +43,11 @@ def next_free_name(dst: Path, template: Template) -> Path:
     counter = 2
     prev_candidate = None
     while True:
-        args = dict(
-            name=dst.stem,
-            extension=dst.suffix,
-            counter=counter,
-        )
+        args = {
+            "name": dst.stem,
+            "extension": dst.suffix,
+            "counter": counter,
+        }
         new_name = render(template, args)
         candidate = dst.with_name(new_name)
         if not candidate.exists():
@@ -135,4 +135,4 @@ def resolve_conflict(
             dst.rename(new_path)
         return ConflictResult(skip_action=False, use_dst=dst)
 
-    raise ValueError("Unknown conflict_mode %s" % conflict_mode)
+    raise ValueError(f"Unknown conflict_mode {conflict_mode}")

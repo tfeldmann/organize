@@ -100,13 +100,11 @@ def test_exif_filter_tag_exists_and_date_format(images_folder):
     """
     Config.from_string(config).execute(simulate=False)
     out = Path("/test/out.txt").read_text()
-    assert set(out.splitlines()) == set(
-        [
-            "3: 12.08.2017",
-            "4: 22.02.2018",
-            "5: 08.07.2015",
-        ]
-    )
+    assert set(out.splitlines()) == {
+        "3: 12.08.2017",
+        "4: 22.02.2018",
+        "5: 08.07.2015",
+    }
 
 
 def test_exif_filter_by_multiple_keys(images_folder):
@@ -122,5 +120,5 @@ def test_exif_filter_by_multiple_keys(images_folder):
             - move: "/chosen/"
     """
     Config.from_string(config).execute(simulate=False)
-    chosen = set(str(x.name) for x in Path("/chosen").glob("*"))
-    assert chosen == set(["3.jpg", "4.jpg"])
+    chosen = {str(x.name) for x in Path("/chosen").glob("*")}
+    assert chosen == {"3.jpg", "4.jpg"}

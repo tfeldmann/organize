@@ -64,7 +64,7 @@ def read_files(path: Path | str = "."):
     if isinstance(path, str):
         path = Path(path)
 
-    result = dict()
+    result = {}
     for x in path.glob("*"):
         if x.is_file():
             result[x.name] = x.read_text()

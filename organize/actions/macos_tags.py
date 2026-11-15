@@ -54,7 +54,9 @@ class MacOSTags:
 
             if color not in COLORS:
                 raise ValueError(
-                    "color %s is unknown. (Available: %s)" % (color, " / ".join(COLORS))
+                    "color {} is unknown. (Available: {})".format(
+                        color, " / ".join(COLORS)
+                    )
                 )
 
             output.msg(

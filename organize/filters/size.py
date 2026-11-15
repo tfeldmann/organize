@@ -68,7 +68,7 @@ def create_constraints(inp: str):
                 numbytes = num * base**exp
                 yield (op, numbytes)
         except (AttributeError, KeyError, IndexError, ValueError, TypeError) as e:
-            raise ValueError("Invalid size format: %s" % part) from e
+            raise ValueError(f"Invalid size format: {part}") from e
 
 
 def satisfies_constraints(size, constraints) -> bool:

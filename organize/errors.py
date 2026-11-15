@@ -35,7 +35,7 @@ class ConfigNotFound(FileNotFoundError):
     def __init__(
         self,
         config: str,
-        search_pathes: Iterable[Path] = tuple(),
+        search_pathes: Iterable[Path] = (),
     ):
         self.config = config
         self.search_pathes = search_pathes

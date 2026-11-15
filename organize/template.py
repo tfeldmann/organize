@@ -4,12 +4,12 @@ from datetime import date, datetime
 import jinja2
 
 # variables that should be always available in a template
-BASIC_VARS = dict(
-    env=os.environ,
-    now=datetime.now,
-    utcnow=datetime.utcnow,
-    today=date.today,
-)
+BASIC_VARS = {
+    "env": os.environ,
+    "now": datetime.now,
+    "utcnow": datetime.utcnow,
+    "today": date.today,
+}
 
 
 def finalize_placeholder(x):
@@ -32,7 +32,7 @@ Template = jinja2.Environment(
 
 def render(template: str | jinja2.Template, args=None) -> str:
     if args is None:
-        args = dict()
+        args = {}
     try:
         if isinstance(template, jinja2.Template):
             text = template.render(**args, **BASIC_VARS)

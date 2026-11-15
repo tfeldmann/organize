@@ -37,18 +37,18 @@ def test_examples_are_valid(location, config):
     except OSError:
         # in case filters are not supported on the test OS
         pass
-    except Exception as e:
+    except Exception:
         print(f"{location}:\n({config})")
-        raise e
+        raise
 
 
 def test_all_filters_documented():
     filter_docs = (DOCS_DIR / "filters.md").read_text(encoding="utf-8")
-    for name in FILTERS.keys():
+    for name in FILTERS:
         assert f"## {name}" in filter_docs, f"The {name} filter is not documented!"
 
 
 def test_all_actions_documented():
     action_docs = (DOCS_DIR / "actions.md").read_text(encoding="utf-8")
-    for name in ACTIONS.keys():
+    for name in ACTIONS:
         assert f"## {name}" in action_docs, f"The {name} action is not documented!"

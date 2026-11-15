@@ -137,7 +137,7 @@ class Default:
         if self.simulate:
             self.console.print(Panel("SIMULATION", style="simulation"))
 
-        if working_dir.resolve() != Path(".").resolve():
+        if working_dir.resolve() != Path.cwd():
             self.console.print(f'Working dir: "{escape(working_dir)}"')
         if config_path:
             self.console.print(f'Config: "{escape(config_path)}"')

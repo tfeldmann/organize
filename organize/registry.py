@@ -4,8 +4,8 @@ from . import actions, filters
 from .action import Action
 from .filter import Filter
 
-FILTERS: dict[str, type[Filter]] = dict()
-ACTIONS: dict[str, type[Action]] = dict()
+FILTERS: dict[str, type[Filter]] = {}
+ACTIONS: dict[str, type[Action]] = {}
 
 
 def register_filter(filter: type[Filter], force: bool = False):

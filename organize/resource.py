@@ -66,7 +66,7 @@ class Resource:
         """
         Convenience method for filters / actions to merge data into the `vars` dict.
         """
-        prev = self.vars.get(key, dict())
+        prev = self.vars.get(key, {})
         self.vars[key] = deep_merge(prev, data)
 
     # TODO: Caching for `is_file` and `is_dir`

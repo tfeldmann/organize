@@ -70,7 +70,7 @@ class Shell:
                 }
             except subprocess.CalledProcessError as e:
                 if not self.ignore_errors:
-                    raise e
+                    raise
                 output.msg(
                     res=res,
                     msg=f"Ignoring error: {e}",

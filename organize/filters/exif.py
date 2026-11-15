@@ -110,7 +110,7 @@ def convert_value(key: str, value: str) -> ExifValue:
 
 
 def convert_recursive(data):
-    result = dict()
+    result = {}
     for k, v in data.items():
         if isinstance(v, dict):
             result[k] = convert_recursive(v)
@@ -148,15 +148,15 @@ def exiftool_read(path: Path) -> ExifStrDict:
             text=True,
         )
     except subprocess.CalledProcessError:
-        return dict()
+        return {}
 
     # we pass a single filepath, so we are interested in the first element
     data: dict = json.loads(data_json)[0]
 
     # if the result only contains "File", "SourceFile" and "ExifTool" it means exiftool
     # couldn't find any additional data about this file.
-    if set(data.keys()) == set(["SourceFile", "ExifTool", "File"]):
-        return dict()
+    if set(data.keys()) == {"SourceFile", "ExifTool", "File"}:
+        return {}
 
     return data
 
@@ -236,7 +236,7 @@ class Exif(BaseModel):
         # exif filter is used differently from other filters. The **kwargs are not
         # filter parameters but all belong into the filter_tags dictionary to filter
         # for specific exif tags.
-        params = filter_tags or dict()
+        params = filter_tags or {}
         params.update(kwargs)
         # *args are tags filtered without a value, like ["gps", "image.model"].
         for arg in args:

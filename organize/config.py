@@ -83,10 +83,14 @@ class Config:
         self,
         simulate: bool = True,
         output: Output = Default(),
-        tags: Tags = set(),
-        skip_tags: Tags = set(),
+        tags: Tags = None,
+        skip_tags: Tags = None,
         working_dir: str | Path = ".",
     ) -> None:
+        if skip_tags is None:
+            skip_tags = set()
+        if tags is None:
+            tags = set()
         working_path = Path(render(str(working_dir)))
         os.chdir(working_path)
         output.start(

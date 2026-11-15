@@ -60,4 +60,4 @@ def test_macos_filter(tmp_path, testoutput):
         """
     ).execute(simulate=False, output=testoutput)
 
-    assert set(testoutput.messages) == set(["Invoice (red)", "Urgent (green)"])
+    assert set(testoutput.messages) == {"Invoice (red)", "Urgent (green)"}

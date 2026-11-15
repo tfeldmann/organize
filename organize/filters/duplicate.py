@@ -134,7 +134,7 @@ class Duplicate:
 
         self._files_for_size = defaultdict(list)
         self._files_for_chunk = defaultdict(list)
-        self._file_for_hash = dict()
+        self._file_for_hash = {}
 
         # we keep track of the files we already computed the hashes for so we only do
         # that once.
