@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import ClassVar
 
@@ -8,7 +8,7 @@ from .common.timefilter import TimeFilter
 
 
 def read_lastmodified(path: Path) -> datetime:
-    return datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
+    return datetime.fromtimestamp(path.stat().st_mtime, tz=UTC)
 
 
 class LastModified(TimeFilter):

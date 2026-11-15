@@ -6,7 +6,7 @@ import subprocess
 from datetime import date, datetime, timedelta
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, ClassVar, DefaultDict, Dict, Optional, Union
+from typing import Any, ClassVar, Union
 
 import exifread
 from pydantic import BaseModel
@@ -17,10 +17,10 @@ from organize.logger import logger
 from organize.output import Output
 from organize.resource import Resource
 
-ExifStrDict = Dict[str, Dict[str, str]]
+ExifStrDict = dict[str, dict[str, str]]
 ExifValue = Union[str, datetime, date, timedelta]
-ExifDict = Dict[str, Dict[str, ExifValue]]
-ExifDefaultDict = DefaultDict[str, DefaultDict[str, ExifValue]]
+ExifDict = dict[str, dict[str, ExifValue]]
+ExifDefaultDict = collections.defaultdict[str, collections.defaultdict[str, ExifValue]]
 
 ORGANIZE_EXIFTOOL_PATH = os.environ.get("ORGANIZE_EXIFTOOL_PATH", "")
 
@@ -45,14 +45,14 @@ def exiftool_available() -> bool:
 
 
 def group_keys_by_splitting(
-    data: Dict[str, Any],
+    data: dict[str, Any],
     delimiter: str = " ",
-) -> Dict[str, Dict[str, Any]]:
+) -> dict[str, dict[str, Any]]:
     """
     >>> group_keys_by_splitting({"cat a": 1, "cat b": 2, "x c": 1, "x d": 2})
     {"cat": {"a": 1, "b": 2}, "x": {"c": 1, "d": 2}}
     """
-    result: DefaultDict[str, Any] = collections.defaultdict(dict)
+    result: collections.defaultdict[str, Any] = collections.defaultdict(dict)
     for k, v in data.items():
         if delimiter in k:
             category, field = k.split(delimiter, maxsplit=1)
@@ -62,13 +62,13 @@ def group_keys_by_splitting(
     return dict(result)
 
 
-def lowercase_keys_recursive(data) -> Dict:
-    if isinstance(data, Dict):
+def lowercase_keys_recursive(data) -> dict:
+    if isinstance(data, dict):
         return {k.lower(): lowercase_keys_recursive(v) for k, v in data.items()}
     return data
 
 
-def parse_date_value(value: str) -> Union[datetime, date, str]:
+def parse_date_value(value: str) -> datetime | date | str:
     """
     Parse datetime or date values (e.g. image.datetime, exif.datetimeoriginal, ...)
     Exiftool often gives date and time values for keys with only "date" in their name
@@ -85,7 +85,7 @@ def parse_date_value(value: str) -> Union[datetime, date, str]:
     return value
 
 
-def parse_offset_value(value: str) -> Union[timedelta, str]:
+def parse_offset_value(value: str) -> timedelta | str:
     """
     Parse offset values (e.g. exif.offsettimeoriginal, exif.offsettimedigitized)
     Supports formats "+HHMM" or "+HH:MM[:SS]" or "UTC+HH:MM[:SS]"
@@ -112,7 +112,7 @@ def convert_value(key: str, value: str) -> ExifValue:
 def convert_recursive(data):
     result = dict()
     for k, v in data.items():
-        if isinstance(v, Dict):
+        if isinstance(v, dict):
             result[k] = convert_recursive(v)
         else:
             result[k] = convert_value(k, v)
@@ -151,7 +151,7 @@ def exiftool_read(path: Path) -> ExifStrDict:
         return dict()
 
     # we pass a single filepath, so we are interested in the first element
-    data: Dict = json.loads(data_json)[0]
+    data: dict = json.loads(data_json)[0]
 
     # if the result only contains "File", "SourceFile" and "ExifTool" it means exiftool
     # couldn't find any additional data about this file.
@@ -162,8 +162,8 @@ def exiftool_read(path: Path) -> ExifStrDict:
 
 
 def matches_tags(
-    filter_tags: Dict[str, Optional[str]],
-    data: Dict[str, Dict[str, str]],
+    filter_tags: dict[str, str | None],
+    data: dict[str, dict[str, str]],
 ) -> bool:
     if not data:
         return False
@@ -217,7 +217,7 @@ class Exif(BaseModel):
         - ``{exif.interoperability}`` -- Interoperability information
     """
 
-    filter_tags: Dict
+    filter_tags: dict
     lowercase_keys: bool = True
 
     filter_config: ClassVar[FilterConfig] = FilterConfig(
@@ -229,7 +229,7 @@ class Exif(BaseModel):
     def __init__(
         self,
         *args,
-        filter_tags: Optional[Dict] = None,
+        filter_tags: dict | None = None,
         lowercase_keys: bool = True,
         **kwargs,
     ):

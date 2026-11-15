@@ -1,5 +1,3 @@
-from typing import List
-
 from .jsonl import JSONL, EventType
 
 
@@ -9,7 +7,7 @@ class SavingOutput(JSONL):
     """
 
     def __init__(self) -> None:
-        self.queue: List[EventType] = []
+        self.queue: list[EventType] = []
 
     def start(self, *args, **kwargs) -> None:
         self.queue.clear()
@@ -18,7 +16,7 @@ class SavingOutput(JSONL):
     def emit_event(self, event: EventType) -> None:
         self.queue.append(event)
 
-    def _messages_of_kind(self, kind: str) -> List:
+    def _messages_of_kind(self, kind: str) -> list:
         return [x for x in self.queue if x.type == kind]
 
     @property

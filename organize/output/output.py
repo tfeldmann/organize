@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, Optional, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Literal, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -22,7 +22,7 @@ class Output(Protocol):
     def start(
         self,
         simulate: bool,
-        config_path: Optional[Path],
+        config_path: Path | None,
         working_dir: Path,
     ) -> None: ...
 

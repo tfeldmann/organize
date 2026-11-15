@@ -1,8 +1,9 @@
 import re
 import subprocess
+from collections.abc import Callable
 from functools import lru_cache
 from pathlib import Path
-from typing import Callable, ClassVar, Dict, Union
+from typing import ClassVar
 
 from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
@@ -82,7 +83,7 @@ def extract_docx(path: Path) -> str:
     return clean(result)
 
 
-EXTRACTORS: Dict[str, Callable[[Path], str]] = {
+EXTRACTORS: dict[str, Callable[[Path], str]] = {
     ".md": extract_txt,
     ".txt": extract_txt,
     ".log": extract_txt,
@@ -134,7 +135,7 @@ class FileContent:
     def __post_init__(self):
         self._expr = re.compile(self.expr, re.MULTILINE | re.DOTALL)
 
-    def matches(self, path: Path) -> Union[re.Match, None]:
+    def matches(self, path: Path) -> re.Match | None:
         try:
             content = textract(path)
             match = self._expr.search(content)

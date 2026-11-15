@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import ClassVar, Set, Tuple
+from typing import ClassVar
 
 from pydantic import Field, field_validator
 from pydantic.config import ConfigDict
@@ -40,7 +40,7 @@ class Extension:
     - `{extension}`: the original file extension (without colon)
     """
 
-    extensions: Set[str] = Field(default_factory=set)
+    extensions: set[str] = Field(default_factory=set)
 
     filter_config: ClassVar[FilterConfig] = FilterConfig(
         name="extension",
@@ -53,7 +53,7 @@ class Extension:
         as_list = convert_to_list(v)
         return set(map(normalize_extension, flatten(list(as_list))))
 
-    def suffix_match(self, path: Path) -> Tuple[str, bool]:
+    def suffix_match(self, path: Path) -> tuple[str, bool]:
         suffix = path.suffix.lstrip(".")
         if not self.extensions:
             return (suffix, bool(suffix))

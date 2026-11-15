@@ -5,7 +5,7 @@ import unicodedata
 from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal, Union
+from typing import Any, Literal
 
 from rich.markup import escape as rich_escape
 
@@ -60,7 +60,7 @@ def has_executable(name: str) -> bool:
     return shutil.which(name) is not None
 
 
-def expandvars(path: Union[str, Path]) -> Path:
+def expandvars(path: str | Path) -> Path:
     return Path(os.path.expandvars(path)).expanduser()
 
 

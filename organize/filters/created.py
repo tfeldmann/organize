@@ -1,15 +1,15 @@
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import ClassVar, Optional
+from typing import ClassVar
 
 from organize.filter import FilterConfig
 
 from .common.timefilter import TimeFilter
 
 
-def read_stat_created(path: Path) -> Optional[int]:
+def read_stat_created(path: Path) -> int | None:
     commands = (
         ["stat", "--format=%W", str(path)],  # GNU coreutils
         ["stat", "-f %B", str(path)],  # BSD
@@ -48,9 +48,9 @@ def read_created(path: Path) -> datetime:
 
     # give up.
     if timestamp is None:
-        raise EnvironmentError("The creation time is not available.")
+        raise OSError("The creation time is not available.")
 
-    return datetime.fromtimestamp(timestamp, timezone.utc)
+    return datetime.fromtimestamp(timestamp, UTC)
 
 
 class Created(TimeFilter):

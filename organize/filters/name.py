@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, List, Union
+from typing import Any, ClassVar
 
 import simplematch
 from pydantic.config import ConfigDict
@@ -33,9 +33,9 @@ class Name:
     """
 
     match: str = "*"
-    startswith: Union[str, List[str]] = ""
-    contains: Union[str, List[str]] = ""
-    endswith: Union[str, List[str]] = ""
+    startswith: str | list[str] = ""
+    contains: str | list[str] = ""
+    endswith: str | list[str] = ""
     case_sensitive: bool = True
 
     filter_config: ClassVar[FilterConfig] = FilterConfig(
@@ -82,7 +82,7 @@ class Name:
         return result
 
     @staticmethod
-    def create_list(x: Union[int, str, List[Any]], case_sensitive: bool) -> List[str]:
+    def create_list(x: int | str | list[Any], case_sensitive: bool) -> list[str]:
         if isinstance(x, (int, float)):
             x = str(x)
         if isinstance(x, str):

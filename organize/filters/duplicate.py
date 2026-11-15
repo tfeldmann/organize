@@ -9,8 +9,9 @@ Which was updated for python3 in:
 """
 
 from collections import defaultdict
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable, ClassVar, Literal, NamedTuple, Tuple
+from typing import Any, ClassVar, Literal, NamedTuple
 
 from pydantic.config import ConfigDict
 from pydantic.dataclasses import dataclass
@@ -61,7 +62,7 @@ class OriginalDetectionResult(NamedTuple):
 
 def detect_original(
     known: Path, new: Path, method: DetectionMethod, reverse: bool
-) -> Tuple[Path, Path]:
+) -> tuple[Path, Path]:
     """Returns a tuple (original file, duplicate)"""
 
     if method == "first_seen":

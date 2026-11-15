@@ -1,6 +1,6 @@
 from datetime import datetime, tzinfo
 from pathlib import Path
-from typing import ClassVar, Literal, Union
+from typing import ClassVar, Literal
 
 import arrow
 from pydantic.config import ConfigDict
@@ -21,7 +21,7 @@ class TimeFilter:
     minutes: int = 0
     seconds: int = 0
     mode: Literal["older", "newer"] = "older"
-    timezone: Union[tzinfo, str] = "local"
+    timezone: tzinfo | str = "local"
 
     filter_config: ClassVar[FilterConfig] = FilterConfig(
         "timefilter",

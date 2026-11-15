@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal, Optional, Union
+from typing import TYPE_CHECKING, Literal, Union
 
 from pydantic import BaseModel
 
@@ -17,15 +17,15 @@ if TYPE_CHECKING:
 class Start(BaseModel):
     type: Literal["START"] = "START"
     simulate: bool
-    config_path: Optional[Path]
+    config_path: Path | None
     working_dir: Path
 
 
 class Msg(BaseModel):
     type: Literal["MSG"] = "MSG"
     level: Level = "info"
-    path: Optional[Path]
-    basedir: Optional[Path]
+    path: Path | None
+    basedir: Path | None
     sender: str
     msg: str
     rule_nr: int
@@ -34,8 +34,8 @@ class Msg(BaseModel):
 
 class Confirm(BaseModel):
     type: Literal["CONFIRM"] = "CONFIRM"
-    path: Optional[Path]
-    basedir: Optional[Path]
+    path: Path | None
+    basedir: Path | None
     sender: str
     msg: str
     default: bool
@@ -59,7 +59,7 @@ class JSONL:
     def start(
         self,
         simulate: bool,
-        config_path: Optional[Path],
+        config_path: Path | None,
         working_dir: Path,
     ) -> None:
         self.emit_event(

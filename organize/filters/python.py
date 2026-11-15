@@ -1,5 +1,5 @@
 import textwrap
-from typing import ClassVar, Dict, Optional
+from typing import ClassVar
 
 from pydantic import field_validator
 from pydantic.config import ConfigDict
@@ -48,7 +48,7 @@ class Python:
     def __post_init__(self):
         self.code = textwrap.dedent(self.code)
 
-    def __usercode__(self, print, **kwargs) -> Optional[Dict]:
+    def __usercode__(self, print, **kwargs) -> dict | None:
         raise NotImplementedError()
 
     def pipeline(self, res: Resource, output: Output) -> bool:

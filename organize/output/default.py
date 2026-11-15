@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import TYPE_CHECKING
 
 from rich.console import Console
 from rich.panel import Panel
@@ -15,8 +15,6 @@ from ._sender import sender_name
 from .output import Level
 
 if TYPE_CHECKING:
-    from typing import List
-
     from organize.resource import Resource
 
     from ._sender import SenderType
@@ -28,7 +26,7 @@ def format_path(path: Path, base_style: str, main_style: str) -> str:
     return f"[{base_style}]{base}[/][{main_style}]{main}[/]"
 
 
-MSG_STYLE: Dict[Level, str] = {
+MSG_STYLE: dict[Level, str] = {
     "info": "[pipeline.msg]",
     "warn": "[pipeline.warn]",
     "error": "[pipeline.error]ERROR! ",
@@ -57,7 +55,7 @@ class Confirm(RichConfirm):
 
 
 class Default:
-    def __init__(self, theme: Optional[Theme] = None, errors_only: bool = False):
+    def __init__(self, theme: Theme | None = None, errors_only: bool = False):
         if theme is None:
             theme = Theme(
                 {
@@ -81,7 +79,7 @@ class Default:
                 }
             )
         self.errors_only = errors_only
-        self.msg_queue: List[str] = []
+        self.msg_queue: list[str] = []
         self.det_resource = ChangeDetector()
 
         self.console = Console(theme=theme, highlight=False)
@@ -128,7 +126,7 @@ class Default:
     def start(
         self,
         simulate: bool,
-        config_path: Optional[Path],
+        config_path: Path | None,
         working_dir: Path,
     ) -> None:
         self.det_rule.reset()

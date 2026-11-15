@@ -1,6 +1,6 @@
 from collections import Counter
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Dict, Iterable, List, Union
 
 import pytest
 
@@ -18,7 +18,7 @@ def equal_items(a: Iterable, b: Iterable) -> bool:
     return Counter(a) == Counter(b)
 
 
-def make_files(structure: Union[Dict, List], path: Union[Path, str] = "."):
+def make_files(structure: dict | list, path: Path | str = "."):
     """Example structure:
 
     {
@@ -60,7 +60,7 @@ def make_files(structure: Union[Dict, List], path: Union[Path, str] = "."):
             raise ValueError(f"Unknown file data {content}")
 
 
-def read_files(path: Union[Path, str] = "."):
+def read_files(path: Path | str = "."):
     if isinstance(path, str):
         path = Path(path)
 

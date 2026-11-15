@@ -1,6 +1,5 @@
 import os
 from datetime import date, datetime
-from typing import Union
 
 import jinja2
 
@@ -31,7 +30,7 @@ Template = jinja2.Environment(
 )
 
 
-def render(template: Union[str, jinja2.Template], args=None) -> str:
+def render(template: str | jinja2.Template, args=None) -> str:
     if args is None:
         args = dict()
     try:

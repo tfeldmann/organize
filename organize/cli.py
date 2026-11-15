@@ -42,7 +42,7 @@ import os
 import sys
 from functools import partial
 from pathlib import Path
-from typing import Annotated, Literal, Optional, Set, Union
+from typing import Annotated, Literal
 
 from docopt import docopt
 from pydantic import (
@@ -73,7 +73,7 @@ from organize.utils import escape
 
 from .__version__ import __version__
 
-Tags = Set[str]
+Tags = set[str]
 OutputFormat = Annotated[
     Literal["default", "jsonl", "errorsonly"], BeforeValidator(lambda v: v.lower())
 ]
@@ -88,14 +88,14 @@ class ConfigWithPath(BaseModel):
     """
 
     config: str
-    config_path: Optional[Path]
+    config_path: Path | None
 
     @classmethod
     def from_stdin(cls) -> "ConfigWithPath":
         return cls(config=sys.stdin.read(), config_path=None)
 
     @classmethod
-    def by_name_or_path(cls, name_or_path: Optional[str]) -> "ConfigWithPath":
+    def by_name_or_path(cls, name_or_path: str | None) -> "ConfigWithPath":
         config_path = find_config(name_or_path=name_or_path)
         return cls(
             config=config_path.read_text(encoding="utf-8"),
@@ -126,7 +126,7 @@ def _output_for_format(format: OutputFormat) -> Output:
 
 def execute(
     config: ConfigWithPath,
-    working_dir: Optional[Path],
+    working_dir: Path | None,
     format: OutputFormat,
     tags: Tags,
     skip_tags: Tags,
@@ -144,7 +144,7 @@ def execute(
     )
 
 
-def new(config: Optional[str]) -> None:
+def new(config: str | None) -> None:
     try:
         new_path = create_example_config(name_or_path=config)
         console.print(
@@ -158,7 +158,7 @@ def new(config: Optional[str]) -> None:
         sys.exit(1)
 
 
-def edit(config: Optional[str]) -> None:
+def edit(config: str | None) -> None:
     config_path = find_config(config)
     editor = os.getenv("EDITOR")
     if editor:
@@ -177,7 +177,7 @@ def debug(config: ConfigWithPath) -> None:
     pprint(conf, expand_all=True, indent_guides=False)
 
 
-def show(config: Optional[str], path: bool, reveal: bool) -> None:
+def show(config: str | None, path: bool, reveal: bool) -> None:
     config_path = find_config(name_or_path=config)
     if path:
         print(config_path)
@@ -218,11 +218,11 @@ class CliArgs(BaseModel):
     docs: bool
 
     # run / sim options
-    config: Optional[str] = Field(..., alias="<config>")
-    working_dir: Optional[Path] = Field(..., alias="--working-dir")
+    config: str | None = Field(..., alias="<config>")
+    working_dir: Path | None = Field(..., alias="--working-dir")
     format: OutputFormat = Field("default", alias="--format")
-    tags: Optional[str] = Field(..., alias="--tags")
-    skip_tags: Optional[str] = Field(..., alias="--skip-tags")
+    tags: str | None = Field(..., alias="--tags")
+    skip_tags: str | None = Field(..., alias="--skip-tags")
     stdin: bool = Field(..., alias="--stdin")
 
     # show options
@@ -240,13 +240,13 @@ class CliArgs(BaseModel):
         return self
 
 
-def _split_tags(val: Optional[str]) -> Tags:
+def _split_tags(val: str | None) -> Tags:
     if val is None:
         return set()
     return set(val.split(","))
 
 
-def cli(argv: Union[list[str], str, None] = None) -> None:
+def cli(argv: list[str] | str | None = None) -> None:
     enable_logfile()
     assert __doc__ is not None
     parsed_args = docopt(

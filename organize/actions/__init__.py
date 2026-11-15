@@ -16,7 +16,7 @@ from .symlink import Symlink
 from .trash import Trash
 from .write import Write
 
-ALL: Tuple[Type[Action], ...] = (
+ALL: tuple[type[Action], ...] = (
     Confirm,
     Copy,
     Delete,

@@ -1,7 +1,8 @@
 import os
+from collections.abc import Iterable, Iterator
 from fnmatch import fnmatch
 from pathlib import Path
-from typing import Iterable, Iterator, List, Literal, NamedTuple, Optional, Set
+from typing import Literal, NamedTuple
 
 from natsort import os_sorted
 from pydantic import Field
@@ -13,8 +14,8 @@ def pattern_match(name: str, patterns: Iterable[str]) -> bool:
 
 
 class ScandirResult(NamedTuple):
-    dirs: List[os.DirEntry]
-    nondirs: List[os.DirEntry]
+    dirs: list[os.DirEntry]
+    nondirs: list[os.DirEntry]
 
 
 def scandir(top: str, collectfiles: bool = True) -> ScandirResult:
@@ -65,19 +66,19 @@ def scandir(top: str, collectfiles: bool = True) -> ScandirResult:
 
 
 class DirActions(NamedTuple):
-    to_yield: List[os.DirEntry]
-    to_walk: List[os.DirEntry]
+    to_yield: list[os.DirEntry]
+    to_walk: list[os.DirEntry]
 
 
 @dataclass(frozen=True)
 class Walker:
     min_depth: int = 0
-    max_depth: Optional[int] = None
+    max_depth: int | None = None
     method: Literal["breadth", "depth"] = "breadth"
-    filter_dirs: Optional[List[str]] = None
-    filter_files: Optional[List[str]] = None
-    exclude_dirs: Set[str] = Field(default_factory=set)
-    exclude_files: Set[str] = Field(default_factory=set)
+    filter_dirs: list[str] | None = None
+    filter_files: list[str] | None = None
+    exclude_dirs: set[str] = Field(default_factory=set)
+    exclude_files: set[str] = Field(default_factory=set)
 
     def _should_yield_file(self, entry: os.DirEntry, lvl: int) -> bool:
         return (

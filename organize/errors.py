@@ -1,11 +1,11 @@
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, Optional
 
 from pydantic import ValidationError
 
 
 class ConfigError(ValueError):
-    def __init__(self, e: ValidationError, config_path: Optional[Path] = None):
+    def __init__(self, e: ValidationError, config_path: Path | None = None):
         self.e = e
         self.config_path = config_path.resolve() if config_path else None
 

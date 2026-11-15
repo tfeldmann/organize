@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import builtins
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, Optional, Set
+from typing import TYPE_CHECKING, Any
 
 from organize.utils import deep_merge
 
@@ -32,14 +33,14 @@ class Resource:
         rest of the rule.
     """
 
-    path: Optional[Path]
-    basedir: Optional[Path] = None
-    rule: Optional[Rule] = None  # TODO: not optional?
+    path: Path | None
+    basedir: Path | None = None
+    rule: Rule | None = None  # TODO: not optional?
     rule_nr: int = 0
-    vars: Dict[str, Any] = field(default_factory=dict)
-    walker_skip_pathes: Set[Path] = field(default_factory=set)
+    vars: builtins.dict[str, Any] = field(default_factory=dict)
+    walker_skip_pathes: set[Path] = field(default_factory=set)
 
-    def relative_path(self) -> Optional[Path]:
+    def relative_path(self) -> Path | None:
         if self.basedir is None:
             return self.path
         if self.path is None:
@@ -61,7 +62,7 @@ class Resource:
             **self.vars,
         )
 
-    def deep_merge(self, key: str, data: Dict) -> None:
+    def deep_merge(self, key: str, data: builtins.dict) -> None:
         """
         Convenience method for filters / actions to merge data into the `vars` dict.
         """

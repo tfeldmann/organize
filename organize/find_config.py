@@ -1,8 +1,7 @@
 import os
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 from itertools import chain, product
 from pathlib import Path
-from typing import Iterator, Optional
 
 import platformdirs
 
@@ -56,7 +55,7 @@ def find_default_config() -> Path:
     return find_config_by_name("config")
 
 
-def find_config(name_or_path: Optional[str] = None) -> Path:
+def find_config(name_or_path: str | None = None) -> Path:
     # No config given? Find the default one.
     if name_or_path is None:
         return find_default_config()
@@ -87,7 +86,7 @@ rules:
 """
 
 
-def example_config_path(name_or_path: Optional[str]) -> Path:
+def example_config_path(name_or_path: str | None) -> Path:
     # prefer "~/.config/organize" if it is already present on the system
     preferred_dir = XDG_CONFIG_DIR if XDG_CONFIG_DIR.is_dir() else USER_CONFIG_DIR
 
@@ -108,7 +107,7 @@ def example_config_path(name_or_path: Optional[str]) -> Path:
     return preferred_dir / f"{name_or_path}.yaml"
 
 
-def create_example_config(name_or_path: Optional[str] = None) -> Path:
+def create_example_config(name_or_path: str | None = None) -> Path:
     path = example_config_path(name_or_path=name_or_path)
     if path.is_file():
         raise FileExistsError(f'Config "{path.absolute()}" already exists.')

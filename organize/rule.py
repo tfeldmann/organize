@@ -1,5 +1,6 @@
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Dict, Iterable, List, Literal, Optional, Set
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -19,7 +20,7 @@ from .walker import Walker
 FilterMode = Literal["all", "any", "none"]
 
 
-def action_from_dict(d: Dict) -> Action:
+def action_from_dict(d: dict) -> Action:
     """
     :param d:
         A dict in the forms of
@@ -41,7 +42,7 @@ def action_from_dict(d: Dict) -> Action:
         return ActionCls(value)
 
 
-def filter_from_dict(d: Dict) -> Filter:
+def filter_from_dict(d: dict) -> Filter:
     """
     :param d:
         A dict in the forms of ("not" prefix is optional)
@@ -106,15 +107,15 @@ def action_pipeline(
 
 
 class Rule(BaseModel):
-    name: Optional[str] = None
+    name: str | None = None
     enabled: bool = True
     targets: Literal["files", "dirs"] = "files"
     locations: FlatList[Location] = Field(default_factory=list)
     subfolders: bool = False
-    tags: Set[str] = Field(default_factory=set)
-    filters: List[Filter] = Field(default_factory=list)
+    tags: set[str] = Field(default_factory=set)
+    filters: list[Filter] = Field(default_factory=list)
     filter_mode: FilterMode = "all"
-    actions: List[Action] = Field(..., min_length=1)
+    actions: list[Action] = Field(..., min_length=1)
 
     model_config = ConfigDict(
         extra="forbid",
@@ -251,7 +252,7 @@ class Rule(BaseModel):
         if not self.enabled:
             return ReportSummary()
 
-        current_action: Optional[Action] = None
+        current_action: Action | None = None
 
         # standalone mode
         if not self.locations:
@@ -277,7 +278,7 @@ class Rule(BaseModel):
 
         # normal mode
         summary = ReportSummary()
-        skip_pathes: Set[Path] = set()
+        skip_pathes: set[Path] = set()
         for res in self.walk(rule_nr=rule_nr):
             if res.path in skip_pathes:
                 continue

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import os
 import textwrap
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, List, Optional, Union
 
 import yaml
 from pydantic import ConfigDict, ValidationError
@@ -54,12 +54,12 @@ def should_execute(rule_tags: Tags, tags: Tags, skip_tags: Tags) -> bool:
 
 @dataclass(config=ConfigDict(extra="ignore"))
 class Config:
-    rules: List[Rule]
+    rules: list[Rule]
 
-    _config_path: Optional[Path] = None
+    _config_path: Path | None = None
 
     @classmethod
-    def from_string(cls, config: str, config_path: Optional[Path] = None) -> Config:
+    def from_string(cls, config: str, config_path: Path | None = None) -> Config:
         normalized = normalize_unicode(config)
         dedented = textwrap.dedent(normalized)
         as_dict = yaml.load(dedented, Loader=yaml.SafeLoader)
@@ -85,7 +85,7 @@ class Config:
         output: Output = Default(),
         tags: Tags = set(),
         skip_tags: Tags = set(),
-        working_dir: Union[str, Path] = ".",
+        working_dir: str | Path = ".",
     ) -> None:
         working_path = Path(render(str(working_dir)))
         os.chdir(working_path)
