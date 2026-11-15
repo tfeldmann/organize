@@ -2,10 +2,16 @@
 
 ## [Unreleased]
 
-- `extension` filter without arguments no longer matches files that have no extension, so the documented lowercase rule leaves `LICENSE` alone.
-- Fixed #500: `rename_existing` conflict messages now show the generated filename.
-- Fixed #438 (`filecontent` filter fails for PDFs when `pdftotext` isn't installed, instead of falling back to `pdfminer`)
-- Fixed #492: `filecontent` now reads `pdftotext` output as UTF-8 instead of the locale encoding, so non-ASCII PDF text matches on Windows without `PYTHONUTF8=1`.
+## v3.4.0 (2026-11-15)
+
+- Python >= 3.11 is now required
+- `duplicates` fixes an edge case where copies of files are not found (thanks @jayhemnani9910)
+- `extension` filter without arguments no longer matches files that have no extension (thanks @jayhemnani9910)
+- `rename_existing` conflict messages now show the generated filename (#500) (thanks @hmmlavi)
+- `filecontent` filter no longer fails for PDFs when `pdftotext` isn't installed and falls back to `pdfminer` instead (#438) (thanks @zor-el)
+- `filecontent` now reads `pdftotext` output as UTF-8 instead of the locale encoding, so non-ASCII PDF text matches on Windows without `PYTHONUTF8=1` (#492) (thanks @RClaudiuM)
+- Documentation: fixed wrong example code (thanks @jayhemnani9910)
+- Dependency updates and code modernizations
 
 ## v3.3.0 (2024-11-25)
 
