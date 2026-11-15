@@ -1,6 +1,5 @@
 <p align="center">
-  <!--<img width="623" height="168" src="https://github.com/tfeldmann/organize/raw/gh-pages/img/organize.svg?sanitize=true" alt="organize logo">-->
-  <a href="https://tfeldmann.github.io/organize/changelog/" target="_blank"><img width="100%" src="https://github.com/tfeldmann/organize/blob/main/docs/img/organize-v3.jpg?raw=true" alt="organize v3 is out"></a>
+  <img width="623" height="168" src="https://github.com/tfeldmann/organize/raw/gh-pages/img/organize.svg?sanitize=true" alt="organize logo">
 </p>
 
 <div align="center">
@@ -19,17 +18,6 @@
 <br>
 <a href="https://organize.readthedocs.io/" target="_blank">Full documentation at Read the docs</a>
 </p>
-
-
-## v3 is now available
-
-The new version should be *much* faster and fix a lot of bugs. It also comes with
-a some new actions, filters and options.
-
-If you encounter any other bugs or problems during the migration, please reach out!
-
-- [See the changelog](https://tfeldmann.github.io/organize/changelog/)
-- [Migration guide](https://tfeldmann.github.io/organize/migrating/#migrating-from-v2-to-v3)
 
 ## About
 
@@ -68,16 +56,17 @@ Some highlights include:
 
 ### Installation
 
-Only python 3.9+ is needed.
-Install it via your package manager or from [python.org](https://python.org).
+Note that the package name is `organize-tool`:
 
-Installation is done via pip. Note that the package name is `organize-tool`:
+Install using `uv ` or plain `pip`:
 
 ```bash
-pip install -U organize-tool
-```
+uv tool install organize-tool  # uv
+pip install organize-tool      # pip
 
-This command can also be used to update to the newest version. Now you can run `organize --help` to check if the installation was successful.
+# verify successful installation
+organize --help
+```
 
 ### Create your first rule
 
