@@ -83,8 +83,8 @@ class Config:
         self,
         simulate: bool = True,
         output: Output | None = None,
-        tags: Tags = None,
-        skip_tags: Tags = None,
+        tags: Tags | None = None,
+        skip_tags: Tags | None = None,
         working_dir: str | Path = ".",
     ) -> None:
         if output is None:
