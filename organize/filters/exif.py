@@ -6,7 +6,7 @@ import subprocess
 from datetime import date, datetime, timedelta
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, ClassVar, Union
+from typing import Any, ClassVar
 
 import exifread
 from pydantic import BaseModel
@@ -18,7 +18,7 @@ from organize.output import Output
 from organize.resource import Resource
 
 ExifStrDict = dict[str, dict[str, str]]
-ExifValue = Union[str, datetime, date, timedelta]
+ExifValue = str | datetime | date | timedelta
 ExifDict = dict[str, dict[str, ExifValue]]
 ExifDefaultDict = collections.defaultdict[str, collections.defaultdict[str, ExifValue]]
 

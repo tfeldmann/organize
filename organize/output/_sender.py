@@ -1,9 +1,7 @@
-from typing import Union
-
 from organize.action import HasActionConfig
 from organize.filter import HasFilterConfig
 
-SenderType = Union[HasActionConfig, HasFilterConfig, str]
+SenderType = HasActionConfig | HasFilterConfig | str
 
 
 def sender_name(sender: SenderType) -> str:

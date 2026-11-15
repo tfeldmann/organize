@@ -53,7 +53,7 @@ class All:
                 match = filter.pipeline(res, output=output)
                 if not match:
                     return False
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 output.msg(res=res, level="error", msg=str(e), sender=filter)
                 logger.exception(e)
                 return False
@@ -71,7 +71,7 @@ class Any:
                 match = filter.pipeline(res, output=output)
                 if match:
                     result = True
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 output.msg(res=res, level="error", msg=str(e), sender=filter)
                 logger.exception(e)
         return result

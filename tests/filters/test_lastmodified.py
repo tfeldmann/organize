@@ -60,5 +60,5 @@ def test_date_formatting(fs, testoutput):
         """
     Config.from_string(config).execute(simulate=False, output=testoutput)
     new_name = f"{date.today():%Y%m%d} - test.txt"
-    testoutput.messages == [f"Created at {new_name}"]
+    assert testoutput.messages[0] == f"moving to {new_name}"
     assert read_files("/test/moved") == {new_name: ""}

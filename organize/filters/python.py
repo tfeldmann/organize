@@ -68,7 +68,7 @@ class Python:
         func += textwrap.indent(self.code, "    ")
         func += "\n\nself.__usercode__ = __userfunc"
 
-        exec(func, globals().copy(), locals().copy())
+        exec(func, globals().copy(), locals().copy())  # noqa: S102
         result = self.__usercode__(print=_output_msg, **res.dict())
 
         if isinstance(result, dict):

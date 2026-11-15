@@ -68,7 +68,7 @@ class TimeFilter:
         assert res.path is not None, "Does not support standalone mode"
         try:
             dt = self.get_datetime(res.path)
-        except Exception:
+        except Exception:  # noqa: BLE001
             return False
 
         # apply timezone

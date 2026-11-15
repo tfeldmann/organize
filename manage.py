@@ -89,9 +89,12 @@ def set_version(args):
 
     if ask_confirm("Commit changes?"):
         subprocess.run(
-            ["git", "add", "pyproject.toml", "*/__version__.py", "CHANGELOG.md"]
+            ["git", "add", "pyproject.toml", "*/__version__.py", "CHANGELOG.md"],
+            check=True,
         )
-        subprocess.run(["git", "commit", "-m", f"bump version to v{version}"])
+        subprocess.run(
+            ["git", "commit", "-m", f"bump version to v{version}"], check=True
+        )
 
     print("Please push to github and wait for CI to pass.")
     print("Success.")
@@ -131,7 +134,9 @@ def publish(args):
 
     # create git tag ('vXXX')
     if ask_confirm("Create tag?"):
-        subprocess.run(["git", "tag", "-a", f"v{version}", "-m", f"v{version}"])
+        subprocess.run(
+            ["git", "tag", "-a", f"v{version}", "-m", f"v{version}"], check=True
+        )
 
     # push to github
     if ask_confirm("Push to github?"):

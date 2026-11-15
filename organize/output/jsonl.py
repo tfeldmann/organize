@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal, Union
+from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel
 
@@ -49,7 +49,7 @@ class Report(BaseModel):
     error_count: int
 
 
-EventType = Union[Start, Msg, Confirm, Report]
+EventType = Start | Msg | Confirm | Report
 
 
 class JSONL:

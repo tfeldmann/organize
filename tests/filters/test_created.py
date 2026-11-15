@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 
 from arrow import now as arrow_now
 
@@ -23,4 +23,4 @@ def test_max():
 def test_read_created(tmp_path):
     f = tmp_path / "file.txt"
     f.touch()
-    assert read_created(f).date() == datetime.utcnow().date()
+    assert read_created(f).date() == datetime.now(tz=UTC).date()

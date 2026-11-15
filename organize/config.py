@@ -82,11 +82,13 @@ class Config:
     def execute(
         self,
         simulate: bool = True,
-        output: Output = Default(),
+        output: Output | None = None,
         tags: Tags = None,
         skip_tags: Tags = None,
         working_dir: str | Path = ".",
     ) -> None:
+        if output is None:
+            output = Default()
         if skip_tags is None:
             skip_tags = set()
         if tags is None:

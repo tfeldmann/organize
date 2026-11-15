@@ -140,7 +140,7 @@ class FileContent:
             content = textract(path)
             match = self._expr.search(content)
             return match
-        except Exception:
+        except Exception:  # noqa: BLE001
             return None
 
     def pipeline(self, res: Resource, output: Output) -> bool:

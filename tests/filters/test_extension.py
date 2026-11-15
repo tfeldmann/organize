@@ -12,16 +12,15 @@ from organize.filters.extension import Extension
     (
         ("/somefile.pdf", True, "pdf"),
         ("/home/test/somefile.pdf.jpeg", False, "jpeg"),
-        ("/home/test/gif.TXT", False, "txt"),
-        ("/home/test/txt.GIF", True, "gif"),
-        ("/somefile.pdf", True, "pdf"),
+        ("/home/test/gif.TXT", False, "TXT"),
+        ("/home/test/txt.GIF", True, "GIF"),
     ),
 )
 def test_extension(path, match, suffix):
     extension = Extension(["JPG", ".gif", "pdf"])
-    suffix, match = extension.suffix_match(Path(path))
-    assert match == match
-    assert suffix == suffix
+    result_suffix, result_match = extension.suffix_match(Path(path))
+    assert result_match == match
+    assert result_suffix == suffix
 
 
 def test_extension_empty_needs_a_suffix():

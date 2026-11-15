@@ -266,7 +266,7 @@ class Rule(BaseModel):
                 ):
                     pass
                 return ReportSummary(success=1)
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 output.msg(
                     res=res,
                     msg=str(e),
@@ -300,7 +300,7 @@ class Rule(BaseModel):
                         pass
                     skip_pathes = skip_pathes.union(res.walker_skip_pathes)
                     summary.success += 1
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     output.msg(
                         res=res,
                         msg=str(e),

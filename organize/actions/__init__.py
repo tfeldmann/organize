@@ -1,5 +1,3 @@
-from typing import Tuple, Type
-
 from organize.action import Action
 
 from .confirm import Confirm
