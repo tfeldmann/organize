@@ -12,8 +12,13 @@ from rich.markup import escape as rich_escape
 ENV_ORGANIZE_NORMALIZE_UNICODE = os.environ.get("ORGANIZE_NORMALIZE_UNICODE", "1")
 
 
+def escape_surrogates(text: str) -> str:
+    """Represent undecodable filename bytes as printable Unicode escapes."""
+    return text.encode("utf-8", errors="backslashreplace").decode("utf-8")
+
+
 def escape(msg: Any) -> str:
-    return rich_escape(str(msg))
+    return rich_escape(escape_surrogates(str(msg)))
 
 
 def normalize_unicode(
