@@ -8,6 +8,7 @@ from pydantic.dataclasses import dataclass
 
 from organize.action import ActionConfig
 from organize.template import Template, render
+from organize.utils import escape_surrogates
 
 if TYPE_CHECKING:
     from organize.output import Output
@@ -23,7 +24,8 @@ class Write:
 
     Attributes:
         text (str):
-            The text that should be written. Supports templates.
+            The text that should be written. Supports templates. Undecodable bytes
+            in interpolated filenames are written as Unicode escapes.
 
         outfile (str):
             The file `text` should be written into. Supports templates.
@@ -67,7 +69,7 @@ class Write:
         self._known_files = set()
 
     def pipeline(self, res: Resource, output: Output, simulate: bool):
-        text = render(self._text, res.dict())
+        text = escape_surrogates(render(self._text, res.dict()))
         path = Path(render(self._path, res.dict()))
 
         resolved = path.resolve()

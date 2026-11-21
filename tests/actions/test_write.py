@@ -1,9 +1,52 @@
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
 from conftest import make_files, read_files
 
 from organize.config import Config
+
+
+@pytest.mark.skipif(
+    sys.platform != "linux" or sys.getfilesystemencoding() != "utf-8",
+    reason="requires Linux filenames with undecodable UTF-8 bytes",
+)
+def test_write_filename_with_undecodable_byte(tmp_path):
+    source = tmp_path / "source"
+    source.mkdir()
+    undecodable = source / os.fsdecode(b"track-\xf6.mp3")
+    undecodable.touch()
+    (source / "z-caf\u00e9.mp3").touch()
+    result = subprocess.run(
+        [sys.executable, "-m", "organize.cli", "run", "--stdin"],
+        cwd=tmp_path,
+        input=b"""
+        rules:
+          - locations: source
+            actions:
+              - write:
+                  text: "{path.name}"
+                  outfile: output.txt
+        """,
+        capture_output=True,
+        check=False,
+        timeout=30,
+        env={
+            **os.environ,
+            "PYTHONIOENCODING": "utf-8:strict",
+            "XDG_STATE_HOME": str(tmp_path / "state"),
+        },
+    )
+    assert result.returncode == 0, result.stderr.decode("utf-8")
+    stdout = result.stdout.decode("utf-8")
+    assert r"track-\udcf6.mp3" in stdout
+    assert "success 2 / fail 0" in stdout
+    assert (tmp_path / "output.txt").read_text(encoding="utf-8") == (
+        "track-\\udcf6.mp3\nz-caf\u00e9.mp3\n"
+    )
+    assert undecodable.is_file()
 
 
 @pytest.mark.parametrize(

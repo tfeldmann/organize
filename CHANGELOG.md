@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Console output and the `write` action escape undecodable filename bytes so processing can continue (#429).
+
 ## v3.4.0 (2026-11-15)
 
 - Python >= 3.11 is now required
