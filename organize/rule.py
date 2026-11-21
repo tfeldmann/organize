@@ -1,4 +1,4 @@
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import Literal
 
@@ -211,7 +211,11 @@ class Rule(BaseModel):
 
         return self
 
-    def walk(self, rule_nr: int = 0):
+    def walk(
+        self,
+        rule_nr: int = 0,
+        onerror: Callable[[OSError], None] | None = None,
+    ):
         for location in self.locations:
             # instantiate the filesystem walker
             exclude_files = location.system_exclude_files | location.exclude_files
@@ -229,6 +233,7 @@ class Rule(BaseModel):
                 method="breadth",
                 exclude_dirs=exclude_dirs,
                 exclude_files=exclude_files,
+                onerror=None if location.ignore_errors else onerror,
             )
 
             # whether to walk dirs or files
@@ -279,7 +284,17 @@ class Rule(BaseModel):
         # normal mode
         summary = ReportSummary()
         skip_pathes: set[Path] = set()
-        for res in self.walk(rule_nr=rule_nr):
+
+        def walk_error(e: OSError) -> None:
+            output.msg(
+                res=Resource(path=Path(e.filename), rule=self, rule_nr=rule_nr),
+                msg=str(e),
+                level="error",
+                sender="rule",
+            )
+            summary.errors += 1
+
+        for res in self.walk(rule_nr=rule_nr, onerror=walk_error):
             if res.path in skip_pathes:
                 continue
             result = filter_pipeline(
